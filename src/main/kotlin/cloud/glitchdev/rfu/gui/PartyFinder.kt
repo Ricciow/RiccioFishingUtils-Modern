@@ -2,9 +2,9 @@ package cloud.glitchdev.rfu.gui
 
 import cloud.glitchdev.rfu.gui.components.Button
 import gg.essential.elementa.components.UIRoundedRectangle
-import gg.essential.elementa.components.inspector.Inspector
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.RelativeWindowConstraint
+import gg.essential.elementa.constraints.SiblingConstraint
 import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.dsl.percent
@@ -25,11 +25,11 @@ class PartyFinder : BaseWindow() {
             color = ColorScheme.primaryColorOpaque.toConstraint()
         } childOf window
 
-        Button("Testando", 5f) {
+        Button("Testando Botao longo para caralho", 5f) {
 
         }.constrain {
             x = CenterConstraint()
-            y = CenterConstraint()
+            y = SiblingConstraint()
             width = 20.percent()
             height = 20.pixels()
         } childOf background

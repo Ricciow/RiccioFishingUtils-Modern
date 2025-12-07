@@ -9,6 +9,7 @@ import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.animate
 import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
+import gg.essential.elementa.dsl.min
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.toConstraint
@@ -34,7 +35,7 @@ class Button(val text: String, radius: Float = 0f, val callback : () -> Unit) : 
         val text = UIText(text).constrain {
             x = CenterConstraint()
             y = CenterConstraint()
-            width = TextAspectConstraint() - 5.pixels()
+            width = min(TextAspectConstraint() - 5.pixels(), 90.percent())
             height = 90.percent() - 5.pixels()
             color = textColor
         } childOf this
