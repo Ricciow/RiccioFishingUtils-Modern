@@ -1,7 +1,9 @@
 package cloud.glitchdev.rfu.gui
 
 import cloud.glitchdev.rfu.gui.components.Button
+import cloud.glitchdev.rfu.gui.components.Checkbox
 import gg.essential.elementa.components.UIRoundedRectangle
+import gg.essential.elementa.components.inspector.Inspector
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.RelativeWindowConstraint
 import gg.essential.elementa.constraints.SiblingConstraint
@@ -33,5 +35,16 @@ class PartyFinder : BaseWindow() {
             width = 20.percent()
             height = 20.pixels()
         } childOf background
+
+        Checkbox("Checkbox") {
+
+        }.constrain {
+            x = CenterConstraint()
+            y = SiblingConstraint()
+            width = 20.percent()
+            height = 20.pixels()
+        } childOf background
+
+        Inspector(window) childOf window
     }
 }

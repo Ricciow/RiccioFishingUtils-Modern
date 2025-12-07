@@ -15,7 +15,7 @@ import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.toConstraint
 import gg.essential.elementa.dsl.minus
 
-class Button(val text: String, radius: Float = 0f, val callback : () -> Unit) : UIRoundedRectangle(radius) {
+class Button(val text: String, radius: Float = 0f, val callback : () -> Unit = {}) : UIRoundedRectangle(radius) {
     val primaryColor = ColorScheme.secondaryColorOpaque.toConstraint()
     val hoverColor = ColorScheme.secondaryColor.toConstraint()
     val textColor = ColorScheme.primaryTextColor.toConstraint()
