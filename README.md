@@ -1,25 +1,32 @@
-# Stonecutter Fabric template
-## Setup
-1. Review the supported Minecraft versions in `settings.gradle.kts`.
-   For new entries, add `versions/.../gradle.properties` with the same keys as other versions.
-2. Change `mod.group`, `mod.id` and `mod.name` properties in `gradle.properties`.
-3. Rename `com.example` package in `src/main/java`.
-4. Rename `src/main/resources/template.mixins.json` to use your mod's id.
-5. Review the `LICENSE` file. 
-   See the [license decision diagram](https://docs.codeberg.org/getting-started/licensing/#license-decision-diagram) for common options.
-6. Review `src/main/resources/fabric.mod.json` to have up-to-date properties.
+<h1 align="center">
+  RicciosFinestUtils 
 
-## Usage
-- Use `"Set active project to ..."` Gradle tasks to update the Minecraft version
-  available in `src/` classes.
-- Use `buildAndCollect` Gradle task to store mod releases in `build/libs/`.
-- Enable `mod-publish-plugin` in `stonecutter.gradle.kts` and `build.gradle.kts`
-  and the corresponding code blocks to publish releases to Modrinth and Curseforge.
-- Enable `maven-publish` in `build.gradle.kts` and the corresponding code block
-  to publish releases to a personal maven repository.
+Minecraft Mod for Hypixel SkyBlock
 
-## Useful links
-- [Stonecutter beginner's guide](https://stonecutter.kikugie.dev/wiki/start/): *spoiler: you* ***need*** *to understand how it works!*
-- [Fabric Discord server](https://discord.gg/v6v4pMv): for mod development help.
-- [Stonecutter Discord server](https://discord.kikugie.dev/): for Stonecutter and Gradle help.
-- [How To Ask Questions - the guide](http://www.catb.org/esr/faqs/smart-questions.html): also in [video form](https://www.youtube.com/results?search_query=How+To+Ask+Questions+The+Smart+Way).
+![rfu](https://raw.githubusercontent.com/Ricciow/RicciosFinestUtils/refs/heads/main/src/main/resources/assets/rfu/icon.png)
+</h1>
+
+<div align="center">
+
+[![Discord](https://img.shields.io/discord/1210734539186376774?label=discord&color=7289da&logo=discord&style=for-the-badge)](https://discord.gg/JfrXm6TqXz)
+[![Downloads](https://img.shields.io/github/downloads/ricciow/RicciosFinestUtils/total?label=downloads&color=055ca3&logo=github&style=for-the-badge)](https://github.com/ricciow/RicciosFinestUtils/releases)
+</div>
+
+## What it does
+
+RicciosFinestUtils is a Chattriggers module for Minecraft 1.21.5-1.21.10 that adds many useful features to [Hypixel SkyBlock](https://wiki.hypixel.net/Fishing) focused mostly on fishing.
+
+* **Party Finder:** Get parties for your fishing duties!
+
+## Join the Discord!
+
+Give feedback or just chat with others on our Discord
+
+* **Bug Reports:** Use the `#bug-reporting` channel when you find broken stuff.
+* **Feature Suggestions:** Feel free to tell your ideas in `#suggestions` channel for new features and improvements to the mod.
+* **Chatting:** Chat with other RFU users in `#general` channel.
+
+## Install/Update:
+Download on [Modrinth]()
+
+---
