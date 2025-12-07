@@ -1,20 +1,20 @@
 <h1 align="center">
-  RicciosFinestUtils 
+  RicciosFinestUtilities 
 
 Minecraft Mod for Hypixel SkyBlock
 
-![rfu](https://raw.githubusercontent.com/Ricciow/RicciosFinestUtils/refs/heads/main/src/main/resources/assets/rfu/icon.png)
+![rfu](https://raw.githubusercontent.com/Ricciow/RicciosFinestUtilities/refs/heads/main/src/main/resources/assets/rfu/icon.png)
 </h1>
 
 <div align="center">
 
 [![Discord](https://img.shields.io/discord/1210734539186376774?label=discord&color=7289da&logo=discord&style=for-the-badge)](https://discord.gg/JfrXm6TqXz)
-[![Downloads](https://img.shields.io/github/downloads/ricciow/RicciosFinestUtils/total?label=downloads&color=055ca3&logo=github&style=for-the-badge)](https://github.com/ricciow/RicciosFinestUtils/releases)
+[![Downloads](https://img.shields.io/github/downloads/ricciow/RicciosFinestUtilities/total?label=downloads&color=055ca3&logo=github&style=for-the-badge)](https://github.com/ricciow/RicciosFinestUtilities/releases)
 </div>
 
 ## What it does
 
-RicciosFinestUtils is a Chattriggers module for Minecraft 1.21.5-1.21.10 that adds many useful features to [Hypixel SkyBlock](https://wiki.hypixel.net/Fishing) focused mostly on fishing.
+RicciosFinestUtilities is a Chattriggers module for Minecraft 1.21.5-1.21.10 that adds many useful features to [Hypixel SkyBlock](https://wiki.hypixel.net/Fishing) focused mostly on fishing.
 
 * **Party Finder:** Get parties for your fishing duties!
 
