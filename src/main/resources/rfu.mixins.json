@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "package": "cloud.glitchdev.rfu.mixin",
+  "compatibilityLevel": "${java}",
+  "mixins": [
+    "ExampleMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

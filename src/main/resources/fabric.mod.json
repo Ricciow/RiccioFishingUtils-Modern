@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "${id}",
+  "version": "${version}",
+  "name": "${name}",
+  "description": "This is my mod",
+  "authors": [
+    "Riccio"
+  ],
+  "contact": {
+    "homepage": "https://stonecutter.kikugie.dev/",
+    "sources": "https://codeberg.org/stonecutter/template-fabric"
+  },
+  "license": "MIT",
+  "icon": "assets/template/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [],
+    "client": [
+      {
+        "adapter": "kotlin",
+        "value": "cloud.glitchdev.rfu.RicciosFinestUtilities"
+      }
+    ]
+  },
+  "mixins": [],
+  "accessWidener": "rfu.accesswidener",
+  "depends": {
+    "fabricloader": ">=0.17",
+    "minecraft": "${minecraft}",
+    "fabric-language-kotlin": ">=${fabric_language_kotlin}"
+  }
+}
