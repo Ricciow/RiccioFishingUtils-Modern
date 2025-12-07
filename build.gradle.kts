@@ -72,6 +72,10 @@ java {
     sourceCompatibility = requiredJava
 }
 
+kotlin {
+    jvmToolchain(requiredJava.majorVersion.toInt())
+}
+
 tasks {
     processResources {
         inputs.property("id", project.property("mod.id"))
