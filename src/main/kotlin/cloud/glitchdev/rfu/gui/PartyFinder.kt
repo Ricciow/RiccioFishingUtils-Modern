@@ -49,7 +49,7 @@ class PartyFinder : BaseWindow() {
             height = 20.pixels()
         } childOf background
 
-        val drop = UIDropdown(arrayListOf(DropdownOption("Teste", "Teste"), DropdownOption("Teste2", "Teste2")), 0, 2f, window).constrain {
+        val drop = UIDropdown(arrayListOf(DropdownOption("Teste", "Teste"), DropdownOption("Teste2", "Teste2")), 0, 2f).constrain {
             x = CenterConstraint()
             y = SiblingConstraint()
             width = 20.percent()

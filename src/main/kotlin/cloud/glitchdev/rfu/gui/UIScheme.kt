@@ -12,7 +12,7 @@ object UIScheme {
     val primaryTextColor = Color(255, 255, 255)
     val secondaryTextColor = Color(180, 180, 180)
 
-    const val HOVER_EFFECT_DURATION = 0.2f
+    const val HOVER_EFFECT_DURATION = 0.1f
 
     fun increaseOpacity(baseColor : Color, amount: Int) : Color {
         return Color(baseColor.red, baseColor.green, baseColor.blue, baseColor.alpha - amount)
