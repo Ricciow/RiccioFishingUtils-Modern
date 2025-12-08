@@ -11,7 +11,6 @@ import gg.essential.elementa.constraints.SiblingConstraint
 import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.dsl.percent
-import gg.essential.elementa.dsl.pixels
 
 class UIFilterArea(radius: Float) : UIRoundedRectangle(radius) {
     init {
@@ -29,21 +28,21 @@ class UIFilterArea(radius: Float) : UIRoundedRectangle(radius) {
         UIDropdown(FishingIslands.toDropdownOptions(), 0, 2f).constrain {
             x = SiblingConstraint(2f)
             y = CenterConstraint()
-            width = 100.pixels()
+            width = 25.percent()
             height = 50.percent()
         } childOf topArea
 
         UIDropdown(PartyTypes.toDropdownOptions(), 0, 2f).constrain {
             x = SiblingConstraint(2f)
             y = CenterConstraint()
-            width = 100.pixels()
+            width = 25.percent()
             height = 50.percent()
         } childOf topArea
 
         UIDecoratedTextInput("Sea Creature", 2f).constrain {
             x = SiblingConstraint(2f)
             y = CenterConstraint()
-            width = 100.pixels()
+            width = 25.percent()
             height = 50.percent()
         } childOf topArea
 

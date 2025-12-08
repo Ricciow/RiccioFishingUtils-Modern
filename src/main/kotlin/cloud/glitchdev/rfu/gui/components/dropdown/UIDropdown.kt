@@ -85,7 +85,11 @@ class UIDropdown(val values : ArrayList<DropdownOption>, var selectedIndex : Int
         background.isFloating = true
 
         background.onMouseClick {
+            grabWindowFocus()
             isOpen = !isOpen
+            updateDropdown()
+        }.onFocusLost {
+            isOpen = false
             updateDropdown()
         }
 
