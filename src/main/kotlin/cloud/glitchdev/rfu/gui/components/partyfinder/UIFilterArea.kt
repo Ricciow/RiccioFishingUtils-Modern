@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.gui.components.partyfinder
 
 import cloud.glitchdev.rfu.constants.FishingIslands
 import cloud.glitchdev.rfu.constants.PartyTypes
+import cloud.glitchdev.rfu.gui.components.UIDecoratedTextInput
 import cloud.glitchdev.rfu.gui.components.dropdown.UIDropdown
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
@@ -33,6 +34,13 @@ class UIFilterArea(radius: Float) : UIRoundedRectangle(radius) {
         } childOf topArea
 
         UIDropdown(PartyTypes.toDropdownOptions(), 0, 2f).constrain {
+            x = SiblingConstraint(2f)
+            y = CenterConstraint()
+            width = 100.pixels()
+            height = 50.percent()
+        } childOf topArea
+
+        UIDecoratedTextInput("Sea Creature", 2f).constrain {
             x = SiblingConstraint(2f)
             y = CenterConstraint()
             width = 100.pixels()

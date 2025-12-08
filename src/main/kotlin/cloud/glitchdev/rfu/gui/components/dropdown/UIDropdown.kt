@@ -64,6 +64,7 @@ class UIDropdown(val values : ArrayList<DropdownOption>, var selectedIndex : Int
             lastHeight = currentHeight
             updateHeight()
         }
+        super.draw(matrixStack)
     }
 
     init {
