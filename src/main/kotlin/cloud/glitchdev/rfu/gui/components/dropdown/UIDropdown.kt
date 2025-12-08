@@ -19,9 +19,11 @@ import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.plus
 import gg.essential.elementa.dsl.toConstraint
+import gg.essential.elementa.dsl.width
+import gg.essential.universal.UMatrixStack
 
 /**
- * Dropdown component, must call updateHeight() after height constraints are applied
+ * Dropdown component
  */
 class UIDropdown(val values : ArrayList<DropdownOption>, var selectedIndex : Int = 0, val radiusProps : Float, val onSelect : (Any) -> Unit = {}) : UIContainer() {
     val primaryColor = UIScheme.secondaryColorOpaque.toConstraint()
@@ -55,6 +57,14 @@ class UIDropdown(val values : ArrayList<DropdownOption>, var selectedIndex : Int
             }
         }
 
+    private var lastHeight = this.getHeight()
+    override fun draw(matrixStack: UMatrixStack) {
+        val currentHeight = this.getHeight()
+        if(lastHeight != this.getHeight()) {
+            lastHeight = currentHeight
+            updateHeight()
+        }
+    }
 
     init {
         create()
@@ -151,6 +161,7 @@ class UIDropdown(val values : ArrayList<DropdownOption>, var selectedIndex : Int
 
     fun updateHeight() {
         val newHeight = this.getHeight()
+        println("newheight: $newHeight")
         textContainer.setHeight(newHeight.pixels())
         for(uiOption in uiOptions) {
             uiOption.setHeight(newHeight.pixels())
@@ -160,11 +171,19 @@ class UIDropdown(val values : ArrayList<DropdownOption>, var selectedIndex : Int
 
     fun updateFontSize() {
         var font = fontSize
-        while(getSelectedOption().label.height(font) < textContainer.getHeight() * 0.9) {
-            font += 0.1f
+        for(option in values) {
+            while (option.label.height(font) < textContainer.getHeight() * 0.9) {
+                font += 0.1f
+                println("Fonte mudada $font")
+            }
         }
-        while(getSelectedOption().label.height(font) > textContainer.getHeight() * 0.9) {
-            font -= 0.1f
+        for(option in values) {
+            while(option.label.height(font) > textContainer.getHeight() * 0.9 ||
+                    option.label.width(font) > textContainer.getWidth() * 0.8)
+            {
+                font -= 0.1f
+                println("Fonte mudada $font\nwidth:${option.label.width(font)}\nlf:${textContainer.getWidth() * 0.8}\nheight:${option.label.height(font)}\nlf${textContainer.getHeight() * 0.9}" )
+            }
         }
         fontSize = font
     }
