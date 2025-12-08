@@ -3,11 +3,13 @@ package cloud.glitchdev.rfu.gui.components.dropdown
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.utils.dsl.addHoverColoring
 import cloud.glitchdev.rfu.utils.dsl.setHidden
+import com.ibm.icu.number.Scale
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
+import gg.essential.elementa.constraints.ScaledTextConstraint
 import gg.essential.elementa.constraints.SiblingConstraint
 import gg.essential.elementa.constraints.TextAspectConstraint
 import gg.essential.elementa.constraints.animation.Animations
@@ -21,7 +23,7 @@ import gg.essential.elementa.dsl.plus
 import gg.essential.elementa.dsl.toConstraint
 
 /**
- * Dropdown component, must call updateDropdown() after constraints are applied onto it
+ * Dropdown component, must call updateHeight() after height constraints are applied
  */
 class UIDropdown(val values : ArrayList<DropdownOption>, var selectedIndex : Int = 0, val radiusProps : Float, val onSelect : (Any) -> Unit = {}) : UIContainer() {
     val primaryColor = UIScheme.secondaryColorOpaque.toConstraint()
@@ -36,6 +38,21 @@ class UIDropdown(val values : ArrayList<DropdownOption>, var selectedIndex : Int
     lateinit var textContainer : UIContainer
     lateinit var text : UIText
     lateinit var options : UIContainer
+    val uiOptions : MutableList<UIRoundedRectangle> = mutableListOf()
+    val uiOptionsText : MutableList<UIText> = mutableListOf()
+
+    var fontSize : Float = 1.5f
+        set(value) {
+            text.constrain {
+                width = ScaledTextConstraint(value)
+            }
+            for(optionText in uiOptionsText) {
+                optionText.constrain {
+                    width = ScaledTextConstraint(value)
+                }
+            }
+        }
+
 
     init {
         create()
@@ -69,7 +86,7 @@ class UIDropdown(val values : ArrayList<DropdownOption>, var selectedIndex : Int
         text = UIText("").constrain {
             x = CenterConstraint()
             y = CenterConstraint()
-            width = min(TextAspectConstraint() - 5.pixels(), 90.percent())
+            width = ScaledTextConstraint(fontSize)
             height = 100.percent() - 5.pixels()
             color = textColor
         } childOf textContainer
@@ -97,11 +114,13 @@ class UIDropdown(val values : ArrayList<DropdownOption>, var selectedIndex : Int
             color = primaryColor
         } childOf options
 
+        uiOptions.addLast(uiOption)
+
         UIText(option.label).constrain {
             x = CenterConstraint()
             y = CenterConstraint()
-            width = min(TextAspectConstraint() - 5.pixels(), 90.percent())
-            height = 90.percent() - 5.pixels()
+            width = ScaledTextConstraint(fontSize)
+            height = 100.percent() - 5.pixels()
             color = textColor
         } childOf uiOption
 
@@ -118,9 +137,14 @@ class UIDropdown(val values : ArrayList<DropdownOption>, var selectedIndex : Int
         return (values.getOrNull(selectedIndex) ?: DropdownOption("Dropdown", "Dropdown"))
     }
 
-    fun updateDropdown() {
+    fun updateHeight() {
         textContainer.setHeight(this.getHeight().pixels())
+        for(uiOption in uiOptions) {
+            uiOption.setHeight(this.getHeight().pixels())
+        }
+    }
 
+    fun updateDropdown() {
         options.setHidden(!isOpen)
         if(isOpen) {
             val oldY = textContainer.getTop() - background.getTop()
