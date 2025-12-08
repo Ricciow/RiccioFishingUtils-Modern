@@ -162,7 +162,6 @@ class UIDropdown(val values : ArrayList<DropdownOption>, var selectedIndex : Int
 
     fun updateHeight() {
         val newHeight = this.getHeight()
-        println("newheight: $newHeight")
         textContainer.setHeight(newHeight.pixels())
         for(uiOption in uiOptions) {
             uiOption.setHeight(newHeight.pixels())
@@ -175,7 +174,6 @@ class UIDropdown(val values : ArrayList<DropdownOption>, var selectedIndex : Int
         for(option in values) {
             while (option.label.height(font) < textContainer.getHeight() * 0.9) {
                 font += 0.1f
-                println("Fonte mudada $font")
             }
         }
         for(option in values) {
@@ -183,7 +181,6 @@ class UIDropdown(val values : ArrayList<DropdownOption>, var selectedIndex : Int
                     option.label.width(font) > textContainer.getWidth() * 0.8)
             {
                 font -= 0.1f
-                println("Fonte mudada $font\nwidth:${option.label.width(font)}\nlf:${textContainer.getWidth() * 0.8}\nheight:${option.label.height(font)}\nlf${textContainer.getHeight() * 0.9}" )
             }
         }
         fontSize = font
