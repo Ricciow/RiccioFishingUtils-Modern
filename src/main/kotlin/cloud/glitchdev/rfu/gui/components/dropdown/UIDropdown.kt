@@ -46,7 +46,7 @@ class UIDropdown(val values : ArrayList<DropdownOption>, var selectedIndex : Int
                 width = ScaledTextConstraint(value)
             }
             arrowHead.constrain {
-                width = ScaledTextConstraint(value)
+                width = ScaledTextConstraint(value / 3 * 2)
             }
             for(optionText in uiOptionsText) {
                 optionText.constrain {
@@ -96,7 +96,7 @@ class UIDropdown(val values : ArrayList<DropdownOption>, var selectedIndex : Int
         arrowHead = UIText("▼").constrain {
             x = 5.pixels(true)
             y = CenterConstraint()
-            width = ScaledTextConstraint(fontSize)
+            width = ScaledTextConstraint(fontSize / 3 * 2)
             height = TextAspectConstraint()
             color = textColor
         } childOf textContainer
