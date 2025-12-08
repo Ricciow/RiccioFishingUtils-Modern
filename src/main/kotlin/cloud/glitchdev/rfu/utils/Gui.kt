@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.utils
 
+import cloud.glitchdev.rfu.gui.components.dropdown.DropdownOption
 import gg.essential.elementa.WindowScreen
 import gg.essential.universal.UScreen
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents

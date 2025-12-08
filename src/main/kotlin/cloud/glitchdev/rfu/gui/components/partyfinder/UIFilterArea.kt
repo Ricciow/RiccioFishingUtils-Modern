@@ -1,0 +1,49 @@
+package cloud.glitchdev.rfu.gui.components.partyfinder
+
+import cloud.glitchdev.rfu.constants.FishingIslands
+import cloud.glitchdev.rfu.constants.PartyTypes
+import cloud.glitchdev.rfu.gui.components.dropdown.UIDropdown
+import gg.essential.elementa.components.UIContainer
+import gg.essential.elementa.components.UIRoundedRectangle
+import gg.essential.elementa.constraints.CenterConstraint
+import gg.essential.elementa.constraints.SiblingConstraint
+import gg.essential.elementa.dsl.childOf
+import gg.essential.elementa.dsl.constrain
+import gg.essential.elementa.dsl.percent
+import gg.essential.elementa.dsl.pixels
+
+class UIFilterArea(radius: Float) : UIRoundedRectangle(radius) {
+    init {
+        create()
+    }
+
+    fun create() {
+        val topArea = UIContainer().constrain {
+            x = CenterConstraint()
+            y = SiblingConstraint(2f)
+            width = 96.percent()
+            height = 50.percent()
+        } childOf this
+
+        UIDropdown(FishingIslands.toDropdownOptions(), 0, 2f).constrain {
+            x = SiblingConstraint(2f)
+            y = CenterConstraint()
+            width = 100.pixels()
+            height = 50.percent()
+        } childOf topArea
+
+        UIDropdown(PartyTypes.toDropdownOptions(), 0, 2f).constrain {
+            x = SiblingConstraint(2f)
+            y = CenterConstraint()
+            width = 100.pixels()
+            height = 50.percent()
+        } childOf topArea
+
+        val bottomArea = UIContainer().constrain {
+            x = CenterConstraint()
+            y = SiblingConstraint(2f)
+            width = 96.percent()
+            height = 50.percent()
+        } childOf this
+    }
+}

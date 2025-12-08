@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.gui
 
 import cloud.glitchdev.rfu.gui.components.UIButton
+import cloud.glitchdev.rfu.gui.components.partyfinder.UIFilterArea
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
@@ -31,6 +32,7 @@ class PartyFinder : BaseWindow() {
     }
 
     fun create() {
+
         background = UIRoundedRectangle(radius).constrain {
             x = CenterConstraint()
             y = CenterConstraint()
@@ -40,6 +42,14 @@ class PartyFinder : BaseWindow() {
         } childOf window
 
         createHeader()
+
+        UIFilterArea(radius).constrain {
+            x = CenterConstraint()
+            y = SiblingConstraint(2f)
+            width = 100.percent()
+            height = max(20.percent(), 40.pixels())
+            color = primaryColor
+        } childOf background
 
         Inspector(window) childOf window
     }
