@@ -16,6 +16,9 @@ import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.toConstraint
 import gg.essential.elementa.dsl.minus
 
+/**
+ * Simple Button Component
+ */
 class UIButton(val text: String, radius: Float = 0f, val callback : () -> Unit = {}) : UIRoundedRectangle(radius) {
     val primaryColor = UIScheme.secondaryColorOpaque.toConstraint()
     val hoverColor = UIScheme.secondaryColor.toConstraint()

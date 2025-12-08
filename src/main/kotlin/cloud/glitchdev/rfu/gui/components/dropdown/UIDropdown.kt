@@ -22,6 +22,9 @@ import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.plus
 import gg.essential.elementa.dsl.toConstraint
 
+/**
+ * Dropdown component, must call updateDropdown() after constraints are applied onto it
+ */
 class UIDropdown(val values : ArrayList<DropdownOption>, var selectedIndex : Int = 0, val radiusProps : Float, val onSelect : (Any) -> Unit = {}) : UIContainer() {
     val primaryColor = UIScheme.secondaryColorOpaque.toConstraint()
     val hoverColor = UIScheme.secondaryColor.toConstraint()

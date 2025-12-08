@@ -21,6 +21,9 @@ import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.toConstraint
 
+/**
+ * Simple Checkbox Component
+ */
 class UICheckbox(val text: String, defaultState : Boolean = false, val callback : (Boolean) -> Unit = {}) : UIContainer() {
     val primaryColor = UIScheme.secondaryColorOpaque.toConstraint()
     val hoverColor = UIScheme.secondaryColor.toConstraint()
