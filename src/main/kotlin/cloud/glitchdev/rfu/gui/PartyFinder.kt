@@ -4,8 +4,6 @@ import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.UICheckbox
 import cloud.glitchdev.rfu.gui.components.dropdown.DropdownOption
 import cloud.glitchdev.rfu.gui.components.dropdown.UIDropdown
-import gg.essential.elementa.components.UIBlock
-import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.inspector.Inspector
 import gg.essential.elementa.constraints.CenterConstraint

@@ -3,7 +3,6 @@ package cloud.glitchdev.rfu.gui.components.dropdown
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.utils.dsl.addHoverColoring
 import cloud.glitchdev.rfu.utils.dsl.setHidden
-import com.ibm.icu.number.Scale
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
@@ -11,11 +10,9 @@ import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
 import gg.essential.elementa.constraints.ScaledTextConstraint
 import gg.essential.elementa.constraints.SiblingConstraint
-import gg.essential.elementa.constraints.TextAspectConstraint
 import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
-import gg.essential.elementa.dsl.min
 import gg.essential.elementa.dsl.minus
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
