@@ -4,6 +4,8 @@ import gg.essential.elementa.UIComponent
 import gg.essential.elementa.constraints.ColorConstraint
 import gg.essential.elementa.constraints.animation.AnimationStrategy
 import gg.essential.elementa.dsl.animate
+import gg.essential.elementa.font.DefaultFonts
+import gg.essential.elementa.font.FontProvider
 
 fun <T : UIComponent> T.setHidden(state: Boolean) : UIComponent {
     if(state) {
@@ -29,3 +31,6 @@ fun <T : UIComponent> T.addHoverColoring(strategy: AnimationStrategy, duration :
 
     return this
 }
+
+fun String.height(textScale: Float = 1f, fontProvider: FontProvider = DefaultFonts.VANILLA_FONT_RENDERER) =
+    fontProvider.getStringHeight(this, 10f) * textScale

@@ -53,7 +53,6 @@ class PartyFinder : BaseWindow() {
             width = 20.percent()
             height = 20.pixels()
         } childOf background
-
         drop.updateHeight()
 
         Inspector(window) childOf window

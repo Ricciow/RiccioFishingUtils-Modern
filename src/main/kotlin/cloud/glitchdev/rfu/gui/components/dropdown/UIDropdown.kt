@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.gui.components.dropdown
 
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.utils.dsl.addHoverColoring
+import cloud.glitchdev.rfu.utils.dsl.height
 import cloud.glitchdev.rfu.utils.dsl.setHidden
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
@@ -10,10 +11,10 @@ import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
 import gg.essential.elementa.constraints.ScaledTextConstraint
 import gg.essential.elementa.constraints.SiblingConstraint
+import gg.essential.elementa.constraints.TextAspectConstraint
 import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
-import gg.essential.elementa.dsl.minus
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.plus
@@ -34,6 +35,7 @@ class UIDropdown(val values : ArrayList<DropdownOption>, var selectedIndex : Int
     lateinit var background : UIRoundedRectangle
     lateinit var textContainer : UIContainer
     lateinit var text : UIText
+    lateinit var arrowHead : UIText
     lateinit var options : UIContainer
     val uiOptions : MutableList<UIRoundedRectangle> = mutableListOf()
     val uiOptionsText : MutableList<UIText> = mutableListOf()
@@ -41,6 +43,9 @@ class UIDropdown(val values : ArrayList<DropdownOption>, var selectedIndex : Int
     var fontSize : Float = 1.5f
         set(value) {
             text.constrain {
+                width = ScaledTextConstraint(value)
+            }
+            arrowHead.constrain {
                 width = ScaledTextConstraint(value)
             }
             for(optionText in uiOptionsText) {
@@ -84,14 +89,22 @@ class UIDropdown(val values : ArrayList<DropdownOption>, var selectedIndex : Int
             x = CenterConstraint()
             y = CenterConstraint()
             width = ScaledTextConstraint(fontSize)
-            height = 100.percent() - 5.pixels()
+            height = TextAspectConstraint()
+            color = textColor
+        } childOf textContainer
+
+        arrowHead = UIText("▼").constrain {
+            x = 5.pixels(true)
+            y = CenterConstraint()
+            width = ScaledTextConstraint(fontSize)
+            height = TextAspectConstraint()
             color = textColor
         } childOf textContainer
 
         options = UIContainer().constrain {
             x = CenterConstraint()
             y = SiblingConstraint(padding)
-            width = 100.percent() - 5.pixels()
+            width = 90.percent()
             height = ChildBasedSizeConstraint()
         } childOf background
 
@@ -113,13 +126,15 @@ class UIDropdown(val values : ArrayList<DropdownOption>, var selectedIndex : Int
 
         uiOptions.addLast(uiOption)
 
-        UIText(option.label).constrain {
+        val optionText = UIText(option.label).constrain {
             x = CenterConstraint()
             y = CenterConstraint()
             width = ScaledTextConstraint(fontSize)
-            height = 100.percent() - 5.pixels()
+            height = TextAspectConstraint()
             color = textColor
         } childOf uiOption
+
+        uiOptionsText.addLast(optionText)
 
         uiOption.addHoverColoring(Animations.IN_EXP, hoverDuration, primaryColor, hoverColor)
 
@@ -135,10 +150,23 @@ class UIDropdown(val values : ArrayList<DropdownOption>, var selectedIndex : Int
     }
 
     fun updateHeight() {
-        textContainer.setHeight(this.getHeight().pixels())
+        val newHeight = this.getHeight()
+        textContainer.setHeight(newHeight.pixels())
         for(uiOption in uiOptions) {
-            uiOption.setHeight(this.getHeight().pixels())
+            uiOption.setHeight(newHeight.pixels())
         }
+        updateFontSize()
+    }
+
+    fun updateFontSize() {
+        var font = fontSize
+        while(getSelectedOption().label.height(font) < textContainer.getHeight() * 0.9) {
+            font += 0.1f
+        }
+        while(getSelectedOption().label.height(font) > textContainer.getHeight() * 0.9) {
+            font -= 0.1f
+        }
+        fontSize = font
     }
 
     fun updateDropdown() {
@@ -151,6 +179,7 @@ class UIDropdown(val values : ArrayList<DropdownOption>, var selectedIndex : Int
             background.constrain {
                 height = ChildBasedSizeConstraint(padding) + oldY.pixels()
             }
+            arrowHead.setText("▲")
         }
         else {
             textContainer.constrain {
@@ -159,6 +188,7 @@ class UIDropdown(val values : ArrayList<DropdownOption>, var selectedIndex : Int
             background.constrain {
                 height = 100.percent()
             }
+            arrowHead.setText("▼")
         }
 
         text.setText(getSelectedOption().label)
