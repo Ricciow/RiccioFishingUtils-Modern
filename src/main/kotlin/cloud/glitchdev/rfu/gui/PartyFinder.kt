@@ -1,7 +1,11 @@
 package cloud.glitchdev.rfu.gui
 
-import cloud.glitchdev.rfu.gui.components.Button
-import cloud.glitchdev.rfu.gui.components.Checkbox
+import cloud.glitchdev.rfu.gui.components.UIButton
+import cloud.glitchdev.rfu.gui.components.UICheckbox
+import cloud.glitchdev.rfu.gui.components.dropdown.DropdownOption
+import cloud.glitchdev.rfu.gui.components.dropdown.UIDropdown
+import gg.essential.elementa.components.UIBlock
+import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.inspector.Inspector
 import gg.essential.elementa.constraints.CenterConstraint
@@ -24,10 +28,10 @@ class PartyFinder : BaseWindow() {
             y = CenterConstraint()
             width = RelativeWindowConstraint(0.8f)
             height = RelativeWindowConstraint(0.8f)
-            color = ColorScheme.primaryColorOpaque.toConstraint()
+            color = UIScheme.primaryColorOpaque.toConstraint()
         } childOf window
 
-        Button("Testando Botao longo para caralho", 5f) {
+        UIButton("Testando Botao longo", 5f) {
 
         }.constrain {
             x = CenterConstraint()
@@ -36,7 +40,7 @@ class PartyFinder : BaseWindow() {
             height = 20.pixels()
         } childOf background
 
-        Checkbox("Checkbox") {
+        UICheckbox("Checkbox") {
 
         }.constrain {
             x = CenterConstraint()
@@ -44,6 +48,15 @@ class PartyFinder : BaseWindow() {
             width = 20.percent()
             height = 20.pixels()
         } childOf background
+
+        val drop = UIDropdown(arrayListOf(DropdownOption("Teste", "Teste"), DropdownOption("Teste2", "Teste2")), 0, 2f, window).constrain {
+            x = CenterConstraint()
+            y = SiblingConstraint()
+            width = 20.percent()
+            height = 20.pixels()
+        } childOf background
+
+        drop.updateDropdown()
 
         Inspector(window) childOf window
     }

@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.gui.components
 
-import cloud.glitchdev.rfu.gui.ColorScheme
+import cloud.glitchdev.rfu.gui.UIScheme
+import cloud.glitchdev.rfu.utils.dsl.addHoverColoring
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
@@ -20,12 +21,12 @@ import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.toConstraint
 
-class Checkbox(val text: String, defaultState : Boolean = false, val callback : (Boolean) -> Unit = {}) : UIContainer() {
-    val primaryColor = ColorScheme.secondaryColorOpaque.toConstraint()
-    val hoverColor = ColorScheme.secondaryColor.toConstraint()
-    val textColor = ColorScheme.primaryTextColor.toConstraint()
+class UICheckbox(val text: String, defaultState : Boolean = false, val callback : (Boolean) -> Unit = {}) : UIContainer() {
+    val primaryColor = UIScheme.secondaryColorOpaque.toConstraint()
+    val hoverColor = UIScheme.secondaryColor.toConstraint()
+    val textColor = UIScheme.primaryTextColor.toConstraint()
+    val animationDuration = UIScheme.HOVER_EFFECT_DURATION
     val padding = 2f
-    val animationDuration = 0.1f
 
     var state = false
 
@@ -62,15 +63,7 @@ class Checkbox(val text: String, defaultState : Boolean = false, val callback : 
                 checkmark.hide()
             }
             callback(state)
-        }.onMouseEnter {
-            checkbox.animate {
-                setColorAnimation(Animations.IN_EXP, animationDuration, hoverColor)
-            }
-        }.onMouseLeave {
-            checkbox.animate {
-                setColorAnimation(Animations.IN_EXP, animationDuration, primaryColor)
-            }
-        }
+        }.addHoverColoring(Animations.IN_EXP, animationDuration, primaryColor, hoverColor)
 
         UIText(text).constrain {
             x = SiblingConstraint(padding)
