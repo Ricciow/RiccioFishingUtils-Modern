@@ -63,7 +63,7 @@ class PartyFinder : BaseWindow() {
             color = primaryColor
         } childOf background
 
-        val pfText = UIText("RFU Party Finder").constrain {
+        UIText("RFU Party Finder").constrain {
             x = 2.percent()
             y = CenterConstraint()
             width = TextAspectConstraint()
