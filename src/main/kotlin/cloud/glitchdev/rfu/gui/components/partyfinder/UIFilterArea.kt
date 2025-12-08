@@ -8,6 +8,8 @@ import cloud.glitchdev.rfu.gui.components.dropdown.UIDropdown
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.constraints.CenterConstraint
+import gg.essential.elementa.constraints.ChildBasedSizeConstraint
+import gg.essential.elementa.constraints.CramSiblingConstraint
 import gg.essential.elementa.constraints.FillConstraint
 import gg.essential.elementa.constraints.SiblingConstraint
 import gg.essential.elementa.dsl.childOf
@@ -24,7 +26,7 @@ class UIFilterArea(radius: Float) : UIRoundedRectangle(radius) {
     fun create() {
         val topArea = UIContainer().constrain {
             x = CenterConstraint()
-            y = SiblingConstraint(2f)
+            y = SiblingConstraint()
             width = 96.percent()
             height = 50.percent()
         } childOf this
@@ -59,57 +61,57 @@ class UIFilterArea(radius: Float) : UIRoundedRectangle(radius) {
 
         val bottomArea = UIContainer().constrain {
             x = CenterConstraint()
-            y = SiblingConstraint(2f)
+            y = SiblingConstraint()
             width = 96.percent()
             height = 50.percent()
         } childOf this
 
         UICheckbox("Can Join").constrain {
-            x = SiblingConstraint(2f)
-            y = CenterConstraint()
-            width = 10.percent()
+            x = CramSiblingConstraint(4f)
+            y = CramSiblingConstraint()
+            width = ChildBasedSizeConstraint()
             height = 50.percent()
         } childOf bottomArea
 
         UICheckbox("Lava").constrain {
-            x = SiblingConstraint(2f)
-            y = CenterConstraint()
-            width = 10.percent()
+            x = CramSiblingConstraint(4f)
+            y = CramSiblingConstraint()
+            width = ChildBasedSizeConstraint()
             height = 50.percent()
         } childOf bottomArea
 
         UICheckbox("Water").constrain {
-            x = SiblingConstraint(2f)
-            y = CenterConstraint()
-            width = 10.percent()
+            x = CramSiblingConstraint(4f)
+            y = CramSiblingConstraint()
+            width = ChildBasedSizeConstraint()
             height = 50.percent()
         } childOf bottomArea
 
         UICheckbox("Has Killer").constrain {
-            x = SiblingConstraint(2f)
-            y = CenterConstraint()
-            width = 10.percent()
+            x = CramSiblingConstraint(4f)
+            y = CramSiblingConstraint()
+            width = ChildBasedSizeConstraint()
             height = 50.percent()
         } childOf bottomArea
 
         UICheckbox("Enderman 9").constrain {
-            x = SiblingConstraint(2f)
-            y = CenterConstraint()
-            width = 10.percent()
+            x = CramSiblingConstraint(4f)
+            y = CramSiblingConstraint()
+            width = ChildBasedSizeConstraint()
             height = 50.percent()
         } childOf bottomArea
 
         UICheckbox("Looting 5").constrain {
-            x = SiblingConstraint(2f)
-            y = CenterConstraint()
-            width = 10.percent()
+            x = CramSiblingConstraint(4f)
+            y = CramSiblingConstraint()
+            width = ChildBasedSizeConstraint()
             height = 50.percent()
         } childOf bottomArea
 
         UICheckbox("Brain Food").constrain {
-            x = SiblingConstraint(2f)
-            y = CenterConstraint()
-            width = 10.percent()
+            x = CramSiblingConstraint(4f)
+            y = CramSiblingConstraint()
+            width = ChildBasedSizeConstraint()
             height = 50.percent()
         } childOf bottomArea
     }

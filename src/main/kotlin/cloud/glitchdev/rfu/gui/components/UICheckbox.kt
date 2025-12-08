@@ -15,7 +15,6 @@ import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.dsl.min
-import gg.essential.elementa.dsl.minus
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.toConstraint
@@ -56,7 +55,7 @@ class UICheckbox(val text: String, defaultState : Boolean = false, val callback 
 
         checkmark.hide()
 
-        checkbox.onMouseClick {
+        this.onMouseClick {
             state = !state
             if(state) {
                 checkmark.unhide()
@@ -65,12 +64,14 @@ class UICheckbox(val text: String, defaultState : Boolean = false, val callback 
                 checkmark.hide()
             }
             callback(state)
-        }.addHoverColoring(Animations.IN_EXP, animationDuration, primaryColor, hoverColor)
+        }
+
+        checkbox.addHoverColoring(Animations.IN_EXP, animationDuration, primaryColor, hoverColor)
 
         UIText(text).constrain {
             x = SiblingConstraint(padding)
             y = CenterConstraint()
-            width = min(TextAspectConstraint(), FillConstraint()) - 5.pixels() - padding.pixels()
+            width = TextAspectConstraint()
             height = ScaledTextConstraint(1f)
             color = textColor
         } childOf this
