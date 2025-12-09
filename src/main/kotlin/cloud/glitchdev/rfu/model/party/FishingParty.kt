@@ -16,6 +16,16 @@ data class FishingParty(
     val seaCreatures: List<String>,
     val players : Players
 ) {
+    fun getCountString() : String = players.getString()
+
+    fun getSeaCreatureString() : String {
+        return seaCreatures.joinToString()
+    }
+
+    fun getTitleString() : String {
+        return "$title - $user - LVL $level"
+    }
+
     companion object {
         private val gson = Gson()
 
@@ -26,6 +36,7 @@ data class FishingParty(
 }
 
 data class Requisite(
+    val id: String,
     val name: String,
     val value: Boolean
 )

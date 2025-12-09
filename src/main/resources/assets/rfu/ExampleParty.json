@@ -1,0 +1,37 @@
+{
+  "user": "Usuario top",
+  "level": 200,
+  "title": "Titulo top",
+  "description": "Decricao top",
+  "liquid": "Water",
+  "fishing_type": "Treasure Fishing",
+  "requisites": [
+    {
+      "id": "enderman_9",
+      "name": "Eman 9",
+      "value": true
+    },
+    {
+      "id": "brain_food",
+      "name": "Brain Food",
+      "value": true
+    },
+    {
+      "id": "looting_5",
+      "name": "Looting 5",
+      "value": true
+    },
+    {
+      "id": "has_killer",
+      "name": "Has killer",
+      "value": true
+    }
+  ],
+  "sea_creatures": [
+    "Jawbus", "Thunder"
+  ],
+  "players": {
+    "current": 2,
+    "max": 10
+  }
+}
