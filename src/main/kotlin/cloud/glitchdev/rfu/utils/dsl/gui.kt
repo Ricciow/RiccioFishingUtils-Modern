@@ -6,7 +6,6 @@ import gg.essential.elementa.constraints.animation.AnimationStrategy
 import gg.essential.elementa.dsl.animate
 import gg.essential.elementa.font.DefaultFonts
 import gg.essential.elementa.font.FontProvider
-import java.awt.Color
 
 fun <T : UIComponent> T.setHidden(state: Boolean) : UIComponent {
     if(state) {
@@ -18,6 +17,18 @@ fun <T : UIComponent> T.setHidden(state: Boolean) : UIComponent {
 
     return this
 }
+
+fun <T : UIComponent> T.toggleHidden() : UIComponent {
+    if(this.parent.children.contains(this)) {
+        this.hide()
+    }
+    else {
+        this.unhide()
+    }
+
+    return this
+}
+
 
 fun <T : UIComponent> T.addHoverColoring(strategy: AnimationStrategy, duration : Float, primaryColor : ColorConstraint, hoverColor : ColorConstraint) : UIComponent {
     this.onMouseEnter {

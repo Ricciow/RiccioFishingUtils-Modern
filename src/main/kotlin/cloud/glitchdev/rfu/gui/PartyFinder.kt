@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.gui
 
 import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.partyfinder.UIFilterArea
+import cloud.glitchdev.rfu.utils.dsl.toggleHidden
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
@@ -26,6 +27,7 @@ class PartyFinder : BaseWindow() {
     val windowSize = 0.8f
 
     lateinit var background : UIRoundedRectangle
+    lateinit var filterArea : UIFilterArea
 
     init {
         create()
@@ -43,13 +45,15 @@ class PartyFinder : BaseWindow() {
 
         createHeader()
 
-        UIFilterArea(radius).constrain {
+        filterArea = UIFilterArea(radius).constrain {
             x = CenterConstraint()
             y = SiblingConstraint(2f)
             width = 100.percent()
             height = max(20.percent(), 40.pixels())
             color = primaryColor
         } childOf background
+
+        filterArea.hide()
 
         Inspector(window) childOf window
     }
@@ -78,14 +82,16 @@ class PartyFinder : BaseWindow() {
             height = 80.percent()
         } childOf header
 
-        val createButton = UIButton("New Party", 3f).constrain {
+        UIButton("New Party", 3f).constrain {
             x = SiblingConstraint(2f, true)
             y = CenterConstraint()
             width = 70.pixels()
             height = 100.percent()
         } childOf rightContainer
 
-        val filtersButton = UIButton("Filters", 3f).constrain {
+        UIButton("Filters", 3f) {
+            filterArea.toggleHidden()
+        }.constrain {
             x = SiblingConstraint(2f, true)
             y = CenterConstraint()
             width = 50.pixels()
