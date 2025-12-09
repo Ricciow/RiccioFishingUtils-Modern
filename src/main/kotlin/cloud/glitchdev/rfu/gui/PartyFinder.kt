@@ -2,7 +2,7 @@ package cloud.glitchdev.rfu.gui
 
 import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.partyfinder.UIFilterArea
-import cloud.glitchdev.rfu.utils.dsl.toggleHidden
+import cloud.glitchdev.rfu.utils.dsl.setHidden
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
@@ -53,7 +53,7 @@ class PartyFinder : BaseWindow() {
             color = primaryColor
         } childOf background
 
-        filterArea.hide()
+        filterArea.setHidden(filterOpen)
 
         Inspector(window) childOf window
     }
@@ -90,7 +90,8 @@ class PartyFinder : BaseWindow() {
         } childOf rightContainer
 
         UIButton("Filters", 3f) {
-            filterArea.toggleHidden()
+            filterOpen = !filterOpen
+            filterArea.setHidden(filterOpen)
         }.constrain {
             x = SiblingConstraint(2f, true)
             y = CenterConstraint()
@@ -101,5 +102,9 @@ class PartyFinder : BaseWindow() {
             rightContainer.constrain {
             x = 98.percent() - rightContainer.getWidth().pixels()
         }
+    }
+
+    companion object {
+        var filterOpen = false
     }
 }
