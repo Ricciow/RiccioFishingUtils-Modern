@@ -34,7 +34,6 @@ class PartyFinder : BaseWindow() {
     }
 
     fun create() {
-
         background = UIRoundedRectangle(radius).constrain {
             x = CenterConstraint()
             y = CenterConstraint()
