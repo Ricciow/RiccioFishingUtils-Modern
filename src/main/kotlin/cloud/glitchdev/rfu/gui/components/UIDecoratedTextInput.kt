@@ -49,12 +49,13 @@ class UIDecoratedTextInput(val placeholder : String, radius : Float, val numberO
     override fun draw(matrixStack: UMatrixStack) {
         if(textChanged) {
             val text = textInput.getText()
-            if(numberOnly) {
+            if(numberOnly && textInput.getText().contains(numberRegex)) {
                 textInput.setText(numberRegex.replace(text, ""))
             }
             if(maxChars != 0 && text.length > maxChars) {
                 textInput.setText(text.slice(IntRange(0, maxChars-1)))
             }
+            textChanged = false
         }
 
         super.draw(matrixStack)

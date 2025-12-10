@@ -28,7 +28,6 @@ class UIRadio(val values : ArrayList<DataOption>, selectedValue : Int, val callb
 
     fun create() {
         for((index, option) in values.withIndex()) {
-            println("$index, $selectedValue, ${index == selectedValue}")
             val checkbox = UICheckbox(option.label, index == selectedValue, false) { value ->
                 selectedValue = index
                 callback(value)
