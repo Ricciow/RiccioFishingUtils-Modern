@@ -17,7 +17,14 @@ enum class FishingIslands(val island: String) {
     @SerializedName("The Farming Islands")
     DESERT("The Farming Islands"),
     @SerializedName("Spider's Den")
-    SPIDER("Spider's Den");
+    SPIDER("Spider's Den"),
+    @SerializedName("Jerry's Workshop")
+    JERRY("Jerry's Workshop"),
+    @SerializedName("Dwarven Mines")
+    DWARVEN("Dwarven Mines"),
+    @SerializedName("Hub")
+    HUB("Hub");
+
 
     companion object {
         fun toDataOptions() : ArrayList<DataOption> {
