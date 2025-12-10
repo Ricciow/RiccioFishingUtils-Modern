@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.constants
 import cloud.glitchdev.rfu.constants.LiquidTypes.*
 import cloud.glitchdev.rfu.constants.SeaCreatureCategory.*
+import cloud.glitchdev.rfu.model.data.DataOption
 
 enum class SeaCreatures(val scName : String, val liquidType: LiquidTypes, val category: SeaCreatureCategory) {
     //Any water source
@@ -83,5 +84,20 @@ enum class SeaCreatures(val scName : String, val liquidType: LiquidTypes, val ca
     FRIED_CHICKEN("Fried Chicken", LAVA, HOTSPOT_LAVA),
     FIREPROOF_WITCH("Fireproof Witch", LAVA, HOTSPOT_LAVA),
     FIERY_SCUTTER("Fiery Scutter", LAVA, HOTSPOT_LAVA),
-    RAGNAROCK("Ragnarock", LAVA, HOTSPOT_LAVA)
+    RAGNAROCK("Ragnarock", LAVA, HOTSPOT_LAVA);
+
+    companion object {
+        fun toDataOptions(liquidType: LiquidTypes, island: FishingIslands) : ArrayList<DataOption> {
+            val seaCreatures = SeaCreatures.entries.filter { sc ->
+                if(sc.liquidType != liquidType) return@filter false
+                if(!sc.category.islands.contains(island)) return@filter false
+
+                return@filter true
+            }
+
+            return seaCreatures.map { sc ->
+                DataOption(sc, sc.scName)
+            } as ArrayList<DataOption>
+        }
+    }
 }

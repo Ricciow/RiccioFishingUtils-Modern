@@ -27,7 +27,7 @@ import gg.essential.universal.UMatrixStack
 /**
  * Dropdown component
  */
-class UIDropdown(val values : ArrayList<DataOption>, var selectedIndex : Int = 0, val radiusProps : Float, val onSelect : (Any) -> Unit = {}) : UIContainer() {
+class UIDropdown(val values : ArrayList<DataOption>, var selectedIndex : Int = 0, val radiusProps : Float, val hideArrow : Boolean = false, val label : String = "", val onSelect : (Any) -> Unit = {}) : UIContainer() {
     val primaryColor = UIScheme.secondaryColorOpaque.toConstraint()
     val hoverColor = UIScheme.secondaryColor.toConstraint()
     val textColor = UIScheme.primaryTextColor.toConstraint()
@@ -123,7 +123,7 @@ class UIDropdown(val values : ArrayList<DataOption>, var selectedIndex : Int = 0
             height = 10.pixels()
         } childOf background
 
-        text = UIText("").constrain {
+        text = UIText(label).constrain {
             x = CenterConstraint()
             y = CenterConstraint()
             width = ScaledTextConstraint(fontSize)
@@ -138,6 +138,8 @@ class UIDropdown(val values : ArrayList<DataOption>, var selectedIndex : Int = 0
             height = TextAspectConstraint()
             color = textColor
         } childOf textContainer
+
+        arrowHead.setHidden(hideArrow)
 
         options = UIContainer().constrain {
             x = CenterConstraint()
@@ -235,6 +237,8 @@ class UIDropdown(val values : ArrayList<DataOption>, var selectedIndex : Int = 0
             arrowHead.setText("▼")
         }
 
-        text.setText(getSelectedOption().label)
+        if(label == "") {
+            text.setText(getSelectedOption().label)
+        }
     }
 }

@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.gui.components.partyfinder
 import cloud.glitchdev.rfu.constants.FishingIslands
 import cloud.glitchdev.rfu.constants.LiquidTypes
 import cloud.glitchdev.rfu.constants.PartyTypes
+import cloud.glitchdev.rfu.constants.SeaCreatures
 import cloud.glitchdev.rfu.gui.components.UIDecoratedTextInput
 import cloud.glitchdev.rfu.gui.components.checkbox.UICheckbox
 import cloud.glitchdev.rfu.gui.components.checkbox.UIRadio
@@ -143,5 +144,15 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
             width = ChildBasedSizeConstraint()
             height = 100.percent()
         } childOf requisitesFields
+
+        val mobsArea = UITitledSection("Sea Creatures:").constrain {
+            x = CenterConstraint()
+            y = SiblingConstraint(4f)
+            width = 100.percent()
+            height = 25.pixels()
+        } childOf container
+
+        val mobsField = UIDropdown(SeaCreatures.toDataOptions(LiquidTypes.LAVA, FishingIslands.ISLE), 0, 5f, true, "+")
+        mobsArea.addSection(mobsField)
     }
 }
