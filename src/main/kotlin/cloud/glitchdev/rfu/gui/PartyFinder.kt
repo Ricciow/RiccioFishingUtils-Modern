@@ -37,10 +37,13 @@ class PartyFinder : BaseWindow() {
     lateinit var filterArea : UIFilterArea
     lateinit var partyCreationArea : UICreateParty
     lateinit var partyArea : UIContainer
+    lateinit var filterButton : UIButton
+    lateinit var partyCreationButton : UIButton
 
     init {
         getParties()
         create()
+        updatePartyCreation()
     }
 
     fun getParties() {
@@ -140,16 +143,9 @@ class PartyFinder : BaseWindow() {
             height = 80.percent()
         } childOf header
 
-        lateinit var filterButton : UIButton
-        lateinit var partyCreationButton : UIButton
-
         partyCreationButton = UIButton("New Party", 3f) {
             partyCreationOpen = !partyCreationOpen
-            partyCreationArea.setHidden(!partyCreationOpen)
-            partyArea.setHidden(partyCreationOpen)
-            filterArea.setHidden(if (partyCreationOpen) true else !filterOpen)
-            partyCreationButton.setText(if (partyCreationOpen) "Close" else "New Party")
-            filterButton.disabled = partyCreationOpen
+            updatePartyCreation()
         }.constrain {
             x = SiblingConstraint(2f, true)
             y = CenterConstraint()
@@ -172,6 +168,14 @@ class PartyFinder : BaseWindow() {
         }
 
 
+    }
+
+    fun updatePartyCreation() {
+        partyCreationArea.setHidden(!partyCreationOpen)
+        partyArea.setHidden(partyCreationOpen)
+        filterArea.setHidden(if (partyCreationOpen) true else !filterOpen)
+        partyCreationButton.setText(if (partyCreationOpen) "Close" else "New Party")
+        filterButton.disabled = partyCreationOpen
     }
 
     companion object {
