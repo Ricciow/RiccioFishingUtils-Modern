@@ -1,7 +1,6 @@
 package cloud.glitchdev.rfu.gui.components.checkbox
 
 import cloud.glitchdev.rfu.gui.UIScheme
-import cloud.glitchdev.rfu.utils.dsl.addHoverColoring
 import cloud.glitchdev.rfu.utils.dsl.setHidden
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
@@ -13,6 +12,7 @@ import gg.essential.elementa.constraints.ScaledTextConstraint
 import gg.essential.elementa.constraints.SiblingConstraint
 import gg.essential.elementa.constraints.TextAspectConstraint
 import gg.essential.elementa.constraints.animation.Animations
+import gg.essential.elementa.dsl.animate
 import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.dsl.min
@@ -64,9 +64,15 @@ class UICheckbox(val text: String, defaultState : Boolean = false, val allowDisa
             if(!allowDisabling && state) return@onMouseClick
             state = !state
             callback(state)
+        }.onMouseEnter {
+            checkbox.animate {
+                setColorAnimation(Animations.IN_EXP, animationDuration, hoverColor)
+            }
+        }.onMouseLeave {
+            checkbox.animate {
+                setColorAnimation(Animations.IN_EXP, animationDuration, primaryColor)
+            }
         }
-
-        checkbox.addHoverColoring(Animations.IN_EXP, animationDuration, primaryColor, hoverColor)
 
         UIText(text).constrain {
             x = SiblingConstraint(padding)

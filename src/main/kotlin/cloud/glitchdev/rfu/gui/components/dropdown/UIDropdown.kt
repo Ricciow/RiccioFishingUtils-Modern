@@ -14,6 +14,7 @@ import gg.essential.elementa.constraints.ScaledTextConstraint
 import gg.essential.elementa.constraints.SiblingConstraint
 import gg.essential.elementa.constraints.TextAspectConstraint
 import gg.essential.elementa.constraints.animation.Animations
+import gg.essential.elementa.dsl.animate
 import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.dsl.percent
@@ -88,10 +89,31 @@ class UIDropdown(val values : ArrayList<DataOption>, var selectedIndex : Int = 0
         background.onMouseClick {
             grabWindowFocus()
             isOpen = !isOpen
+            if(isOpen) {
+                this.constrain {
+                    color = primaryColor
+                }
+            } else {
+                this.animate {
+                    setColorAnimation(Animations.IN_SIN, hoverDuration * 2, hoverColor)
+                }
+            }
             updateDropdown()
         }.onFocusLost {
             isOpen = false
             updateDropdown()
+        }.onMouseEnter {
+            if(!isOpen) {
+                this.animate {
+                    setColorAnimation(Animations.IN_EXP, hoverDuration, hoverColor)
+                }
+            }
+        }.onMouseLeave {
+            if(!isOpen) {
+                this.animate {
+                    setColorAnimation(Animations.IN_EXP, hoverDuration, primaryColor)
+                }
+            }
         }
 
         textContainer = UIContainer().constrain {
