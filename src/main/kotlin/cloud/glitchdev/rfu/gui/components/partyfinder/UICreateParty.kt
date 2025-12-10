@@ -8,6 +8,7 @@ import cloud.glitchdev.rfu.gui.components.UIDecoratedTextInput
 import cloud.glitchdev.rfu.gui.components.checkbox.UICheckbox
 import cloud.glitchdev.rfu.gui.components.checkbox.UIRadio
 import cloud.glitchdev.rfu.gui.components.dropdown.UIDropdown
+import cloud.glitchdev.rfu.gui.components.dropdown.UISelectionDropdown
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIWrappedText
@@ -152,7 +153,7 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
             height = 25.pixels()
         } childOf container
 
-        val mobsField = UIDropdown(SeaCreatures.toDataOptions(LiquidTypes.LAVA, FishingIslands.ISLE), 0, 5f, true, "+")
+        val mobsField = UISelectionDropdown(SeaCreatures.toDataOptions(LiquidTypes.LAVA, FishingIslands.ISLE), 5, emptySet(), 5f, true, "Sea Creatures")
         mobsArea.addSection(mobsField)
     }
 }

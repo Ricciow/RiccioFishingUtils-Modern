@@ -1,244 +1,28 @@
 package cloud.glitchdev.rfu.gui.components.dropdown
 
-import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.model.data.DataOption
-import cloud.glitchdev.rfu.utils.dsl.addHoverColoring
-import cloud.glitchdev.rfu.utils.dsl.height
-import cloud.glitchdev.rfu.utils.dsl.setHidden
-import gg.essential.elementa.components.UIContainer
-import gg.essential.elementa.components.UIRoundedRectangle
-import gg.essential.elementa.components.UIText
-import gg.essential.elementa.constraints.CenterConstraint
-import gg.essential.elementa.constraints.ChildBasedSizeConstraint
-import gg.essential.elementa.constraints.ScaledTextConstraint
-import gg.essential.elementa.constraints.SiblingConstraint
-import gg.essential.elementa.constraints.TextAspectConstraint
-import gg.essential.elementa.constraints.animation.Animations
-import gg.essential.elementa.dsl.animate
-import gg.essential.elementa.dsl.childOf
-import gg.essential.elementa.dsl.constrain
-import gg.essential.elementa.dsl.percent
-import gg.essential.elementa.dsl.pixels
-import gg.essential.elementa.dsl.plus
-import gg.essential.elementa.dsl.toConstraint
-import gg.essential.elementa.dsl.width
-import gg.essential.universal.UMatrixStack
 
-/**
- * Dropdown component
- */
-class UIDropdown(val values : ArrayList<DataOption>, var selectedIndex : Int = 0, val radiusProps : Float, val hideArrow : Boolean = false, val label : String = "", val onSelect : (Any) -> Unit = {}) : UIContainer() {
-    val primaryColor = UIScheme.secondaryColorOpaque.toConstraint()
-    val hoverColor = UIScheme.secondaryColor.toConstraint()
-    val textColor = UIScheme.primaryTextColor.toConstraint()
-    val hoverDuration = UIScheme.HOVER_EFFECT_DURATION
-    val padding = 2f
+class UIDropdown(
+    values: ArrayList<DataOption>,
+    var selectedIndex: Int = 0,
+    radiusProps: Float,
+    hideArrow: Boolean = false,
+    label: String = "",
+    val onSelect: (Any) -> Unit = {}
+) : UIAbstractDropdown(values, radiusProps, hideArrow, label) {
 
-    var isOpen = false
-    //var selectedIndex
-    lateinit var background : UIRoundedRectangle
-    lateinit var textContainer : UIContainer
-    lateinit var text : UIText
-    lateinit var arrowHead : UIText
-    lateinit var options : UIContainer
-    val uiOptions : MutableList<UIRoundedRectangle> = mutableListOf()
-    val uiOptionsText : MutableList<UIText> = mutableListOf()
-
-    var fontSize : Float = 1.5f
-        set(value) {
-            text.constrain {
-                width = ScaledTextConstraint(value)
-            }
-            arrowHead.constrain {
-                width = ScaledTextConstraint(value / 3 * 2)
-            }
-            for(optionText in uiOptionsText) {
-                optionText.constrain {
-                    width = ScaledTextConstraint(value)
-                }
-            }
-        }
-
-    private var lastHeight = this.getHeight()
-    override fun draw(matrixStack: UMatrixStack) {
-        val currentHeight = this.getHeight()
-        if(lastHeight != this.getHeight()) {
-            lastHeight = currentHeight
-            updateHeight()
-        }
-        super.draw(matrixStack)
+    override fun onOptionClicked(option: DataOption, index: Int) {
+        selectedIndex = index
+        onSelect(option.value)
+        isOpen = false
+        updateDropdownState()
     }
 
-    init {
-        create()
-        updateDropdown()
+    override fun isOptionSelected(index: Int): Boolean {
+        return index == selectedIndex
     }
 
-    fun create() {
-        background = UIRoundedRectangle(radiusProps).constrain {
-            y = 0.pixels()
-            x = CenterConstraint()
-            width = 100.percent()
-            height = 100.percent()
-            color = primaryColor
-            isFloating = true
-        } childOf this
-
-        background.isFloating = true
-
-        background.onMouseClick {
-            grabWindowFocus()
-            isOpen = !isOpen
-            if(isOpen) {
-                this.constrain {
-                    color = primaryColor
-                }
-            } else {
-                this.animate {
-                    setColorAnimation(Animations.IN_SIN, hoverDuration * 2, hoverColor)
-                }
-            }
-            updateDropdown()
-        }.onFocusLost {
-            isOpen = false
-            updateDropdown()
-        }.onMouseEnter {
-            if(!isOpen) {
-                this.animate {
-                    setColorAnimation(Animations.IN_EXP, hoverDuration, hoverColor)
-                }
-            }
-        }.onMouseLeave {
-            if(!isOpen) {
-                this.animate {
-                    setColorAnimation(Animations.IN_EXP, hoverDuration, primaryColor)
-                }
-            }
-        }
-
-        textContainer = UIContainer().constrain {
-            x = CenterConstraint()
-            y = CenterConstraint()
-            width = 100.percent()
-            height = 10.pixels()
-        } childOf background
-
-        text = UIText(label).constrain {
-            x = CenterConstraint()
-            y = CenterConstraint()
-            width = ScaledTextConstraint(fontSize)
-            height = TextAspectConstraint()
-            color = textColor
-        } childOf textContainer
-
-        arrowHead = UIText("▼").constrain {
-            x = 5.pixels(true)
-            y = CenterConstraint()
-            width = ScaledTextConstraint(fontSize / 3 * 2)
-            height = TextAspectConstraint()
-            color = textColor
-        } childOf textContainer
-
-        arrowHead.setHidden(hideArrow)
-
-        options = UIContainer().constrain {
-            x = CenterConstraint()
-            y = SiblingConstraint(padding)
-            width = 90.percent()
-            height = ChildBasedSizeConstraint()
-        } childOf background
-
-        for((index, option) in values.withIndex()) {
-            createOption(option, index)
-        }
-
-        options.hide()
-    }
-
-    fun createOption(option : DataOption, index : Int) {
-        val uiOption = UIRoundedRectangle(radiusProps).constrain {
-            x = CenterConstraint()
-            y = SiblingConstraint(padding)
-            width = 100.percent()
-            height = 10.pixels()
-            color = primaryColor
-        } childOf options
-
-        uiOptions.addLast(uiOption)
-
-        val optionText = UIText(option.label).constrain {
-            x = CenterConstraint()
-            y = CenterConstraint()
-            width = ScaledTextConstraint(fontSize)
-            height = TextAspectConstraint()
-            color = textColor
-        } childOf uiOption
-
-        uiOptionsText.addLast(optionText)
-
-        uiOption.addHoverColoring(Animations.IN_EXP, hoverDuration, primaryColor, hoverColor)
-
-        uiOption.onMouseClick {
-            selectedIndex = index
-            onSelect(option.value)
-            updateDropdown()
-        }
-    }
-
-    private fun getSelectedOption() : DataOption {
-        return (values.getOrNull(selectedIndex) ?: DataOption("Dropdown", "Dropdown"))
-    }
-
-    fun updateHeight() {
-        val newHeight = this.getHeight()
-        textContainer.setHeight(newHeight.pixels())
-        for(uiOption in uiOptions) {
-            uiOption.setHeight(newHeight.pixels())
-        }
-        updateFontSize()
-    }
-
-    fun updateFontSize() {
-        var font = fontSize
-        for(option in values) {
-            while (option.label.height(font) < textContainer.getHeight() * 0.9) {
-                font += 0.1f
-            }
-        }
-        for(option in values) {
-            while(option.label.height(font) > textContainer.getHeight() * 0.9 ||
-                    option.label.width(font) > textContainer.getWidth() * 0.8)
-            {
-                font -= 0.1f
-            }
-        }
-        fontSize = font
-    }
-
-    fun updateDropdown() {
-        options.setHidden(!isOpen)
-        if(isOpen) {
-            val oldY = textContainer.getTop() - background.getTop()
-            textContainer.constrain {
-                y = SiblingConstraint(padding) + oldY.pixels()
-            }
-            background.constrain {
-                height = ChildBasedSizeConstraint(padding) + oldY.pixels()
-            }
-            arrowHead.setText("▲")
-        }
-        else {
-            textContainer.constrain {
-                y = CenterConstraint()
-            }
-            background.constrain {
-                height = 100.percent()
-            }
-            arrowHead.setText("▼")
-        }
-
-        if(label == "") {
-            text.setText(getSelectedOption().label)
-        }
+    override fun getDropdownDisplayText(): String {
+        return values.getOrNull(selectedIndex)?.label ?: "Dropdown"
     }
 }
