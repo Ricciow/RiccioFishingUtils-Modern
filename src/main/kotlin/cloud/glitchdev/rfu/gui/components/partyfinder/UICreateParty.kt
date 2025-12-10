@@ -4,12 +4,14 @@ import cloud.glitchdev.rfu.constants.FishingIslands
 import cloud.glitchdev.rfu.constants.LiquidTypes
 import cloud.glitchdev.rfu.constants.PartyTypes
 import cloud.glitchdev.rfu.gui.components.UIDecoratedTextInput
+import cloud.glitchdev.rfu.gui.components.checkbox.UICheckbox
 import cloud.glitchdev.rfu.gui.components.checkbox.UIRadio
 import cloud.glitchdev.rfu.gui.components.dropdown.UIDropdown
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIWrappedText
 import gg.essential.elementa.constraints.CenterConstraint
+import gg.essential.elementa.constraints.ChildBasedSizeConstraint
 import gg.essential.elementa.constraints.SiblingConstraint
 import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
@@ -103,5 +105,43 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
 
         val liquidField = UIRadio(LiquidTypes.toDataOptions(), 0)
         liquidArea.addSection(liquidField)
+
+        val requisitesArea = UITitledSection("Extras:").constrain {
+            x = CenterConstraint()
+            y = SiblingConstraint(4f)
+            width = 100.percent()
+            height = 25.pixels()
+        } childOf container
+
+        val requisitesFields = UIContainer()
+        requisitesArea.addSection(requisitesFields)
+
+        UICheckbox("Has Killer").constrain {
+            x = SiblingConstraint(4f)
+            y = CenterConstraint()
+            width = ChildBasedSizeConstraint()
+            height = 100.percent()
+        } childOf requisitesFields
+
+        UICheckbox("Enderman 9").constrain {
+            x = SiblingConstraint(4f)
+            y = CenterConstraint()
+            width = ChildBasedSizeConstraint()
+            height = 100.percent()
+        } childOf requisitesFields
+
+        UICheckbox("Looting 5").constrain {
+            x = SiblingConstraint(4f)
+            y = CenterConstraint()
+            width = ChildBasedSizeConstraint()
+            height = 100.percent()
+        } childOf requisitesFields
+
+        UICheckbox("Brain Food").constrain {
+            x = SiblingConstraint(4f)
+            y = CenterConstraint()
+            width = ChildBasedSizeConstraint()
+            height = 100.percent()
+        } childOf requisitesFields
     }
 }
