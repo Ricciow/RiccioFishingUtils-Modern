@@ -8,12 +8,11 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallba
 import net.minecraft.client.MinecraftClient
 
 class RicciosFinestUtilities : ClientModInitializer {
-
     override fun onInitializeClient() {
         Gui.initialize()
 
         ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
-            dispatcher.register(ClientCommandManager.literal("rfupf").executes { context ->
+            dispatcher.register(ClientCommandManager.literal("rfupf").executes { _ ->
                 Gui.openGui(PartyFinder())
                 1
             })

@@ -1,5 +1,8 @@
 package cloud.glitchdev.rfu.model.party
 
+import cloud.glitchdev.rfu.constants.FishingIslands
+import cloud.glitchdev.rfu.constants.LiquidTypes
+import cloud.glitchdev.rfu.constants.PartyTypes
 import com.google.gson.annotations.SerializedName
 import com.google.gson.Gson
 
@@ -8,15 +11,18 @@ data class FishingParty(
     val level: Int,
     val title: String,
     val description: String,
-    val liquid: String,
+    val liquid: LiquidTypes,
     @SerializedName("fishing_type")
-    val fishingType: String,
+    val fishingType: PartyTypes,
+    val island: FishingIslands,
     val requisites : List<Requisite>,
     @SerializedName("sea_creatures")
     val seaCreatures: List<String>,
     val players : Players
 ) {
-    fun getCountString() : String = players.getString()
+    fun getCountString() : String {
+        return "${players.getString()} ${island.island} $liquid"
+    }
 
     fun getSeaCreatureString() : String {
         return seaCreatures.joinToString()

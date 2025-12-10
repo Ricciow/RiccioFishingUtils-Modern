@@ -1,0 +1,107 @@
+package cloud.glitchdev.rfu.gui.components.partyfinder
+
+import cloud.glitchdev.rfu.constants.FishingIslands
+import cloud.glitchdev.rfu.constants.LiquidTypes
+import cloud.glitchdev.rfu.constants.PartyTypes
+import cloud.glitchdev.rfu.gui.components.UIDecoratedTextInput
+import cloud.glitchdev.rfu.gui.components.checkbox.UIRadio
+import cloud.glitchdev.rfu.gui.components.dropdown.UIDropdown
+import gg.essential.elementa.components.UIContainer
+import gg.essential.elementa.components.UIRoundedRectangle
+import gg.essential.elementa.components.UIWrappedText
+import gg.essential.elementa.constraints.CenterConstraint
+import gg.essential.elementa.constraints.SiblingConstraint
+import gg.essential.elementa.dsl.childOf
+import gg.essential.elementa.dsl.constrain
+import gg.essential.elementa.dsl.minus
+import gg.essential.elementa.dsl.percent
+import gg.essential.elementa.dsl.pixels
+
+class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
+    init {
+        create()
+    }
+
+    fun create() {
+        val container = UIContainer().constrain {
+            x = CenterConstraint()
+            y = CenterConstraint()
+            width = 96.percent()
+            height = 96.percent()
+        } childOf this
+
+        UIWrappedText("Create your party here, parties queued will last for at most 30 minutes.").constrain {
+            x = 0.pixels()
+            y = SiblingConstraint()
+            width = 100.percent()
+            height = 18.pixels()
+        } childOf container
+
+        val fieldArea = UIContainer().constrain {
+            x = CenterConstraint()
+            y = SiblingConstraint(2f)
+            width = 100.percent()
+            height = 25.pixels()
+        } childOf container
+
+        val titleArea = UITitledSection("Title:").constrain {
+            x = SiblingConstraint(2f)
+            y = CenterConstraint()
+            width = 20.percent() - 1.6.pixels()
+            height = 100.percent()
+        } childOf fieldArea
+
+        val titleField = UIDecoratedTextInput("Max 20 chars", 5f, false, 20)
+        titleArea.addSection(titleField)
+
+        val typeArea = UITitledSection("Type:").constrain {
+            x = SiblingConstraint(2f)
+            y = CenterConstraint()
+            width = 20.percent() - 1.6.pixels()
+            height = 100.percent()
+        } childOf fieldArea
+
+        val typeField = UIDropdown(PartyTypes.toDataOptions(), 0, 5f)
+        typeArea.addSection(typeField)
+
+        val islandArea = UITitledSection("Island:").constrain {
+            x = SiblingConstraint(2f)
+            y = CenterConstraint()
+            width = 20.percent() - 1.6.pixels()
+            height = 100.percent()
+        } childOf fieldArea
+
+        val islandField = UIDropdown(FishingIslands.toDataOptions(), 0, 5f)
+        islandArea.addSection(islandField)
+
+        val limitArea = UITitledSection("Max Players:").constrain {
+            x = SiblingConstraint(2f)
+            y = CenterConstraint()
+            width = 20.percent() - 1.6.pixels()
+            height = 100.percent()
+        } childOf fieldArea
+
+        val limitField = UIDecoratedTextInput("6", 5f, true, 2)
+        limitArea.addSection(limitField)
+
+        val levelArea = UITitledSection("Min Level:").constrain {
+            x = SiblingConstraint(2f)
+            y = CenterConstraint()
+            width = 20.percent() - 1.6.pixels()
+            height = 100.percent()
+        } childOf fieldArea
+
+        val levelField = UIDecoratedTextInput("0", 5f, true, 3)
+        levelArea.addSection(levelField)
+
+        val liquidArea = UITitledSection("Liquid:").constrain {
+            x = CenterConstraint()
+            y = SiblingConstraint(4f)
+            width = 100.percent()
+            height = 25.pixels()
+        } childOf container
+
+        val liquidField = UIRadio(LiquidTypes.toDataOptions(), 0)
+        liquidArea.addSection(liquidField)
+    }
+}

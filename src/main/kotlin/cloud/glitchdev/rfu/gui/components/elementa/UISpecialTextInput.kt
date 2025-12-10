@@ -133,11 +133,13 @@ open class UISpecialTextInput @JvmOverloads constructor(
         activateAction(getText())
     }
 
+    //New
     private fun getVerticalOffset(): Float {
         val textHeight = 9f * getTextScale()
         return (getHeight() - textHeight) / 2f
     }
 
+    //Modified
     override fun draw(matrixStack: UMatrixStack) {
         beforeDrawCompat(matrixStack)
 

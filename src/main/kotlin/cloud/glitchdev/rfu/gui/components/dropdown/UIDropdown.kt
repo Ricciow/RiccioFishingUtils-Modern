@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.gui.components.dropdown
 
 import cloud.glitchdev.rfu.gui.UIScheme
+import cloud.glitchdev.rfu.model.data.DataOption
 import cloud.glitchdev.rfu.utils.dsl.addHoverColoring
 import cloud.glitchdev.rfu.utils.dsl.height
 import cloud.glitchdev.rfu.utils.dsl.setHidden
@@ -25,7 +26,7 @@ import gg.essential.universal.UMatrixStack
 /**
  * Dropdown component
  */
-class UIDropdown(val values : ArrayList<DropdownOption>, var selectedIndex : Int = 0, val radiusProps : Float, val onSelect : (Any) -> Unit = {}) : UIContainer() {
+class UIDropdown(val values : ArrayList<DataOption>, var selectedIndex : Int = 0, val radiusProps : Float, val onSelect : (Any) -> Unit = {}) : UIContainer() {
     val primaryColor = UIScheme.secondaryColorOpaque.toConstraint()
     val hoverColor = UIScheme.secondaryColor.toConstraint()
     val textColor = UIScheme.primaryTextColor.toConstraint()
@@ -130,7 +131,7 @@ class UIDropdown(val values : ArrayList<DropdownOption>, var selectedIndex : Int
         options.hide()
     }
 
-    fun createOption(option : DropdownOption, index : Int) {
+    fun createOption(option : DataOption, index : Int) {
         val uiOption = UIRoundedRectangle(radiusProps).constrain {
             x = CenterConstraint()
             y = SiblingConstraint(padding)
@@ -160,8 +161,8 @@ class UIDropdown(val values : ArrayList<DropdownOption>, var selectedIndex : Int
         }
     }
 
-    private fun getSelectedOption() : DropdownOption {
-        return (values.getOrNull(selectedIndex) ?: DropdownOption("Dropdown", "Dropdown"))
+    private fun getSelectedOption() : DataOption {
+        return (values.getOrNull(selectedIndex) ?: DataOption("Dropdown", "Dropdown"))
     }
 
     fun updateHeight() {

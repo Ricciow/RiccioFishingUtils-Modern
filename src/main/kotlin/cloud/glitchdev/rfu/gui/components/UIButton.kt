@@ -1,7 +1,6 @@
 package cloud.glitchdev.rfu.gui.components
 
 import cloud.glitchdev.rfu.gui.UIScheme
-import cloud.glitchdev.rfu.utils.dsl.addHoverColoring
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
 import gg.essential.elementa.constraints.CenterConstraint
@@ -24,11 +23,26 @@ class UIButton(val text: String, radius: Float = 0f, val callback : () -> Unit =
     val hoverColor = UIScheme.secondaryColor.toConstraint()
     val textColor = UIScheme.primaryTextColor.toConstraint()
     val secondaryTextColor = UIScheme.secondaryTextColor.toConstraint()
+    val disabledColor = UIScheme.secondaryColorDisabledOpaque.toConstraint()
     val hoverDuration = UIScheme.HOVER_EFFECT_DURATION
     val clickDuration = 0.1f
 
+    var disabled = false
+        set(value) {
+            field = value
+            this.constrain {
+                color = if (disabled) disabledColor else primaryColor
+            }
+        }
+
+    lateinit var textArea : UIText
+
     init {
         create()
+    }
+
+    fun setText(text : String) {
+        textArea.setText(text)
     }
 
     fun create() {
@@ -36,7 +50,7 @@ class UIButton(val text: String, radius: Float = 0f, val callback : () -> Unit =
             color = primaryColor
         }
 
-        val text = UIText(text).constrain {
+        textArea = UIText(text).constrain {
             x = CenterConstraint()
             y = CenterConstraint()
             width = min(TextAspectConstraint() - 5.pixels(), 90.percent())
@@ -45,17 +59,32 @@ class UIButton(val text: String, radius: Float = 0f, val callback : () -> Unit =
         } childOf this
 
         this.onMouseClick {
-            callback()
-        }
-        .addHoverColoring(Animations.IN_EXP, hoverDuration, primaryColor, hoverColor)
-        .onMouseClick {
-            text.animate {
-                setColorAnimation(Animations.IN_EXP, clickDuration, secondaryTextColor)
+            if(!disabled) {
+                callback()
+                textArea.animate {
+                    setColorAnimation(Animations.IN_EXP, clickDuration, secondaryTextColor)
+                }
             }
         }
         .onMouseRelease {
-            text.animate {
-                setColorAnimation(Animations.IN_EXP, clickDuration, textColor)
+            if(!disabled) {
+                textArea.animate {
+                    setColorAnimation(Animations.IN_EXP, clickDuration, textColor)
+                }
+            }
+        }
+        .onMouseEnter {
+            if(!disabled) {
+                this.animate {
+                    setColorAnimation(Animations.IN_EXP, hoverDuration, hoverColor)
+                }
+            }
+        }
+        .onMouseLeave {
+            if(!disabled) {
+                this.animate {
+                    setColorAnimation(Animations.IN_EXP, hoverDuration, primaryColor)
+                }
             }
         }
 

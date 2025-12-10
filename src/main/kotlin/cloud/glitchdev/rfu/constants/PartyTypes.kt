@@ -1,19 +1,25 @@
 package cloud.glitchdev.rfu.constants
 
-import cloud.glitchdev.rfu.gui.components.dropdown.DropdownOption
+import cloud.glitchdev.rfu.model.data.DataOption
+import com.google.gson.annotations.SerializedName
 
 enum class PartyTypes(val type: String){
-    REGULAR("Normal Fishing"),
-    HOTSPOT("Hotspot Fishing"),
-    BARN("Barn Fishing"),
-    TROPHY("Trophy Fishing"),
-    TREASURE("Treasure Fishing");
+    @SerializedName("Normal")
+    REGULAR("Normal"),
+    @SerializedName("Hotspot")
+    HOTSPOT("Hotspot"),
+    @SerializedName("Barn")
+    BARN("Barn"),
+    @SerializedName("Trophy")
+    TROPHY("Trophy"),
+    @SerializedName("Treasure")
+    TREASURE("Treasure");
 
     companion object {
-        fun toDropdownOptions() : ArrayList<DropdownOption> {
+        fun toDataOptions() : ArrayList<DataOption> {
             return entries.map { party ->
-                DropdownOption(party, party.type)
-            } as ArrayList<DropdownOption>
+                DataOption(party, party.type)
+            } as ArrayList<DataOption>
         }
     }
 }

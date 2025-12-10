@@ -8,6 +8,7 @@ import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
 import gg.essential.elementa.components.UIWrappedText
 import gg.essential.elementa.constraints.CenterConstraint
+import gg.essential.elementa.constraints.ChildBasedSizeConstraint
 import gg.essential.elementa.constraints.CramSiblingConstraint
 import gg.essential.elementa.constraints.FillConstraint
 import gg.essential.elementa.constraints.ScaledTextConstraint
@@ -54,11 +55,11 @@ class UIPartyCard(val party: FishingParty, radius : Float) : UIRoundedRectangle(
             height = 100.percent()
         } childOf mainContainer
 
-        UIText(party.getTitleString()).constrain {
+        UIWrappedText(party.getTitleString()).constrain {
             x = 0.pixels()
             y = SiblingConstraint(2f)
-            width = TextAspectConstraint()
-            height = ScaledTextConstraint(fontSize)
+            width = 100.percent()
+            height = 9.pixels() //TODO: Make this variable
             color = textColor
         } childOf leftArea
 
@@ -85,7 +86,7 @@ class UIPartyCard(val party: FishingParty, radius : Float) : UIRoundedRectangle(
             height = 100.percent()
         } childOf mainContainer
 
-        UIText("Type: ${party.fishingType}").constrain {
+        UIText("Type: ${party.fishingType.type}").constrain {
             x = 0.pixels()
             y = SiblingConstraint(2f)
             width = TextAspectConstraint()
@@ -97,7 +98,7 @@ class UIPartyCard(val party: FishingParty, radius : Float) : UIRoundedRectangle(
             x = 0.pixels()
             y = SiblingConstraint(2f)
             width = 100.percent()
-            height = FillConstraint()
+            height = ChildBasedSizeConstraint()
         } childOf rightArea
 
         for(requisites in party.requisites) {
@@ -113,7 +114,7 @@ class UIPartyCard(val party: FishingParty, radius : Float) : UIRoundedRectangle(
             x = 0.pixels()
             y = SiblingConstraint(2f)
             width = 100.percent()
-            height = 20.pixels()
+            height = FillConstraint()
         } childOf rightArea
     }
 }

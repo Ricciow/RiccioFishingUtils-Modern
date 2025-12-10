@@ -1,6 +1,5 @@
 package cloud.glitchdev.rfu.utils
 
-import cloud.glitchdev.rfu.gui.components.dropdown.DropdownOption
 import gg.essential.elementa.WindowScreen
 import gg.essential.universal.UScreen
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
@@ -11,7 +10,7 @@ object Gui {
     private var shouldOpen = false
 
     fun initialize() {
-        ClientTickEvents.END_CLIENT_TICK.register(ClientTickEvents.EndTick { client ->
+        ClientTickEvents.END_CLIENT_TICK.register(ClientTickEvents.EndTick { _ ->
             if (shouldOpen && queuedInterface != null) {
                 shouldOpen = false
                 UScreen.displayScreen(queuedInterface)
@@ -28,6 +27,4 @@ object Gui {
             throw Exception("Tried to open a screen while one was already queued")
         }
     }
-
-    val transparent : Color = Color(0, 0,0, 0)
 }

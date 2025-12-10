@@ -1,7 +1,8 @@
-package cloud.glitchdev.rfu.gui.components
+package cloud.glitchdev.rfu.gui.components.checkbox
 
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.utils.dsl.addHoverColoring
+import cloud.glitchdev.rfu.utils.dsl.setHidden
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
@@ -22,17 +23,21 @@ import gg.essential.elementa.dsl.toConstraint
 /**
  * Simple Checkbox Component
  */
-class UICheckbox(val text: String, defaultState : Boolean = false, val callback : (Boolean) -> Unit = {}) : UIContainer() {
+class UICheckbox(val text: String, defaultState : Boolean = false, val allowDisabling : Boolean = true, val callback : (Boolean) -> Unit = {}) : UIContainer() {
     val primaryColor = UIScheme.secondaryColorOpaque.toConstraint()
     val hoverColor = UIScheme.secondaryColor.toConstraint()
     val textColor = UIScheme.primaryTextColor.toConstraint()
     val animationDuration = UIScheme.HOVER_EFFECT_DURATION
     val padding = 2f
 
-    var state = false
+    var state = defaultState
+        set(value) {
+            checkmark.setHidden(!value)
+            field = value
+        }
+    lateinit var checkmark : UIText
 
     init {
-        state = defaultState
         create()
     }
 
@@ -45,7 +50,7 @@ class UICheckbox(val text: String, defaultState : Boolean = false, val callback 
             color = primaryColor
         } childOf this
 
-        val checkmark = UIText("✔").constrain {
+        checkmark = UIText("✔").constrain {
             x = CenterConstraint()
             y = CenterConstraint()
             width = min(TextAspectConstraint(), FillConstraint())
@@ -53,16 +58,11 @@ class UICheckbox(val text: String, defaultState : Boolean = false, val callback 
             color = textColor
         } childOf checkbox
 
-        checkmark.hide()
+        checkmark.setHidden(!state)
 
         this.onMouseClick {
+            if(!allowDisabling && state) return@onMouseClick
             state = !state
-            if(state) {
-                checkmark.unhide()
-            }
-            else {
-                checkmark.hide()
-            }
             callback(state)
         }
 

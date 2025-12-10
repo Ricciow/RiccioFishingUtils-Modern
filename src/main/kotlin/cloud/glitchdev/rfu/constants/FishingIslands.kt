@@ -1,21 +1,29 @@
 package cloud.glitchdev.rfu.constants
 
-import cloud.glitchdev.rfu.gui.components.dropdown.DropdownOption
+import cloud.glitchdev.rfu.model.data.DataOption
+import com.google.gson.annotations.SerializedName
 
 enum class FishingIslands(val island: String) {
+    @SerializedName("Crimson Isle")
     ISLE("Crimson Isle"),
+    @SerializedName("Crystal Hollows")
     HOLLOWS("Crystal Hollows"),
+    @SerializedName("Backwater Bayou")
     BAYOU("Backwater Bayou"),
+    @SerializedName("Park")
     PARK("Park"),
+    @SerializedName("Galatea")
     GALATEA("Galatea"),
+    @SerializedName("The Farming Islands")
     DESERT("The Farming Islands"),
+    @SerializedName("Spider's Den")
     SPIDER("Spider's Den");
 
     companion object {
-        fun toDropdownOptions() : ArrayList<DropdownOption> {
+        fun toDataOptions() : ArrayList<DataOption> {
             return entries.map { island ->
-                DropdownOption(island, island.island)
-            } as ArrayList<DropdownOption>
+                DataOption(island, island.island)
+            } as ArrayList<DataOption>
         }
     }
 }

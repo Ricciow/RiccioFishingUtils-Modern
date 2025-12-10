@@ -9,6 +9,9 @@ object UIScheme {
     val secondaryColor = Color(200, 200, 200)
     val secondaryColorOpaque = increaseOpacity(secondaryColor, 127)
 
+    val secondaryColorDisabled = Color(150, 150, 150)
+    val secondaryColorDisabledOpaque = increaseOpacity(secondaryColorDisabled, 127)
+
     val primaryTextColor = Color(255, 255, 255)
     val secondaryTextColor = Color(180, 180, 180)
 

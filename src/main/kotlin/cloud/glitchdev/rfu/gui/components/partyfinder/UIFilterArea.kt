@@ -1,9 +1,11 @@
 package cloud.glitchdev.rfu.gui.components.partyfinder
 
 import cloud.glitchdev.rfu.constants.FishingIslands
+import cloud.glitchdev.rfu.constants.LiquidTypes
 import cloud.glitchdev.rfu.constants.PartyTypes
-import cloud.glitchdev.rfu.gui.components.UICheckbox
+import cloud.glitchdev.rfu.gui.components.checkbox.UICheckbox
 import cloud.glitchdev.rfu.gui.components.UIDecoratedTextInput
+import cloud.glitchdev.rfu.gui.components.checkbox.UIRadio
 import cloud.glitchdev.rfu.gui.components.dropdown.UIDropdown
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
@@ -31,14 +33,14 @@ class UIFilterArea(radius: Float) : UIRoundedRectangle(radius) {
             height = 50.percent()
         } childOf this
 
-        UIDropdown(FishingIslands.toDropdownOptions(), 0, 2f).constrain {
+        UIDropdown(FishingIslands.toDataOptions(), 0, 2f).constrain {
             x = SiblingConstraint(2f)
             y = CenterConstraint()
             width = 25.percent()
             height = 50.percent()
         } childOf topArea
 
-        UIDropdown(PartyTypes.toDropdownOptions(), 0, 2f).constrain {
+        UIDropdown(PartyTypes.toDataOptions(), 0, 2f).constrain {
             x = SiblingConstraint(2f)
             y = CenterConstraint()
             width = 25.percent()
@@ -73,17 +75,10 @@ class UIFilterArea(radius: Float) : UIRoundedRectangle(radius) {
             height = 50.percent()
         } childOf bottomArea
 
-        UICheckbox("Lava").constrain {
+        UIRadio(LiquidTypes.toDataOptions(), -1).constrain {
             x = CramSiblingConstraint(4f)
             y = CramSiblingConstraint()
-            width = ChildBasedSizeConstraint()
-            height = 50.percent()
-        } childOf bottomArea
-
-        UICheckbox("Water").constrain {
-            x = CramSiblingConstraint(4f)
-            y = CramSiblingConstraint()
-            width = ChildBasedSizeConstraint()
+            width = 80.pixels()
             height = 50.percent()
         } childOf bottomArea
 

@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.gui
 
 import cloud.glitchdev.rfu.gui.components.UIButton
+import cloud.glitchdev.rfu.gui.components.partyfinder.UICreateParty
 import cloud.glitchdev.rfu.gui.components.partyfinder.UIFilterArea
 import cloud.glitchdev.rfu.gui.components.partyfinder.UIPartyCard
 import cloud.glitchdev.rfu.model.party.FishingParty
@@ -34,6 +35,8 @@ class PartyFinder : BaseWindow() {
 
     lateinit var background : UIRoundedRectangle
     lateinit var filterArea : UIFilterArea
+    lateinit var partyCreationArea : UICreateParty
+    lateinit var partyArea : UIContainer
 
     init {
         getParties()
@@ -41,11 +44,7 @@ class PartyFinder : BaseWindow() {
     }
 
     fun getParties() {
-        parties.add(FishingParty.fromJson("{\"user\":\"Usuariotop\",\"level\":200,\"title\":\"Titulotop\",\"description\":\"Decricaotop\",\"liquid\":\"Water\",\"fishing_type\":\"TreasureFishing\",\"requisites\":[{\"id\":\"enderman_9\",\"name\":\"Eman 9\",\"value\":true},{\"id\":\"brain_food\",\"name\":\"Brain Food\",\"value\":true},{\"id\":\"looting_5\",\"name\":\"Looting 5\",\"value\":true},{\"id\":\"has_killer\",\"name\":\"Has killer\",\"value\":true}],\"sea_creatures\":[\"Jawbus\",\"Thunder\"],\"players\":{\"current\":2,\"max\":10}}"))
-        parties.add(FishingParty.fromJson("{\"user\":\"Usuariotop\",\"level\":200,\"title\":\"Titulotop\",\"description\":\"Decricaotop\",\"liquid\":\"Water\",\"fishing_type\":\"TreasureFishing\",\"requisites\":[{\"id\":\"enderman_9\",\"name\":\"Eman 9\",\"value\":true},{\"id\":\"brain_food\",\"name\":\"Brain Food\",\"value\":true},{\"id\":\"looting_5\",\"name\":\"Looting 5\",\"value\":true},{\"id\":\"has_killer\",\"name\":\"Has killer\",\"value\":true}],\"sea_creatures\":[\"Jawbus\",\"Thunder\"],\"players\":{\"current\":2,\"max\":10}}"))
-        parties.add(FishingParty.fromJson("{\"user\":\"Usuariotop\",\"level\":200,\"title\":\"Titulotop\",\"description\":\"Decricaotop\",\"liquid\":\"Water\",\"fishing_type\":\"TreasureFishing\",\"requisites\":[{\"id\":\"enderman_9\",\"name\":\"Eman 9\",\"value\":true},{\"id\":\"brain_food\",\"name\":\"Brain Food\",\"value\":true},{\"id\":\"looting_5\",\"name\":\"Looting 5\",\"value\":true},{\"id\":\"has_killer\",\"name\":\"Has killer\",\"value\":true}],\"sea_creatures\":[\"Jawbus\",\"Thunder\"],\"players\":{\"current\":2,\"max\":10}}"))
-        parties.add(FishingParty.fromJson("{\"user\":\"Usuariotop\",\"level\":200,\"title\":\"Titulotop\",\"description\":\"Decricaotop\",\"liquid\":\"Water\",\"fishing_type\":\"TreasureFishing\",\"requisites\":[{\"id\":\"enderman_9\",\"name\":\"Eman 9\",\"value\":true},{\"id\":\"brain_food\",\"name\":\"Brain Food\",\"value\":true},{\"id\":\"looting_5\",\"name\":\"Looting 5\",\"value\":true},{\"id\":\"has_killer\",\"name\":\"Has killer\",\"value\":true}],\"sea_creatures\":[\"Jawbus\",\"Thunder\"],\"players\":{\"current\":2,\"max\":10}}"))
-        parties.add(FishingParty.fromJson("{\"user\":\"Usuariotop\",\"level\":200,\"title\":\"Titulotop\",\"description\":\"Decricaotop\",\"liquid\":\"Water\",\"fishing_type\":\"TreasureFishing\",\"requisites\":[{\"id\":\"enderman_9\",\"name\":\"Eman 9\",\"value\":true},{\"id\":\"brain_food\",\"name\":\"Brain Food\",\"value\":true},{\"id\":\"looting_5\",\"name\":\"Looting 5\",\"value\":true},{\"id\":\"has_killer\",\"name\":\"Has killer\",\"value\":true},{\"id\":\"has_killer\",\"name\":\"Has killer\",\"value\":true}],\"sea_creatures\":[\"Jawbus\",\"Thunder\", \"The Loch Emperor\", \"Ragnarock\"],\"players\":{\"current\":2,\"max\":10}}"))
+        parties.add(FishingParty.fromJson("{\"user\":\"Usuariotop\",\"level\":200,\"title\":\"Titulotop\",\"description\":\"Decricaotop\",\"liquid\":\"Water\",\"fishing_type\":\"Treasure\",\"island\":\"Crimson Isle\",\"requisites\":[{\"id\":\"enderman_9\",\"name\":\"Eman9\",\"value\":true},{\"id\":\"brain_food\",\"name\":\"BrainFood\",\"value\":true},{\"id\":\"looting_5\",\"name\":\"Looting5\",\"value\":true},{\"id\":\"has_killer\",\"name\":\"Haskiller\",\"value\":true}],\"sea_creatures\":[\"Jawbus\",\"Thunder\"],\"players\":{\"current\":2,\"max\":10}}"))
     }
 
     fun create() {
@@ -59,6 +58,16 @@ class PartyFinder : BaseWindow() {
 
         createHeader()
 
+        partyCreationArea = UICreateParty(5f).constrain {
+            x = CenterConstraint()
+            y = SiblingConstraint(2f)
+            width = 100.percent()
+            height = 100.percent() - max(10.percent(), 20.pixels())
+            color = primaryColor
+        } childOf background
+
+        partyCreationArea.setHidden(!partyCreationOpen)
+
         filterArea = UIFilterArea(radius).constrain {
             x = CenterConstraint()
             y = SiblingConstraint(2f)
@@ -67,7 +76,7 @@ class PartyFinder : BaseWindow() {
             color = primaryColor
         } childOf background
 
-        filterArea.setHidden(filterOpen)
+        filterArea.setHidden(!filterOpen)
 
         createPartyArea()
 
@@ -75,7 +84,7 @@ class PartyFinder : BaseWindow() {
     }
 
     fun createPartyArea() {
-        val scrollContainer = UIContainer().constrain {
+        partyArea = UIContainer().constrain {
             x = CenterConstraint()
             y = SiblingConstraint(2f)
             width = 96.percent()
@@ -86,14 +95,14 @@ class PartyFinder : BaseWindow() {
             x = 0.pixels(true)
             width = 5.pixels()
             color = secondaryColor
-        } childOf scrollContainer
+        } childOf partyArea
 
         val scrollArea = ScrollComponent().constrain {
             x = 0.pixels()
             y = CenterConstraint()
             width = 100.percent() - 7.pixels()
             height = 100.percent()
-        } childOf scrollContainer
+        } childOf partyArea
 
         scrollArea.setScrollBarComponent(scrollbar, false, false)
 
@@ -131,16 +140,26 @@ class PartyFinder : BaseWindow() {
             height = 80.percent()
         } childOf header
 
-        UIButton("New Party", 3f).constrain {
+        lateinit var filterButton : UIButton
+        lateinit var partyCreationButton : UIButton
+
+        partyCreationButton = UIButton("New Party", 3f) {
+            partyCreationOpen = !partyCreationOpen
+            partyCreationArea.setHidden(!partyCreationOpen)
+            partyArea.setHidden(partyCreationOpen)
+            filterArea.setHidden(if (partyCreationOpen) true else !filterOpen)
+            partyCreationButton.setText(if (partyCreationOpen) "Close" else "New Party")
+            filterButton.disabled = partyCreationOpen
+        }.constrain {
             x = SiblingConstraint(2f, true)
             y = CenterConstraint()
             width = 70.pixels()
             height = 100.percent()
         } childOf rightContainer
 
-        UIButton("Filters", 3f) {
+        filterButton = UIButton("Filters", 3f) {
             filterOpen = !filterOpen
-            filterArea.setHidden(filterOpen)
+            filterArea.setHidden(!filterOpen)
         }.constrain {
             x = SiblingConstraint(2f, true)
             y = CenterConstraint()
@@ -151,9 +170,12 @@ class PartyFinder : BaseWindow() {
             rightContainer.constrain {
             x = 98.percent() - rightContainer.getWidth().pixels()
         }
+
+
     }
 
     companion object {
         var filterOpen = false
+        var partyCreationOpen = false
     }
 }

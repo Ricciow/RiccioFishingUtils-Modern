@@ -10,12 +10,18 @@ import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.toConstraint
+import gg.essential.universal.UMatrixStack
 
-class UIDecoratedTextInput(val placeholder : String, radius : Float) : UIRoundedRectangle(radius) {
+class UIDecoratedTextInput(val placeholder : String, radius : Float, val numberOnly: Boolean = false, val maxChars : Int = 0) : UIRoundedRectangle(radius) {
     val primaryColor = UIScheme.secondaryColorOpaque.toConstraint()
     val hoverColor = UIScheme.secondaryColor.toConstraint()
     val textColor = UIScheme.primaryTextColor.toConstraint()
     val hoverDuration = UIScheme.HOVER_EFFECT_DURATION
+
+    private var textChanged = false
+    private val numberRegex = "[^0-9]".toRegex()
+
+    lateinit var textInput : UISpecialTextInput
 
     init {
         create()
@@ -27,7 +33,7 @@ class UIDecoratedTextInput(val placeholder : String, radius : Float) : UIRounded
         }
         this.addHoverColoring(Animations.IN_EXP, hoverDuration, primaryColor, hoverColor)
 
-        UISpecialTextInput(placeholder).constrain {
+        textInput = (UISpecialTextInput(placeholder).constrain {
             x = CenterConstraint()
             y = CenterConstraint()
             width = 90.percent()
@@ -35,6 +41,22 @@ class UIDecoratedTextInput(val placeholder : String, radius : Float) : UIRounded
             color = textColor
         }.onMouseClick {
             grabWindowFocus()
-        } childOf this
+        }.onKeyType { _, _ ->
+            textChanged = true
+        } childOf this) as UISpecialTextInput
+    }
+
+    override fun draw(matrixStack: UMatrixStack) {
+        if(textChanged) {
+            val text = textInput.getText()
+            if(numberOnly) {
+                textInput.setText(numberRegex.replace(text, ""))
+            }
+            if(maxChars != 0 && text.length > maxChars) {
+                textInput.setText(text.slice(IntRange(0, maxChars-1)))
+            }
+        }
+
+        super.draw(matrixStack)
     }
 }

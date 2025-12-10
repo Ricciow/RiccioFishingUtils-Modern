@@ -4,7 +4,8 @@
   "title": "Titulo top",
   "description": "Decricao top",
   "liquid": "Water",
-  "fishing_type": "Treasure Fishing",
+  "fishing_type": "Treasure",
+  "island": "Crimson Isle",
   "requisites": [
     {
       "id": "enderman_9",
