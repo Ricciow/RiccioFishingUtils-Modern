@@ -61,6 +61,25 @@ class UISelectionDropdown(
         return "${selectedIndices.size} Selected"
     }
 
+    override fun setValues(newValues: List<DataOption>) {
+        val stillSelected = hashSetOf<DataOption>()
+        for(index in selectedIndices) {
+            val value = values[index]
+            if(newValues.contains(value)) {
+                stillSelected.add(value)
+            }
+        }
+        selectedIndices.clear()
+        super.setValues(newValues)
+
+        for(value in stillSelected) {
+            selectedIndices.add(values.indexOf(value))
+        }
+
+        refreshOptionColors()
+        println(selectedIndices)
+    }
+
     fun getSelectedItems(): List<DataOption> {
         return values.filterIndexed { index, _ -> selectedIndices.contains(index) }
     }

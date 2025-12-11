@@ -64,7 +64,7 @@ abstract class UIAbstractDropdown(
         create()
     }
 
-    fun setValues(newValues: List<DataOption>) {
+    open fun setValues(newValues: List<DataOption>) {
         uiOptions.forEach { scrollComponent.removeChild(it) }
 
         uiOptions.clear()
