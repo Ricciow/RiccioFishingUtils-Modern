@@ -12,6 +12,7 @@ import gg.essential.elementa.components.Window
 import gg.essential.elementa.constraints.*
 import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.*
+import gg.essential.universal.UKeyboard
 import gg.essential.universal.UMatrixStack
 import kotlin.math.min
 
@@ -92,9 +93,16 @@ abstract class UIAbstractDropdown(
             color = primaryColor
         } childOf this
 
-        background.onMouseClick {
-            grabWindowFocus()
+        this.onMouseClick {
+            background.grabWindowFocus()
             toggleDropdown()
+        }
+
+        background.onMouseClick { event ->
+            if(event.absoluteY > this@UIAbstractDropdown.getBottom()) {
+                event.stopPropagation()
+                background.grabWindowFocus()
+            }
         }.onFocusLost {
             isOpen = false
             updateDropdownState()
@@ -102,6 +110,10 @@ abstract class UIAbstractDropdown(
             if (!isOpen) this.animate { setColorAnimation(Animations.IN_EXP, hoverDuration, hoverColor) }
         }.onMouseLeave {
             if (!isOpen) this.animate { setColorAnimation(Animations.IN_EXP, hoverDuration, primaryColor) }
+        }.onKeyType { _, code ->
+            if(code == UKeyboard.KEY_ESCAPE) {
+                background.releaseWindowFocus()
+            }
         }
 
         textContainer = UIContainer().constrain {

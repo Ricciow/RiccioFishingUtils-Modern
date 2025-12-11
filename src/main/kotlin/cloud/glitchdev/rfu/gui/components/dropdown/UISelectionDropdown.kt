@@ -58,7 +58,7 @@ class UISelectionDropdown(
     }
 
     override fun getDropdownDisplayText(): String {
-        if (selectedIndices.isEmpty()) return "None"
+        if (selectedIndices?.isEmpty() ?: true) return "None"
         if (selectedIndices.size == 1) return values[selectedIndices.first()].label
         if (selectedIndices.size == values.size) return "All"
 

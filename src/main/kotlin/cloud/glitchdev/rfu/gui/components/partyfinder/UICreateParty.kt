@@ -181,8 +181,7 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
             5,
             emptySet(),
             5f,
-            false,
-            "Max 5"
+            false
         ).constrain {
             width = 20.percent()
             height = 100.percent()
