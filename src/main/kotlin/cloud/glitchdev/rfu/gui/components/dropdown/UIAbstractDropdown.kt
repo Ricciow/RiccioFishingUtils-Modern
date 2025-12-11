@@ -81,7 +81,6 @@ abstract class UIAbstractDropdown(
         } childOf this
 
         background.onMouseClick {
-            println("Background Clicked")
             grabWindowFocus()
             toggleDropdown()
         }.onFocusLost {
