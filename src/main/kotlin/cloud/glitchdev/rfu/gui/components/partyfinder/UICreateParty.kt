@@ -24,6 +24,7 @@ import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.dsl.minus
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
+import gg.essential.universal.UMatrixStack
 
 class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
 
@@ -42,10 +43,11 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
     lateinit var mobsField : UISelectionDropdown
     lateinit var descriptionField : UIWrappedDecoratedTextInput
 
+    private var needUpdating = true
+
     init {
         create()
         createInteractions()
-        updateMobField()
     }
 
     fun create() {
@@ -217,30 +219,46 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
 
         descriptionArea.constrain {
             //Remove space from siblingConstraint paddings
-            height = FillConstraint() - ((descriptionArea.parent.children.size) * 4).pixels()
+            height = FillConstraint() - (descriptionArea.parent.children.size * 4).pixels()
         }
     }
 
     fun createInteractions() {
         typeField.onSelect = { data ->
-            println("Type")
             party.fishingType = data.value as PartyTypes
-            updateMobField()
+            updateFields()
         }
         islandField.onSelect = { data ->
-            println("Island")
             party.island = data.value as FishingIslands
-            updateMobField()
+            updateFields()
         }
         liquidField.onChange = { data ->
-            println("Liquid")
             party.liquid = data.value as LiquidTypes
-            updateMobField()
+            updateFields()
         }
     }
 
-    fun updateMobField() {
-        println("update")
+    fun updateFields() {
+        titleField.setText(party.title)
+        typeField.setSelected(party.fishingType.toDataOption())
+        islandField.setSelected(party.island.toDataOption())
+        limitField.setText(party.players.max.toString())
+        levelField.setText(party.level.toString())
+        liquidField.setSelected(party.liquid.toDataOption())
+        killerField.state = party.getRequisite("has_killer", "Has Killer").value
+        endermanField.state = party.getRequisite("enderman_9", "Enderman 9").value
+        lootingField.state = party.getRequisite("looting_5", "Looting 5").value
+        brainFoodField.state = party.getRequisite("brain_food", "Brain Food").value
         mobsField.setValues(SeaCreatures.toDataOptions(party.liquid, party.island, party.fishingType))
+        descriptionField.setText(party.description)
+        println(descriptionField.textInput.getText())
+    }
+
+    override fun draw(matrixStack: UMatrixStack) {
+        if(needUpdating && this.getWidth() != 0f) {
+            updateFields()
+            needUpdating = false
+        }
+        super.draw(matrixStack)
     }
 }

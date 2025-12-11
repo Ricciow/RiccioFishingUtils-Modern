@@ -11,6 +11,11 @@ class UIDropdown(
     var onSelect: (DataOption) -> Unit = {}
 ) : UIAbstractDropdown(values, radiusProps, hideArrow, label) {
 
+    fun setSelected(option: DataOption) {
+        selectedIndex = values.indexOf(option)
+        updateDropdownState()
+    }
+
     override fun onOptionClicked(option: DataOption, index: Int) {
         selectedIndex = index
         onSelect(getSelectedItem())

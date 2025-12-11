@@ -15,10 +15,14 @@ enum class PartyTypes(val type: String, val noMobs : Boolean = false){
     @SerializedName("Treasure")
     TREASURE("Treasure", true);
 
+    fun toDataOption() : DataOption {
+        return DataOption(this, this.type)
+    }
+
     companion object {
         fun toDataOptions() : ArrayList<DataOption> {
             return entries.map { party ->
-                DataOption(party, party.type)
+                party.toDataOption()
             } as ArrayList<DataOption>
         }
     }

@@ -26,6 +26,10 @@ class UIRadio(val values : ArrayList<DataOption>, selectedValue : Int, var onCha
         create()
     }
 
+    fun setSelected(option: DataOption) {
+        selectedValue = values.indexOf(option)
+    }
+
     fun create() {
         for((index, option) in values.withIndex()) {
             val checkbox = UICheckbox(option.label, index == selectedValue, false) {

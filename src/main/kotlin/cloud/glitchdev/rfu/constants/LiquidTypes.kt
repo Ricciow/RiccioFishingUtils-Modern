@@ -9,10 +9,14 @@ enum class LiquidTypes(val liquid : String) {
     @SerializedName("Water")
     WATER("Water");
 
+    fun toDataOption() : DataOption {
+        return DataOption(this, this.liquid)
+    }
+
     companion object {
         fun toDataOptions() : ArrayList<DataOption> {
             return LiquidTypes.entries.map { liquid ->
-                DataOption(liquid, liquid.liquid)
+                liquid.toDataOption()
             } as ArrayList<DataOption>
         }
     }

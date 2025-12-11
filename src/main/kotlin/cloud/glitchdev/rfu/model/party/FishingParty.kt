@@ -36,6 +36,13 @@ data class FishingParty(
         return gson.toJson(this)
     }
 
+    fun getRequisite(id : String, name: String) : Requisite {
+        for (req in requisites) {
+            if(req.id == id) return req
+        }
+        return Requisite(id, name, false)
+    }
+
     companion object {
         private val gson = Gson()
 

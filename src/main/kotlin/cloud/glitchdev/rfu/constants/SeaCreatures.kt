@@ -88,11 +88,7 @@ enum class SeaCreatures(val scName : String, val liquidType: LiquidTypes, val ca
 
     companion object {
         fun toDataOptions(liquidType: LiquidTypes, island: FishingIslands, partyType: PartyTypes) : ArrayList<DataOption> {
-            println(partyType)
-
             if(partyType.noMobs) return arrayListOf()
-
-            println(island)
 
             val seaCreatures = SeaCreatures.entries.filter { sc ->
                 if(sc.liquidType != liquidType) return@filter false

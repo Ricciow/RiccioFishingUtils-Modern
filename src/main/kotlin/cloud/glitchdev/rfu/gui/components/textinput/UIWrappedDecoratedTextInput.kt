@@ -59,4 +59,9 @@ class UIWrappedDecoratedTextInput(val placeholder : String, radius : Float, val 
 
         super.draw(matrixStack)
     }
+
+    fun setText(text : String) {
+        textInput.setText(text)
+        textChanged = true
+    }
 }
