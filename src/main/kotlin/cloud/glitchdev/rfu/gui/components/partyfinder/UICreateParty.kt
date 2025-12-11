@@ -229,7 +229,12 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
             updateFields()
         }
         islandField.onSelect = { data ->
-            party.island = data.value as FishingIslands
+            val island = data.value as FishingIslands
+            party.island = island
+            val availableLiquids = island.availableLiquids
+            if(!availableLiquids.contains(party.liquid)) {
+                party.liquid = availableLiquids.getOrNull(0) ?: LiquidTypes.LAVA
+            }
             updateFields()
         }
         liquidField.onChange = { data ->
