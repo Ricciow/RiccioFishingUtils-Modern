@@ -55,7 +55,7 @@ class PartyFinder : BaseWindow() {
             x = CenterConstraint()
             y = CenterConstraint()
             width = RelativeWindowConstraint(windowSize)
-            height = RelativeWindowConstraint(windowSize)
+            height = max(RelativeWindowConstraint(windowSize), 220.pixels())
             color = primaryColor
         } childOf window
 

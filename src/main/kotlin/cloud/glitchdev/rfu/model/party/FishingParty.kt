@@ -21,7 +21,7 @@ data class FishingParty(
     val players : Players
 ) {
     fun getCountString() : String {
-        return "${players.getString()} ${island.island} $liquid"
+        return "${players.getString()} ${island.island} ${liquid.liquid}"
     }
 
     fun getSeaCreatureString() : String {

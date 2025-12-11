@@ -4,6 +4,7 @@ import cloud.glitchdev.rfu.constants.FishingIslands
 import cloud.glitchdev.rfu.constants.LiquidTypes
 import cloud.glitchdev.rfu.constants.PartyTypes
 import cloud.glitchdev.rfu.constants.SeaCreatures
+import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.textinput.UIDecoratedTextInput
 import cloud.glitchdev.rfu.gui.components.checkbox.UICheckbox
 import cloud.glitchdev.rfu.gui.components.checkbox.UIRadio
@@ -177,13 +178,27 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
             width = 100.percent()
         } childOf container
 
+        val descriptionField = UIWrappedDecoratedTextInput("Max 200 Chars", 5f, 200)
+
+        descriptionArea.addSection(descriptionField)
+
+        val endArea = UIContainer().constrain {
+            x = CenterConstraint()
+            y = SiblingConstraint(4f)
+            width = 100.percent()
+            height = 20.pixels()
+        } childOf container
+
+        UIButton("Create", 5f).constrain {
+            x = 0.pixels(true)
+            y = CenterConstraint()
+            width = 10.percent()
+            height = 100.percent()
+        } childOf endArea
+
         descriptionArea.constrain {
             //Remove space from siblingConstraint paddings
             height = FillConstraint() - ((descriptionArea.parent.children.size) * 4).pixels()
         }
-
-        val descriptionField = UIWrappedDecoratedTextInput("Max 200 Chars", 5f, 200)
-
-        descriptionArea.addSection(descriptionField)
     }
 }
