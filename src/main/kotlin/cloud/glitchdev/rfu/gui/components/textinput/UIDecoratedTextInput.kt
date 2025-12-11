@@ -12,7 +12,7 @@ import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.toConstraint
 import gg.essential.universal.UMatrixStack
 
-class UIDecoratedTextInput(val placeholder : String, radius : Float, val numberOnly: Boolean = false, val maxChars : Int = 0) : UIRoundedRectangle(radius) {
+class UIDecoratedTextInput(val placeholder : String, radius : Float, val numberOnly: Boolean = false, val maxChars : Int = 0, var onChange : (String) -> Unit = {}) : UIRoundedRectangle(radius) {
     val primaryColor = UIScheme.secondaryColorOpaque.toConstraint()
     val hoverColor = UIScheme.secondaryColor.toConstraint()
     val textColor = UIScheme.primaryTextColor.toConstraint()
@@ -55,6 +55,7 @@ class UIDecoratedTextInput(val placeholder : String, radius : Float, val numberO
             if(maxChars != 0 && text.length > maxChars) {
                 textInput.setText(text.slice(IntRange(0, maxChars-1)))
             }
+            onChange(textInput.getText())
             textChanged = false
         }
 

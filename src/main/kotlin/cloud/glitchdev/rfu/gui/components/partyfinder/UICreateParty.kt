@@ -222,6 +222,9 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
     }
 
     fun createInteractions() {
+        titleField.onChange = { title ->
+            party.title = title
+        }
         typeField.onSelect = { data ->
             party.fishingType = data.value as PartyTypes
             updateFields()
@@ -235,28 +238,33 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
             }
             updateFields()
         }
+        limitField.onChange = { limit ->
+            party.players.max = limit.toInt()
+        }
+        levelField.onChange = { level ->
+            party.level = level.toInt()
+        }
         liquidField.onChange = { data ->
             party.liquid = data.value as LiquidTypes
             updateFields()
         }
         killerField.onChange = { state ->
             party.setRequisite("has_killer", "Has Killer", state)
-            updateFields()
         }
         endermanField.onChange = { state ->
             party.setRequisite("enderman_9", "Enderman 9", state)
-            updateFields()
         }
         lootingField.onChange = { state ->
             party.setRequisite("looting_5", "Looting 5", state)
-            updateFields()
         }
         brainFoodField.onChange = { state ->
             party.setRequisite("brain_food", "Brain Food", state)
-            updateFields()
         }
         mobsField.onSelectionChanged = { options ->
             party.seaCreatures = options.map { it.value as SeaCreatures }
+        }
+        descriptionField.onChange = { description ->
+            party.description = description
         }
     }
 

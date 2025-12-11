@@ -166,8 +166,6 @@ class PartyFinder : BaseWindow() {
             rightContainer.constrain {
             x = 98.percent() - rightContainer.getWidth().pixels()
         }
-
-
     }
 
     fun updatePartyCreation() {

@@ -117,8 +117,8 @@ data class Requisite(
 }
 
 data class Players(
-    val current: Int,
-    val max: Int
+    var current: Int,
+    var max: Int
 ) {
     fun getString() : String {
         return "$current/$max"
