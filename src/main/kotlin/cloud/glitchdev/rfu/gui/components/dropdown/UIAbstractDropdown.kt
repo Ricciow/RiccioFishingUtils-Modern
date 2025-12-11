@@ -152,7 +152,7 @@ abstract class UIAbstractDropdown(
     private fun createOptionUI(option: DataOption, index: Int) {
         val uiOption = UIRoundedRectangle(radiusProps).constrain {
             x = CenterConstraint()
-            y = (index * (optionHeightPixels + padding)).pixels()
+            y = SiblingConstraint(2f)
             width = 100.percent()
             height = optionHeightPixels.pixels()
             color = primaryColor
