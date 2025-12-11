@@ -4,16 +4,18 @@ import cloud.glitchdev.rfu.constants.FishingIslands
 import cloud.glitchdev.rfu.constants.LiquidTypes
 import cloud.glitchdev.rfu.constants.PartyTypes
 import cloud.glitchdev.rfu.constants.SeaCreatures
-import cloud.glitchdev.rfu.gui.components.UIDecoratedTextInput
+import cloud.glitchdev.rfu.gui.components.textinput.UIDecoratedTextInput
 import cloud.glitchdev.rfu.gui.components.checkbox.UICheckbox
 import cloud.glitchdev.rfu.gui.components.checkbox.UIRadio
 import cloud.glitchdev.rfu.gui.components.dropdown.UIDropdown
 import cloud.glitchdev.rfu.gui.components.dropdown.UISelectionDropdown
+import cloud.glitchdev.rfu.gui.components.textinput.UIWrappedDecoratedTextInput
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIWrappedText
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
+import gg.essential.elementa.constraints.FillConstraint
 import gg.essential.elementa.constraints.SiblingConstraint
 import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
@@ -31,7 +33,7 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
             x = CenterConstraint()
             y = CenterConstraint()
             width = 96.percent()
-            height = 96.percent()
+            height = 100.percent()
         } childOf this
 
         UIWrappedText("Create your party here, parties queued will last for at most 30 minutes.").constrain {
@@ -163,10 +165,25 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
             false,
             "Max 5"
         ).constrain {
-            width = 33.percent()
+            width = 20.percent()
             height = 100.percent()
         } childOf mobsField
 
         mobsArea.addSection(mobsField)
+
+        val descriptionArea = UITitledSection("Description:").constrain {
+            x = CenterConstraint()
+            y = SiblingConstraint(4f)
+            width = 100.percent()
+        } childOf container
+
+        descriptionArea.constrain {
+            //Remove space from siblingConstraint paddings
+            height = FillConstraint() - ((descriptionArea.parent.children.size) * 4).pixels()
+        }
+
+        val descriptionField = UIWrappedDecoratedTextInput("Max 200 Chars", 5f, 200)
+
+        descriptionArea.addSection(descriptionField)
     }
 }

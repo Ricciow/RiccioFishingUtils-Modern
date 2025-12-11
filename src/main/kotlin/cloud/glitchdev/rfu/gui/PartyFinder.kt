@@ -65,7 +65,7 @@ class PartyFinder : BaseWindow() {
             x = CenterConstraint()
             y = SiblingConstraint(2f)
             width = 100.percent()
-            height = 100.percent() - max(10.percent(), 20.pixels())
+            height = FillConstraint() - 2f.pixels()
             color = primaryColor
         } childOf background
 

@@ -1,4 +1,4 @@
-package cloud.glitchdev.rfu.gui.components
+package cloud.glitchdev.rfu.gui.components.textinput
 
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.elementa.UISpecialTextInput
