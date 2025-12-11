@@ -27,6 +27,7 @@ abstract class UIAbstractDropdown(
     protected val hoverColor = UIScheme.secondaryColor.toConstraint()
     protected val textColor = UIScheme.primaryTextColor.toConstraint()
     protected val selectedColor = UIScheme.primaryColor.toConstraint()
+    protected val disabledColor = UIScheme.secondaryColorDisabled.toConstraint()
     protected val hoverDuration = UIScheme.HOVER_EFFECT_DURATION
     protected val padding = 2f
     protected val optionHeightPixels = 12f
@@ -191,6 +192,10 @@ abstract class UIAbstractDropdown(
         return true
     }
 
+    open fun isOptionDisabled(index : Int) : Boolean {
+        return false
+    }
+
     fun toggleDropdown() {
         isOpen = !isOpen
         if (isOpen) {
@@ -242,8 +247,8 @@ abstract class UIAbstractDropdown(
 
     fun refreshOptionColors() {
         uiOptions.forEachIndexed { index, uiOption ->
-            val targetColor = if (isOptionSelected(index)) selectedColor else primaryColor
-            uiOption.setColor(targetColor.color)
+            val targetColor = if (isOptionSelected(index)) selectedColor else if(isOptionDisabled(index)) disabledColor else primaryColor
+            uiOption.constrain { color = targetColor }
         }
     }
 

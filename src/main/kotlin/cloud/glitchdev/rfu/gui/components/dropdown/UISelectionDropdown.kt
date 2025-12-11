@@ -41,7 +41,12 @@ class UISelectionDropdown(
     }
 
     override fun shouldHover() : Boolean {
-        return selectedIndices.size < selectionLimit
+        val size = selectedIndices?.size ?: 0
+        return size < selectionLimit
+    }
+
+    override fun isOptionDisabled(index: Int): Boolean {
+        return !isOptionSelected(index) && !shouldHover()
     }
 
     override fun isOptionSelected(index: Int): Boolean {

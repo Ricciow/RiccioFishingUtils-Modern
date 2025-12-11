@@ -153,7 +153,20 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
             height = 25.pixels()
         } childOf container
 
-        val mobsField = UISelectionDropdown(SeaCreatures.toDataOptions(LiquidTypes.LAVA, FishingIslands.ISLE), 5, emptySet(), 5f, true, "Sea Creatures")
+        val mobsField = UIContainer()
+
+        UISelectionDropdown(
+            SeaCreatures.toDataOptions(LiquidTypes.LAVA, FishingIslands.ISLE),
+            5,
+            emptySet(),
+            5f,
+            false,
+            "Max 5"
+        ).constrain {
+            width = 33.percent()
+            height = 100.percent()
+        } childOf mobsField
+
         mobsArea.addSection(mobsField)
     }
 }
