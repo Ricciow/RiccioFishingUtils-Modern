@@ -27,9 +27,6 @@ import gg.essential.elementa.dsl.pixels
 import gg.essential.universal.UMatrixStack
 
 class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
-
-    var party : FishingParty = FishingParty.blankParty()
-
     lateinit var titleField : UIDecoratedTextInput
     lateinit var typeField : UIDropdown
     lateinit var islandField : UIDropdown
@@ -180,7 +177,7 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
         val mobsFieldContainer = UIContainer()
 
         mobsField = UISelectionDropdown(
-            arrayListOf(),
+            SeaCreatures.toDataOptions(party.liquid, party.island, party.fishingType),
             5,
             emptySet(),
             5f,
@@ -190,6 +187,8 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
             width = 20.percent()
             height = 100.percent()
         } childOf mobsFieldContainer
+
+        mobsField.setOptionsStates(party.seaCreatures.map {it.toDataOption()}, true)
 
         mobsArea.addSection(mobsFieldContainer)
 
@@ -257,6 +256,9 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
             party.setRequisite("brain_food", "Brain Food", state)
             updateFields()
         }
+        mobsField.onSelectionChanged = { options ->
+            party.seaCreatures = options.map { it.value as SeaCreatures }
+        }
     }
 
     fun updateFields() {
@@ -271,6 +273,7 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
         lootingField.state = party.getRequisite("looting_5", "Looting 5").value
         brainFoodField.state = party.getRequisite("brain_food", "Brain Food").value
         mobsField.setValues(SeaCreatures.toDataOptions(party.liquid, party.island, party.fishingType))
+        mobsField.setOptionsStates(party.seaCreatures.map {it.toDataOption()}, true)
         descriptionField.setText(party.description)
     }
 
@@ -280,5 +283,9 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
             needUpdating = false
         }
         super.draw(matrixStack)
+    }
+
+    companion object {
+        var party : FishingParty = FishingParty.blankParty()
     }
 }

@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.model.party
 import cloud.glitchdev.rfu.constants.FishingIslands
 import cloud.glitchdev.rfu.constants.LiquidTypes
 import cloud.glitchdev.rfu.constants.PartyTypes
+import cloud.glitchdev.rfu.constants.SeaCreatures
 import com.google.gson.annotations.SerializedName
 import com.google.gson.Gson
 
@@ -17,7 +18,7 @@ data class FishingParty(
     var island: FishingIslands,
     var requisites : MutableList<Requisite>,
     @SerializedName("sea_creatures")
-    var seaCreatures: List<String>,
+    var seaCreatures: List<SeaCreatures>,
     var players : Players
 ) {
     fun getCountString() : String {
@@ -62,7 +63,44 @@ data class FishingParty(
         }
 
         fun blankParty() : FishingParty {
-            return fromJson("{\"user\":\"Usuariotop\",\"level\":200,\"title\":\"Titulotop\",\"description\":\"Decricaotop\",\"liquid\":\"Lava\",\"fishing_type\":\"Normal\",\"island\":\"Crimson Isle\",\"requisites\":[{\"id\":\"enderman_9\",\"name\":\"Eman 9\",\"value\":true},{\"id\":\"brain_food\",\"name\":\"Brain Food\",\"value\":true},{\"id\":\"looting_5\",\"name\":\"Looting 5\",\"value\":true},{\"id\":\"has_killer\",\"name\":\"Has killer\",\"value\":true}],\"sea_creatures\":[\"Jawbus\",\"Thunder\"],\"players\":{\"current\":2,\"max\":10}}")
+            return fromJson("{\n" +
+                    "  \"user\": \"Usuario top\",\n" +
+                    "  \"level\": 200,\n" +
+                    "  \"title\": \"Titulo top\",\n" +
+                    "  \"description\": \"Decricao top\",\n" +
+                    "  \"liquid\": \"Lava\",\n" +
+                    "  \"fishing_type\": \"Normal\",\n" +
+                    "  \"island\": \"Crimson Isle\",\n" +
+                    "  \"requisites\": [\n" +
+                    "    {\n" +
+                    "      \"id\": \"enderman_9\",\n" +
+                    "      \"name\": \"Enderman 9\",\n" +
+                    "      \"value\": true\n" +
+                    "    },\n" +
+                    "    {\n" +
+                    "      \"id\": \"brain_food\",\n" +
+                    "      \"name\": \"Brain Food\",\n" +
+                    "      \"value\": true\n" +
+                    "    },\n" +
+                    "    {\n" +
+                    "      \"id\": \"looting_5\",\n" +
+                    "      \"name\": \"Looting 5\",\n" +
+                    "      \"value\": true\n" +
+                    "    },\n" +
+                    "    {\n" +
+                    "      \"id\": \"has_killer\",\n" +
+                    "      \"name\": \"Has killer\",\n" +
+                    "      \"value\": true\n" +
+                    "    }\n" +
+                    "  ],\n" +
+                    "  \"sea_creatures\": [\n" +
+                    "    \"Lord Jawbus\", \"Thunder\"\n" +
+                    "  ],\n" +
+                    "  \"players\": {\n" +
+                    "    \"current\": 2,\n" +
+                    "    \"max\": 10\n" +
+                    "  }\n" +
+                    "}")
         }
     }
 }

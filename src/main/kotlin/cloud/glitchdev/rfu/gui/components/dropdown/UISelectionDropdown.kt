@@ -65,6 +65,23 @@ class UISelectionDropdown(
         return "${selectedIndices.size} Selected"
     }
 
+    fun setOptionsStates(options: List<DataOption>, state : Boolean) {
+        for(option in options) {
+            setOptionState(option, state)
+        }
+    }
+
+    fun setOptionState(option : DataOption, state : Boolean) {
+        val index = values.indexOf(option)
+        if(index != -1) {
+            if(!state) {
+                selectedIndices.remove(index)
+            } else {
+                selectedIndices.add(index)
+            }
+        }
+    }
+
     override fun setValues(newValues: List<DataOption>) {
         val stillSelected = hashSetOf<DataOption>()
         for(index in selectedIndices) {
@@ -81,7 +98,7 @@ class UISelectionDropdown(
         }
 
         runListener()
-        refreshOptionColors()
+        updateDropdownState()
     }
 
     fun getSelectedItems(): List<DataOption> {

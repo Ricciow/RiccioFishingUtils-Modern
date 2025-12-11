@@ -3,13 +3,13 @@
   "level": 200,
   "title": "Titulo top",
   "description": "Decricao top",
-  "liquid": "Water",
-  "fishing_type": "Treasure",
+  "liquid": "Lava",
+  "fishing_type": "Normal",
   "island": "Crimson Isle",
   "requisites": [
     {
       "id": "enderman_9",
-      "name": "Eman 9",
+      "name": "Enderman 9",
       "value": true
     },
     {
@@ -29,7 +29,7 @@
     }
   ],
   "sea_creatures": [
-    "Jawbus", "Thunder"
+    "Lord Jawbus", "Thunder"
   ],
   "players": {
     "current": 2,
