@@ -15,7 +15,7 @@ data class FishingParty(
     @SerializedName("fishing_type")
     var fishingType: PartyTypes,
     var island: FishingIslands,
-    var requisites : List<Requisite>,
+    var requisites : MutableList<Requisite>,
     @SerializedName("sea_creatures")
     var seaCreatures: List<String>,
     var players : Players
@@ -43,6 +43,17 @@ data class FishingParty(
         return Requisite(id, name, false)
     }
 
+    fun setRequisite(id : String, name: String, value: Boolean) {
+        val requisite = requisites.find { requisite -> requisite.id == id }
+
+        if(requisite != null) {
+            requisite.update(name, value)
+        }
+        else {
+            requisites.add(Requisite(id, name, value))
+        }
+    }
+
     companion object {
         private val gson = Gson()
 
@@ -58,9 +69,14 @@ data class FishingParty(
 
 data class Requisite(
     val id: String,
-    val name: String,
-    val value: Boolean
-)
+    var name: String,
+    var value: Boolean
+) {
+    fun update(name : String = this.name, value: Boolean = this.value) {
+        this.name = name
+        this.value = value
+    }
+}
 
 data class Players(
     val current: Int,

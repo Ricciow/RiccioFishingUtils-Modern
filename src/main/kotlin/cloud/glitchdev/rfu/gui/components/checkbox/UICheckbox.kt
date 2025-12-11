@@ -23,7 +23,7 @@ import gg.essential.elementa.dsl.toConstraint
 /**
  * Simple Checkbox Component
  */
-class UICheckbox(val text: String, defaultState : Boolean = false, val allowDisabling : Boolean = true, val callback : (Boolean) -> Unit = {}) : UIContainer() {
+class UICheckbox(val text: String, defaultState : Boolean = false, val allowDisabling : Boolean = true, var onChange : (Boolean) -> Unit = {}) : UIContainer() {
     val primaryColor = UIScheme.secondaryColorOpaque.toConstraint()
     val hoverColor = UIScheme.secondaryColor.toConstraint()
     val textColor = UIScheme.primaryTextColor.toConstraint()
@@ -63,7 +63,7 @@ class UICheckbox(val text: String, defaultState : Boolean = false, val allowDisa
         this.onMouseClick {
             if(!allowDisabling && state) return@onMouseClick
             state = !state
-            callback(state)
+            onChange(state)
         }.onMouseEnter {
             checkbox.animate {
                 setColorAnimation(Animations.IN_EXP, animationDuration, hoverColor)

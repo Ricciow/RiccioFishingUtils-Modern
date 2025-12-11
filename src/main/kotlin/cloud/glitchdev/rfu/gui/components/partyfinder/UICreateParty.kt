@@ -241,6 +241,22 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
             party.liquid = data.value as LiquidTypes
             updateFields()
         }
+        killerField.onChange = { state ->
+            party.setRequisite("has_killer", "Has Killer", state)
+            updateFields()
+        }
+        endermanField.onChange = { state ->
+            party.setRequisite("enderman_9", "Enderman 9", state)
+            updateFields()
+        }
+        lootingField.onChange = { state ->
+            party.setRequisite("looting_5", "Looting 5", state)
+            updateFields()
+        }
+        brainFoodField.onChange = { state ->
+            party.setRequisite("brain_food", "Brain Food", state)
+            updateFields()
+        }
     }
 
     fun updateFields() {
@@ -256,7 +272,6 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
         brainFoodField.state = party.getRequisite("brain_food", "Brain Food").value
         mobsField.setValues(SeaCreatures.toDataOptions(party.liquid, party.island, party.fishingType))
         descriptionField.setText(party.description)
-        println(descriptionField.textInput.getText())
     }
 
     override fun draw(matrixStack: UMatrixStack) {

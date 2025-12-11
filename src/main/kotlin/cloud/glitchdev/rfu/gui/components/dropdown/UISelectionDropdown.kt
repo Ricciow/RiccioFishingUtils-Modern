@@ -9,7 +9,7 @@ class UISelectionDropdown(
     radiusProps: Float,
     hideArrow: Boolean = false,
     label: String = "",
-    var onSelectionChanged: (List<Any>) -> Unit = {}
+    var onSelectionChanged: (List<DataOption>) -> Unit = {}
 ) : UIAbstractDropdown(values, radiusProps, hideArrow, label) {
 
     private val selectedIndices = HashSet<Int>()
@@ -17,6 +17,11 @@ class UISelectionDropdown(
     init {
         selectedIndices.addAll(preSelectedIndices)
         updateDropdownState()
+    }
+
+    fun runListener() {
+        val selectedValues = values.filterIndexed { i, _ -> selectedIndices.contains(i) }
+        onSelectionChanged(selectedValues)
     }
 
     override fun onOptionClicked(option: DataOption, index: Int) {
@@ -30,8 +35,7 @@ class UISelectionDropdown(
             }
         }
 
-        val selectedValues = values.filterIndexed { i, _ -> selectedIndices.contains(i) }.map { it.value }
-        onSelectionChanged(selectedValues)
+        runListener()
 
         refreshOptionColors()
 
@@ -76,8 +80,8 @@ class UISelectionDropdown(
             selectedIndices.add(values.indexOf(value))
         }
 
+        runListener()
         refreshOptionColors()
-        println(selectedIndices)
     }
 
     fun getSelectedItems(): List<DataOption> {
