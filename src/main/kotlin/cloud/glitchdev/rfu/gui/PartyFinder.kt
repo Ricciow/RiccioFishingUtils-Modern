@@ -31,23 +31,49 @@ class PartyFinder : BaseWindow() {
     val textColor = UIScheme.primaryTextColor.toConstraint()
     val radius = 5f
     val windowSize = 0.8f
-    val parties : MutableList<FishingParty> = mutableListOf()
+    var parties : MutableList<FishingParty> = mutableListOf()
+    var displayParties : MutableList<FishingParty> = mutableListOf()
+    val partyCards : MutableList<UIPartyCard> = mutableListOf()
 
     lateinit var background : UIRoundedRectangle
     lateinit var filterArea : UIFilterArea
     lateinit var partyCreationArea : UICreateParty
     lateinit var partyArea : UIContainer
+    lateinit var scrollArea : ScrollComponent
     lateinit var filterButton : UIButton
     lateinit var partyCreationButton : UIButton
 
     init {
-        getParties()
         create()
         updatePartyCreation()
+        getParties()
     }
 
     fun getParties() {
-        parties.add(FishingParty.fromJson("{\"user\":\"Usuariotop\",\"level\":200,\"title\":\"Titulotop\",\"description\":\"Decricaotop\",\"liquid\":\"Water\",\"fishing_type\":\"Treasure\",\"island\":\"Crimson Isle\",\"requisites\":[{\"id\":\"enderman_9\",\"name\":\"Eman9\",\"value\":true},{\"id\":\"brain_food\",\"name\":\"BrainFood\",\"value\":true},{\"id\":\"looting_5\",\"name\":\"Looting5\",\"value\":true},{\"id\":\"has_killer\",\"name\":\"Haskiller\",\"value\":true}],\"sea_creatures\":[\"Jawbus\",\"Thunder\"],\"players\":{\"current\":2,\"max\":10}}"))
+        parties.add(FishingParty.blankParty())
+        updateFiltering()
+    }
+
+    fun updateFiltering() {
+        if(::scrollArea.isInitialized) {
+            displayParties = filterArea.applyFilter(parties)
+            for (partyCard in partyCards) {
+                scrollArea.removeChild(partyCard)
+            }
+
+            partyCards.clear()
+
+            for(party in displayParties) {
+                val partyCard = UIPartyCard(party, 5f).constrain {
+                    x = 0.pixels()
+                    y = SiblingConstraint(2f)
+                    width = 100.percent()
+                    height = 80.pixels()
+                } childOf scrollArea
+
+                partyCards.add(partyCard)
+            }
+        }
     }
 
     fun create() {
@@ -100,7 +126,7 @@ class PartyFinder : BaseWindow() {
             color = secondaryColor
         } childOf partyArea
 
-        val scrollArea = ScrollComponent().constrain {
+        scrollArea = ScrollComponent().constrain {
             x = 0.pixels()
             y = CenterConstraint()
             width = 100.percent() - 7.pixels()
@@ -108,15 +134,6 @@ class PartyFinder : BaseWindow() {
         } childOf partyArea
 
         scrollArea.setScrollBarComponent(scrollbar, false, false)
-
-        for(party in parties) {
-            UIPartyCard(party, 5f).constrain {
-                x = 0.pixels()
-                y = SiblingConstraint(2f)
-                width = 100.percent()
-                height = 80.pixels()
-            } childOf scrollArea
-        }
     }
 
     fun createHeader() {

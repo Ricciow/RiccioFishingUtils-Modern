@@ -26,7 +26,7 @@ data class FishingParty(
     }
 
     fun getSeaCreatureString() : String {
-        return seaCreatures.joinToString()
+        return seaCreatures.joinToString { it.scName }
     }
 
     fun getTitleString() : String {

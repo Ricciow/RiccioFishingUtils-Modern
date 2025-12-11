@@ -7,6 +7,7 @@ import cloud.glitchdev.rfu.gui.components.checkbox.UICheckbox
 import cloud.glitchdev.rfu.gui.components.textinput.UIDecoratedTextInput
 import cloud.glitchdev.rfu.gui.components.checkbox.UIRadio
 import cloud.glitchdev.rfu.gui.components.dropdown.UIDropdown
+import cloud.glitchdev.rfu.model.party.FishingParty
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.constraints.CenterConstraint
@@ -20,7 +21,7 @@ import gg.essential.elementa.dsl.minus
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 
-class UIFilterArea(radius: Float) : UIRoundedRectangle(radius) {
+class UIFilterArea(radius: Float, var onFilterChange : () -> Unit = {}) : UIRoundedRectangle(radius) {
     init {
         create()
     }
@@ -43,7 +44,7 @@ class UIFilterArea(radius: Float) : UIRoundedRectangle(radius) {
         UIDropdown(PartyTypes.toDataOptions(), 0, 2f).constrain {
             x = SiblingConstraint(2f)
             y = CenterConstraint()
-            width = 25.percent()
+            width = 15.percent()
             height = 50.percent()
         } childOf topArea
 
@@ -54,7 +55,7 @@ class UIFilterArea(radius: Float) : UIRoundedRectangle(radius) {
             height = 50.percent()
         } childOf topArea
 
-        UIDecoratedTextInput("LVL", 2f).constrain {
+        UIDecoratedTextInput("LVL", 2f, true, 3).constrain {
             x = SiblingConstraint(2f)
             y = CenterConstraint()
             width = 10.percent()
@@ -109,5 +110,10 @@ class UIFilterArea(radius: Float) : UIRoundedRectangle(radius) {
             width = ChildBasedSizeConstraint()
             height = 50.percent()
         } childOf bottomArea
+    }
+
+    fun applyFilter(parties : MutableList<FishingParty>) : MutableList<FishingParty>{
+        //TODO: Implement
+        return parties
     }
 }
