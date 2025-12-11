@@ -32,6 +32,10 @@ data class FishingParty(
         return "$title - $user - LVL $level"
     }
 
+    fun toJson() : String {
+        return gson.toJson(this)
+    }
+
     companion object {
         private val gson = Gson()
 
