@@ -7,18 +7,18 @@ import com.google.gson.annotations.SerializedName
 import com.google.gson.Gson
 
 data class FishingParty(
-    val user: String,
-    val level: Int,
-    val title: String,
-    val description: String,
-    val liquid: LiquidTypes,
+    var user: String,
+    var level: Int,
+    var title: String,
+    var description: String,
+    var liquid: LiquidTypes,
     @SerializedName("fishing_type")
-    val fishingType: PartyTypes,
-    val island: FishingIslands,
-    val requisites : List<Requisite>,
+    var fishingType: PartyTypes,
+    var island: FishingIslands,
+    var requisites : List<Requisite>,
     @SerializedName("sea_creatures")
-    val seaCreatures: List<String>,
-    val players : Players
+    var seaCreatures: List<String>,
+    var players : Players
 ) {
     fun getCountString() : String {
         return "${players.getString()} ${island.island} ${liquid.liquid}"
@@ -41,6 +41,10 @@ data class FishingParty(
 
         fun fromJson(json : String) : FishingParty {
             return gson.fromJson(json, FishingParty::class.java)
+        }
+
+        fun blankParty() : FishingParty {
+            return fromJson("{\"user\":\"Usuariotop\",\"level\":200,\"title\":\"Titulotop\",\"description\":\"Decricaotop\",\"liquid\":\"Lava\",\"fishing_type\":\"Normal\",\"island\":\"Crimson Isle\",\"requisites\":[{\"id\":\"enderman_9\",\"name\":\"Eman 9\",\"value\":true},{\"id\":\"brain_food\",\"name\":\"Brain Food\",\"value\":true},{\"id\":\"looting_5\",\"name\":\"Looting 5\",\"value\":true},{\"id\":\"has_killer\",\"name\":\"Has killer\",\"value\":true}],\"sea_creatures\":[\"Jawbus\",\"Thunder\"],\"players\":{\"current\":2,\"max\":10}}")
         }
     }
 }

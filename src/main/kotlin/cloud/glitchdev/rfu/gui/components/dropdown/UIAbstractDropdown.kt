@@ -22,7 +22,6 @@ abstract class UIAbstractDropdown(
     val label: String = ""
 ) : UIContainer() {
 
-    // Style constants
     protected val primaryColor = UIScheme.secondaryColorOpaque.toConstraint()
     protected val hoverColor = UIScheme.secondaryColor.toConstraint()
     protected val textColor = UIScheme.primaryTextColor.toConstraint()
@@ -34,27 +33,21 @@ abstract class UIAbstractDropdown(
 
     var isOpen = false
 
-    // UI Elements
     lateinit var background: UIRoundedRectangle
     lateinit var textContainer: UIContainer
     lateinit var text: UIText
     lateinit var arrowHead: UIText
-
-    // Scroll System
     lateinit var listContainer: UIContainer
     lateinit var scrollComponent: ScrollComponent
     lateinit var scrollbar: UIRoundedRectangle
 
-    // Track option elements
     val uiOptions: MutableList<UIRoundedRectangle> = mutableListOf()
     val uiOptionsText: MutableList<UIText> = mutableListOf()
 
-    // Abstract methods
     abstract fun onOptionClicked(option: DataOption, index: Int)
     abstract fun isOptionSelected(index: Int): Boolean
     abstract fun getDropdownDisplayText(): String
 
-    // Font Logic
     var fontSize: Float = 1.5f
         set(value) {
             field = value
@@ -71,7 +64,26 @@ abstract class UIAbstractDropdown(
         create()
     }
 
+    fun setValues(newValues: List<DataOption>) {
+        uiOptions.forEach { scrollComponent.removeChild(it) }
+
+        uiOptions.clear()
+        uiOptionsText.clear()
+
+        this.values.clear()
+        this.values.addAll(newValues)
+
+        for ((index, option) in values.withIndex()) {
+            createOptionUI(option, index)
+        }
+
+        updateDropdownState()
+
+        updateFontSize()
+    }
+
     open fun create() {
+
         background = UIRoundedRectangle(radiusProps).constrain {
             y = 0.pixels()
             x = CenterConstraint()
@@ -170,11 +182,11 @@ abstract class UIAbstractDropdown(
         uiOptionsText.add(optionText)
 
         uiOption.onMouseEnter {
-            if(shouldHover() || isOptionSelected(index)) {
+            if (shouldHover() || isOptionSelected(index)) {
                 uiOption.animate { setColorAnimation(Animations.IN_EXP, hoverDuration, hoverColor) }
             }
         }.onMouseLeave {
-            if(shouldHover() || isOptionSelected(index)) {
+            if (shouldHover() || isOptionSelected(index)) {
                 val targetColor = if (isOptionSelected(index)) selectedColor else primaryColor
                 uiOption.animate { setColorAnimation(Animations.IN_EXP, hoverDuration, targetColor) }
             }
@@ -187,11 +199,11 @@ abstract class UIAbstractDropdown(
         }
     }
 
-    open fun shouldHover() : Boolean {
+    open fun shouldHover(): Boolean {
         return true
     }
 
-    open fun isOptionDisabled(index : Int) : Boolean {
+    open fun isOptionDisabled(index: Int): Boolean {
         return false
     }
 
@@ -206,6 +218,8 @@ abstract class UIAbstractDropdown(
     }
 
     open fun updateDropdownState() {
+        if (!::listContainer.isInitialized) return
+
         listContainer.setHidden(!isOpen)
         background.isFloating = isOpen
 
@@ -246,8 +260,10 @@ abstract class UIAbstractDropdown(
 
     fun refreshOptionColors() {
         uiOptions.forEachIndexed { index, uiOption ->
-            val targetColor = if (isOptionSelected(index)) selectedColor else if(isOptionDisabled(index)) disabledColor else primaryColor
-            uiOption.constrain { color = targetColor }
+            if (index < values.size) {
+                val targetColor = if (isOptionSelected(index)) selectedColor else if (isOptionDisabled(index)) disabledColor else primaryColor
+                uiOption.constrain { color = targetColor }
+            }
         }
     }
 
@@ -262,11 +278,14 @@ abstract class UIAbstractDropdown(
 
     open fun updateHeight() {
         val newHeight = this.getHeight()
-        textContainer.setHeight(newHeight.pixels())
-        updateFontSize()
+        if (::textContainer.isInitialized) {
+            textContainer.setHeight(newHeight.pixels())
+            updateFontSize()
+        }
     }
 
     private fun updateFontSize() {
+        if (values.isEmpty()) return
         var font = fontSize
         for (option in values) {
             while (option.label.height(font) < textContainer.getHeight() * 0.9) {
@@ -275,7 +294,8 @@ abstract class UIAbstractDropdown(
         }
         for (option in values) {
             while (option.label.height(font) > textContainer.getHeight() * 0.9 ||
-                option.label.width(font) > textContainer.getWidth() * 0.8) {
+                option.label.width(font) > textContainer.getWidth() * 0.8
+            ) {
                 font -= 0.1f
             }
         }

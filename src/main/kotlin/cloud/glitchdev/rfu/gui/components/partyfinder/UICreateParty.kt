@@ -11,6 +11,7 @@ import cloud.glitchdev.rfu.gui.components.checkbox.UIRadio
 import cloud.glitchdev.rfu.gui.components.dropdown.UIDropdown
 import cloud.glitchdev.rfu.gui.components.dropdown.UISelectionDropdown
 import cloud.glitchdev.rfu.gui.components.textinput.UIWrappedDecoratedTextInput
+import cloud.glitchdev.rfu.model.party.FishingParty
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIWrappedText
@@ -25,8 +26,26 @@ import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 
 class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
+
+    var party : FishingParty = FishingParty.blankParty()
+
+    lateinit var titleField : UIDecoratedTextInput
+    lateinit var typeField : UIDropdown
+    lateinit var islandField : UIDropdown
+    lateinit var limitField : UIDecoratedTextInput
+    lateinit var levelField : UIDecoratedTextInput
+    lateinit var liquidField : UIRadio
+    lateinit var killerField : UICheckbox
+    lateinit var endermanField : UICheckbox
+    lateinit var lootingField: UICheckbox
+    lateinit var brainFoodField : UICheckbox
+    lateinit var mobsField : UISelectionDropdown
+    lateinit var descriptionField : UIWrappedDecoratedTextInput
+
     init {
         create()
+        createInteractions()
+        updateMobField()
     }
 
     fun create() {
@@ -58,7 +77,7 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
             height = 100.percent()
         } childOf fieldArea
 
-        val titleField = UIDecoratedTextInput("Max 20 chars", 5f, false, 20)
+        titleField = UIDecoratedTextInput("Max 20 chars", 5f, false, 20)
         titleArea.addSection(titleField)
 
         val typeArea = UITitledSection("Type:").constrain {
@@ -68,7 +87,7 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
             height = 100.percent()
         } childOf fieldArea
 
-        val typeField = UIDropdown(PartyTypes.toDataOptions(), 0, 5f)
+        typeField = UIDropdown(PartyTypes.toDataOptions(), 0, 5f)
         typeArea.addSection(typeField)
 
         val islandArea = UITitledSection("Island:").constrain {
@@ -78,7 +97,7 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
             height = 100.percent()
         } childOf fieldArea
 
-        val islandField = UIDropdown(FishingIslands.toDataOptions(), 0, 5f)
+        islandField = UIDropdown(FishingIslands.toDataOptions(), 0, 5f)
         islandArea.addSection(islandField)
 
         val limitArea = UITitledSection("Max Players:").constrain {
@@ -88,7 +107,7 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
             height = 100.percent()
         } childOf fieldArea
 
-        val limitField = UIDecoratedTextInput("6", 5f, true, 2)
+        limitField = UIDecoratedTextInput("6", 5f, true, 2)
         limitArea.addSection(limitField)
 
         val levelArea = UITitledSection("Min Level:").constrain {
@@ -98,7 +117,7 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
             height = 100.percent()
         } childOf fieldArea
 
-        val levelField = UIDecoratedTextInput("0", 5f, true, 3)
+        levelField = UIDecoratedTextInput("0", 5f, true, 3)
         levelArea.addSection(levelField)
 
         val liquidArea = UITitledSection("Liquid:").constrain {
@@ -108,7 +127,7 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
             height = 25.pixels()
         } childOf container
 
-        val liquidField = UIRadio(LiquidTypes.toDataOptions(), 0)
+        liquidField = UIRadio(LiquidTypes.toDataOptions(), 0)
         liquidArea.addSection(liquidField)
 
         val requisitesArea = UITitledSection("Extras:").constrain {
@@ -121,28 +140,28 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
         val requisitesFields = UIContainer()
         requisitesArea.addSection(requisitesFields)
 
-        UICheckbox("Has Killer").constrain {
+        killerField = UICheckbox("Has Killer").constrain {
             x = SiblingConstraint(4f)
             y = CenterConstraint()
             width = ChildBasedSizeConstraint()
             height = 100.percent()
         } childOf requisitesFields
 
-        UICheckbox("Enderman 9").constrain {
+        endermanField = UICheckbox("Enderman 9").constrain {
             x = SiblingConstraint(4f)
             y = CenterConstraint()
             width = ChildBasedSizeConstraint()
             height = 100.percent()
         } childOf requisitesFields
 
-        UICheckbox("Looting 5").constrain {
+        lootingField = UICheckbox("Looting 5").constrain {
             x = SiblingConstraint(4f)
             y = CenterConstraint()
             width = ChildBasedSizeConstraint()
             height = 100.percent()
         } childOf requisitesFields
 
-        UICheckbox("Brain Food").constrain {
+        brainFoodField = UICheckbox("Brain Food").constrain {
             x = SiblingConstraint(4f)
             y = CenterConstraint()
             width = ChildBasedSizeConstraint()
@@ -156,10 +175,10 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
             height = 25.pixels()
         } childOf container
 
-        val mobsField = UIContainer()
+        val mobsFieldContainer = UIContainer()
 
-        UISelectionDropdown(
-            SeaCreatures.toDataOptions(LiquidTypes.LAVA, FishingIslands.ISLE),
+        mobsField = UISelectionDropdown(
+            arrayListOf(),
             5,
             emptySet(),
             5f,
@@ -168,9 +187,9 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
         ).constrain {
             width = 20.percent()
             height = 100.percent()
-        } childOf mobsField
+        } childOf mobsFieldContainer
 
-        mobsArea.addSection(mobsField)
+        mobsArea.addSection(mobsFieldContainer)
 
         val descriptionArea = UITitledSection("Description:").constrain {
             x = CenterConstraint()
@@ -178,7 +197,7 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
             width = 100.percent()
         } childOf container
 
-        val descriptionField = UIWrappedDecoratedTextInput("Max 200 Chars", 5f, 200)
+        descriptionField = UIWrappedDecoratedTextInput("Max 200 Chars", 5f, 200)
 
         descriptionArea.addSection(descriptionField)
 
@@ -200,5 +219,28 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
             //Remove space from siblingConstraint paddings
             height = FillConstraint() - ((descriptionArea.parent.children.size) * 4).pixels()
         }
+    }
+
+    fun createInteractions() {
+        typeField.onSelect = { data ->
+            println("Type")
+            party.fishingType = data.value as PartyTypes
+            updateMobField()
+        }
+        islandField.onSelect = { data ->
+            println("Island")
+            party.island = data.value as FishingIslands
+            updateMobField()
+        }
+        liquidField.onChange = { data ->
+            println("Liquid")
+            party.liquid = data.value as LiquidTypes
+            updateMobField()
+        }
+    }
+
+    fun updateMobField() {
+        println("update")
+        mobsField.setValues(SeaCreatures.toDataOptions(party.liquid, party.island, party.fishingType))
     }
 }

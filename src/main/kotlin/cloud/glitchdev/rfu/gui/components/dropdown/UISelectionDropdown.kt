@@ -9,7 +9,7 @@ class UISelectionDropdown(
     radiusProps: Float,
     hideArrow: Boolean = false,
     label: String = "",
-    val onSelectionChanged: (List<Any>) -> Unit = {}
+    var onSelectionChanged: (List<Any>) -> Unit = {}
 ) : UIAbstractDropdown(values, radiusProps, hideArrow, label) {
 
     private val selectedIndices = HashSet<Int>()

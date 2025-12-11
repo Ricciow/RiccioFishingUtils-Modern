@@ -8,12 +8,12 @@ class UIDropdown(
     radiusProps: Float,
     hideArrow: Boolean = false,
     label: String = "",
-    val onSelect: (Any) -> Unit = {}
+    var onSelect: (DataOption) -> Unit = {}
 ) : UIAbstractDropdown(values, radiusProps, hideArrow, label) {
 
     override fun onOptionClicked(option: DataOption, index: Int) {
         selectedIndex = index
-        onSelect(option.value)
+        onSelect(getSelectedItem())
         isOpen = false
         updateDropdownState()
     }
@@ -24,5 +24,9 @@ class UIDropdown(
 
     override fun getDropdownDisplayText(): String {
         return values.getOrNull(selectedIndex)?.label ?: "Dropdown"
+    }
+
+    fun getSelectedItem(): DataOption {
+        return values.getOrNull(selectedIndex) ?: DataOption("None", "None")
     }
 }

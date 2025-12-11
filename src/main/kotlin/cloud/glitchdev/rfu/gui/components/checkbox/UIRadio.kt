@@ -11,7 +11,7 @@ import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.plus
 
-class UIRadio(val values : ArrayList<DataOption>, selectedValue : Int, val callback: (Any) -> Unit = {}) : UIContainer() {
+class UIRadio(val values : ArrayList<DataOption>, selectedValue : Int, var onChange: (DataOption) -> Unit = {}) : UIContainer() {
     val checkboxes : ArrayList<UICheckbox> = arrayListOf()
 
     private var selectedValue : Int = selectedValue
@@ -28,9 +28,9 @@ class UIRadio(val values : ArrayList<DataOption>, selectedValue : Int, val callb
 
     fun create() {
         for((index, option) in values.withIndex()) {
-            val checkbox = UICheckbox(option.label, index == selectedValue, false) { value ->
+            val checkbox = UICheckbox(option.label, index == selectedValue, false) {
                 selectedValue = index
-                callback(value)
+                onChange(getSelectedValue())
             }.constrain {
                 x = CramSiblingConstraint(2f)
                 y = CramSiblingConstraint(2f) + if(index == 0) CenterConstraint() else 0.pixels()
@@ -40,5 +40,9 @@ class UIRadio(val values : ArrayList<DataOption>, selectedValue : Int, val callb
 
             checkboxes.add(checkbox)
         }
+    }
+
+    fun getSelectedValue() : DataOption {
+        return values.getOrNull(selectedValue) ?: DataOption("None", "None")
     }
 }
