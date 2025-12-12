@@ -161,7 +161,7 @@ class UIFilterArea(radius: Float, var onFilterChange: () -> Unit = {}) : UIRound
             if (!party.seaCreatures.joinToString(" ") { it.scName.lowercase() }
                     .contains(seaCreatureField.getText().lowercase().toRegex())) return@filter false
 
-            if (!levelField.getText().isEmpty() && party.level <= levelField.getText().toInt()) return@filter false
+            if (!levelField.getText().isEmpty() && party.level < levelField.getText().toInt()) return@filter false
             if (party.liquid != liquidField.getSelectedValue().value) return@filter false
             if (killerField.state && !party.getRequisite("has_killer", "Has Killer").value) return@filter false
             if (endermanField.state && !party.getRequisite("enderman_9", "Enderman 9").value) return@filter false

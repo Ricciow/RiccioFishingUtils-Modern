@@ -10,7 +10,6 @@ import gg.essential.elementa.components.ScrollComponent
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
-import gg.essential.elementa.components.inspector.Inspector
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
 import gg.essential.elementa.constraints.FillConstraint
@@ -112,8 +111,6 @@ class PartyFinder : BaseWindow() {
         }
 
         createPartyArea()
-
-        Inspector(window) childOf window
     }
 
     fun createPartyArea() {
