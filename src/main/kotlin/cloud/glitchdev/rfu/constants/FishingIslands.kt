@@ -32,7 +32,13 @@ enum class FishingIslands(val island: String, val availableLiquids : List<Liquid
     DWARVEN("Dwarven Mines", listOf(LiquidTypes.WATER)),
 
     @SerializedName("Hub")
-    HUB("Hub", listOf(LiquidTypes.WATER));
+    HUB("Hub", listOf(LiquidTypes.WATER)),
+
+    @SerializedName("Other")
+    OTHER("Other", listOf()),
+
+    @SerializedName("Not Skyblock")
+    NOT_SB("Not Skyblock", listOf());
 
     fun toDataOption(): DataOption {
         return DataOption(this, this.island)
@@ -40,9 +46,13 @@ enum class FishingIslands(val island: String, val availableLiquids : List<Liquid
 
     companion object {
         fun toDataOptions(): ArrayList<DataOption> {
-            return entries.map { island ->
+            return entries.filter { it != OTHER && it != NOT_SB } .map { island ->
                 island.toDataOption()
             } as ArrayList<DataOption>
+        }
+
+        fun findIslandObject(name : String, default : FishingIslands = OTHER) : FishingIslands {
+            return entries.find { fishingIslands -> fishingIslands.island == name } ?: default
         }
     }
 }

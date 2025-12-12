@@ -41,8 +41,15 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
     lateinit var descriptionField : UIWrappedDecoratedTextInput
 
     private var needUpdating = true
+    private val TIMEOUT = 300000
 
     init {
+        val currentTime = System.currentTimeMillis()
+        if(createdAt + TIMEOUT < currentTime) {
+            party = FishingParty.blankParty()
+            createdAt = currentTime
+        }
+
         create()
         createInteractions()
     }
@@ -208,6 +215,16 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
             height = 20.pixels()
         } childOf container
 
+        UIButton("Pull data from current island", 5f) {
+            party = FishingParty.blankParty()
+            updateFields()
+        }.constrain {
+            x = 0.pixels()
+            y = CenterConstraint()
+            width = 40.percent()
+            height = 100.percent()
+        } childOf endArea
+
         UIButton("Create", 5f).constrain {
             x = 0.pixels(true)
             y = CenterConstraint()
@@ -294,5 +311,6 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
 
     companion object {
         var party : FishingParty = FishingParty.blankParty()
+        var createdAt : Long = 0
     }
 }

@@ -4,6 +4,8 @@ import cloud.glitchdev.rfu.constants.FishingIslands
 import cloud.glitchdev.rfu.constants.LiquidTypes
 import cloud.glitchdev.rfu.constants.PartyTypes
 import cloud.glitchdev.rfu.constants.SeaCreatures
+import cloud.glitchdev.rfu.utils.User
+import cloud.glitchdev.rfu.utils.World
 import com.google.gson.annotations.SerializedName
 import com.google.gson.Gson
 
@@ -16,41 +18,40 @@ data class FishingParty(
     @SerializedName("fishing_type")
     var fishingType: PartyTypes,
     var island: FishingIslands,
-    var requisites : MutableList<Requisite>,
+    var requisites: MutableList<Requisite>,
     @SerializedName("sea_creatures")
     var seaCreatures: List<SeaCreatures>,
-    var players : Players
+    var players: Players
 ) {
-    fun getCountString() : String {
+    fun getCountString(): String {
         return "${players.getString()} ${island.island} ${liquid.liquid}"
     }
 
-    fun getSeaCreatureString() : String {
+    fun getSeaCreatureString(): String {
         return seaCreatures.joinToString { it.scName }
     }
 
-    fun getTitleString() : String {
+    fun getTitleString(): String {
         return "$title - $user - LVL $level"
     }
 
-    fun toJson() : String {
+    fun toJson(): String {
         return gson.toJson(this)
     }
 
-    fun getRequisite(id : String, name: String) : Requisite {
+    fun getRequisite(id: String, name: String): Requisite {
         for (req in requisites) {
-            if(req.id == id) return req
+            if (req.id == id) return req
         }
         return Requisite(id, name, false)
     }
 
-    fun setRequisite(id : String, name: String, value: Boolean) {
+    fun setRequisite(id: String, name: String, value: Boolean) {
         val requisite = requisites.find { requisite -> requisite.id == id }
 
-        if(requisite != null) {
+        if (requisite != null) {
             requisite.update(name, value)
-        }
-        else {
+        } else {
             requisites.add(Requisite(id, name, value))
         }
     }
@@ -58,49 +59,24 @@ data class FishingParty(
     companion object {
         private val gson = Gson()
 
-        fun fromJson(json : String) : FishingParty {
+        fun fromJson(json: String): FishingParty {
             return gson.fromJson(json, FishingParty::class.java)
         }
 
-        fun blankParty() : FishingParty {
-            return fromJson("{\n" +
-                    "  \"user\": \"Usuario top\",\n" +
-                    "  \"level\": 200,\n" +
-                    "  \"title\": \"Titulo top\",\n" +
-                    "  \"description\": \"Decricao top\",\n" +
-                    "  \"liquid\": \"Lava\",\n" +
-                    "  \"fishing_type\": \"Normal\",\n" +
-                    "  \"island\": \"Crimson Isle\",\n" +
-                    "  \"requisites\": [\n" +
-                    "    {\n" +
-                    "      \"id\": \"enderman_9\",\n" +
-                    "      \"name\": \"Enderman 9\",\n" +
-                    "      \"value\": true\n" +
-                    "    },\n" +
-                    "    {\n" +
-                    "      \"id\": \"brain_food\",\n" +
-                    "      \"name\": \"Brain Food\",\n" +
-                    "      \"value\": true\n" +
-                    "    },\n" +
-                    "    {\n" +
-                    "      \"id\": \"looting_5\",\n" +
-                    "      \"name\": \"Looting 5\",\n" +
-                    "      \"value\": true\n" +
-                    "    },\n" +
-                    "    {\n" +
-                    "      \"id\": \"has_killer\",\n" +
-                    "      \"name\": \"Has killer\",\n" +
-                    "      \"value\": true\n" +
-                    "    }\n" +
-                    "  ],\n" +
-                    "  \"sea_creatures\": [\n" +
-                    "    \"Lord Jawbus\", \"Thunder\"\n" +
-                    "  ],\n" +
-                    "  \"players\": {\n" +
-                    "    \"current\": 2,\n" +
-                    "    \"max\": 10\n" +
-                    "  }\n" +
-                    "}")
+        fun blankParty(): FishingParty {
+            val island = World.getCurrentFishingIsland()
+            return FishingParty(
+                User.getUsername(),
+                1,
+                "",
+                "",
+                island.availableLiquids[0],
+                PartyTypes.REGULAR,
+                island,
+                mutableListOf(),
+                listOf(),
+                Players(1, 1) //TODO: Get actual party members
+            )
         }
     }
 }
@@ -110,7 +86,7 @@ data class Requisite(
     var name: String,
     var value: Boolean
 ) {
-    fun update(name : String = this.name, value: Boolean = this.value) {
+    fun update(name: String = this.name, value: Boolean = this.value) {
         this.name = name
         this.value = value
     }
@@ -120,7 +96,7 @@ data class Players(
     var current: Int,
     var max: Int
 ) {
-    fun getString() : String {
+    fun getString(): String {
         return "$current/$max"
     }
 }
