@@ -243,16 +243,18 @@ abstract class UIAbstractDropdown(
             val availableHeight = window.getHeight() - dropdownStartY - 10f
             val finalHeight = min(contentHeight, availableHeight.coerceAtLeast(optionHeightPixels))
 
-            textContainer.constrain { y = SiblingConstraint() }
+            if(values.size > 0) {
+                textContainer.constrain { y = SiblingConstraint() }
 
-            listContainer.constrain {
-                height = finalHeight.pixels()
-                y = SiblingConstraint(padding) + (headerHeight - background.getHeight()).pixels()
-            }
+                listContainer.constrain {
+                    height = finalHeight.pixels()
+                    y = SiblingConstraint(padding) + (headerHeight - background.getHeight()).pixels()
+                }
 
-            background.constrain {
-                height = (headerHeight + padding + finalHeight + padding).pixels()
-                color = primaryColor
+                background.constrain {
+                    height = (headerHeight + padding + finalHeight + padding).pixels()
+                    color = primaryColor
+                }
             }
 
             arrowHead.setText("▲")
