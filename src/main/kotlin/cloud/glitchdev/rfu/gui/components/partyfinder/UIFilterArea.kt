@@ -21,9 +21,21 @@ import gg.essential.elementa.dsl.minus
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 
-class UIFilterArea(radius: Float, var onFilterChange : () -> Unit = {}) : UIRoundedRectangle(radius) {
+class UIFilterArea(radius: Float, var onFilterChange: () -> Unit = {}) : UIRoundedRectangle(radius) {
+    lateinit var islandField: UIDropdown
+    lateinit var typeField: UIDropdown
+    lateinit var seaCreatureField: UIDecoratedTextInput
+    lateinit var levelField: UIDecoratedTextInput
+    lateinit var canJoinField: UICheckbox
+    lateinit var liquidField: UIRadio
+    lateinit var killerField: UICheckbox
+    lateinit var endermanField: UICheckbox
+    lateinit var lootingField: UICheckbox
+    lateinit var brainFoodField: UICheckbox
+
     init {
         create()
+        createInteractions()
     }
 
     fun create() {
@@ -34,28 +46,28 @@ class UIFilterArea(radius: Float, var onFilterChange : () -> Unit = {}) : UIRoun
             height = 50.percent()
         } childOf this
 
-        UIDropdown(FishingIslands.toDataOptions(), 0, 2f).constrain {
+        islandField = UIDropdown(FishingIslands.toDataOptions(), 0, 2f).constrain {
             x = SiblingConstraint(2f)
             y = CenterConstraint()
             width = 25.percent()
             height = 50.percent()
         } childOf topArea
 
-        UIDropdown(PartyTypes.toDataOptions(), 0, 2f).constrain {
+        typeField = UIDropdown(PartyTypes.toDataOptions(), 0, 2f).constrain {
             x = SiblingConstraint(2f)
             y = CenterConstraint()
             width = 15.percent()
             height = 50.percent()
         } childOf topArea
 
-        UIDecoratedTextInput("Sea Creature", 2f).constrain {
+        seaCreatureField = UIDecoratedTextInput("Sea Creature", 2f).constrain {
             x = SiblingConstraint(2f)
             y = CenterConstraint()
             width = FillConstraint() - 6.pixels()
             height = 50.percent()
         } childOf topArea
 
-        UIDecoratedTextInput("LVL", 2f, true, 3).constrain {
+        levelField = UIDecoratedTextInput("LVL", 2f, true, 3).constrain {
             x = SiblingConstraint(2f)
             y = CenterConstraint()
             width = 10.percent()
@@ -69,42 +81,42 @@ class UIFilterArea(radius: Float, var onFilterChange : () -> Unit = {}) : UIRoun
             height = 50.percent()
         } childOf this
 
-        UICheckbox("Can Join").constrain {
+        canJoinField = UICheckbox("Can Join").constrain {
             x = CramSiblingConstraint(4f)
             y = CramSiblingConstraint()
             width = ChildBasedSizeConstraint()
             height = 50.percent()
         } childOf bottomArea
 
-        UIRadio(LiquidTypes.toDataOptions(), -1).constrain {
+        liquidField = UIRadio(LiquidTypes.toDataOptions(), 0).constrain {
             x = CramSiblingConstraint(4f)
             y = CramSiblingConstraint()
             width = 80.pixels()
             height = 50.percent()
         } childOf bottomArea
 
-        UICheckbox("Has Killer").constrain {
+        killerField = UICheckbox("Has Killer").constrain {
             x = CramSiblingConstraint(4f)
             y = CramSiblingConstraint()
             width = ChildBasedSizeConstraint()
             height = 50.percent()
         } childOf bottomArea
 
-        UICheckbox("Enderman 9").constrain {
+        endermanField = UICheckbox("Enderman 9").constrain {
             x = CramSiblingConstraint(4f)
             y = CramSiblingConstraint()
             width = ChildBasedSizeConstraint()
             height = 50.percent()
         } childOf bottomArea
 
-        UICheckbox("Looting 5").constrain {
+        lootingField = UICheckbox("Looting 5").constrain {
             x = CramSiblingConstraint(4f)
             y = CramSiblingConstraint()
             width = ChildBasedSizeConstraint()
             height = 50.percent()
         } childOf bottomArea
 
-        UICheckbox("Brain Food").constrain {
+        brainFoodField = UICheckbox("Brain Food").constrain {
             x = CramSiblingConstraint(4f)
             y = CramSiblingConstraint()
             width = ChildBasedSizeConstraint()
@@ -112,8 +124,51 @@ class UIFilterArea(radius: Float, var onFilterChange : () -> Unit = {}) : UIRoun
         } childOf bottomArea
     }
 
-    fun applyFilter(parties : MutableList<FishingParty>) : MutableList<FishingParty>{
-        //TODO: Implement
-        return parties
+    fun createInteractions() {
+        islandField.onSelect = {
+            onFilterChange()
+        }
+        typeField.onSelect = {
+            onFilterChange()
+        }
+        seaCreatureField.onChange = {
+            onFilterChange()
+        }
+        levelField.onChange = {
+            onFilterChange()
+        }
+        liquidField.onChange = {
+            onFilterChange()
+        }
+        killerField.onChange = {
+            onFilterChange()
+        }
+        endermanField.onChange = {
+            onFilterChange()
+        }
+        lootingField.onChange = {
+            onFilterChange()
+        }
+        brainFoodField.onChange = {
+            onFilterChange()
+        }
+    }
+
+    fun applyFilter(parties: MutableList<FishingParty>): MutableList<FishingParty> {
+        return parties.filter { party ->
+            if (party.island != islandField.getSelectedItem().value) return@filter false
+            if (party.fishingType != typeField.getSelectedItem().value) return@filter false
+            if (!party.seaCreatures.joinToString(" ") { it.scName.lowercase() }
+                    .contains(seaCreatureField.getText().lowercase().toRegex())) return@filter false
+
+            if (!levelField.getText().isEmpty() && party.level <= levelField.getText().toInt()) return@filter false
+            if (party.liquid != liquidField.getSelectedValue().value) return@filter false
+            if (killerField.state && !party.getRequisite("has_killer", "Has Killer").value) return@filter false
+            if (endermanField.state && !party.getRequisite("enderman_9", "Enderman 9").value) return@filter false
+            if (lootingField.state && !party.getRequisite("looting_5", "Looting 5").value) return@filter false
+            if (brainFoodField.state && !party.getRequisite("brain_food", "Brain Food").value) return@filter false
+
+            return@filter true
+        } as MutableList<FishingParty>
     }
 }

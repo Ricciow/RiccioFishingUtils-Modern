@@ -66,4 +66,8 @@ class UIDecoratedTextInput(val placeholder : String, radius : Float, val numberO
         textInput.setText(text)
         textChanged = true
     }
+
+    fun getText() : String {
+        return textInput.getText()
+    }
 }

@@ -56,7 +56,7 @@ class PartyFinder : BaseWindow() {
 
     fun updateFiltering() {
         if(::scrollArea.isInitialized) {
-            displayParties = filterArea.applyFilter(parties)
+            displayParties = if (filterOpen) filterArea.applyFilter(parties) else parties
             for (partyCard in partyCards) {
                 scrollArea.removeChild(partyCard)
             }
@@ -106,6 +106,10 @@ class PartyFinder : BaseWindow() {
         } childOf background
 
         filterArea.setHidden(!filterOpen)
+
+        filterArea.onFilterChange = {
+            updateFiltering()
+        }
 
         createPartyArea()
 
@@ -173,6 +177,7 @@ class PartyFinder : BaseWindow() {
         filterButton = UIButton("Filters", 3f) {
             filterOpen = !filterOpen
             filterArea.setHidden(!filterOpen)
+            updateFiltering()
         }.constrain {
             x = SiblingConstraint(2f, true)
             y = CenterConstraint()
