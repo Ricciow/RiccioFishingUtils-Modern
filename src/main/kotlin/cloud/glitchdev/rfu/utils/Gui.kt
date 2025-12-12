@@ -3,7 +3,6 @@ package cloud.glitchdev.rfu.utils
 import gg.essential.elementa.WindowScreen
 import gg.essential.universal.UScreen
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
-import java.awt.Color
 
 object Gui {
     private var queuedInterface : WindowScreen? = null

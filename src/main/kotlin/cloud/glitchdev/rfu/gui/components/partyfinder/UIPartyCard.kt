@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.gui.components.partyfinder
 
 import cloud.glitchdev.rfu.gui.UIScheme
+import cloud.glitchdev.rfu.gui.components.elementa.TextWrappingConstraint
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.utils.dsl.addHoverColoring
 import gg.essential.elementa.components.UIContainer
@@ -59,7 +60,7 @@ class UIPartyCard(val party: FishingParty, radius : Float) : UIRoundedRectangle(
             x = 0.pixels()
             y = SiblingConstraint(2f)
             width = 100.percent()
-            height = 9.pixels() //TODO: Make this variable
+            height = TextWrappingConstraint()
             color = textColor
         } childOf leftArea
 
