@@ -6,4 +6,8 @@ object User {
     fun getUsername() : String {
         return minecraft.session.username
     }
+
+    fun isUser(username : String) : Boolean {
+        return getUsername() == username
+    }
 }

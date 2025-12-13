@@ -8,7 +8,7 @@ object Gui {
     private var queuedInterface : WindowScreen? = null
     private var shouldOpen = false
 
-    fun initialize() {
+    fun registerEvents() {
         ClientTickEvents.END_CLIENT_TICK.register(ClientTickEvents.EndTick { _ ->
             if (shouldOpen && queuedInterface != null) {
                 shouldOpen = false

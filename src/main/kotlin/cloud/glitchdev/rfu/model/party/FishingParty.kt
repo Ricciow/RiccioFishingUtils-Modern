@@ -4,10 +4,12 @@ import cloud.glitchdev.rfu.constants.FishingIslands
 import cloud.glitchdev.rfu.constants.LiquidTypes
 import cloud.glitchdev.rfu.constants.PartyTypes
 import cloud.glitchdev.rfu.constants.SeaCreatures
+import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.World
 import com.google.gson.annotations.SerializedName
 import com.google.gson.Gson
+import kotlin.math.max
 
 data class FishingParty(
     var user: String,
@@ -67,7 +69,7 @@ data class FishingParty(
             val island = World.getCurrentFishingIsland()
             return FishingParty(
                 User.getUsername(),
-                1,
+                0,
                 "",
                 "",
                 island.availableLiquids[0],
@@ -75,7 +77,7 @@ data class FishingParty(
                 island,
                 mutableListOf(),
                 listOf(),
-                Players(1, 1) //TODO: Get actual party members
+                Players(max(Party.members.size, 1), 6)
             )
         }
     }

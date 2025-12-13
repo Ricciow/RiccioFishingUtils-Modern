@@ -5,6 +5,7 @@ import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.gui.PartyFinder
 import cloud.glitchdev.rfu.utils.Gui
+import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.World
 import net.fabricmc.api.ClientModInitializer
@@ -14,7 +15,8 @@ import net.minecraft.client.MinecraftClient
 
 class RicciosFinestUtilities : ClientModInitializer {
     override fun onInitializeClient() {
-        Gui.initialize()
+        Gui.registerEvents()
+        Party.registerEvents()
 
         ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
             dispatcher.register(ClientCommandManager.literal("rfupf").executes { context ->
@@ -24,6 +26,12 @@ class RicciosFinestUtilities : ClientModInitializer {
                     context.source.sendFeedback(TextUtils.rfuLiteral("Must be in skyblock to use this feature!",
                         TextStyle(TextColor.LIGHT_RED, TextEffects.UNDERLINE)))
                 }
+                1
+            })
+
+            dispatcher.register(ClientCommandManager.literal("rfupartymembers").executes { context ->
+                context.source.sendFeedback(TextUtils.rfuLiteral(Party.members.joinToString(),
+                    TextStyle(TextColor.WHITE, TextEffects.UNDERLINE)))
                 1
             })
         }
