@@ -32,11 +32,15 @@ object Chat {
         }
     }
 
-    fun sendMessage(message : String) {
+    fun sendServerMessage(message : String) {
         minecraft.networkHandler?.sendChatMessage(message)
     }
 
-    fun sendCommand(command : String) {
+    fun sendServerCommand(command : String) {
         minecraft.networkHandler?.sendChatCommand(command)
+    }
+
+    fun sendMessage(message : Text) {
+        minecraft.player?.sendMessage(message, false)
     }
 }

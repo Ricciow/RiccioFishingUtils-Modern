@@ -12,6 +12,7 @@ import cloud.glitchdev.rfu.gui.components.dropdown.UIDropdown
 import cloud.glitchdev.rfu.gui.components.dropdown.UISelectionDropdown
 import cloud.glitchdev.rfu.gui.components.textinput.UIWrappedDecoratedTextInput
 import cloud.glitchdev.rfu.model.party.FishingParty
+import cloud.glitchdev.rfu.utils.Network
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIWrappedText
@@ -26,7 +27,7 @@ import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 import gg.essential.universal.UMatrixStack
 
-class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
+class UICreateParty(radius: Float, val onCreateParty : (Boolean) -> Unit) : UIRoundedRectangle(radius) {
     lateinit var titleField : UIDecoratedTextInput
     lateinit var typeField : UIDropdown
     lateinit var islandField : UIDropdown
@@ -225,12 +226,21 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
             height = 100.percent()
         } childOf endArea
 
-        UIButton("Create", 5f).constrain {
+        val createButton = UIButton("Create", 5f).constrain {
             x = 0.pixels(true)
             y = CenterConstraint()
             width = 10.percent()
             height = 100.percent()
         } childOf endArea
+
+        createButton.onClick = {
+            createButton.disabled = true
+            Network.createParty(party) { success ->
+                //TODO: Alert user if fails
+                onCreateParty(success)
+                createButton.disabled = false
+            }
+        }
 
         descriptionArea.constrain {
             //Remove space from siblingConstraint paddings
@@ -256,10 +266,20 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
             updateFields()
         }
         limitField.onChange = { limit ->
-            party.players.max = limit.toInt()
+            if(limit.isNotEmpty()) {
+                party.players.max = limit.toInt()
+            }
+            else {
+                party.players.max = 6
+            }
         }
         levelField.onChange = { level ->
-            party.level = level.toInt()
+            if(level.isNotEmpty()) {
+                party.level = level.toInt()
+            }
+            else {
+                party.level = 0
+            }
         }
         liquidField.onChange = { data ->
             party.liquid = data.value as LiquidTypes

@@ -18,7 +18,7 @@ import gg.essential.elementa.dsl.minus
 /**
  * Simple Button Component
  */
-class UIButton(val text: String, radius: Float = 0f, val callback : () -> Unit = {}) : UIRoundedRectangle(radius) {
+class UIButton(val text: String, radius: Float = 0f, var onClick : () -> Unit = {}) : UIRoundedRectangle(radius) {
     val primaryColor = UIScheme.secondaryColorOpaque.toConstraint()
     val hoverColor = UIScheme.secondaryColor.toConstraint()
     val textColor = UIScheme.primaryTextColor.toConstraint()
@@ -63,7 +63,7 @@ class UIButton(val text: String, radius: Float = 0f, val callback : () -> Unit =
 
         this.onMouseClick {
             if(!disabled) {
-                callback()
+                onClick()
                 textArea.animate {
                     setColorAnimation(Animations.IN_EXP, clickDuration, secondaryTextColor)
                 }

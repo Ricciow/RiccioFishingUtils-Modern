@@ -9,11 +9,10 @@ import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.World
 import com.google.gson.annotations.SerializedName
 import com.google.gson.Gson
-import com.google.gson.annotations.Expose
 import kotlin.math.max
 
 data class FishingParty(
-    @Expose(serialize = false)
+    @Transient
     var id: String = "?",
     var user: String,
     var level: Int,

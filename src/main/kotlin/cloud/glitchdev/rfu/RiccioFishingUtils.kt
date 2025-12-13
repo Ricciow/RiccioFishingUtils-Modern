@@ -28,12 +28,6 @@ class RiccioFishingUtils : ClientModInitializer {
                 }
                 1
             })
-
-            dispatcher.register(ClientCommandManager.literal("rfupartymembers").executes { context ->
-                context.source.sendFeedback(TextUtils.rfuLiteral(Party.members.joinToString(),
-                    TextStyle(TextColor.WHITE, TextEffects.UNDERLINE)))
-                1
-            })
         }
     }
 

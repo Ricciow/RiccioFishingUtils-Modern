@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.gui
 
+import cloud.glitchdev.rfu.RiccioFishingUtils.Companion.minecraft
 import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.partyfinder.UICreateParty
 import cloud.glitchdev.rfu.gui.components.partyfinder.UIFilterArea
@@ -11,7 +12,6 @@ import gg.essential.elementa.components.ScrollComponent
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
-import gg.essential.elementa.components.inspector.Inspector
 import gg.essential.elementa.constraints.AspectConstraint
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
@@ -57,9 +57,11 @@ class PartyFinder : BaseWindow() {
         parties.clear()
         updateFiltering()
         Network.getExistingParties { newParties ->
-            parties.addAll(newParties)
-            updateFiltering()
-            reloadButton.disabled = false
+            minecraft.execute {
+                parties.addAll(newParties)
+                updateFiltering()
+                if(!partyCreationOpen) reloadButton.disabled = false
+            }
         }
     }
 
@@ -96,7 +98,11 @@ class PartyFinder : BaseWindow() {
 
         createHeader()
 
-        partyCreationArea = UICreateParty(5f).constrain {
+        partyCreationArea = UICreateParty(5f) { success ->
+            if(success) {
+                getParties()
+            }
+        }.constrain {
             x = CenterConstraint()
             y = SiblingConstraint(2f)
             width = 100.percent()
@@ -145,8 +151,6 @@ class PartyFinder : BaseWindow() {
         } childOf partyArea
 
         scrollArea.setScrollBarComponent(scrollbar, false, false)
-
-        Inspector(window) childOf window
     }
 
     fun createHeader() {
