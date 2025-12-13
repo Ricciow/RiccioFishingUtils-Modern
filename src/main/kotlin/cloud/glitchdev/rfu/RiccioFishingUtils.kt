@@ -39,5 +39,6 @@ class RiccioFishingUtils : ClientModInitializer {
 
     companion object {
         val minecraft: MinecraftClient = MinecraftClient.getInstance()
+        val API_URL: String = "http:localhost:8080/api"
     }
 }

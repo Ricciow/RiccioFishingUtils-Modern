@@ -9,9 +9,12 @@ import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.World
 import com.google.gson.annotations.SerializedName
 import com.google.gson.Gson
+import com.google.gson.annotations.Expose
 import kotlin.math.max
 
 data class FishingParty(
+    @Expose(serialize = false)
+    var id: String = "?",
     var user: String,
     var level: Int,
     var title: String,
@@ -35,7 +38,7 @@ data class FishingParty(
 
     fun getTitleString(): String {
         return listOf(title, user)
-            .filter { it.isNotEmpty() } // Removes empty title
+            .filter { it.isNotEmpty() }
             .joinToString(" - ") + " - LVL $level"
     }
 
@@ -70,6 +73,7 @@ data class FishingParty(
         fun blankParty(): FishingParty {
             val island = World.getCurrentFishingIsland()
             return FishingParty(
+                "?",
                 User.getUsername(),
                 0,
                 "",

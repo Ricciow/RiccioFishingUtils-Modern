@@ -5,6 +5,7 @@ import cloud.glitchdev.rfu.gui.components.partyfinder.UICreateParty
 import cloud.glitchdev.rfu.gui.components.partyfinder.UIFilterArea
 import cloud.glitchdev.rfu.gui.components.partyfinder.UIPartyCard
 import cloud.glitchdev.rfu.model.party.FishingParty
+import cloud.glitchdev.rfu.utils.Network
 import cloud.glitchdev.rfu.utils.dsl.setHidden
 import gg.essential.elementa.components.ScrollComponent
 import gg.essential.elementa.components.UIContainer
@@ -53,7 +54,9 @@ class PartyFinder : BaseWindow() {
 
     fun getParties() {
         parties.clear()
-        parties.add(FishingParty.blankParty())
+        val partiesReq = Network.getExistingParties()
+        println(partiesReq)
+        parties.addAll(partiesReq)
         updateFiltering()
     }
 
