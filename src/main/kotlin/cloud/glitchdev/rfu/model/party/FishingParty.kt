@@ -34,7 +34,9 @@ data class FishingParty(
     }
 
     fun getTitleString(): String {
-        return "$title - $user - LVL $level"
+        return listOf(title, user)
+            .filter { it.isNotEmpty() } // Removes empty title
+            .joinToString(" - ") + " - LVL $level"
     }
 
     fun toJson(): String {
@@ -72,7 +74,7 @@ data class FishingParty(
                 0,
                 "",
                 "",
-                island.availableLiquids[0],
+                island.availableLiquids.getOrNull(0) ?: LiquidTypes.LAVA,
                 PartyTypes.REGULAR,
                 island,
                 mutableListOf(),
