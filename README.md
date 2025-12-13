@@ -1,5 +1,5 @@
 <h1 align="center">
-  RicciosFinestUtilities 
+  RiccioFishingUtils
 
 Minecraft Mod for Hypixel SkyBlock
 

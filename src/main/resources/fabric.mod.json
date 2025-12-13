@@ -12,14 +12,14 @@
     "sources": "https://codeberg.org/stonecutter/template-fabric"
   },
   "license": "MIT",
-  "icon": "assets/template/icon.png",
+  "icon": "assets/rfu/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [],
     "client": [
       {
         "adapter": "kotlin",
-        "value": "cloud.glitchdev.rfu.RicciosFinestUtilities"
+        "value": "cloud.glitchdev.rfu.RiccioFishingUtils"
       }
     ]
   },

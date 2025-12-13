@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.gui
 
-import cloud.glitchdev.rfu.RicciosFinestUtilities.Companion.minecraft
+import cloud.glitchdev.rfu.RiccioFishingUtils.Companion.minecraft
 import gg.essential.elementa.ElementaVersion
 import gg.essential.elementa.WindowScreen
 import gg.essential.universal.UKeyboard

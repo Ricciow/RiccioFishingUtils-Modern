@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.utils
 
-import cloud.glitchdev.rfu.RicciosFinestUtilities.Companion.minecraft
+import cloud.glitchdev.rfu.RiccioFishingUtils.Companion.minecraft
 
 object User {
     fun getUsername() : String {

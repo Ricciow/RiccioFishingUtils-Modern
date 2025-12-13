@@ -13,7 +13,7 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 import net.minecraft.client.MinecraftClient
 
-class RicciosFinestUtilities : ClientModInitializer {
+class RiccioFishingUtils : ClientModInitializer {
     override fun onInitializeClient() {
         Gui.registerEvents()
         Party.registerEvents()
