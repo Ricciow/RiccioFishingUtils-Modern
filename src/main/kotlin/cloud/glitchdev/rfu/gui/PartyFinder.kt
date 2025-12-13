@@ -10,6 +10,8 @@ import gg.essential.elementa.components.ScrollComponent
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
+import gg.essential.elementa.components.inspector.Inspector
+import gg.essential.elementa.constraints.AspectConstraint
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
 import gg.essential.elementa.constraints.FillConstraint
@@ -40,6 +42,7 @@ class PartyFinder : BaseWindow() {
     lateinit var partyArea : UIContainer
     lateinit var scrollArea : ScrollComponent
     lateinit var filterButton : UIButton
+    lateinit var reloadButton : UIButton
     lateinit var partyCreationButton : UIButton
 
     init {
@@ -49,6 +52,7 @@ class PartyFinder : BaseWindow() {
     }
 
     fun getParties() {
+        parties.clear()
         parties.add(FishingParty.blankParty())
         updateFiltering()
     }
@@ -135,6 +139,8 @@ class PartyFinder : BaseWindow() {
         } childOf partyArea
 
         scrollArea.setScrollBarComponent(scrollbar, false, false)
+
+        Inspector(window) childOf window
     }
 
     fun createHeader() {
@@ -182,7 +188,21 @@ class PartyFinder : BaseWindow() {
             height = 100.percent()
         } childOf rightContainer
 
-            rightContainer.constrain {
+        reloadButton = UIButton("\uD83D\uDDD8", 3f) {
+            getParties()
+        }.constrain {
+            x = SiblingConstraint(2f, true)
+            y = CenterConstraint()
+            width = AspectConstraint(1f)
+            height = 100.percent()
+        } childOf rightContainer
+
+        reloadButton.textArea.constrain {
+            width = 60.percent()
+            height = TextAspectConstraint()
+        }
+
+        rightContainer.constrain {
             x = 98.percent() - rightContainer.getWidth().pixels()
         }
     }
@@ -193,6 +213,7 @@ class PartyFinder : BaseWindow() {
         filterArea.setHidden(if (partyCreationOpen) true else !filterOpen)
         partyCreationButton.setText(if (partyCreationOpen) "Close" else "New Party")
         filterButton.disabled = partyCreationOpen
+        reloadButton.disabled = partyCreationOpen
     }
 
     companion object {
