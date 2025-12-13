@@ -33,6 +33,9 @@ class UIButton(val text: String, radius: Float = 0f, val callback : () -> Unit =
             this.constrain {
                 color = if (disabled) disabledColor else primaryColor
             }
+            textArea.constrain {
+                color = if (disabled) secondaryTextColor else textColor
+            }
         }
 
     lateinit var textArea : UIText

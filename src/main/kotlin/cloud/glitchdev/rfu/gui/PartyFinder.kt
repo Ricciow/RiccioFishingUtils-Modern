@@ -53,11 +53,14 @@ class PartyFinder : BaseWindow() {
     }
 
     fun getParties() {
+        reloadButton.disabled = true
         parties.clear()
-        val partiesReq = Network.getExistingParties()
-        println(partiesReq)
-        parties.addAll(partiesReq)
         updateFiltering()
+        Network.getExistingParties { newParties ->
+            parties.addAll(newParties)
+            updateFiltering()
+            reloadButton.disabled = false
+        }
     }
 
     fun updateFiltering() {

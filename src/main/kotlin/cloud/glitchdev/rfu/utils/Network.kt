@@ -21,45 +21,62 @@ object Network {
     private val client = HttpClient.newHttpClient()
     private val gson = Gson()
 
-    fun getRequest(url : String) : Response {
+    fun getRequest(url : String, callback: (Response) -> Unit) {
         try {
             val request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .GET()
                 .build()
 
-            val response = client.send(request, HttpResponse.BodyHandlers.ofString())
-
-            return Response(response)
+            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .handle { res, ex ->
+                    if (ex != null) {
+                        callback(Response(null))
+                    } else {
+                        callback(Response(res))
+                    }
+                }
         }
         catch (e : Exception) {
-            return Response(null)
+            callback(Response(null))
         }
     }
 
-    fun postRequest(url : String) : Response {
+    fun postRequest(url : String, callback: (Response) -> Unit) {
         try {
             val request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
-                .GET()
+                .POST(HttpRequest.BodyPublishers.noBody()) // Assuming empty body for now
                 .build()
 
-            val response = client.send(request, HttpResponse.BodyHandlers.ofString())
-
-            return Response(response)
+            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .handle { res, ex ->
+                    if (ex != null) {
+                        callback(Response(null))
+                    } else {
+                        callback(Response(res))
+                    }
+                }
         }
         catch (e : Exception) {
-            return Response(null)
+            callback(Response(null))
         }
     }
 
-    fun getExistingParties() : List<FishingParty> {
-        val response = getRequest("$API_URL/party")
+    fun getExistingParties(callback: (List<FishingParty>) -> Unit) {
+        getRequest("$API_URL/party") { response ->
+            if(!response.isSuccessful()) {
+                callback(mutableListOf())
+                return@getRequest
+            }
 
-        if(!response.isSuccessful()) return mutableListOf()
-
-        val partiesArray = gson.fromJson(response.body, Array<FishingParty>::class.java)
-
-        return partiesArray.toList()
+            try {
+                val partiesArray = gson.fromJson(response.body, Array<FishingParty>::class.java)
+                callback(partiesArray.toList())
+            } catch (e: Exception) {
+                e.printStackTrace()
+                callback(mutableListOf())
+            }
+        }
     }
 }
