@@ -5,8 +5,7 @@ import gg.essential.elementa.components.UIWrappedText
 import gg.essential.elementa.constraints.ConstraintType
 import gg.essential.elementa.constraints.HeightConstraint
 import gg.essential.elementa.constraints.resolution.ConstraintVisitor
-import gg.essential.universal.UGraphics
-import kotlin.math.ceil
+import gg.essential.elementa.utils.getStringSplitToWidth
 
 class TextWrappingConstraint(
     override var cachedValue: Float = 0f,
@@ -14,8 +13,9 @@ class TextWrappingConstraint(
     override var constrainTo: UIComponent? = null,
 ) : HeightConstraint {
     override fun getHeightImpl(component: UIComponent): Float {
-        val text = (component as? UIWrappedText)?.getText() ?: throw IllegalStateException("TextWrappingConstraint can only be used in UIWrappedText components")
-        return ceil(UGraphics.getStringWidth(text) / component.getWidth()) * 9
+        val textComponent = (component as? UIWrappedText) ?: throw IllegalStateException("TextWrappingConstraint can only be used in UIWrappedText components")
+        val lines = getStringSplitToWidth(textComponent.getText(), textComponent.getWidth(), textComponent.getTextScale())
+        return lines.size * 9 * textComponent.getTextScale()
     }
 
     override fun visitImpl(

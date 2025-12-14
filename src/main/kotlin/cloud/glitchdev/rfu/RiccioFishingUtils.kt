@@ -5,6 +5,7 @@ import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.gui.PartyFinder
 import cloud.glitchdev.rfu.utils.Gui
+import cloud.glitchdev.rfu.utils.network.Network
 import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.World
@@ -17,6 +18,7 @@ class RiccioFishingUtils : ClientModInitializer {
     override fun onInitializeClient() {
         Gui.registerEvents()
         Party.registerEvents()
+        Network.registerEvents()
 
         ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
             dispatcher.register(ClientCommandManager.literal("rfupf").executes { context ->

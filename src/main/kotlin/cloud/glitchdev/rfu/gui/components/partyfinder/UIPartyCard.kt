@@ -4,6 +4,8 @@ import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.elementa.TextWrappingConstraint
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.utils.dsl.addHoverColoring
+import cloud.glitchdev.rfu.utils.dsl.isUser
+import cloud.glitchdev.rfu.utils.network.PartyHttp
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
@@ -24,10 +26,11 @@ import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.toConstraint
 
-class UIPartyCard(val party: FishingParty, radius : Float) : UIRoundedRectangle(radius) {
+class UIPartyCard(val party: FishingParty, radius : Float, var onDelete : () -> Unit = {}) : UIRoundedRectangle(radius) {
     val primaryColor = UIScheme.decreaseOpacity(UIScheme.primaryColorOpaque, 80).toConstraint()
     val hoverColor = UIScheme.secondaryColorOpaque.toConstraint()
     val textColor = UIScheme.primaryTextColor.toConstraint()
+    val hoverText = UIScheme.denyColor.toConstraint()
     val hoverDuration = UIScheme.HOVER_EFFECT_DURATION
     val fontSize = 1f
 
@@ -64,7 +67,7 @@ class UIPartyCard(val party: FishingParty, radius : Float) : UIRoundedRectangle(
             color = textColor
         } childOf leftArea
 
-        UIWrappedText(party.description).constrain {
+        UIWrappedText(party.description, trimText = true).constrain {
             x = 0.pixels()
             y = SiblingConstraint(2f)
             width = 100.percent()
@@ -72,18 +75,18 @@ class UIPartyCard(val party: FishingParty, radius : Float) : UIRoundedRectangle(
             color = textColor
         } childOf leftArea
 
-        UIText(party.getCountString()).constrain {
+        UIWrappedText(party.getCountString()).constrain {
             x = 0.pixels()
             y = SiblingConstraint(2f)
-            width = TextAspectConstraint()
-            height = ScaledTextConstraint(fontSize)
+            width = 100.percent()
+            height = TextWrappingConstraint()
             color = textColor
         } childOf leftArea
 
         val rightArea = UIContainer().constrain {
             x = SiblingConstraint(2f)
             y = CenterConstraint()
-            width = max(33.percent(), 160.pixels())- 2.pixels()
+            width = max(33.percent(), 180.pixels())- 2.pixels()
             height = 100.percent()
         } childOf mainContainer
 
@@ -111,11 +114,35 @@ class UIPartyCard(val party: FishingParty, radius : Float) : UIRoundedRectangle(
             } childOf restrictions
         }
 
-        UIWrappedText("SCs: ${party.getSeaCreatureString()}").constrain {
+        UIWrappedText("SCs: ${party.getSeaCreatureString()}", trimText = true).constrain {
             x = 0.pixels()
             y = SiblingConstraint(2f)
             width = 100.percent()
             height = FillConstraint()
         } childOf rightArea
+
+        if(party.user.isUser()) {
+            val text = UIText("❌").constrain {
+                x = 0.pixels(true)
+                y = 0.pixels()
+                width = ScaledTextConstraint(1f)
+                height = TextAspectConstraint()
+            } childOf mainContainer
+
+            text.addHoverColoring(Animations.IN_EXP, hoverDuration, textColor, hoverText)
+
+            var requesting = false
+            text.onMouseClick {
+                if(requesting) return@onMouseClick
+                requesting = true
+
+                PartyHttp.deleteParty { success ->
+                    requesting = false
+                    if(success) {
+                        onDelete()
+                    }
+                }
+            }
+        }
     }
 }

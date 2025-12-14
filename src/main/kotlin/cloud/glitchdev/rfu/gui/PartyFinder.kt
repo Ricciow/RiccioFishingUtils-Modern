@@ -6,8 +6,8 @@ import cloud.glitchdev.rfu.gui.components.partyfinder.UICreateParty
 import cloud.glitchdev.rfu.gui.components.partyfinder.UIFilterArea
 import cloud.glitchdev.rfu.gui.components.partyfinder.UIPartyCard
 import cloud.glitchdev.rfu.model.party.FishingParty
-import cloud.glitchdev.rfu.utils.Network
 import cloud.glitchdev.rfu.utils.dsl.setHidden
+import cloud.glitchdev.rfu.utils.network.PartyHttp
 import gg.essential.elementa.components.ScrollComponent
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
@@ -56,7 +56,7 @@ class PartyFinder : BaseWindow() {
         reloadButton.disabled = true
         parties.clear()
         updateFiltering()
-        Network.getExistingParties { newParties ->
+        PartyHttp.getExistingParties { newParties ->
             minecraft.execute {
                 parties.addAll(newParties)
                 updateFiltering()
@@ -75,7 +75,9 @@ class PartyFinder : BaseWindow() {
             partyCards.clear()
 
             for(party in displayParties) {
-                val partyCard = UIPartyCard(party, 5f).constrain {
+                val partyCard = UIPartyCard(party, 5f) {
+                    getParties()
+                }.constrain {
                     x = 0.pixels()
                     y = SiblingConstraint(2f)
                     width = 100.percent()
@@ -101,6 +103,8 @@ class PartyFinder : BaseWindow() {
         partyCreationArea = UICreateParty(5f) { success ->
             if(success) {
                 getParties()
+                partyCreationOpen = false
+                updatePartyCreation()
             }
         }.constrain {
             x = CenterConstraint()

@@ -12,7 +12,7 @@ import cloud.glitchdev.rfu.gui.components.dropdown.UIDropdown
 import cloud.glitchdev.rfu.gui.components.dropdown.UISelectionDropdown
 import cloud.glitchdev.rfu.gui.components.textinput.UIWrappedDecoratedTextInput
 import cloud.glitchdev.rfu.model.party.FishingParty
-import cloud.glitchdev.rfu.utils.Network
+import cloud.glitchdev.rfu.utils.network.PartyHttp
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIWrappedText
@@ -235,7 +235,7 @@ class UICreateParty(radius: Float, val onCreateParty : (Boolean) -> Unit) : UIRo
 
         createButton.onClick = {
             createButton.disabled = true
-            Network.createParty(party) { success ->
+            PartyHttp.createParty(party) { success ->
                 //TODO: Alert user if fails
                 onCreateParty(success)
                 createButton.disabled = false
