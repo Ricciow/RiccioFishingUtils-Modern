@@ -28,4 +28,4 @@ stonecutter {
     }
 }
 
-rootProject.name = "Template"
+rootProject.name = "RiccioFishingUtils"

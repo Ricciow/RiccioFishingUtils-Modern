@@ -8,8 +8,8 @@
     "Riccio"
   ],
   "contact": {
-    "homepage": "https://stonecutter.kikugie.dev/",
-    "sources": "https://codeberg.org/stonecutter/template-fabric"
+    "homepage": "https://rfu.glitchdev.cloud/",
+    "sources": "https://github.com/Ricciow/RiccioFishingUtilsV2"
   },
   "license": "MIT",
   "icon": "assets/rfu/icon.png",
