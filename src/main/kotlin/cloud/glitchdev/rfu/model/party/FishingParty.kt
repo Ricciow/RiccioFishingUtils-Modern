@@ -80,7 +80,12 @@ data class FishingParty(
                 island.availableLiquids.getOrNull(0) ?: LiquidTypes.LAVA,
                 PartyTypes.REGULAR,
                 island,
-                mutableListOf(),
+                mutableListOf(
+                    Requisite("has_killer", "Has Killer", false),
+                    Requisite("enderman_9", "Enderman 9", false),
+                    Requisite("looting_5", "Looting 5", false),
+                    Requisite("brain_food", "Brain Food", false),
+                ),
                 listOf(),
                 Players(max(Party.members.size, 1), 6)
             )

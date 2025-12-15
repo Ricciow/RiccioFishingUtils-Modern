@@ -12,6 +12,7 @@ import gg.essential.elementa.components.ScrollComponent
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
+import gg.essential.elementa.components.Window
 import gg.essential.elementa.constraints.AspectConstraint
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
@@ -102,9 +103,9 @@ class PartyFinder : BaseWindow() {
 
         partyCreationArea = UICreateParty(5f) { success ->
             if(success) {
-                getParties()
                 partyCreationOpen = false
                 updatePartyCreation()
+                getParties()
             }
         }.constrain {
             x = CenterConstraint()
@@ -114,8 +115,6 @@ class PartyFinder : BaseWindow() {
             color = primaryColor
         } childOf background
 
-        partyCreationArea.setHidden(!partyCreationOpen)
-
         filterArea = UIFilterArea(radius).constrain {
             x = CenterConstraint()
             y = SiblingConstraint(2f)
@@ -123,8 +122,6 @@ class PartyFinder : BaseWindow() {
             height = max(20.percent(), 40.pixels())
             color = primaryColor
         } childOf background
-
-        filterArea.setHidden(!filterOpen)
 
         filterArea.onFilterChange = {
             updateFiltering()
@@ -193,7 +190,7 @@ class PartyFinder : BaseWindow() {
 
         filterButton = UIButton("Filters", 3f) {
             filterOpen = !filterOpen
-            filterArea.setHidden(!filterOpen)
+            updatePartyCreation()
             updateFiltering()
         }.constrain {
             x = SiblingConstraint(2f, true)
@@ -222,12 +219,14 @@ class PartyFinder : BaseWindow() {
     }
 
     fun updatePartyCreation() {
-        partyCreationArea.setHidden(!partyCreationOpen)
-        partyArea.setHidden(partyCreationOpen)
-        filterArea.setHidden(if (partyCreationOpen) true else !filterOpen)
-        partyCreationButton.setText(if (partyCreationOpen) "Close" else "New Party")
-        filterButton.disabled = partyCreationOpen
-        reloadButton.disabled = partyCreationOpen
+        Window.enqueueRenderOperation {
+            partyCreationArea.setHidden(!partyCreationOpen)
+            partyArea.setHidden(partyCreationOpen)
+            filterArea.setHidden(if (partyCreationOpen) true else !filterOpen)
+            partyCreationButton.setText(if (partyCreationOpen) "Close" else "New Party")
+            filterButton.disabled = partyCreationOpen
+            reloadButton.disabled = partyCreationOpen
+        }
     }
 
     companion object {
