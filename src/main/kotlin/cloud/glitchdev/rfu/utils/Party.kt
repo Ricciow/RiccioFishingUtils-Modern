@@ -1,8 +1,16 @@
 package cloud.glitchdev.rfu.utils
 
+import cloud.glitchdev.rfu.constants.text.TextColor
+import cloud.glitchdev.rfu.constants.text.TextEffects
+import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.utils.dsl.isUser
 import cloud.glitchdev.rfu.utils.dsl.removeRankTag
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
+import net.minecraft.text.ClickEvent
+import net.minecraft.text.HoverEvent
+import net.minecraft.text.MutableText
+import net.minecraft.text.Style
+import net.minecraft.text.Text
 
 object Party {
     var inParty = false
@@ -104,5 +112,28 @@ object Party {
             val player = matches[1].removeRankTag()
             members.remove(player)
         }
+
+        Chat.registerChat("From ($playerRegex): \\[RFUPF\\] I would like to join your party!".toExactRegex()) { _, matches ->
+            val player = matches[1].removeRankTag()
+            promptInvite(player)
+        }
+    }
+
+    fun promptInvite(username: String) {
+        val text = TextUtils.rfuLiteral("$username ${TextColor.GOLD}would like to join your party ", TextStyle(TextColor.YELLOW,
+            TextEffects.BOLD)) as? MutableText
+        text?.append(
+            Text.literal("§a[Accept]")
+                .setStyle(
+                    Style.EMPTY
+                        .withClickEvent(ClickEvent.RunCommand("party $username"))
+                        .withHoverEvent(HoverEvent.ShowText(Text.literal("/party $username")))
+                )
+        )
+        Chat.sendMessage(text as Text)
+    }
+
+    fun requestEntry(username : String) {
+        Chat.sendServerCommand("w $username [RFUPF] I would like to join your party!")
     }
 }

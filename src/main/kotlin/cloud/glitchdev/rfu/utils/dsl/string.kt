@@ -7,7 +7,7 @@ fun String.removeFormatting() : String {
 }
 
 fun String.removeRankTag() : String {
-    return this.replace("""\[[A-Z]+\+*\]""".toRegex(), "")
+    return this.replace("""\[[A-Z]+\+*\]""".toRegex(), "").trim()
 }
 
 fun String.toExactRegex() : Regex {

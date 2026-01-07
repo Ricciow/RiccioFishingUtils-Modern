@@ -3,6 +3,8 @@ package cloud.glitchdev.rfu.gui.components.partyfinder
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.elementa.TextWrappingConstraint
 import cloud.glitchdev.rfu.model.party.FishingParty
+import cloud.glitchdev.rfu.utils.Party
+import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.dsl.addHoverColoring
 import cloud.glitchdev.rfu.utils.dsl.isUser
 import cloud.glitchdev.rfu.utils.network.PartyHttp
@@ -41,6 +43,10 @@ class UIPartyCard(val party: FishingParty, radius : Float, var onDelete : () -> 
     fun create() {
         this.constrain {
             color = primaryColor
+        }
+
+        this.onMouseClick {
+            if(party.user != User.getUsername()) Party.requestEntry(party.user)
         }
 
         this.addHoverColoring(Animations.IN_EXP, hoverDuration, primaryColor, hoverColor)
