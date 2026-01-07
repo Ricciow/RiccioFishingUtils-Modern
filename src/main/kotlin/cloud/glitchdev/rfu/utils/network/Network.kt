@@ -148,8 +148,8 @@ object Network {
             val session = RiccioFishingUtils.minecraft.session
             val serverId = UUID.randomUUID().toString().replace("-", "")
             //? if <1.21.10 {
-            /*val sessionService = minecraft.sessionService
-            *///?} else  {
+            /*val sessionService = RiccioFishingUtils.minecraft.sessionService
+            *///?} else {
             val sessionService = RiccioFishingUtils.minecraft.apiServices.sessionService
             //?}
 

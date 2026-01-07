@@ -2,7 +2,6 @@ package cloud.glitchdev.rfu.utils
 
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.network.PlayerListEntry
-import kotlin.text.isEmpty
 
 object Tablist {
     fun getTabListPlayers(): Collection<PlayerListEntry> {
@@ -15,6 +14,9 @@ object Tablist {
 
     fun getTablistAsStrings() : List<String> {
         val players = getTabListPlayers()
-        return players.map { it.displayName?.string }.filter { it != null && !it.isEmpty()} as List<String>
+        return players.mapNotNull { player ->
+            val name = player.displayName?.string
+            if (name.isNullOrEmpty()) null else name
+        }
     }
 }
