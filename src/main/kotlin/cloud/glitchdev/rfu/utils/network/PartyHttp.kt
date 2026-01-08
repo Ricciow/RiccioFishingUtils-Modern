@@ -13,6 +13,7 @@ import java.net.http.HttpRequest
 
 object PartyHttp {
     private val gson = Gson()
+    var currentParty : FishingParty? = null
 
     fun getExistingParties(callback: (List<FishingParty>) -> Unit) {
         getRequest("${RiccioFishingUtils.API_URL}/party") { response ->
@@ -40,6 +41,9 @@ object PartyHttp {
 
         postRequest("${RiccioFishingUtils.API_URL}/party", true, HttpRequest.BodyPublishers.ofString(party.toJson())) { response ->
             callback(response.isSuccessful())
+            if(response.isSuccessful()) {
+                currentParty = party
+            }
         }
     }
 
@@ -52,6 +56,9 @@ object PartyHttp {
 
         deleteRequest("${RiccioFishingUtils.API_URL}/party/${User.getUsername()}", true) { response ->
             callback(response.isSuccessful())
+            if(response.isSuccessful()) {
+                currentParty = null
+            }
         }
     }
 }
