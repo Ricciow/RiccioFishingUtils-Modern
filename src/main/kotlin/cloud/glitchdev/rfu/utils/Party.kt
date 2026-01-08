@@ -49,7 +49,7 @@ object Party {
             val username = matches[1].removeRankTag()
             isLeader = username.isUser()
             members.clear()
-            members.add(username)
+            if(!isLeader) members.add(username)
             executePartyChange()
         }
 
@@ -135,19 +135,21 @@ object Party {
         }
 
         onPartyChange { inParty, _, members ->
-            val currentParty : FishingParty? = PartyHttp.currentParty
-            if(currentParty != null) {
-                PartyHttp.deleteParty { success ->
-                 if(success && inParty && members.size + 1 <= currentParty.players.max) {
+            val currentParty: FishingParty? = PartyHttp.currentParty
+            if (currentParty != null) {
+                if (inParty) {
+                    if (members.size + 1 <= currentParty.players.max) {
                         currentParty.players.current = members.size + 1
                         PartyHttp.createParty(currentParty) {}
                     }
+                } else {
+                    PartyHttp.deleteParty {}
                 }
             }
         }
 
         ClientLifecycleEvents.CLIENT_STOPPING.register {
-            if(PartyHttp.currentParty != null) {
+            if (PartyHttp.currentParty != null) {
                 PartyHttp.deleteParty {}
             }
         }
@@ -176,6 +178,10 @@ object Party {
     private var oldMembers: MutableSet<String> = mutableSetOf()
 
     private fun executePartyChange() {
+//        println("inParty $inParty != $wasInParty")
+//        println("wasLeader $isLeader != $wasLeader")
+//        println("members $oldMembers != $members")
+
         if (inParty != wasInParty ||
             wasLeader != isLeader ||
             oldMembers != members
