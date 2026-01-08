@@ -8,6 +8,7 @@ import cloud.glitchdev.rfu.utils.dsl.isUser
 import cloud.glitchdev.rfu.utils.dsl.removeRankTag
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import cloud.glitchdev.rfu.utils.network.PartyHttp
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents
 import net.minecraft.text.ClickEvent
 import net.minecraft.text.HoverEvent
 import net.minecraft.text.MutableText
@@ -142,6 +143,12 @@ object Party {
                         PartyHttp.createParty(currentParty) {}
                     }
                 }
+            }
+        }
+
+        ClientLifecycleEvents.CLIENT_STOPPING.register {
+            if(PartyHttp.currentParty != null) {
+                PartyHttp.deleteParty {}
             }
         }
     }
