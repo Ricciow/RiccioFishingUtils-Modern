@@ -1,6 +1,7 @@
 plugins {
     id("fabric-loom")
     kotlin("jvm")
+    id("com.google.devtools.ksp")
 }
 
 version = "${property("mod.version")}+${stonecutter.current.version}"
@@ -49,6 +50,8 @@ dependencies {
     modImplementation("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric_api")}")
 
     modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:${property("devauth_version")}")
+
+    ksp(project(":processor"))
 }
 
 loom {

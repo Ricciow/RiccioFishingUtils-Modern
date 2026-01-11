@@ -9,10 +9,12 @@ pluginManagement {
 
     val kotlin_version: String by settings
     val loom_version: String by settings
+    val ksp_version: String by settings
 
     plugins {
         id("fabric-loom") version loom_version
         kotlin("jvm") version kotlin_version
+        id("com.google.devtools.ksp") version ksp_version
     }
 
 }
@@ -29,3 +31,4 @@ stonecutter {
 }
 
 rootProject.name = "RiccioFishingUtils"
+include(":processor")
