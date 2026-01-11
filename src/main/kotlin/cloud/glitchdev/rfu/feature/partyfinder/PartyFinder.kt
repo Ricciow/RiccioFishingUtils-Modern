@@ -13,7 +13,7 @@ import cloud.glitchdev.rfu.utils.World
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
 
 @RFUFeature
-class PartyFinder : Feature {
+object PartyFinder : Feature {
     override fun onInitialize() {
         Command.registerCommand(
             literal("rfupf")
