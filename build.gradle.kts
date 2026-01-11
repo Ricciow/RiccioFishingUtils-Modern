@@ -77,6 +77,12 @@ java {
 
 kotlin {
     jvmToolchain(requiredJava.majorVersion.toInt())
+
+    sourceSets {
+        main {
+            kotlin.srcDir("build/generated/ksp/main/kotlin")
+        }
+    }
 }
 
 tasks {

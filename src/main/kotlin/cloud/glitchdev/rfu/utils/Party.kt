@@ -3,6 +3,8 @@ package cloud.glitchdev.rfu.utils
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.constants.text.TextStyle
+import cloud.glitchdev.rfu.events.AutoRegister
+import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.utils.dsl.isUser
 import cloud.glitchdev.rfu.utils.dsl.removeRankTag
@@ -15,7 +17,8 @@ import net.minecraft.text.MutableText
 import net.minecraft.text.Style
 import net.minecraft.text.Text
 
-object Party {
+@AutoRegister
+object Party : RegisteredEvent {
     var inParty = false
     var isLeader = false
     val members: MutableSet<String> = mutableSetOf()
@@ -23,7 +26,7 @@ object Party {
 
     private const val PLAYER_REGEX = "(?:\\[[A-Z]+\\+*\\] )?[0-9a-zA-Z_]{3,16}"
 
-    fun registerEvents() {
+    override fun register() {
         Chat.registerChat("""Party > .+: .+""".toExactRegex()) { _, _ ->
             inParty = true
             executePartyChange()

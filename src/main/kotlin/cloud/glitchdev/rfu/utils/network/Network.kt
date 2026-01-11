@@ -1,6 +1,8 @@
 package cloud.glitchdev.rfu.utils.network
 
 import cloud.glitchdev.rfu.RiccioFishingUtils
+import cloud.glitchdev.rfu.events.AutoRegister
+import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.utils.User
 import com.google.gson.JsonParser
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents
@@ -12,7 +14,8 @@ import java.time.Instant
 import java.util.Base64
 import java.util.UUID
 
-object Network {
+@AutoRegister
+object Network : RegisteredEvent {
     class Response(val response : HttpResponse<String>?) {
         val statusCode = response?.statusCode()
         val body = response?.body()
@@ -26,7 +29,7 @@ object Network {
     private var expiresAt : Long? = null
     private val client = HttpClient.newHttpClient()
 
-    fun registerEvents() {
+    override fun register() {
         ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register { _, _ ->
             authenticateUser()
         }

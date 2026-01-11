@@ -1,23 +1,13 @@
 package cloud.glitchdev.rfu
 
-import cloud.glitchdev.rfu.utils.Command
-import cloud.glitchdev.rfu.utils.Features
-import cloud.glitchdev.rfu.utils.Gui
-import cloud.glitchdev.rfu.utils.network.Network
-import cloud.glitchdev.rfu.utils.Party
 import net.fabricmc.api.ClientModInitializer
 import net.minecraft.client.MinecraftClient
+import cloud.glitchdev.rfu.generated.RFULoader
 
 class RiccioFishingUtils : ClientModInitializer {
     override fun onInitializeClient() {
-        Features.initializeFeatures()
-
-        Gui.registerEvents()
-        Party.registerEvents()
-        Network.registerEvents()
-
-
-        Command.registerEvents()
+        RFULoader.loadFeatures()
+        RFULoader.registerEvents()
     }
 
     companion object {

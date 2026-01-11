@@ -1,10 +1,16 @@
 package cloud.glitchdev.rfu.processor
 
 import com.google.devtools.ksp.processing.*
+import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import java.io.OutputStream
-import java.nio.file.FileAlreadyExistsException
+
+private data class GeneratorSpec(
+    val annotation: String,
+    val loaderFuncName: String,
+    val methodToCall: String
+)
 
 class FeatureProcessor(
     private val codeGenerator: CodeGenerator,
@@ -12,38 +18,57 @@ class FeatureProcessor(
 ) : SymbolProcessor {
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        val annotationName = "cloud.glitchdev.rfu.feature.RFUFeature"
+        // --- CONFIGURATION: Annotation stuff ---
+        val specs = listOf(
+            GeneratorSpec("cloud.glitchdev.rfu.feature.RFUFeature", "loadFeatures", "onInitialize"),
+            GeneratorSpec("cloud.glitchdev.rfu.events.AutoRegister", "registerEvents", "register")
+        )
 
-        val symbols = resolver.getSymbolsWithAnnotation(annotationName)
-            .filterIsInstance<KSClassDeclaration>()
-            .toList()
-
-        if (symbols.isEmpty()) return emptyList()
-
-        val resourceFile = "META-INF/services/cloud.glitchdev.rfu.feature.Feature"
-
-        try {
-            val file: OutputStream = codeGenerator.createNewFile(
-                Dependencies(true, *symbols.map { it.containingFile!! }.toTypedArray()),
-                "",
-                resourceFile,
-                ""
-            )
-
-            file.bufferedWriter().use { writer ->
-                symbols.forEach { classDeclaration ->
-                    val className = classDeclaration.qualifiedName?.asString()
-                    if (className != null) {
-                        writer.write(className)
-                        writer.newLine()
-                    }
-                }
-            }
-            logger.warn("Registered ${symbols.size} features for $annotationName")
-        } catch (e: FileAlreadyExistsException) {
-            //Just a catch
+        val symbolsMap = specs.associateWith { spec ->
+            resolver.getSymbolsWithAnnotation(spec.annotation)
+                .filterIsInstance<KSClassDeclaration>()
+                .toList()
         }
 
+        if (symbolsMap.values.all { it.isEmpty() }) return emptyList()
+
+        val packageName = "cloud.glitchdev.rfu.generated"
+        val fileName = "RFULoader"
+        val allFiles = symbolsMap.values.flatten().mapNotNull { it.containingFile }.toTypedArray()
+
+        val file: OutputStream = codeGenerator.createNewFile(
+            Dependencies(true, *allFiles), packageName, fileName
+        )
+
+        file.bufferedWriter().use { writer ->
+            writer.write("package $packageName\n\n")
+            symbolsMap.values.flatten().distinct().forEach {
+                writer.write("import ${it.qualifiedName!!.asString()}\n")
+            }
+            writer.write("\nobject $fileName {\n")
+
+            specs.forEach { spec ->
+                val symbols = symbolsMap[spec] ?: emptyList()
+
+                writer.write("\n    fun ${spec.loaderFuncName}() {\n")
+                if (symbols.isEmpty()) writer.write("        // No entries found\n")
+
+                symbols.forEach { symbol ->
+                    val name = symbol.simpleName.asString()
+                    writer.write("        ")
+                    if (symbol.classKind == ClassKind.OBJECT) {
+                        writer.write("$name.${spec.methodToCall}()")
+                    } else {
+                        writer.write("$name().${spec.methodToCall}()")
+                    }
+                    writer.write("\n")
+                }
+                writer.write("    }\n")
+            }
+            writer.write("}")
+        }
+
+        logger.warn("RFU Loader generated successfully.")
         return emptyList()
     }
 }
