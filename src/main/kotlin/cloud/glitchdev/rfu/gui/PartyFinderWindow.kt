@@ -222,7 +222,7 @@ class PartyFinderWindow : BaseWindow() {
         Window.enqueueRenderOperation {
             partyCreationArea.setHidden(!partyCreationOpen)
             partyArea.setHidden(partyCreationOpen)
-            filterArea.setHidden(if (partyCreationOpen) true else !filterOpen)
+            filterArea.setHidden(partyCreationOpen || !filterOpen)
             partyCreationButton.setText(if (partyCreationOpen) "Close" else "New Party")
             filterButton.disabled = partyCreationOpen
             reloadButton.disabled = partyCreationOpen

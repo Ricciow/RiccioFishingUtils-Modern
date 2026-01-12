@@ -1,7 +1,7 @@
 package cloud.glitchdev.rfu.utils.network
 
-import cloud.glitchdev.rfu.RiccioFishingUtils
 import cloud.glitchdev.rfu.RiccioFishingUtils.minecraft
+import cloud.glitchdev.rfu.RiccioFishingUtils.API_URL
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.events.AutoRegister
@@ -143,7 +143,7 @@ object Network : RegisteredEvent {
                 val jsonObject = JsonParser.parseString(decodedJson).asJsonObject
 
                 if (jsonObject.has("exp")) {
-                    expiresAt = jsonObject.get("exp").asLong
+                    expiresAt = jsonObject["exp"].asLong
                 }
                 else {
                     return true
@@ -164,12 +164,12 @@ object Network : RegisteredEvent {
      */
     fun authenticateUser() {
         if(isTokenExpired()) {
-            val session = RiccioFishingUtils.minecraft.session
+            val session = minecraft.session
             val serverId = UUID.randomUUID().toString().replace("-", "")
             //? if <1.21.10 {
-            /*val sessionService = RiccioFishingUtils.minecraft.sessionService
+            /*val sessionService = minecraft.sessionService
             *///?} else {
-            val sessionService = RiccioFishingUtils.minecraft.apiServices.sessionService
+            val sessionService = minecraft.apiServices.sessionService
             //?}
 
             try {
@@ -179,7 +179,7 @@ object Network : RegisteredEvent {
                     serverId
                 )
 
-                postRequest("${RiccioFishingUtils.API_URL}/auth/login?user=${User.getUsername()}&server=$serverId") { response ->
+                postRequest("${API_URL}/auth/login?user=${User.getUsername()}&server=$serverId") { response ->
                     if(response.isSuccessful()) {
                         token = response.body
                         println("Token Renewed")
