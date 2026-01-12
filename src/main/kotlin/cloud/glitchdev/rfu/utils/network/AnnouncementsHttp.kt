@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.utils.network
 
-import cloud.glitchdev.rfu.RiccioFishingUtils.Companion.API_URL
+import cloud.glitchdev.rfu.RiccioFishingUtils.API_URL
 import cloud.glitchdev.rfu.model.announcement.Announcement
 import cloud.glitchdev.rfu.utils.network.Network.getRequest
 import com.google.gson.Gson

@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.gui
 
-import cloud.glitchdev.rfu.RiccioFishingUtils.Companion.minecraft
+import cloud.glitchdev.rfu.RiccioFishingUtils.minecraft
 import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.partyfinder.UICreateParty
 import cloud.glitchdev.rfu.gui.components.partyfinder.UIFilterArea

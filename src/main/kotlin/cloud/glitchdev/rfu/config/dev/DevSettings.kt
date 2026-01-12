@@ -1,13 +1,10 @@
 package cloud.glitchdev.rfu.config.dev
 
-import com.teamresourceful.resourcefulconfig.api.annotations.Category
-import com.teamresourceful.resourcefulconfig.api.annotations.Comment
-import com.teamresourceful.resourcefulconfig.api.annotations.ConfigEntry
+import com.teamresourceful.resourcefulconfigkt.api.CategoryKt
 
-@Category("Developer Settings")
-object DevSettings {
-    @JvmField
-    @ConfigEntry(id = "Dev Mode")
-    @Comment("Enable developer mode")
-    var devMode : Boolean = false
+object DevSettings : CategoryKt("Developer") {
+    var devMode by boolean(false) {
+        name = Literal("Developer Mode")
+        description = Literal("Enable developer mode.")
+    }
 }

@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.utils.network
 
-import cloud.glitchdev.rfu.RiccioFishingUtils.Companion.API_URL
+import cloud.glitchdev.rfu.RiccioFishingUtils.API_URL
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.network.Network.authenticateUser

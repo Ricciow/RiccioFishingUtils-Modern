@@ -3,7 +3,7 @@ package cloud.glitchdev.rfu.utils
 import cloud.glitchdev.rfu.utils.dsl.removeFormatting
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
 import net.minecraft.text.Text
-import cloud.glitchdev.rfu.RiccioFishingUtils.Companion.minecraft
+import cloud.glitchdev.rfu.RiccioFishingUtils.minecraft
 
 object Chat {
     fun registerChat(listener: (message : Text) -> Unit) {

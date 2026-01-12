@@ -8,11 +8,15 @@ import cloud.glitchdev.rfu.utils.Command
 import com.teamresourceful.resourcefulconfig.api.client.ResourcefulConfigScreen
 import com.teamresourceful.resourcefulconfig.api.loader.Configurator
 
-class RiccioFishingUtils : ClientModInitializer {
-    val configurator : Configurator = Configurator(MOD_ID)
+object RiccioFishingUtils : ClientModInitializer {
+    const val MOD_ID = "rfu"
+    const val API_URL: String = "https://rfu.glitchdev.cloud/api"
+
+    val minecraft: MinecraftClient = MinecraftClient.getInstance()
+    val configurator = Configurator(MOD_ID)
 
     override fun onInitializeClient() {
-        configurator.register(RFUSettings::class.java)
+        RFUSettings.register(configurator)
         RFULoader.loadFeatures()
         RFULoader.registerEvents()
 
@@ -24,9 +28,4 @@ class RiccioFishingUtils : ClientModInitializer {
         }
     }
 
-    companion object {
-        val MOD_ID = "rfu"
-        val minecraft: MinecraftClient = MinecraftClient.getInstance()
-        const val API_URL: String = "https://rfu.glitchdev.cloud/api"
-    }
 }

@@ -58,6 +58,7 @@ dependencies {
     ksp(project(":processor"))
 
     modImplementation(include("com.teamresourceful.resourcefulconfig:resourcefulconfig-fabric-${property("resourceful_mc_version")}:${property("resourceful_version")}")!!)
+    modImplementation(include("com.teamresourceful.resourcefulconfigkt:resourcefulconfigkt-fabric-${property("resourcefulkt_mc_version")}:${property("resourcefulkt_version")}")!!)
 }
 
 loom {
