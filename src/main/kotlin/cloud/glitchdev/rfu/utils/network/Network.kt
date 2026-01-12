@@ -45,7 +45,7 @@ object Network : RegisteredEvent {
                 .executes { context ->
                     minecraft.keyboard.clipboard = token
                     context.source.sendFeedback(TextUtils.rfuLiteral("Your rfu back-end token has been copied to your clipboard!",
-                        TextStyle(TextColor.WHITE)))
+                        TextStyle(TextColor.LIGHT_GREEN)))
                     return@executes 1
                 }
         )
