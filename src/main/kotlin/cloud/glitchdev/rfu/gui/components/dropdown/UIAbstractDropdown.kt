@@ -243,7 +243,7 @@ abstract class UIAbstractDropdown(
             val availableHeight = window.getHeight() - dropdownStartY - 10f
             val finalHeight = min(contentHeight, availableHeight.coerceAtLeast(optionHeightPixels))
 
-            if(values.size > 0) {
+            if(values.isNotEmpty()) {
                 textContainer.constrain { y = SiblingConstraint() }
 
                 listContainer.constrain {

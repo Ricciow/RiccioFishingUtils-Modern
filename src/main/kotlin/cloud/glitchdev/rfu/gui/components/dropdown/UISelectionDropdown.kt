@@ -45,7 +45,7 @@ class UISelectionDropdown(
     }
 
     override fun shouldHover() : Boolean {
-        val size = selectedIndices?.size ?: 0
+        val size = selectedIndices.size
         return size < selectionLimit
     }
 
@@ -54,11 +54,11 @@ class UISelectionDropdown(
     }
 
     override fun isOptionSelected(index: Int): Boolean {
-        return selectedIndices?.contains(index) ?: false
+        return selectedIndices.contains(index)
     }
 
     override fun getDropdownDisplayText(): String {
-        if (selectedIndices?.isEmpty() ?: true) return "None"
+        if (selectedIndices.isEmpty()) return "None"
         if (selectedIndices.size == 1) return values[selectedIndices.first()].label
         if (selectedIndices.size == values.size) return "All"
 

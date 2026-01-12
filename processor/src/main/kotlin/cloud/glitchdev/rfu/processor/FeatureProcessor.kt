@@ -21,8 +21,6 @@ class FeatureProcessor(
 ) : SymbolProcessor {
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        // --- CONFIGURATION ---
-        // 2. Define the required interface for your annotation here
         val specs = listOf(
             GeneratorSpec(
                 annotation = "cloud.glitchdev.rfu.feature.RFUFeature",
