@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.utils.network
 
-import cloud.glitchdev.rfu.RiccioFishingUtils
+import cloud.glitchdev.rfu.RiccioFishingUtils.Companion.API_URL
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.network.Network.authenticateUser
@@ -16,7 +16,7 @@ object PartyHttp {
     var currentParty : FishingParty? = null
 
     fun getExistingParties(callback: (List<FishingParty>) -> Unit) {
-        getRequest("${RiccioFishingUtils.API_URL}/party") { response ->
+        getRequest("${API_URL}/party") { response ->
             if(!response.isSuccessful()) {
                 callback(mutableListOf())
                 return@getRequest
@@ -39,7 +39,7 @@ object PartyHttp {
             return
         }
 
-        postRequest("${RiccioFishingUtils.API_URL}/party", true, HttpRequest.BodyPublishers.ofString(party.toJson())) { response ->
+        postRequest("${API_URL}/party", true, HttpRequest.BodyPublishers.ofString(party.toJson())) { response ->
             callback(response.isSuccessful())
             if(response.isSuccessful()) {
                 currentParty = party
@@ -54,7 +54,7 @@ object PartyHttp {
             return
         }
 
-        deleteRequest("${RiccioFishingUtils.API_URL}/party/${User.getUsername()}", true) { response ->
+        deleteRequest("${API_URL}/party/${User.getUsername()}", true) { response ->
             callback(response.isSuccessful())
             if(response.isSuccessful()) {
                 currentParty = null

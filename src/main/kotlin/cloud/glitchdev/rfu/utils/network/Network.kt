@@ -1,10 +1,16 @@
 package cloud.glitchdev.rfu.utils.network
 
 import cloud.glitchdev.rfu.RiccioFishingUtils
+import cloud.glitchdev.rfu.RiccioFishingUtils.Companion.minecraft
+import cloud.glitchdev.rfu.constants.text.TextColor
+import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
+import cloud.glitchdev.rfu.utils.Command
+import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.User
 import com.google.gson.JsonParser
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents
 import java.net.URI
 import java.net.http.HttpClient
@@ -33,6 +39,16 @@ object Network : RegisteredEvent {
         ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register { _, _ ->
             authenticateUser()
         }
+
+        Command.registerCommand(
+            literal("rfubackendtoken")
+                .executes { context ->
+                    minecraft.keyboard.clipboard = token
+                    context.source.sendFeedback(TextUtils.rfuLiteral("Your rfu back-end token has been copied to your clipboard!",
+                        TextStyle(TextColor.WHITE)))
+                    return@executes 1
+                }
+        )
     }
 
     fun getRequest(url : String, useToken : Boolean = false, callback: (Response) -> Unit) {

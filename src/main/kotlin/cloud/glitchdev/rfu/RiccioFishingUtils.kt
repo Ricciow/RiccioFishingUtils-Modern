@@ -12,6 +12,6 @@ class RiccioFishingUtils : ClientModInitializer {
 
     companion object {
         val minecraft: MinecraftClient = MinecraftClient.getInstance()
-        val API_URL: String = "https://rfu.glitchdev.cloud/api"
+        const val API_URL: String = "https://rfu.glitchdev.cloud/api"
     }
 }

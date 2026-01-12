@@ -181,10 +181,6 @@ object Party : RegisteredEvent {
     private var oldMembers: MutableSet<String> = mutableSetOf()
 
     private fun executePartyChange() {
-//        println("inParty $inParty != $wasInParty")
-//        println("wasLeader $isLeader != $wasLeader")
-//        println("members $oldMembers != $members")
-
         if (inParty != wasInParty ||
             wasLeader != isLeader ||
             oldMembers != members
