@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.feature.partyfinder
 
+import cloud.glitchdev.rfu.config.dev.DevSettings
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.constants.text.TextStyle
@@ -18,7 +19,7 @@ object PartyFinder : Feature {
         Command.registerCommand(
             literal("rfupf")
                 .executes { context ->
-                    if(World.isInSkyblock()) {
+                    if(World.isInSkyblock() || DevSettings.devMode) {
                         Gui.openGui(PartyFinderWindow())
                     } else {
                         context.source.sendFeedback(TextUtils.rfuLiteral("Must be in skyblock to use this feature!",

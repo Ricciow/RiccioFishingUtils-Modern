@@ -33,6 +33,10 @@ repositories {
     maven(url = "https://repo.essential.gg/repository/maven-public") {
         name = "Elementa"
     }
+
+    maven(url = "https://maven.teamresourceful.com/repository/maven-public/") {
+        name = "Resourceful Config"
+    }
 }
 
 dependencies {
@@ -52,6 +56,8 @@ dependencies {
     modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:${property("devauth_version")}")
 
     ksp(project(":processor"))
+
+    modImplementation(include("com.teamresourceful.resourcefulconfig:resourcefulconfig-fabric-${property("resourceful_mc_version")}:${property("resourceful_version")}")!!)
 }
 
 loom {
