@@ -187,7 +187,7 @@ class UICreateParty(radius: Float, val onCreateParty : (Boolean) -> Unit) : UIRo
         mobsField = UISelectionDropdown(
             SeaCreatures.toDataOptions(party.liquid, party.island, party.fishingType),
             5,
-            emptySet(),
+            HashSet(),
             5f,
             false
         ).constrain {

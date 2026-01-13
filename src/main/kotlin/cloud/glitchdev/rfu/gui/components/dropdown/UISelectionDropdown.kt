@@ -5,17 +5,18 @@ import cloud.glitchdev.rfu.model.data.DataOption
 class UISelectionDropdown(
     values: ArrayList<DataOption>,
     val selectionLimit: Int = Int.MAX_VALUE, // Default to no limit
-    preSelectedIndices: Set<Int> = emptySet(),
+    preSelectedIndices : HashSet<Int> = HashSet(),
     radiusProps: Float,
     hideArrow: Boolean = false,
     label: String = "",
     var onSelectionChanged: (List<DataOption>) -> Unit = {}
 ) : UIAbstractDropdown(values, radiusProps, hideArrow, label) {
 
-    private val selectedIndices = HashSet<Int>()
+    @Suppress("UNNECESSARY_LATEINIT")
+    lateinit var selectedIndices: HashSet<Int>
 
     init {
-        selectedIndices.addAll(preSelectedIndices)
+        selectedIndices = preSelectedIndices
         updateDropdownState()
     }
 
@@ -45,7 +46,7 @@ class UISelectionDropdown(
     }
 
     override fun shouldHover() : Boolean {
-        val size = selectedIndices.size
+        val size = if(::selectedIndices.isInitialized) selectedIndices.size else 0
         return size < selectionLimit
     }
 
@@ -54,10 +55,11 @@ class UISelectionDropdown(
     }
 
     override fun isOptionSelected(index: Int): Boolean {
-        return selectedIndices.contains(index)
+        return ::selectedIndices.isInitialized && selectedIndices.contains(index)
     }
 
     override fun getDropdownDisplayText(): String {
+        if (!::selectedIndices.isInitialized) return "None"
         if (selectedIndices.isEmpty()) return "None"
         if (selectedIndices.size == 1) return values[selectedIndices.first()].label
         if (selectedIndices.size == values.size) return "All"
