@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.feature.partyfinder
 
+import cloud.glitchdev.rfu.RiccioFishingUtils.minecraft
 import cloud.glitchdev.rfu.config.dev.DevSettings
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
@@ -28,5 +29,10 @@ object PartyFinder : Feature {
                     return@executes 1
                 }
         )
+
+        //Preload party finder window so it doesn't lag upon first opening
+        minecraft.execute {
+            PartyFinderWindow()
+        }
     }
 }
