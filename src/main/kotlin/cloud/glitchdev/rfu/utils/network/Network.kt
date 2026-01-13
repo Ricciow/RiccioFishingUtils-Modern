@@ -101,6 +101,34 @@ object Network : RegisteredEvent {
         }
     }
 
+    fun putRequest(url : String, useToken : Boolean = false, body: HttpRequest.BodyPublisher = HttpRequest.BodyPublishers.noBody(), callback: (Response) -> Unit) {
+        try {
+            val requestBuilder = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .PUT(body)
+                .header("Content-Type", "Application/Json")
+
+            if(useToken) {
+                requestBuilder.header("Authorization", "Bearer $token")
+            }
+
+            val request = requestBuilder.build()
+
+            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .handle { res, ex ->
+                    if (ex != null) {
+                        callback(Response(null))
+                    } else {
+                        callback(Response(res))
+                    }
+                }
+        }
+        catch (e : Exception) {
+            e.printStackTrace()
+            callback(Response(null))
+        }
+    }
+
     fun deleteRequest(url : String, useToken : Boolean = false, body: HttpRequest.BodyPublisher = HttpRequest.BodyPublishers.noBody(), callback: (Response) -> Unit) {
         try {
             val requestBuilder = HttpRequest.newBuilder()

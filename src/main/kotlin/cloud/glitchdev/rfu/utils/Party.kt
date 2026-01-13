@@ -143,7 +143,7 @@ object Party : RegisteredEvent {
                 if (inParty) {
                     if (members.size + 1 <= currentParty.players.max) {
                         currentParty.players.current = members.size + 1
-                        PartyHttp.createParty(currentParty) {}
+                        PartyHttp.updateParty(currentParty) {}
                     }
                 } else {
                     PartyHttp.deleteParty {}

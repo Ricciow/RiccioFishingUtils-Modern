@@ -7,6 +7,7 @@ import cloud.glitchdev.rfu.utils.network.Network.authenticateUser
 import cloud.glitchdev.rfu.utils.network.Network.getRequest
 import cloud.glitchdev.rfu.utils.network.Network.isTokenExpired
 import cloud.glitchdev.rfu.utils.network.Network.postRequest
+import cloud.glitchdev.rfu.utils.network.Network.putRequest
 import cloud.glitchdev.rfu.utils.network.Network.deleteRequest
 import com.google.gson.Gson
 import java.net.http.HttpRequest
@@ -40,6 +41,21 @@ object PartyHttp {
         }
 
         postRequest("${API_URL}/party", true, HttpRequest.BodyPublishers.ofString(party.toJson())) { response ->
+            callback(response.isSuccessful())
+            if(response.isSuccessful()) {
+                currentParty = party
+            }
+        }
+    }
+
+    fun updateParty(party : FishingParty, callback: (Boolean) -> Unit) {
+        if (isTokenExpired()) {
+            authenticateUser()
+            callback(false)
+            return
+        }
+
+        putRequest("${API_URL}/party", true, HttpRequest.BodyPublishers.ofString(party.toJson())) { response ->
             callback(response.isSuccessful())
             if(response.isSuccessful()) {
                 currentParty = party
