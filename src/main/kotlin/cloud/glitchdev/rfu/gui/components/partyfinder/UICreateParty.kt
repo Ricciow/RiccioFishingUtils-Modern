@@ -5,6 +5,7 @@ import cloud.glitchdev.rfu.constants.LiquidTypes
 import cloud.glitchdev.rfu.constants.PartyTypes
 import cloud.glitchdev.rfu.constants.SeaCreatures
 import cloud.glitchdev.rfu.gui.components.UIButton
+import cloud.glitchdev.rfu.gui.components.UIPopup
 import cloud.glitchdev.rfu.gui.components.textinput.UIDecoratedTextInput
 import cloud.glitchdev.rfu.gui.components.checkbox.UICheckbox
 import cloud.glitchdev.rfu.gui.components.checkbox.UIRadio
@@ -62,6 +63,8 @@ class UICreateParty(radius: Float, val onCreateParty : (Boolean) -> Unit) : UIRo
             width = 96.percent()
             height = 100.percent()
         } childOf this
+
+        val popup = UIPopup(5f, "Failed to create party!") childOf this
 
         UIWrappedText("Create your party here, parties queued will last for at most 30 minutes.").constrain {
             x = 0.pixels()
@@ -236,7 +239,9 @@ class UICreateParty(radius: Float, val onCreateParty : (Boolean) -> Unit) : UIRo
         createButton.onClick = {
             createButton.disabled = true
             PartyHttp.createParty(party) { success ->
-                //TODO: Alert user if fails
+                if(!success) {
+                    popup.showPopup()
+                }
                 onCreateParty(success)
                 createButton.disabled = false
             }
