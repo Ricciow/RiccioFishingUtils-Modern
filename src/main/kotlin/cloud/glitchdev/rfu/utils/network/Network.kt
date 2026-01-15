@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.utils.network
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.minecraft
 import cloud.glitchdev.rfu.RiccioFishingUtils.API_URL
+import cloud.glitchdev.rfu.RiccioFishingUtils.LOGGER
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.events.AutoRegister
@@ -43,9 +44,15 @@ object Network : RegisteredEvent {
         Command.registerCommand(
             literal("rfubackendtoken")
                 .executes { context ->
-                    minecraft.keyboard.clipboard = token
-                    context.source.sendFeedback(TextUtils.rfuLiteral("Your rfu back-end token has been copied to your clipboard!",
-                        TextStyle(TextColor.LIGHT_GREEN)))
+                    if(token != null) {
+                        minecraft.keyboard.clipboard = token
+                        context.source.sendFeedback(TextUtils.rfuLiteral("Your rfu back-end token has been copied to your clipboard!",
+                            TextStyle(TextColor.LIGHT_GREEN)))
+                    }
+                    else {
+                        context.source.sendFeedback(TextUtils.rfuLiteral("You don't have a RFU back-end token!",
+                            TextStyle(TextColor.LIGHT_RED)))
+                    }
                     return@executes 1
                 }
         )
@@ -68,7 +75,7 @@ object Network : RegisteredEvent {
                 }
         }
         catch (e : Exception) {
-            e.printStackTrace()
+            LOGGER.error(e.toString())
             callback(Response(null))
         }
     }
@@ -96,7 +103,7 @@ object Network : RegisteredEvent {
                 }
         }
         catch (e : Exception) {
-            e.printStackTrace()
+            LOGGER.error(e.toString())
             callback(Response(null))
         }
     }
@@ -124,7 +131,7 @@ object Network : RegisteredEvent {
                 }
         }
         catch (e : Exception) {
-            e.printStackTrace()
+            LOGGER.error(e.toString())
             callback(Response(null))
         }
     }
@@ -152,7 +159,7 @@ object Network : RegisteredEvent {
                 }
         }
         catch (e : Exception) {
-            e.printStackTrace()
+            LOGGER.error(e.toString())
             callback(Response(null))
         }
     }
@@ -181,7 +188,7 @@ object Network : RegisteredEvent {
             val currentTimestamp = Instant.now().epochSecond
             return currentTimestamp > (expiresAt!! - 10)
         } catch (e: Exception) {
-            e.printStackTrace()
+            LOGGER.error(e.toString())
             return true
         }
     }
@@ -210,12 +217,15 @@ object Network : RegisteredEvent {
                 postRequest("${API_URL}/auth/login?user=${User.getUsername()}&server=$serverId") { response ->
                     if(response.isSuccessful()) {
                         token = response.body
-                        println("Token Renewed")
+                        LOGGER.info("Token Renewed")
+                    }
+                    else {
+                        LOGGER.warn("Failed to log into RFU Back-end\n${response.body}")
                     }
                 }
 
             } catch (e: Exception) {
-                System.err.println("Verification failed: ${e.message}")
+                LOGGER.error("Verification failed: ${e.message}")
             }
         }
     }

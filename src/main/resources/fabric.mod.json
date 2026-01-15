@@ -26,7 +26,7 @@
   "mixins": [],
   "accessWidener": "rfu.accesswidener",
   "depends": {
-    "fabricloader": ">=0.17",
+    "fabricloader": ">=0.18.4",
     "minecraft": "${minecraft}",
     "fabric-language-kotlin": ">=${fabric_language_kotlin}"
   }

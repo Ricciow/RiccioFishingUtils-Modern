@@ -9,7 +9,7 @@ import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.gui.PartyFinderWindow
 import cloud.glitchdev.rfu.utils.Command
-import cloud.glitchdev.rfu.utils.Gui
+import cloud.glitchdev.rfu.utils.gui.Gui
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.World
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal

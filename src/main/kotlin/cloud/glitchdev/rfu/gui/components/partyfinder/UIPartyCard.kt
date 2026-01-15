@@ -5,7 +5,7 @@ import cloud.glitchdev.rfu.gui.components.elementa.TextWrappingConstraint
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.User
-import cloud.glitchdev.rfu.utils.dsl.addHoverColoring
+import cloud.glitchdev.rfu.utils.gui.addHoverColoring
 import cloud.glitchdev.rfu.utils.dsl.isUser
 import cloud.glitchdev.rfu.utils.network.PartyHttp
 import gg.essential.elementa.components.UIContainer

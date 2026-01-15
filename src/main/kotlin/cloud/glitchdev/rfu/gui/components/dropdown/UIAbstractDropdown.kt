@@ -2,8 +2,8 @@ package cloud.glitchdev.rfu.gui.components.dropdown
 
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.model.data.DataOption
-import cloud.glitchdev.rfu.utils.dsl.height
-import cloud.glitchdev.rfu.utils.dsl.setHidden
+import cloud.glitchdev.rfu.utils.gui.height
+import cloud.glitchdev.rfu.utils.gui.setHidden
 import gg.essential.elementa.components.ScrollComponent
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle

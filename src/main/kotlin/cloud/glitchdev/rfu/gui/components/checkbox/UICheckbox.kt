@@ -1,7 +1,7 @@
 package cloud.glitchdev.rfu.gui.components.checkbox
 
 import cloud.glitchdev.rfu.gui.UIScheme
-import cloud.glitchdev.rfu.utils.dsl.setHidden
+import cloud.glitchdev.rfu.utils.gui.setHidden
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText

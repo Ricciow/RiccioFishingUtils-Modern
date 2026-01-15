@@ -1,4 +1,4 @@
-package cloud.glitchdev.rfu.utils.dsl
+package cloud.glitchdev.rfu.utils.gui
 
 import gg.essential.elementa.UIComponent
 import gg.essential.elementa.constraints.ColorConstraint

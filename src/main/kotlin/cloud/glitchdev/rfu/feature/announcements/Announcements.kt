@@ -8,7 +8,7 @@ import cloud.glitchdev.rfu.gui.AnnouncementWindow
 import cloud.glitchdev.rfu.model.announcement.Announcement
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.Command
-import cloud.glitchdev.rfu.utils.Gui
+import cloud.glitchdev.rfu.utils.gui.Gui
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.dsl.toInteractiveText
 import cloud.glitchdev.rfu.utils.network.AnnouncementsHttp

@@ -1,4 +1,4 @@
-package cloud.glitchdev.rfu.utils
+package cloud.glitchdev.rfu.utils.gui
 
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
@@ -7,7 +7,7 @@ import gg.essential.universal.UScreen
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 
 @AutoRegister
-object Gui : RegisteredEvent{
+object Gui : RegisteredEvent {
     private var queuedInterface : WindowScreen? = null
     private var shouldOpen = false
 
@@ -15,7 +15,7 @@ object Gui : RegisteredEvent{
         ClientTickEvents.END_CLIENT_TICK.register(ClientTickEvents.EndTick { _ ->
             if (shouldOpen && queuedInterface != null) {
                 shouldOpen = false
-                UScreen.displayScreen(queuedInterface)
+                UScreen.Companion.displayScreen(queuedInterface)
             }
         })
     }

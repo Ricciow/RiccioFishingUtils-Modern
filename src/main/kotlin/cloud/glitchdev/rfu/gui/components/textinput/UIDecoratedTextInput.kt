@@ -2,7 +2,7 @@ package cloud.glitchdev.rfu.gui.components.textinput
 
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.elementa.UISpecialTextInput
-import cloud.glitchdev.rfu.utils.dsl.addHoverColoring
+import cloud.glitchdev.rfu.utils.gui.addHoverColoring
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.animation.Animations
