@@ -1,58 +1,34 @@
 package cloud.glitchdev.rfu.utils.rendering
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.minecraft
-import cloud.glitchdev.rfu.events.AutoRegister
-import cloud.glitchdev.rfu.events.RegisteredEvent
 //? if >=1.21.10 {
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents
 //?} else {
-/*import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext
+/*import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext
 *///?}
 import net.minecraft.client.render.Camera
 //? if >=1.21.11 {
-/*import net.minecraft.client.render.RenderLayers
-*///?} else {
-import net.minecraft.client.render.RenderLayer
-//?}
+import net.minecraft.client.render.RenderLayers
+//?} else {
+/*import net.minecraft.client.render.RenderLayer
+*///?}
 
 import net.minecraft.client.render.RenderTickCounter
 import net.minecraft.client.render.VertexConsumer
 import net.minecraft.entity.Entity
-import net.minecraft.entity.LivingEntity
 import net.minecraft.util.math.Vec3d
 import org.joml.Matrix4f
 import java.awt.Color
 import kotlin.math.cos
 import kotlin.math.sin
 
-@AutoRegister
-object RenderUtils : RegisteredEvent {
+object Render3D {
     val camera : Camera
         get() = minecraft.gameRenderer.camera
     val tickCounter : RenderTickCounter
         get() = minecraft.renderTickCounter
 
-    override fun register() {
-        WorldRenderEvents.AFTER_ENTITIES.register { context ->
-            val world = minecraft.world ?: return@register
-
-            world.entities.forEach { entity ->
-                if (entity is LivingEntity && entity != minecraft.player) {
-                    renderSphereOnMob(
-                        entity = entity,
-                        radius = 1.0f,
-                        color = Color(0, 255, 255, 255),
-                        true,
-                        context
-                    )
-                }
-            }
-        }
-    }
-
-    private fun renderSphereOnMob(
+    fun renderSphereOnMob(
         entity: Entity,
         radius: Float,
         color : Color,
@@ -64,14 +40,17 @@ object RenderUtils : RegisteredEvent {
         if(centered) {
             entityPos = entityPos.add(0.0, (entity.height/2).toDouble(), 0.0)
         }
-        renderSphere(entityPos, radius, color, context)
+        renderSphere(entityPos, radius, color, context, 32, 32)
     }
 
-    private fun renderSphere(
+    fun renderSphere(
         location: Vec3d,
         radius: Float,
         color : Color,
         context: WorldRenderContext,
+        stacks : Int = 16,
+        slices : Int = 16,
+        lineWidth : Float = 2.0f
     ) {
         //Consumers may be null on <1.21.10
         @Suppress("USELESS_ELVIS")
@@ -101,15 +80,12 @@ object RenderUtils : RegisteredEvent {
         )
 
         //? if >=1.21.11 {
-        /*val buffer = consumers.getBuffer(RenderLayers.LINES)
-        *///?} else {
-        val buffer = consumers.getBuffer(RenderLayer.getLines())
-        //?}
+        val buffer = consumers.getBuffer(RenderLayers.LINES)
+        //?} else {
+        /*val buffer = consumers.getBuffer(RenderLayer.getLines())
+        *///?}
 
         val matrix = matrixStack.peek().positionMatrix
-        val stacks = 16
-        val slices = 16
-        val lineWidth = 2.0f
 
         for (i in 0 until stacks) {
             val lat0 = Math.PI * (-0.5 + (i.toDouble() - 1) / stacks)
@@ -152,7 +128,7 @@ object RenderUtils : RegisteredEvent {
             .color(color.red, color.green, color.blue, color.alpha)
             .normal(1f, 0f, 0f)
         //? if >=1.21.11 {
-            /*.lineWidth(lineWidth)
-        *///?}
+            .lineWidth(lineWidth)
+        //?}
     }
 }
