@@ -16,21 +16,13 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents
  * the world but drawn after standard entities.
  */
 @AutoRegister
-object RenderEvents : AbstractEventManager<(WorldRenderContext) -> Boolean, RenderEvents.RenderEvent>() {
+object RenderEvents : AbstractEventManager<(WorldRenderContext) -> Unit, RenderEvents.RenderEvent>() {
 
     override fun register() {
         WorldRenderEvents.AFTER_ENTITIES.register { client ->
-            val needRemoval = mutableListOf<RenderEvent>()
-
             tasks.forEach { task ->
-                val shouldKeepAlive = task.callback(client)
-
-                if (!shouldKeepAlive) {
-                    needRemoval.add(task)
-                }
+                task.callback(client)
             }
-
-            needRemoval.forEach { event -> event.unregister() }
         }
     }
 
@@ -41,7 +33,7 @@ object RenderEvents : AbstractEventManager<(WorldRenderContext) -> Boolean, Rend
      * @param callback The logic to run. Returns `true` to run again next frame, `false` to destroy.
      * @return The registered [RenderEvent] instance.
      */
-    fun registerRenderEvent(priority: Int = 20, callback: (WorldRenderContext) -> Boolean): RenderEvent {
+    fun registerRenderEvent(priority: Int = 20, callback: (WorldRenderContext) -> Unit): RenderEvent {
         return RenderEvent(priority, callback).register()
     }
 
@@ -51,12 +43,12 @@ object RenderEvents : AbstractEventManager<(WorldRenderContext) -> Boolean, Rend
      * @property priority Determines the order of execution relative to other tasks.
      * @property callback The function invoked every frame.
      * Input: [WorldRenderContext] for drawing.
-     * Output: [Boolean] - `true` to persist, `false` to unregister.
+     * Output: [Unit] - `true` to persist, `false` to unregister.
      */
     class RenderEvent(
         priority: Int = 20,
-        callback: (WorldRenderContext) -> Boolean
-    ) : ManagedTask<(WorldRenderContext) -> Boolean, RenderEvent>(priority, callback) {
+        callback: (WorldRenderContext) -> Unit
+    ) : ManagedTask<(WorldRenderContext) -> Unit, RenderEvent>(priority, callback) {
 
         /** Submits this event to the central [RenderEvents] manager. */
         override fun register() = submitTask(this)

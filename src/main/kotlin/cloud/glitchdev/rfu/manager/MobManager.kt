@@ -19,7 +19,8 @@ object MobManager : RegisteredEvent {
     private val sbEntities = HashMap<Int, SkyblockEntity>()
     private val uniqueSbEntities = HashSet<SkyblockEntity>()
 
-    private val entityRegex = """\[Lv\d+\] [^\s]+ (.+) \d+\.?\d*(?:k|M)?\/\d+\.?\d*(?:k|M)?❤""".toRegex()
+    private val entityRegex = """\[Lv\d+\] [^\s]+ (.+) \d+[\.,]?\d*(?:k|M)?\/\d+[\.,]?\d*(?:k|M)?❤""".toRegex()
+    private val corruptedRegex = """^aCorrupted (.+)a$""".toRegex()
 
     override fun register() {
         TickEvents.registerTickEvent(0, 10) { client ->
@@ -41,7 +42,8 @@ object MobManager : RegisteredEvent {
 
             val name = entity.name.toUnformattedString()
             if (!name.matches(entityRegex)) return@forEach
-            val sbName = entityRegex.find(name)?.groupValues?.getOrNull(1) ?: return@forEach
+            var sbName = entityRegex.find(name)?.groupValues?.getOrNull(1) ?: return@forEach
+            sbName = corruptedRegex.find(sbName)?.groupValues?.getOrNull(1) ?: sbName
 
             val foundModel = findModelForNametag(entity, world)
 
@@ -76,10 +78,7 @@ object MobManager : RegisteredEvent {
 
         val candidates = world.getOtherEntities(nametag, searchBox) { candidate ->
             if (candidate !is LivingEntity || candidate is ArmorStandEntity) return@getOtherEntities false
-            if (candidate is PlayerEntity && getPlayerNames().contains(candidate.name.toUnformattedString())) {
-                println(candidate.name.toUnformattedString())
-                return@getOtherEntities false
-            }
+            if (candidate is PlayerEntity && getPlayerNames().contains(candidate.name.toUnformattedString())) return@getOtherEntities false
             val existingLink = sbEntities[candidate.id]
             existingLink == null || existingLink.nameTagEntity.isRemoved
         }.toList()
@@ -93,6 +92,7 @@ object MobManager : RegisteredEvent {
     }
 
     fun removeEntity(sbEntity: SkyblockEntity) {
+        sbEntity.dispose()
         uniqueSbEntities.remove(sbEntity)
         sbEntities.remove(sbEntity.modelEntity.id)
         sbEntities.remove(sbEntity.nameTagEntity.id)
@@ -106,7 +106,7 @@ object MobManager : RegisteredEvent {
 
     fun clearAll() {
         sbEntities.clear()
-        uniqueSbEntities.forEach { it.isRegistered = false }
+        uniqueSbEntities.forEach { it.renderEvent = null }
         uniqueSbEntities.clear()
     }
 }
