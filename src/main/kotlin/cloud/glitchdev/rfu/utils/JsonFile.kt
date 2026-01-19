@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.utils
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.CONFIG_DIR
 import cloud.glitchdev.rfu.RiccioFishingUtils.LOGGER
+import cloud.glitchdev.rfu.RiccioFishingUtils.MOD_ID
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import java.io.File
@@ -22,7 +23,7 @@ class JsonFile<T : Any>(
     private val defaultFactory: () -> T
 ) {
     private val gson: Gson = GsonBuilder().setPrettyPrinting().create()
-    private val file: File = CONFIG_DIR.resolve(filename).toFile()
+    private val file: File = CONFIG_DIR.resolve(MOD_ID).resolve("data").resolve(filename).toFile()
 
     var data: T = defaultFactory()
         private set
@@ -50,6 +51,7 @@ class JsonFile<T : Any>(
 
     fun save() {
         try {
+            println("Saved to ${file.absolutePath}")
             file.parentFile.mkdirs()
             FileWriter(file).use { writer ->
                 gson.toJson(data, writer)
