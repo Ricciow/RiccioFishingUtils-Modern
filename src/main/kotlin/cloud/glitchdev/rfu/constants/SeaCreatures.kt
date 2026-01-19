@@ -159,8 +159,8 @@ enum class SeaCreatures(
     FIREPROOF_WITCH("Fireproof Witch", LAVA, HOTSPOT_LAVA),
     @SerializedName("Fiery Scutter")
     FIERY_SCUTTER("Fiery Scutter", LAVA, HOTSPOT_LAVA, true),
-    @SerializedName("Ragnarock")
-    RAGNAROCK("Ragnarock", LAVA, HOTSPOT_LAVA, true);
+    @SerializedName("Ragnarok")
+    RAGNAROK("Ragnarok", LAVA, HOTSPOT_LAVA, true);
 
     fun toDataOption() : DataOption {
         return DataOption(this, this.scName)

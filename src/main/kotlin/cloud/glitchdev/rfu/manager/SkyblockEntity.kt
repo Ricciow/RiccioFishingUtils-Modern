@@ -22,7 +22,7 @@ data class SkyblockEntity(
     var renderEvent: RenderEvents.RenderEvent? = null
 
     companion object {
-        private val entityRegex = """\[Lv\d+\] [^\s]+ (.+) \d+[\.,]?\d*(?:k|M)?\/\d+[\.,]?\d*(?:k|M)?❤""".toRegex()
+        private val entityRegex = """(?:﴾ )?\[Lv\d+\] [^\s]+ (.+) \d+[\.,]?\d*(?:k|M)?\/\d+[\.,]?\d*(?:k|M)?❤(?: ✯)?(?: ﴿)?""".toRegex()
         private val corruptedRegex = """^aCorrupted (.+)a$""".toRegex()
 
         fun parseNameFromTag(entity: ArmorStandEntity): String? {
