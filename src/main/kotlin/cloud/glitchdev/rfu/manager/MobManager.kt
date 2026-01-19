@@ -19,12 +19,9 @@ object MobManager : RegisteredEvent {
     private val sbEntities = HashMap<Int, SkyblockEntity>()
     private val uniqueSbEntities = HashSet<SkyblockEntity>()
 
-    private val entityRegex = """\[Lv\d+\] [^\s]+ (.+) \d+[\.,]?\d*(?:k|M)?\/\d+[\.,]?\d*(?:k|M)?❤""".toRegex()
-    private val corruptedRegex = """^aCorrupted (.+)a$""".toRegex()
-
     override fun register() {
         TickEvents.registerTickEvent(0, 10) { client ->
-            val world = client.world!!
+            val world = client.world ?: return@registerTickEvent
             scanForSbEntities(world)
             validateCurrentEntities()
         }
@@ -37,37 +34,38 @@ object MobManager : RegisteredEvent {
     private fun scanForSbEntities(world: ClientWorld) {
         world.entities.forEach { entity ->
             if (entity !is ArmorStandEntity) return@forEach
-            if (sbEntities.containsKey(entity.id)) return@forEach
-            if (!entity.isInvisible || !entity.hasCustomName()) return@forEach
 
-            val name = entity.name.toUnformattedString()
-            if (!name.matches(entityRegex)) return@forEach
-            var sbName = entityRegex.find(name)?.groupValues?.getOrNull(1) ?: return@forEach
-            sbName = corruptedRegex.find(sbName)?.groupValues?.getOrNull(1) ?: sbName
+            val trackedEntity = sbEntities[entity.id]
+            if (trackedEntity != null && !trackedEntity.nameTagEntity.isRemoved) return@forEach
+
+            if (!entity.isInvisible) return@forEach
+
+            val sbName = SkyblockEntity.parseNameFromTag(entity) ?: return@forEach
 
             val foundModel = findModelForNametag(entity, world)
 
             if (foundModel != null) {
                 val existingLink = sbEntities[foundModel.id]
-                if (existingLink != null && !existingLink.nameTagEntity.isRemoved) {
-                    return@forEach
+
+                if (existingLink != null) {
+                    if (existingLink.nameTagEntity.isRemoved) {
+                        sbEntities.remove(existingLink.nameTagEntity.id)
+                        existingLink.updateNametag(entity)
+                        sbEntities[entity.id] = existingLink
+                    }
+                } else {
+                    val sbEntity = SkyblockEntity(entity, foundModel, sbName)
+                    sbEntities[entity.id] = sbEntity
+                    sbEntities[foundModel.id] = sbEntity
+                    uniqueSbEntities.add(sbEntity)
                 }
-
-                val sbEntity = SkyblockEntity(entity, foundModel, sbName)
-
-                sbEntities[entity.id] = sbEntity
-                sbEntities[foundModel.id] = sbEntity
-                uniqueSbEntities.add(sbEntity)
             }
         }
     }
 
     private fun validateCurrentEntities() {
         val toRemove = uniqueSbEntities.filter { it.isRemoved() }
-
-        toRemove.forEach { entity ->
-            removeEntity(entity)
-        }
+        toRemove.forEach { removeEntity(it) }
     }
 
     private fun findModelForNametag(nametag: ArmorStandEntity, world: ClientWorld): LivingEntity? {
@@ -83,7 +81,6 @@ object MobManager : RegisteredEvent {
             existingLink == null || existingLink.nameTagEntity.isRemoved
         }.toList()
 
-        // Return closest candidate
         return candidates.minByOrNull { candidate ->
             val dx = nametag.x - candidate.x
             val dz = nametag.z - candidate.z
@@ -99,9 +96,7 @@ object MobManager : RegisteredEvent {
     }
 
     fun findSbEntities(regex: Regex): List<SkyblockEntity> {
-        return uniqueSbEntities.filter { entity ->
-            regex.matches(entity.sbName)
-        }
+        return uniqueSbEntities.filter { regex.matches(it.sbName) }
     }
 
     fun clearAll() {
