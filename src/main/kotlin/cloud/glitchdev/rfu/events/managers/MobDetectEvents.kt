@@ -1,5 +1,6 @@
-package cloud.glitchdev.rfu.events
+package cloud.glitchdev.rfu.events.managers
 
+import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.manager.SkyblockEntity
 
 object MobDetectEvents : AbstractEventManager<(Set<SkyblockEntity>) -> Unit, MobDetectEvents.MobDetectEvent>() {

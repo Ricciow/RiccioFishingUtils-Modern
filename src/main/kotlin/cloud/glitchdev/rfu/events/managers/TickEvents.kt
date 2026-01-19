@@ -1,5 +1,8 @@
-package cloud.glitchdev.rfu.events
+package cloud.glitchdev.rfu.events.managers
 
+import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.events.AutoRegister
+import cloud.glitchdev.rfu.events.RegisteredEvent
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.minecraft.client.MinecraftClient
 

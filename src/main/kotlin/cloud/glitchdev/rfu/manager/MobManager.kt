@@ -1,9 +1,9 @@
 package cloud.glitchdev.rfu.manager
 
 import cloud.glitchdev.rfu.events.AutoRegister
-import cloud.glitchdev.rfu.events.MobDetectEvents
+import cloud.glitchdev.rfu.events.managers.MobDetectEvents
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.TickEvents
+import cloud.glitchdev.rfu.events.managers.TickEvents
 import cloud.glitchdev.rfu.utils.Tablist.getPlayerNames
 import gg.essential.universal.utils.toUnformattedString
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents

@@ -1,8 +1,8 @@
 package cloud.glitchdev.rfu.manager
 
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
-import cloud.glitchdev.rfu.events.RenderEvents
-import cloud.glitchdev.rfu.events.RenderEvents.registerRenderEvent
+import cloud.glitchdev.rfu.events.managers.RenderEvents
+import cloud.glitchdev.rfu.events.managers.RenderEvents.registerRenderEvent
 import cloud.glitchdev.rfu.feature.mob.LootshareRange.RARE_SC_REGEX
 import cloud.glitchdev.rfu.utils.rendering.Render3D.renderSphereOnMob
 import gg.essential.universal.utils.toUnformattedString
