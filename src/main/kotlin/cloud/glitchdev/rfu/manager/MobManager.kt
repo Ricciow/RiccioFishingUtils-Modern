@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.manager
 
 import cloud.glitchdev.rfu.events.AutoRegister
+import cloud.glitchdev.rfu.events.MobDetectEvents
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.TickEvents
 import cloud.glitchdev.rfu.utils.Tablist.getPlayerNames
@@ -24,6 +25,7 @@ object MobManager : RegisteredEvent {
             val world = client.world ?: return@registerTickEvent
             scanForSbEntities(world)
             validateCurrentEntities()
+            MobDetectEvents.runTasks(uniqueSbEntities.toSet())
         }
 
         ClientPlayConnectionEvents.JOIN.register { _, _, _ ->
@@ -93,10 +95,6 @@ object MobManager : RegisteredEvent {
         uniqueSbEntities.remove(sbEntity)
         sbEntities.remove(sbEntity.modelEntity.id)
         sbEntities.remove(sbEntity.nameTagEntity.id)
-    }
-
-    fun findSbEntities(regex: Regex): List<SkyblockEntity> {
-        return uniqueSbEntities.filter { regex.matches(it.sbName) }
     }
 
     fun clearAll() {

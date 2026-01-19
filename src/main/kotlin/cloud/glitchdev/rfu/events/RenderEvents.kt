@@ -16,7 +16,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents
  * the world but drawn after standard entities.
  */
 @AutoRegister
-object RenderEvents : AbstractEventManager<(WorldRenderContext) -> Unit, RenderEvents.RenderEvent>() {
+object RenderEvents : AbstractEventManager<(WorldRenderContext) -> Unit, RenderEvents.RenderEvent>(), RegisteredEvent {
 
     override fun register() {
         WorldRenderEvents.AFTER_ENTITIES.register { client ->

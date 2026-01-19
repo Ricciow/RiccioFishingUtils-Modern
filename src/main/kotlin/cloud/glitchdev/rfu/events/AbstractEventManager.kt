@@ -7,8 +7,7 @@ import java.util.concurrent.CopyOnWriteArrayList
  * * @param CB The function signature for the callback (e.g., (A) -> Unit, or (A, B) -> Unit)
  * @param T The specific task type implementation
  */
-abstract class AbstractEventManager<CB, T : AbstractEventManager.ManagedTask<CB, T>> : RegisteredEvent {
-
+abstract class AbstractEventManager<CB, T : AbstractEventManager.ManagedTask<CB, T>> {
     protected val tasks = CopyOnWriteArrayList<T>()
 
     fun submitTask(task: T): T {

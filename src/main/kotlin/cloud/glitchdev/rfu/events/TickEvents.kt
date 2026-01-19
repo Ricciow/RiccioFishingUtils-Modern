@@ -4,7 +4,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.minecraft.client.MinecraftClient
 
 @AutoRegister
-object TickEvents : AbstractEventManager<(MinecraftClient) -> Unit, TickEvents.TickEvent>() {
+object TickEvents : AbstractEventManager<(MinecraftClient) -> Unit, TickEvents.TickEvent>(), RegisteredEvent {
     override fun register() {
         ClientTickEvents.END_CLIENT_TICK.register { client ->
             tasks.forEach { task ->
