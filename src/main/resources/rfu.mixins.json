@@ -3,6 +3,7 @@
   "package": "cloud.glitchdev.rfu.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "ConfigScreenAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

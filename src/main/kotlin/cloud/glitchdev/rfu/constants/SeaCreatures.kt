@@ -166,6 +166,10 @@ enum class SeaCreatures(
         return DataOption(this, this.scName)
     }
 
+    override fun toString(): String {
+        return scName
+    }
+
     companion object {
         fun toDataOptions(
             liquidType: LiquidTypes,

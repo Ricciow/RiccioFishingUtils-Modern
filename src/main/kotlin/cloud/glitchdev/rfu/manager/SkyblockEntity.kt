@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.manager
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.events.RenderEvents
 import cloud.glitchdev.rfu.events.RenderEvents.registerRenderEvent
+import cloud.glitchdev.rfu.feature.mob.LootshareRange.RARE_SC_REGEX
 import cloud.glitchdev.rfu.utils.rendering.Render3D.renderSphereOnMob
 import gg.essential.universal.utils.toUnformattedString
 //? if >=1.21.10 {
@@ -22,7 +23,7 @@ data class SkyblockEntity(
     var renderEvent: RenderEvents.RenderEvent? = null
 
     companion object {
-        private val entityRegex = """(?:﴾ )?\[Lv\d+\] [^\s]+ (.+) \d+[\.,]?\d*(?:k|M)?\/\d+[\.,]?\d*(?:k|M)?❤(?: ✯)?(?: ﴿)?""".toRegex()
+        private val entityRegex = """(?:﴾ )?\[Lv\d+\] [^\s]+ (.+) \d+[\.,]?\d*[kM]?\/\d+[\.,]?\d*[kM]?❤(?: ✯)?(?: ﴿)?""".toRegex()
         private val corruptedRegex = """^aCorrupted (.+)a$""".toRegex()
 
         fun parseNameFromTag(entity: ArmorStandEntity): String? {
@@ -61,8 +62,8 @@ data class SkyblockEntity(
     }
 
     fun registerLsRange() {
-        if (GeneralFishing.lootshareRange) {
-            registerRenderer { context, entity ->
+        registerRenderer { context, entity ->
+            if (GeneralFishing.lootshareRange && RARE_SC_REGEX.matches(sbName)) {
                 renderSphereOnMob(entity, 30f, Color.WHITE, false, context)
             }
         }

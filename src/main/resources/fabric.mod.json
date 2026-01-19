@@ -23,7 +23,7 @@
       }
     ]
   },
-  "mixins": [],
+  "mixins": ["rfu.mixins.json"],
   "accessWidener": "rfu.accesswidener",
   "depends": {
     "fabricloader": ">=0.18.4",
