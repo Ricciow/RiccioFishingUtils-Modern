@@ -1,4 +1,4 @@
-package cloud.glitchdev.rfu.config.dev
+package cloud.glitchdev.rfu.config.categories
 
 import com.teamresourceful.resourcefulconfigkt.api.CategoryKt
 

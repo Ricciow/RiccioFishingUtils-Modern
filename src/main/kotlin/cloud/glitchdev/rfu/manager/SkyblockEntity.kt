@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.manager
 
-import cloud.glitchdev.rfu.config.dev.GeneralFishing
+import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.events.RenderEvents
 import cloud.glitchdev.rfu.events.RenderEvents.registerRenderEvent
 import cloud.glitchdev.rfu.utils.rendering.Render3D.renderSphereOnMob

@@ -1,7 +1,7 @@
 package cloud.glitchdev.rfu.feature.partyfinder
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.minecraft
-import cloud.glitchdev.rfu.config.dev.DevSettings
+import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.constants.text.TextStyle

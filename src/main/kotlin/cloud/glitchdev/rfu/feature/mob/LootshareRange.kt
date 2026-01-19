@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.feature.mob
 
-import cloud.glitchdev.rfu.config.dev.GeneralFishing
+import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.constants.SeaCreatures
 import cloud.glitchdev.rfu.events.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
