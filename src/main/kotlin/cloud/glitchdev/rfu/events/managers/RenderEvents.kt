@@ -1,9 +1,9 @@
 package cloud.glitchdev.rfu.events.managers
 
-//? if >=1.21.10 {
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
+//? if >=1.21.10 {
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents
 //?} else {
