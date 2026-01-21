@@ -29,7 +29,7 @@ import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.toConstraint
 
-class PartyFinderWindow : BaseWindow() {
+class PartyFinderWindow : BaseWindow(false) {
     val primaryColor = UIScheme.primaryColorOpaque.toConstraint()
     val secondaryColor = UIScheme.secondaryColorOpaque.toConstraint()
     val textColor = UIScheme.primaryTextColor.toConstraint()

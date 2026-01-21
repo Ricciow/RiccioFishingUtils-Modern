@@ -5,7 +5,7 @@ import gg.essential.elementa.ElementaVersion
 import gg.essential.elementa.WindowScreen
 import gg.essential.universal.UKeyboard
 
-open class BaseWindow : WindowScreen(ElementaVersion.V10, drawDefaultBackground = true) {
+open class BaseWindow(drawDefaultBackground : Boolean = false) : WindowScreen(ElementaVersion.V10, drawDefaultBackground = drawDefaultBackground) {
 
     init {
         window.onKeyType { _, id ->

@@ -5,17 +5,18 @@ import cloud.glitchdev.rfu.events.RegisteredEvent
 import gg.essential.elementa.WindowScreen
 import gg.essential.universal.UScreen
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
+import net.minecraft.client.gui.screen.Screen
 
 @AutoRegister
 object Gui : RegisteredEvent {
-    private var queuedInterface : WindowScreen? = null
+    private var queuedInterface : Screen? = null
     private var shouldOpen = false
 
     override fun register() {
         ClientTickEvents.END_CLIENT_TICK.register(ClientTickEvents.EndTick { _ ->
             if (shouldOpen && queuedInterface != null) {
                 shouldOpen = false
-                UScreen.Companion.displayScreen(queuedInterface)
+                UScreen.displayScreen(queuedInterface)
             }
         })
     }
