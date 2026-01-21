@@ -7,7 +7,7 @@ import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.feature.Feature
-import cloud.glitchdev.rfu.gui.PartyFinderWindow
+import cloud.glitchdev.rfu.gui.window.PartyFinderWindow
 import cloud.glitchdev.rfu.utils.Command
 import cloud.glitchdev.rfu.utils.gui.Gui
 import cloud.glitchdev.rfu.utils.TextUtils

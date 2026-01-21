@@ -4,7 +4,7 @@ import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.feature.Feature
-import cloud.glitchdev.rfu.gui.AnnouncementWindow
+import cloud.glitchdev.rfu.gui.window.AnnouncementWindow
 import cloud.glitchdev.rfu.model.announcement.Announcement
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.Command

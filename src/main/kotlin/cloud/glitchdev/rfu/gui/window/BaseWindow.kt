@@ -1,4 +1,4 @@
-package cloud.glitchdev.rfu.gui
+package cloud.glitchdev.rfu.gui.window
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.minecraft
 import gg.essential.elementa.ElementaVersion

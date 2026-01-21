@@ -1,5 +1,6 @@
-package cloud.glitchdev.rfu.gui
+package cloud.glitchdev.rfu.gui.window
 
+import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.model.announcement.Announcement
 import cloud.glitchdev.rfu.utils.dsl.toFormattedDate
 import gg.essential.elementa.components.UIContainer
