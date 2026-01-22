@@ -21,10 +21,10 @@ object RiccioFishingUtils : ClientModInitializer {
     val settings = RFUSettings.register(configurator)
 
     override fun onInitializeClient() {
-        RFULoader.loadFeatures()
-        RFULoader.registerEvents()
         ClientLifecycleEvents.CLIENT_STARTED.register {
-           RFULoader.registerHud()
+            RFULoader.loadFeatures()
+            RFULoader.registerEvents()
+            RFULoader.registerHud()
         }
     }
 }
