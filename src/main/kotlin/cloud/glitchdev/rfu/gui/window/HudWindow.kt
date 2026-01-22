@@ -2,7 +2,7 @@ package cloud.glitchdev.rfu.gui.window
 
 import cloud.glitchdev.rfu.events.managers.HudRenderEvents.registerHudRenderEvent
 import cloud.glitchdev.rfu.gui.UIScheme
-import cloud.glitchdev.rfu.gui.components.hud.AbstractHudElement
+import cloud.glitchdev.rfu.gui.hud.AbstractHudElement
 import cloud.glitchdev.rfu.manager.hud.HudManager
 import cloud.glitchdev.rfu.utils.gui.Gui
 import gg.essential.elementa.components.UIBlock

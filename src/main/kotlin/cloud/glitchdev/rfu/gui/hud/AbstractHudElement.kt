@@ -1,4 +1,4 @@
-package cloud.glitchdev.rfu.gui.components.hud
+package cloud.glitchdev.rfu.gui.hud
 
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.window.HudWindow
