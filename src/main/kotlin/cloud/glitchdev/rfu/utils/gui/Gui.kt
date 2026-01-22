@@ -2,7 +2,6 @@ package cloud.glitchdev.rfu.utils.gui
 
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import gg.essential.elementa.WindowScreen
 import gg.essential.universal.UScreen
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.minecraft.client.gui.screen.Screen
@@ -21,7 +20,7 @@ object Gui : RegisteredEvent {
         })
     }
 
-    fun openGui(gui: WindowScreen) {
+    fun openGui(gui: Screen) {
         if(!shouldOpen) {
             queuedInterface = gui
             shouldOpen = true

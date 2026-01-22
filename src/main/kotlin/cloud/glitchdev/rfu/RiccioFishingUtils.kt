@@ -5,6 +5,7 @@ import net.fabricmc.api.ClientModInitializer
 import net.minecraft.client.MinecraftClient
 import cloud.glitchdev.rfu.generated.RFULoader
 import com.teamresourceful.resourcefulconfig.api.loader.Configurator
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents
 import net.fabricmc.loader.impl.FabricLoaderImpl
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -22,5 +23,8 @@ object RiccioFishingUtils : ClientModInitializer {
     override fun onInitializeClient() {
         RFULoader.loadFeatures()
         RFULoader.registerEvents()
+        ClientLifecycleEvents.CLIENT_STARTED.register {
+           RFULoader.registerHud()
+        }
     }
 }

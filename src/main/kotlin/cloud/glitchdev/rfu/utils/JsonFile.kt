@@ -51,7 +51,7 @@ class JsonFile<T : Any>(
 
     fun save() {
         try {
-            println("Saved to ${file.absolutePath}")
+            LOGGER.info("Saved to ${file.absolutePath}")
             file.parentFile.mkdirs()
             FileWriter(file).use { writer ->
                 gson.toJson(data, writer)

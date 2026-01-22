@@ -27,8 +27,6 @@ object CatchTracker : RegisteredEvent {
     override fun register() {
         registerSeaCreatureCatchEvent(0) { sc ->
             catchHistory.registerCatch(sc)
-            println("Caught SC ${sc.scName}")
-            println(catchesFile.data.catches.size)
         }
 
         ClientPlayConnectionEvents.JOIN.register { _, _, _ ->

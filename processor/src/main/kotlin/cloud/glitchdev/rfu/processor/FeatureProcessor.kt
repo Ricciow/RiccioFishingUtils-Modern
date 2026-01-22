@@ -7,7 +7,6 @@ import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import java.io.OutputStream
 
-// 1. Update Spec to include an optional required interface/class
 private data class GeneratorSpec(
     val annotation: String,
     val loaderFuncName: String,
@@ -33,6 +32,12 @@ class FeatureProcessor(
                 loaderFuncName = "registerEvents",
                 methodToCall = "register",
                 requiredSuperType = "cloud.glitchdev.rfu.events.RegisteredEvent"
+            ),
+            GeneratorSpec(
+                annotation = "cloud.glitchdev.rfu.gui.components.hud.HudElement",
+                loaderFuncName = "registerHud",
+                methodToCall = "initialize",
+                requiredSuperType = "cloud.glitchdev.rfu.gui.components.hud.AbstractHudElement"
             )
         )
 

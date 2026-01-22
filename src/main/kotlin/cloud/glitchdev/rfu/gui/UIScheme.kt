@@ -18,6 +18,9 @@ object UIScheme {
     val denyColor = Color(209, 23, 23)
     val allowColor = Color(23, 209, 51)
 
+    val darkBackground = Color(0, 0, 0, 128)
+    val transparent = Color(0, 0, 0, 0)
+
     const val HOVER_EFFECT_DURATION = 0.1f
 
     fun increaseOpacity(baseColor : Color, amount: Int) : Color {
