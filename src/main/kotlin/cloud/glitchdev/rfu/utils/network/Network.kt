@@ -2,12 +2,12 @@ package cloud.glitchdev.rfu.utils.network
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.minecraft
 import cloud.glitchdev.rfu.RiccioFishingUtils.API_URL
-import cloud.glitchdev.rfu.RiccioFishingUtils.LOGGER
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.utils.Command
+import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.User
 import com.google.gson.JsonParser
@@ -75,7 +75,7 @@ object Network : RegisteredEvent {
                 }
         }
         catch (e : Exception) {
-            LOGGER.error(e.toString())
+            RFULogger.error("Error while sending GET request", e)
             callback(Response(null))
         }
     }
@@ -103,7 +103,7 @@ object Network : RegisteredEvent {
                 }
         }
         catch (e : Exception) {
-            LOGGER.error(e.toString())
+            RFULogger.error("Error while sending POST request", e)
             callback(Response(null))
         }
     }
@@ -131,7 +131,7 @@ object Network : RegisteredEvent {
                 }
         }
         catch (e : Exception) {
-            LOGGER.error(e.toString())
+            RFULogger.error("Error while sending PUT request", e)
             callback(Response(null))
         }
     }
@@ -159,7 +159,7 @@ object Network : RegisteredEvent {
                 }
         }
         catch (e : Exception) {
-            LOGGER.error(e.toString())
+            RFULogger.error("Error while sending DELETE request", e)
             callback(Response(null))
         }
     }
@@ -188,7 +188,7 @@ object Network : RegisteredEvent {
             val currentTimestamp = Instant.now().epochSecond
             return currentTimestamp > (expiresAt!! - 10)
         } catch (e: Exception) {
-            LOGGER.error(e.toString())
+            RFULogger.error("Error while checking token validity", e)
             return true
         }
     }
@@ -217,15 +217,15 @@ object Network : RegisteredEvent {
                 postRequest("${API_URL}/auth/login?user=${User.getUsername()}&server=$serverId") { response ->
                     if(response.isSuccessful()) {
                         token = response.body
-                        LOGGER.info("Token Renewed")
+                        RFULogger.dev("Token Renewed")
                     }
                     else {
-                        LOGGER.warn("Failed to log into RFU Back-end\n${response.body}")
+                        RFULogger.warn("Failed to log into RFU Back-end\n${response.body}")
                     }
                 }
 
             } catch (e: Exception) {
-                LOGGER.error("Verification failed: ${e.message}")
+                RFULogger.error("Verification failed: ${e.message}")
             }
         }
     }

@@ -1,7 +1,6 @@
 package cloud.glitchdev.rfu.utils
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.CONFIG_DIR
-import cloud.glitchdev.rfu.RiccioFishingUtils.LOGGER
 import cloud.glitchdev.rfu.RiccioFishingUtils.MOD_ID
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -40,7 +39,7 @@ class JsonFile<T : Any>(
                     data = loaded ?: defaultFactory()
                 }
             } catch (e: Exception) {
-                LOGGER.warn("[$filename] Failed to load json file. Using defaults. Error: ${e.message}")
+                RFULogger.warn("[$filename] Failed to load json file. Using defaults.", e)
                 data = defaultFactory()
                 save()
             }
@@ -51,13 +50,13 @@ class JsonFile<T : Any>(
 
     fun save() {
         try {
-            LOGGER.info("Saved to ${file.absolutePath}")
+            RFULogger.dev("Saved to ${file.absolutePath}")
             file.parentFile.mkdirs()
             FileWriter(file).use { writer ->
                 gson.toJson(data, writer)
             }
         } catch (e: Exception) {
-            LOGGER.warn("[$filename] Failed to save json file. Error: ${e.message}")
+            RFULogger.warn("[$filename] Failed to save json file.", e)
         }
     }
 }
