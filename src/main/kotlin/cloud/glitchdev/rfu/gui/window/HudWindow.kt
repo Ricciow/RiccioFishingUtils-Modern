@@ -5,6 +5,7 @@ import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.hud.AbstractHudElement
 import cloud.glitchdev.rfu.manager.hud.HudManager
 import cloud.glitchdev.rfu.utils.gui.Gui
+import cloud.glitchdev.rfu.utils.gui.setHidden
 import gg.essential.elementa.components.UIBlock
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.RelativeWindowConstraint
@@ -14,7 +15,6 @@ import gg.essential.elementa.dsl.toConstraint
 
 object HudWindow : BaseWindow(false) {
     val backgroundColor = UIScheme.darkBackground.toConstraint()
-    val transparentColor = UIScheme.transparent.toConstraint()
     lateinit var background : UIBlock
     var isEditingOpen = false
     val hudElements : MutableList<AbstractHudElement> = mutableListOf()
@@ -49,26 +49,24 @@ object HudWindow : BaseWindow(false) {
     }
 
     fun updateState() {
-        background.constrain {
-            color = if(isEditingOpen) backgroundColor else transparentColor
-        }
+        background.setHidden(!isEditingOpen)
     }
 
     fun create() {
-        background = UIBlock(transparentColor).constrain {
+        background = UIBlock(backgroundColor).constrain {
             x = CenterConstraint()
             y = CenterConstraint()
             width = RelativeWindowConstraint(1f)
             height = RelativeWindowConstraint(1f)
         } childOf window
+
+        background.hide()
     }
 
     fun registerHudElement(element: AbstractHudElement) {
         element childOf window
         hudElements.add(element)
         val elementData = HudManager.getElementConfig(element)
-
-        println(element.scale)
 
         element.apply {
             currentX = elementData.x
