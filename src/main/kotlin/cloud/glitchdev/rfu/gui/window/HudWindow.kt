@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.gui.window
 
 import cloud.glitchdev.rfu.events.managers.HudRenderEvents.registerHudRenderEvent
+import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.hud.AbstractHudElement
 import cloud.glitchdev.rfu.manager.hud.HudManager
@@ -25,6 +26,12 @@ object HudWindow : BaseWindow(false) {
         registerHudRenderEvent { context, ticks ->
             if(!isEditingOpen) {
                 render(context, 0, 0, ticks)
+            }
+        }
+
+        registerShutdownEvent(0) {
+            for(element in hudElements) {
+                HudManager.updateElementConfig(element)
             }
         }
     }

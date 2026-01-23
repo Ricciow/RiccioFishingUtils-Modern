@@ -22,7 +22,7 @@ object HudManager : RegisteredEvent {
             hudFile.save()
         }
 
-        registerShutdownEvent {
+        registerShutdownEvent(1000) {
             hudFile.save()
         }
     }
