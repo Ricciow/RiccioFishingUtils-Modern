@@ -1,10 +1,12 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents
 import net.minecraft.client.MinecraftClient
 
+@AutoRegister
 object ShutdownEvents : AbstractEventManager<(MinecraftClient) -> Unit, ShutdownEvents.ShutdownEvent>(), RegisteredEvent {
     override fun register() {
         ClientLifecycleEvents.CLIENT_STOPPING.register { client ->

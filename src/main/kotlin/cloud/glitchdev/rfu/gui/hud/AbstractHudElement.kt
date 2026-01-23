@@ -6,14 +6,18 @@ import cloud.glitchdev.rfu.gui.window.HudWindow
 import cloud.glitchdev.rfu.utils.dsl.roundToDecimal
 import cloud.glitchdev.rfu.utils.gui.setHidden
 import gg.essential.elementa.components.UIBlock
+import gg.essential.elementa.components.Window
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
+import gg.essential.elementa.constraints.ColorConstraint
 import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.toConstraint
 import kotlin.math.max
+import kotlin.math.min
 
 abstract class AbstractHudElement(val id: String) : UIBlock() {
     private val selectionColor = UIScheme.secondaryColorOpaque.toConstraint()
+    private val holdColor = UIScheme.secondaryColorDisabledOpaque.toConstraint()
     private val transparent = UIScheme.transparent.toConstraint()
 
     open val defaultX = 10f
@@ -27,6 +31,8 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
     private var dragOffsetX = 0f
     private var dragOffsetY = 0f
     private var isDragging = false
+    private val window : Window
+        get() = Window.of(this)
 
     init {
         this.constrain {
@@ -41,6 +47,7 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
                 isDragging = true
                 dragOffsetX = event.absoluteX - this.getLeft()
                 dragOffsetY = event.absoluteY - this.getTop()
+                updateState()
             }
         }
 
@@ -51,6 +58,10 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
 
                 currentX = absoluteMouseX - dragOffsetX
                 currentY = absoluteMouseY - dragOffsetY
+
+                //Limit within screen
+                currentX = min(max(currentX, 0f), window.getWidth()-this.getWidth())
+                currentY = min(max(currentY, 0f), window.getHeight()-this.getHeight())
 
                 updateState()
             }
@@ -75,6 +86,7 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
             if (isDragging) {
                 isDragging = false
             }
+            updateState()
         }
     }
 
@@ -86,9 +98,11 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
         }
     }
 
+    private fun currentColor() : ColorConstraint = if (isEditing) if(isDragging) holdColor else selectionColor else transparent
+
     fun updateState() {
         this.constrain {
-            color = if (isEditing) selectionColor else transparent
+            color = currentColor()
             x = currentX.pixels()
             y = currentY.pixels()
         }

@@ -52,7 +52,6 @@ object HudWindow : BaseWindow(false) {
             element.closeEdit()
             HudManager.updateElementConfig(element)
         }
-        super.onClose()
     }
 
     fun updateState() {
