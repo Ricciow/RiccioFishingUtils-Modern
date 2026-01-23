@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.gui.hud
 
+import cloud.glitchdev.rfu.events.managers.CloseConfigEvents.registerCloseConfigEvent
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.window.HudWindow
 import cloud.glitchdev.rfu.utils.dsl.roundToDecimal
@@ -19,7 +20,7 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
     open val defaultY = 10f
     var currentX = defaultX
     var currentY = defaultY
-    open var enabled = false
+    open val enabled = false
     open var scale = 1f
 
     protected var isEditing = false
@@ -79,6 +80,10 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
 
     fun initialize() {
         HudWindow.registerHudElement(this)
+
+        registerCloseConfigEvent {
+            updateState()
+        }
     }
 
     fun updateState() {

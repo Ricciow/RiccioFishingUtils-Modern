@@ -28,10 +28,10 @@ object HudManager : RegisteredEvent {
     }
 
     fun getElementConfig(element : AbstractHudElement) : HudConfig.HudElement {
-        return hudData.getOrAdd(element.id, element.defaultX, element.defaultY, element.enabled, element.scale)
+        return hudData.getOrAdd(element.id, element.defaultX, element.defaultY, element.scale)
     }
 
     fun updateElementConfig(element: AbstractHudElement) {
-        hudData.update(element.id, element.currentX, element.currentY, element.enabled, element.scale)
+        hudData.update(element.id, element.currentX, element.currentY, element.scale)
     }
 }

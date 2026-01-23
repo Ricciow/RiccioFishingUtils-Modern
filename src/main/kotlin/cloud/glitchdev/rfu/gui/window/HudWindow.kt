@@ -78,7 +78,6 @@ object HudWindow : BaseWindow(false) {
         element.apply {
             currentX = elementData.x
             currentY = elementData.y
-            enabled = elementData.enabled
             scale = elementData.scale
         }
         element.updateState()
