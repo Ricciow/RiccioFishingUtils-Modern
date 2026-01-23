@@ -1,7 +1,9 @@
 package cloud.glitchdev.rfu.config.categories
 
+import cloud.glitchdev.rfu.RiccioFishingUtils.minecraft
 import cloud.glitchdev.rfu.constants.SeaCreatures
 import cloud.glitchdev.rfu.feature.mob.LootshareRange.RARE_SC_REGEX
+import cloud.glitchdev.rfu.access.ConfigScreenInvoker
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 import com.teamresourceful.resourcefulconfigkt.api.CategoryKt
 
@@ -19,5 +21,27 @@ object GeneralFishing : CategoryKt("General Fishing") {
     var lootshareRange by boolean(true) {
         name = Literal("Lootshare Range")
         description = Literal("Shows a sphere around rare sea creatures to display their lootshare range")
+    }
+
+    var schDisplay by observable(boolean(false) {
+        name = Literal("SC/h display")
+        description = Literal("Shows how many sea creatures you've caught on average since you start fishing")
+    }) { _, _ ->
+        val screen = minecraft.currentScreen as? ConfigScreenInvoker
+        screen?.rfuInvokeClearAndInit()
+    }
+
+    var schTimer by boolean(true) {
+        name = Literal("SC/h Timer")
+        description = Literal("Shows for how long you've been fishing alongside the sc/h")
+        condition = { schDisplay }
+    }
+
+    var fishingTime by int(5) {
+        name = Literal("Fishing Downtime Limit")
+        description = Literal("The max ammount of downtime for the sc/h counter to reset in minutes")
+        condition = { schDisplay }
+        range = 0..60
+        slider = true
     }
 }

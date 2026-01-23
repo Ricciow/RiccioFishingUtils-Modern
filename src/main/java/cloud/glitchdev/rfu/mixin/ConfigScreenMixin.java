@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.mixin;
 
+import cloud.glitchdev.rfu.access.ConfigScreenInvoker;
 import cloud.glitchdev.rfu.events.managers.CloseConfigEvents;
 import com.teamresourceful.resourcefulconfig.client.ConfigScreen;
 import org.spongepowered.asm.mixin.Mixin;
@@ -10,9 +11,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @SuppressWarnings("UnstableApiUsage")
 @Mixin(ConfigScreen.class)
-public abstract class ConfigScreenMixin {
+public abstract class ConfigScreenMixin implements ConfigScreenInvoker {
     @Invoker("clearAndInit")
-    abstract void invokeClearAndInit();
+    public abstract void rfuInvokeClearAndInit();
 
     @Inject(method = "close", at = @At("HEAD"))
     void onClose(CallbackInfo ci) {

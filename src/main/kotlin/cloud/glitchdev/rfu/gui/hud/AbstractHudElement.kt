@@ -96,6 +96,8 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
         registerCloseConfigEvent {
             updateState()
         }
+
+        onInitialize()
     }
 
     private fun currentColor() : ColorConstraint = if (isEditing) if(isDragging) holdColor else selectionColor else transparent
@@ -124,6 +126,8 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
         onCloseEdit()
     }
 
+    //Methods that can be used to hook on children classes
+    open fun onInitialize() {}
     open fun onUpdateState() {}
     open fun onOpenEdit() {}
     open fun onCloseEdit() {}
