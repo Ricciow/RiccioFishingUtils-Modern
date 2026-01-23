@@ -3,9 +3,9 @@ package cloud.glitchdev.rfu.manager.hud
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
+import cloud.glitchdev.rfu.events.managers.WorldChangeEvents.registerWorldChangeEvent
 import cloud.glitchdev.rfu.gui.hud.AbstractHudElement
 import cloud.glitchdev.rfu.utils.JsonFile
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
 
 @AutoRegister
 object HudManager : RegisteredEvent {
@@ -18,7 +18,7 @@ object HudManager : RegisteredEvent {
     val hudData = hudFile.data
 
     override fun register() {
-        ClientPlayConnectionEvents.JOIN.register { _, _, _ ->
+        registerWorldChangeEvent { _, _, _ ->
             hudFile.save()
         }
 

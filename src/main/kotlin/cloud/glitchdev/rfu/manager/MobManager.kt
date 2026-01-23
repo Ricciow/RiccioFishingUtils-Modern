@@ -4,9 +4,9 @@ import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.managers.MobDetectEvents
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents
+import cloud.glitchdev.rfu.events.managers.WorldChangeEvents.registerWorldChangeEvent
 import cloud.glitchdev.rfu.utils.Tablist.getPlayerNames
 import gg.essential.universal.utils.toUnformattedString
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
 import net.minecraft.client.world.ClientWorld
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.decoration.ArmorStandEntity
@@ -28,7 +28,7 @@ object MobManager : RegisteredEvent {
             MobDetectEvents.runTasks(uniqueSbEntities.toSet())
         }
 
-        ClientPlayConnectionEvents.JOIN.register { _, _, _ ->
+        registerWorldChangeEvent { _, _, _ ->
             clearAll()
         }
     }

@@ -6,13 +6,13 @@ import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
+import cloud.glitchdev.rfu.events.managers.WorldChangeEvents.registerWorldChangeEvent
 import cloud.glitchdev.rfu.utils.Command
 import cloud.glitchdev.rfu.utils.JsonFile
 import cloud.glitchdev.rfu.utils.TextUtils
 import com.mojang.brigadier.arguments.IntegerArgumentType
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
 
 @AutoRegister
 object CatchTracker : RegisteredEvent {
@@ -29,7 +29,7 @@ object CatchTracker : RegisteredEvent {
             catchHistory.registerCatch(sc)
         }
 
-        ClientPlayConnectionEvents.JOIN.register { _, _, _ ->
+        registerWorldChangeEvent { _, _, _ ->
             catchesFile.save()
         }
 
