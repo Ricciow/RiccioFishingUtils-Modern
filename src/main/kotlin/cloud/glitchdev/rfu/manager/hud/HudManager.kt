@@ -18,7 +18,7 @@ object HudManager : RegisteredEvent {
     val hudData = hudFile.data
 
     override fun register() {
-        registerWorldChangeEvent { _, _, _ ->
+        registerWorldChangeEvent {
             hudFile.save()
         }
 

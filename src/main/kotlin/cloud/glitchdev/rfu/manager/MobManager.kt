@@ -28,7 +28,7 @@ object MobManager : RegisteredEvent {
             MobDetectEvents.runTasks(uniqueSbEntities.toSet())
         }
 
-        registerWorldChangeEvent { _, _, _ ->
+        registerWorldChangeEvent {
             clearAll()
         }
     }

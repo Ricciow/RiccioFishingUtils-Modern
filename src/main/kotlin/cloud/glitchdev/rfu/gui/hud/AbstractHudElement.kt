@@ -1,8 +1,10 @@
 package cloud.glitchdev.rfu.gui.hud
 
 import cloud.glitchdev.rfu.events.managers.CloseConfigEvents.registerCloseConfigEvent
+import cloud.glitchdev.rfu.events.managers.WorldChangeEvents.registerWorldChangeEvent
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.window.HudWindow
+import cloud.glitchdev.rfu.utils.World
 import cloud.glitchdev.rfu.utils.dsl.roundToDecimal
 import cloud.glitchdev.rfu.utils.gui.setHidden
 import gg.essential.elementa.components.UIBlock
@@ -26,6 +28,7 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
     var currentY = defaultY
     open val enabled = false
     open var scale = 1f
+    open val skyblockOnly = true
 
     protected var isEditing = false
     private var dragOffsetX = 0f
@@ -97,6 +100,10 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
             updateState()
         }
 
+        registerWorldChangeEvent(delayed = true) {
+            updateState()
+        }
+
         onInitialize()
     }
 
@@ -109,7 +116,7 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
             y = currentY.pixels()
         }
 
-        this.setHidden(!enabled)
+        this.setHidden(!enabled || skyblockOnly && !World.isInSkyblock())
 
         onUpdateState()
     }

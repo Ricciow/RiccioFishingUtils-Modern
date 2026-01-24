@@ -29,7 +29,7 @@ object CatchTracker : RegisteredEvent {
             catchHistory.registerCatch(sc)
         }
 
-        registerWorldChangeEvent { _, _, _ ->
+        registerWorldChangeEvent {
             catchesFile.save()
         }
 
