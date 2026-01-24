@@ -1,4 +1,4 @@
-package cloud.glitchdev.rfu.manager
+package cloud.glitchdev.rfu.manager.mob
 
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.managers.MobDetectEvents
