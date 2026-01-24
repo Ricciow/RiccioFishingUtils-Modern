@@ -20,6 +20,8 @@ object SCHDisplay : AbstractHudElement("schDisplay") {
     var rate = 0
     var total = 0
     var timeElapsed = Duration.ZERO
+    val isFishing : Boolean
+        get() = timeElapsed != Duration.ZERO
 
     var text : UIText = UIText().constrain {
         x = CenterConstraint()
@@ -29,7 +31,7 @@ object SCHDisplay : AbstractHudElement("schDisplay") {
     } childOf this
 
     override val enabled: Boolean
-        get() = GeneralFishing.schDisplay
+        get() = GeneralFishing.schDisplay && (!GeneralFishing.schOnlyWhenFishing || isFishing)
 
     override fun onInitialize() {
         //Required because otherwise the width is sized incorrectly

@@ -6,6 +6,7 @@ import cloud.glitchdev.rfu.feature.mob.LootshareRange.RARE_SC_REGEX
 import cloud.glitchdev.rfu.access.ConfigScreenInvoker
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 import com.teamresourceful.resourcefulconfigkt.api.CategoryKt
+import com.teamresourceful.resourcefulconfigkt.api.builders.SeparatorBuilder
 
 object GeneralFishing : CategoryKt("General Fishing") {
     override val description: TranslatableValue
@@ -23,17 +24,30 @@ object GeneralFishing : CategoryKt("General Fishing") {
         description = Literal("Shows a sphere around rare sea creatures to display their lootshare range")
     }
 
+    init {
+        dualSeparator {
+            title = "SC/h Display"
+            description = "Shows how many sea creatures you've caught on average since you start fishing"
+        }
+    }
+
     var schDisplay by observable(boolean(false) {
-        name = Literal("SC/h display")
-        description = Literal("Shows how many sea creatures you've caught on average since you start fishing")
+        name = Literal("Toggle")
+        description = Literal("Enables the Sc/h display")
     }) { _, _ ->
         val screen = minecraft.currentScreen as? ConfigScreenInvoker
         screen?.rfuInvokeClearAndInit()
     }
 
     var schTimer by boolean(true) {
-        name = Literal("SC/h Timer")
+        name = Literal("Toggle Timer")
         description = Literal("Shows for how long you've been fishing alongside the sc/h")
+        condition = { schDisplay }
+    }
+
+    var schOnlyWhenFishing by boolean(true) {
+        name = Literal("Only display when fishing")
+        description = Literal("Only show the sch display when you're fishing")
         condition = { schDisplay }
     }
 
@@ -43,5 +57,10 @@ object GeneralFishing : CategoryKt("General Fishing") {
         condition = { schDisplay }
         range = 0..60
         slider = true
+    }
+
+    fun dualSeparator(builder: SeparatorBuilder.() -> Unit) {
+        separator {}
+        separator(builder)
     }
 }
