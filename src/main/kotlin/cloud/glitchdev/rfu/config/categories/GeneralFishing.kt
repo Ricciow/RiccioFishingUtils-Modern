@@ -4,6 +4,8 @@ import cloud.glitchdev.rfu.RiccioFishingUtils.minecraft
 import cloud.glitchdev.rfu.constants.SeaCreatures
 import cloud.glitchdev.rfu.feature.mob.LootshareRange.RARE_SC_REGEX
 import cloud.glitchdev.rfu.access.ConfigScreenInvoker
+import cloud.glitchdev.rfu.constants.RareDrops
+import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 import com.teamresourceful.resourcefulconfigkt.api.CategoryKt
 import com.teamresourceful.resourcefulconfigkt.api.builders.SeparatorBuilder
@@ -31,7 +33,7 @@ object GeneralFishing : CategoryKt("General Fishing") {
         }
     }
 
-    var schDisplay by observable(boolean(false) {
+    var schDisplay by observable(boolean(true) {
         name = Literal("Toggle")
         description = Literal("Enables the Sc/h display")
     }) { _, _ ->
@@ -57,6 +59,33 @@ object GeneralFishing : CategoryKt("General Fishing") {
         condition = { schDisplay }
         range = 0..60
         slider = true
+    }
+
+    init {
+        dualSeparator {
+            title = "Rare Drops Tracking"
+            description = "Track your rare drops when you fish!"
+        }
+    }
+
+    var RARE_DROP_REGEX : Regex = """RARE DROP! (.+) \(\+(\d+) ✯ Magic Find\)""".toExactRegex()
+    var DYE_REGEX : Regex = """WOW! (.+) found a (.+)!""".toExactRegex()
+    var rareDrops by observable(draggable(*RareDrops.entries.toTypedArray()) {
+        name = Literal("Rare Drops")
+        description = Literal("Select which drops are considered rare for the mod.")
+    }) { _, new ->
+        //RARE DROP! item (+xxx ✯ Magic Find)
+        RARE_DROP_REGEX = buildString {
+            append("RARE DROP! (")
+            append(new.filter { !it.isDye }.joinToString("|"))
+            append(""") \(\+(\d+) ✯ Magic Find\)""")
+        }.toExactRegex()
+        //WOW! [RANK] user found a DyeName!
+        DYE_REGEX = buildString {
+            append("WOW! (.+) found a (")
+            append(new.filter { it.isDye }.joinToString("|"))
+            append(")!")
+        }.toExactRegex()
     }
 
     fun dualSeparator(builder: SeparatorBuilder.() -> Unit) {

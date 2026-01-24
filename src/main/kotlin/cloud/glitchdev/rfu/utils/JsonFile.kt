@@ -2,26 +2,31 @@ package cloud.glitchdev.rfu.utils
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.CONFIG_DIR
 import cloud.glitchdev.rfu.RiccioFishingUtils.MOD_ID
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
+import com.google.gson.*
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
+import kotlin.time.Instant
 
 /**
  * A generic manager for loading and saving JSON data using Gson.
- *
- * @param T The class type of your config data.
- * @param filename The name of the file (e.g., "my-mod.json").
- * @param type The class object of T (e.g., MyConfig::class.java).
- * @param defaultFactory A function that returns a fresh instance of T with default values.
+ * Modified to support kotlinx.datetime.Instant serialization.
  */
 class JsonFile<T : Any>(
     private val filename: String,
     private val type: Class<T>,
     private val defaultFactory: () -> T
 ) {
-    private val gson: Gson = GsonBuilder().setPrettyPrinting().create()
+    private val gson: Gson = GsonBuilder()
+        .setPrettyPrinting()
+        .registerTypeAdapter(Instant::class.java, JsonSerializer<Instant> { src, _, _ ->
+            JsonPrimitive(src.toString())
+        })
+        .registerTypeAdapter(Instant::class.java, JsonDeserializer { json, _, _ ->
+            Instant.parse(json.asString)
+        })
+        .create()
+
     private val file: File = CONFIG_DIR.resolve(MOD_ID).resolve("data").resolve(filename).toFile()
 
     var data: T = defaultFactory()
