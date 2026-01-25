@@ -4,7 +4,7 @@ import cloud.glitchdev.rfu.constants.SeaCreatures
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.utils.Chat
+import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import gg.essential.universal.utils.toUnformattedString
 
 @AutoRegister
@@ -12,12 +12,13 @@ object SeaCreatureCatchEvents : AbstractEventManager<(SeaCreatures) -> Unit, Sea
     val SC_MESSAGE_REGEX = SeaCreatures.entries.joinToString("|") { it.catchMessage }.toRegex()
 
     override fun register() {
-        Chat.registerChat(SC_MESSAGE_REGEX) { message, _ ->
+        registerGameEvent(SC_MESSAGE_REGEX) { message, _, _ ->
             val catchMessage = message.toUnformattedString()
             val sc = SeaCreatures.entries.find { it.catchMessage == catchMessage }
             if(sc != null) {
                 runTasks(sc)
             }
+            println("Caught sc")
         }
     }
 

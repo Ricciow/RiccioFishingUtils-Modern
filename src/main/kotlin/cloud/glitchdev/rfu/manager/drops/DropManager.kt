@@ -4,9 +4,9 @@ import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.constants.RareDrops
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
+import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
 import cloud.glitchdev.rfu.events.managers.WorldChangeEvents.registerWorldChangeEvent
-import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.JsonFile
 import cloud.glitchdev.rfu.utils.dsl.isUser
 import cloud.glitchdev.rfu.utils.dsl.removeFormatting
@@ -23,7 +23,7 @@ object DropManager : RegisteredEvent {
     val dropHistory = dropsFile.data
 
     override fun register() {
-        Chat.registerChat { text ->
+        registerGameEvent { text, _, _ ->
             val string = text.string.removeFormatting()
 
             GeneralFishing.RARE_DROP_REGEX.find(string)?.groupValues?.let { (_, dropName, mfString) ->

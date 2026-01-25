@@ -5,6 +5,7 @@ import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
+import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.utils.dsl.isUser
@@ -27,67 +28,72 @@ object Party : RegisteredEvent {
     private const val PLAYER_REGEX = "(?:\\[[A-Z]+\\+*\\] )?[0-9a-zA-Z_]{3,16}"
 
     override fun register() {
-        Chat.registerChat("""Party > .+: .+""".toExactRegex()) { _, _ ->
+        registerGameEvent("""Party > .+: .+""".toExactRegex()) { _, _, _ ->
             inParty = true
             executePartyChange()
         }
 
-        Chat.registerChat("""You have joined ($PLAYER_REGEX)'s? party!""".toExactRegex()) { _, matches ->
+        registerGameEvent("""You have joined ($PLAYER_REGEX)'s? party!""".toExactRegex()) { _, _, matches ->
+            val matchGroups = matches?.groupValues ?: return@registerGameEvent
             inParty = true
-            val username = matches[1].removeRankTag()
+            val username = matchGroups[1].removeRankTag()
             members.clear()
             members.add(username)
             executePartyChange()
         }
 
-        Chat.registerChat("""You'll be partying with: ($PLAYER_REGEX)""".toExactRegex()) { _, matches ->
+        registerGameEvent("""You'll be partying with: ($PLAYER_REGEX)""".toExactRegex()) { _, _, matches ->
+            val matchGroups = matches?.groupValues ?: return@registerGameEvent
             inParty = true
-            val people = matches[1].split(", ").map { it.removeRankTag() }
+            val people = matchGroups[1].split(", ").map { it.removeRankTag() }
             members.addAll(people)
             executePartyChange()
         }
 
-        Chat.registerChat("""Party Leader: ($PLAYER_REGEX) ●""".toExactRegex()) { _, matches ->
+        registerGameEvent("""Party Leader: ($PLAYER_REGEX) ●""".toExactRegex()) { _, _, matches ->
+            val matchGroups = matches?.groupValues ?: return@registerGameEvent
             inParty = true
-            val username = matches[1].removeRankTag()
+            val username = matchGroups[1].removeRankTag()
             isLeader = username.isUser()
             members.clear()
             if(!isLeader) members.add(username)
             executePartyChange()
         }
 
-        Chat.registerChat("""Party (?:Moderators|Members): (.+)""".toExactRegex()) { _, matches ->
+        registerGameEvent("""Party (?:Moderators|Members): (.+)""".toExactRegex()) { _, _, matches ->
+            val matchGroups = matches?.groupValues ?: return@registerGameEvent
             inParty = true
-            val people = matches[1].split(" ● ").map { it.removeRankTag() }.filter { it.isNotEmpty() && !it.isUser() }
+            val people = matchGroups[1].split(" ● ").map { it.removeRankTag() }.filter { it.isNotEmpty() && !it.isUser() }
             members.addAll(people)
             executePartyChange()
         }
 
-        Chat.registerChat("""($PLAYER_REGEX) invited $PLAYER_REGEX to the party! They have 60 seconds to accept\.""".toExactRegex()) { _, _ ->
+        registerGameEvent("""($PLAYER_REGEX) invited $PLAYER_REGEX to the party! They have 60 seconds to accept\.""".toExactRegex()) { _, _, _ ->
             inParty = true
             executePartyChange()
         }
 
-        Chat.registerChat("""($PLAYER_REGEX) joined the party\.""".toExactRegex()) { _, matches ->
+        registerGameEvent("""($PLAYER_REGEX) joined the party\.""".toExactRegex()) { _, _, matches ->
+            val matchGroups = matches?.groupValues ?: return@registerGameEvent
             inParty = true
-            val player = matches[1].removeRankTag()
+            val player = matchGroups[1].removeRankTag()
             members.add(player)
             executePartyChange()
         }
 
-        Chat.registerChat("""Created a public party! Players can join with /party join ($PLAYER_REGEX)""".toExactRegex()) { _, _ ->
+        registerGameEvent("""Created a public party! Players can join with /party join ($PLAYER_REGEX)""".toExactRegex()) { _, _, _ ->
             inParty = true
             isLeader = true
             executePartyChange()
         }
 
-        Chat.registerChat("""You're not this party's leader!""".toExactRegex()) { _, _ ->
+        registerGameEvent("""You're not this party's leader!""".toExactRegex()) { _, _, _ ->
             inParty = true
             isLeader = false
             executePartyChange()
         }
 
-        Chat.registerChat(
+        registerGameEvent(
             ("You left the party\\." +
                     "|You have been kicked from the party by $PLAYER_REGEX" +
                     "|The party was disbanded because the party leader disconnected\\." +
@@ -95,24 +101,26 @@ object Party : RegisteredEvent {
                     "|$PLAYER_REGEX has disbanded the party!" +
                     "|You're not in a party right now\\.")
                 .toExactRegex()
-        ) { _, _ ->
+        ) { _, _, _ ->
             inParty = false
             isLeader = false
             members.clear()
             executePartyChange()
         }
 
-        Chat.registerChat("""The party was transfered to ($PLAYER_REGEX) by ($PLAYER_REGEX)""".toExactRegex()) { _, matches ->
+        registerGameEvent("""The party was transfered to ($PLAYER_REGEX) by ($PLAYER_REGEX)""".toExactRegex()) { _, _, matches ->
+            val matchGroups = matches?.groupValues ?: return@registerGameEvent
             inParty = true
-            val player1 = matches[1].removeRankTag()
-            val player2 = matches[2].removeRankTag()
+            val player1 = matchGroups[1].removeRankTag()
+            val player2 = matchGroups[2].removeRankTag()
             isLeader = player1.isUser() && !player2.isUser()
             executePartyChange()
         }
 
-        Chat.registerChat("""The party was transfered to ($PLAYER_REGEX) because ($PLAYER_REGEX) left""".toExactRegex()) { _, matches ->
-            val player1 = matches[1].removeRankTag()
-            val player2 = matches[2].removeRankTag()
+        registerGameEvent("""The party was transfered to ($PLAYER_REGEX) because ($PLAYER_REGEX) left""".toExactRegex()) { _, _, matches ->
+            val matchGroups = matches?.groupValues ?: return@registerGameEvent
+            val player1 = matchGroups[1].removeRankTag()
+            val player2 = matchGroups[2].removeRankTag()
             inParty = !player2.isUser()
             isLeader = player1.isUser() && !player2.isUser()
             if (!inParty) {
@@ -121,19 +129,21 @@ object Party : RegisteredEvent {
             executePartyChange()
         }
 
-        Chat.registerChat(
+        registerGameEvent(
             ("($PLAYER_REGEX) (?:has left the party\\." +
                     "|was removed from your party because they disconnected\\." +
                     "|has been removed from the party\\.)"
                     ).toExactRegex()
-        ) { _, matches ->
-            val player = matches[1].removeRankTag()
+        ) { _, _, matches ->
+            val matchGroups = matches?.groupValues ?: return@registerGameEvent
+            val player = matchGroups[1].removeRankTag()
             members.remove(player)
             executePartyChange()
         }
 
-        Chat.registerChat("From ($PLAYER_REGEX): \\[RFUPF\\] I would like to join your party!".toExactRegex()) { _, matches ->
-            val player = matches[1].removeRankTag()
+        registerGameEvent("From ($PLAYER_REGEX): \\[RFUPF\\] I would like to join your party!".toExactRegex()) { _, _, matches ->
+            val matchGroups = matches?.groupValues ?: return@registerGameEvent
+            val player = matchGroups[1].removeRankTag()
             promptInvite(player)
         }
 
