@@ -2,7 +2,6 @@ package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.minecraft
 import cloud.glitchdev.rfu.constants.SeaCreatures
-import cloud.glitchdev.rfu.feature.mob.LootshareRange.RARE_SC_REGEX
 import cloud.glitchdev.rfu.access.ConfigScreenInvoker
 import cloud.glitchdev.rfu.constants.RareDrops
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
@@ -14,12 +13,14 @@ object GeneralFishing : CategoryKt("General Fishing") {
     override val description: TranslatableValue
         get() = Literal("Settings for all kinds of fishing!")
 
-    var rareSC by observable(draggable(*SeaCreatures.entries.filter { it.special }.toTypedArray()) {
+
+    var rareSC by draggable(*SeaCreatures.entries.filter { it.special }.toTypedArray()) {
         name = Literal("Rare Sea Creatures")
         description = Literal("Select which sea creatures are considered rare for the mod.")
-    }) { _, new ->
-        RARE_SC_REGEX = new.joinToString("|").toRegex()
     }
+
+    val RARE_SC_REGEX
+        get() = rareSC.joinToString("|").toExactRegex()
 
     var lootshareRange by boolean(true) {
         name = Literal("Lootshare Range")
@@ -68,25 +69,24 @@ object GeneralFishing : CategoryKt("General Fishing") {
         }
     }
 
-    var RARE_DROP_REGEX : Regex = """RARE DROP! (.+) \(\+(\d+) ✯ Magic Find\)""".toExactRegex()
-    var DYE_REGEX : Regex = """WOW! (.+) found a (.+)!""".toExactRegex()
-    var rareDrops by observable(draggable(*RareDrops.entries.toTypedArray()) {
+    var rareDrops by draggable(*RareDrops.entries.toTypedArray()) {
         name = Literal("Rare Drops")
         description = Literal("Select which drops are considered rare for the mod.")
-    }) { _, new ->
-        //RARE DROP! item (+xxx ✯ Magic Find)
-        RARE_DROP_REGEX = buildString {
+    }
+
+    val RARE_DROP_REGEX : Regex
+        get() = buildString {
             append("RARE DROP! (")
-            append(new.filter { !it.isDye }.joinToString("|"))
+            append(rareDrops.filter { !it.isDye }.joinToString("|"))
             append(""") \(\+(\d+) ✯ Magic Find\)""")
         }.toExactRegex()
-        //WOW! [RANK] user found a DyeName!
-        DYE_REGEX = buildString {
+    val DYE_REGEX : Regex
+        get() = buildString {
             append("WOW! (.+) found a (")
-            append(new.filter { it.isDye }.joinToString("|"))
+            append(rareDrops.filter { it.isDye }.joinToString("|"))
             append(")!")
         }.toExactRegex()
-    }
+
 
     fun dualSeparator(builder: SeparatorBuilder.() -> Unit) {
         separator {}
