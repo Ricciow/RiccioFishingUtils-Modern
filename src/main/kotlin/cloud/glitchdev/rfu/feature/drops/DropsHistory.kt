@@ -53,7 +53,7 @@ object DropsHistory : Feature {
 
         drops.forEach { dropEntry ->
             val itemName = dropEntry.type.toString()
-            val lastDrop = dropEntry.history.last()
+            val lastDrop = dropEntry.history.lastOrNull() ?: return@forEach
             text.append(Text.literal("\n $YELLOW$BOLD- $itemName: ${YELLOW}Total: $WHITE${dropEntry.history.size} ${YELLOW}- Last: $WHITE${lastDrop.date.toFormattedDate()} (${lastDrop.sinceCount}) $AQUAMARINE(${lastDrop.magicFind}% ✯)"))
         }
 

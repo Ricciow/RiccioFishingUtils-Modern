@@ -14,7 +14,6 @@ import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import cloud.glitchdev.rfu.utils.network.PartyHttp
 import net.minecraft.text.ClickEvent
 import net.minecraft.text.HoverEvent
-import net.minecraft.text.MutableText
 import net.minecraft.text.Style
 import net.minecraft.text.Text
 
@@ -174,8 +173,8 @@ object Party : RegisteredEvent {
                 TextColor.YELLOW,
                 TextEffects.BOLD
             )
-        ) as? MutableText
-        text?.append(
+        )
+        text.append(
             Text.literal("§a[Accept]")
                 .setStyle(
                     Style.EMPTY
