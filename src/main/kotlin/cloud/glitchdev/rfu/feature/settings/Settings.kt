@@ -4,7 +4,7 @@ import cloud.glitchdev.rfu.RiccioFishingUtils.MOD_ID
 import cloud.glitchdev.rfu.RiccioFishingUtils.minecraft
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
-import cloud.glitchdev.rfu.utils.Command
+import cloud.glitchdev.rfu.utils.command.Command
 import com.teamresourceful.resourcefulconfig.api.client.ResourcefulConfigScreen
 
 @RFUFeature

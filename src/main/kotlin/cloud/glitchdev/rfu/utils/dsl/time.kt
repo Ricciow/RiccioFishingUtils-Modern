@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Locale
 import kotlin.time.Duration
+import kotlin.time.toJavaInstant
 
 fun Instant.toFormattedDate() : String {
     val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
@@ -13,6 +14,10 @@ fun Instant.toFormattedDate() : String {
         .withZone(ZoneId.systemDefault())
 
     return formatter.format(this)
+}
+
+fun kotlin.time.Instant.toFormattedDate() : String {
+    return this.toJavaInstant().toFormattedDate()
 }
 
 fun Duration.toReadableString(): String {

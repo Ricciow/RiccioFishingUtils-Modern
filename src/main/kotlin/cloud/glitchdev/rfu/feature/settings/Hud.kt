@@ -3,7 +3,7 @@ package cloud.glitchdev.rfu.feature.settings
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.gui.window.HudWindow
-import cloud.glitchdev.rfu.utils.Command
+import cloud.glitchdev.rfu.utils.command.Command
 
 @RFUFeature
 object Hud : Feature {

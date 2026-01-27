@@ -7,7 +7,7 @@ import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
 import cloud.glitchdev.rfu.events.managers.WorldChangeEvents.registerWorldChangeEvent
-import cloud.glitchdev.rfu.utils.Command
+import cloud.glitchdev.rfu.utils.command.Command
 import cloud.glitchdev.rfu.utils.JsonFile
 import cloud.glitchdev.rfu.utils.TextUtils
 import com.mojang.brigadier.arguments.IntegerArgumentType

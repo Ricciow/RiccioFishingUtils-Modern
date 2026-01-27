@@ -77,13 +77,13 @@ object GeneralFishing : CategoryKt("General Fishing") {
     val RARE_DROP_REGEX : Regex
         get() = buildString {
             append("RARE DROP! (")
-            append(rareDrops.filter { !it.isDye }.joinToString("|"))
+            append(rareDrops.filter { !it.isDye }.joinToString("|") { Regex.escape(it.toString()) })
             append(""") \(\+(\d+) ✯ Magic Find\)""")
         }.toExactRegex()
     val DYE_REGEX : Regex
         get() = buildString {
             append("WOW! (.+) found a (")
-            append(rareDrops.filter { it.isDye }.joinToString("|"))
+            append(rareDrops.filter { it.isDye }.joinToString("|") { Regex.escape(it.toString()) })
             append(")!")
         }.toExactRegex()
 
