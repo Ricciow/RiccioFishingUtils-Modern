@@ -13,7 +13,6 @@ object GeneralFishing : CategoryKt("General Fishing") {
     override val description: TranslatableValue
         get() = Literal("Settings for all kinds of fishing!")
 
-
     var rareSC by draggable(*SeaCreatures.entries.filter { it.special }.toTypedArray()) {
         name = Literal("Rare Sea Creatures")
         description = Literal("Select which sea creatures are considered rare for the mod.")

@@ -5,7 +5,7 @@ import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 import com.teamresourceful.resourcefulconfigkt.api.ConfigKt
 
-object RFUSettings : ConfigKt("RFU") {
+object RFUSettings : ConfigKt("rfu/settings") {
     override val name: TranslatableValue
         get() = Literal("RiccioFishingUtils")
     override val description: TranslatableValue
