@@ -35,7 +35,7 @@ class DropHistory {
         var history: MutableList<DropRecord> = mutableListOf()
 
         fun addDrop(count : Int, magicFind : Int? = null) {
-            val lastCount = history.lastOrNull()?.sinceCount ?: count
+            val lastCount = history.lastOrNull()?.totalCount ?: 0
 
             history.add(DropRecord(count, count - lastCount, magicFind))
         }

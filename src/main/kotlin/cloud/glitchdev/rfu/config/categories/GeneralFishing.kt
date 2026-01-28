@@ -87,6 +87,24 @@ object GeneralFishing : CategoryKt("General Fishing") {
         }.toExactRegex()
 
 
+    init {
+        dualSeparator {
+            title = "Custom Messages"
+            description = "Customize the chat messages for rare drops"
+        }
+    }
+
+    var customRareDropMessage by boolean(false) {
+        name = Literal("Enable Custom Rare Drop Message")
+        description = Literal("Shows a custom message when you get a rare drop")
+    }
+
+    var rareDropMessageFormat by string("&6&lRARE DROP! &e{drop} &b(+{magic_find}% ✯ Magic Find) &7(Took {count} catches, {time} since last)") {
+        name = Literal("Custom Message Format")
+        description = Literal("Variables: {drop}, {magic_find}, {count}, {time}")
+        condition = { customRareDropMessage }
+    }
+
     fun dualSeparator(builder: SeparatorBuilder.() -> Unit) {
         separator {}
         separator(builder)
