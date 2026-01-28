@@ -37,8 +37,7 @@ object GeneralFishing : CategoryKt("General Fishing") {
         name = Literal("Toggle")
         description = Literal("Enables the Sc/h display")
     }) { _, _ ->
-        val screen = minecraft.currentScreen as? ConfigScreenInvoker
-        screen?.rfuInvokeClearAndInit()
+        reloadScreen()
     }
 
     var schTimer by boolean(true) {
@@ -87,16 +86,11 @@ object GeneralFishing : CategoryKt("General Fishing") {
         }.toExactRegex()
 
 
-    init {
-        dualSeparator {
-            title = "Custom Messages"
-            description = "Customize the chat messages for rare drops"
-        }
-    }
-
-    var customRareDropMessage by boolean(false) {
+    var customRareDropMessage by observable(boolean(false) {
         name = Literal("Enable Custom Rare Drop Message")
         description = Literal("Shows a custom message when you get a rare drop")
+    }) { _, _ ->
+        reloadScreen()
     }
 
     var rareDropMessageFormat by string("&6&lRARE DROP! &e{drop} &b(+{magic_find}% ✯ Magic Find) &7(Took {count} catches, {time} since last)") {
@@ -120,5 +114,10 @@ object GeneralFishing : CategoryKt("General Fishing") {
     fun dualSeparator(builder: SeparatorBuilder.() -> Unit) {
         separator {}
         separator(builder)
+    }
+
+    fun reloadScreen() {
+        val screen = minecraft.currentScreen as? ConfigScreenInvoker
+        screen?.rfuReloadAndScroll()
     }
 }
