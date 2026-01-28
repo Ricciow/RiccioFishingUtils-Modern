@@ -2,7 +2,7 @@ package cloud.glitchdev.rfu.gui.hud.elements
 
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.constants.text.TextColor.AQUAMARINE
-import cloud.glitchdev.rfu.constants.text.TextColor.RED
+import cloud.glitchdev.rfu.constants.text.TextColor.GOLD
 import cloud.glitchdev.rfu.constants.text.TextColor.YELLOW
 import cloud.glitchdev.rfu.constants.text.TextEffects.BOLD
 import cloud.glitchdev.rfu.gui.hud.AbstractHudElement
@@ -44,14 +44,14 @@ object FlareTimerDisplay : AbstractHudElement("flareTimerDisplay") {
         val time = remainingTime
         val finalText = if (time != null) {
             buildString {
-                append("$RED${BOLD}Flare:")
+                append("$GOLD${BOLD}Flare:")
                 append(" $YELLOW${time.toReadableString()}")
                 if (activeType != MobManager.FlareType.NONE) {
                     append(" $AQUAMARINE${activeType.bonus}")
                 }
             }
         } else {
-             "$RED${BOLD}Flare: ${YELLOW}0s"
+             "$GOLD${BOLD}Flare: ${YELLOW}0s"
         }
 
         text.setText(finalText)
