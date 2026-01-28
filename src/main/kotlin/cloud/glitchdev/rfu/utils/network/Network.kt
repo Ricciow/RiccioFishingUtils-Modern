@@ -2,7 +2,6 @@ package cloud.glitchdev.rfu.utils.network
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.minecraft
 import cloud.glitchdev.rfu.RiccioFishingUtils.API_URL
-import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
@@ -10,9 +9,15 @@ import cloud.glitchdev.rfu.utils.command.Command
 import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.User
+import cloud.glitchdev.rfu.config.categories.BackendSettings
+import cloud.glitchdev.rfu.events.managers.WorldChangeEvents.registerWorldChangeEvent
+import net.minecraft.text.ClickEvent
+import net.minecraft.text.HoverEvent
+import net.minecraft.text.Text
+import cloud.glitchdev.rfu.constants.text.TextColor.*
+import cloud.glitchdev.rfu.constants.text.TextEffects.*
 import com.google.gson.JsonParser
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -37,9 +42,26 @@ object Network : RegisteredEvent {
     private val client = HttpClient.newHttpClient()
 
     override fun register() {
-        ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register { _, _ ->
+        registerWorldChangeEvent {
             authenticateUser()
         }
+
+        Command.registerCommand(
+            literal("rfubackend")
+                .then(literal("accept").executes {
+                    BackendSettings.backendAccepted = true
+                    BackendSettings.decisionMade = true
+                    authenticateUser()
+                    it.source.sendFeedback(TextUtils.rfuLiteral("Backend connection accepted. If you wish to disable it head to Backend Settings on /rfu", TextStyle(LIGHT_GREEN)))
+                    return@executes 1
+                })
+                .then(literal("deny").executes {
+                    BackendSettings.backendAccepted = false
+                    BackendSettings.decisionMade = true
+                    it.source.sendFeedback(TextUtils.rfuLiteral("Backend connection denied. If you change your mind head to Backend Settings on /rfu", TextStyle(LIGHT_RED)))
+                    return@executes 1
+                })
+        )
 
         Command.registerCommand(
             literal("rfubackendtoken")
@@ -47,11 +69,11 @@ object Network : RegisteredEvent {
                     if(token != null) {
                         minecraft.keyboard.clipboard = token
                         context.source.sendFeedback(TextUtils.rfuLiteral("Your rfu back-end token has been copied to your clipboard!",
-                            TextStyle(TextColor.LIGHT_GREEN)))
+                            TextStyle(LIGHT_GREEN)))
                     }
                     else {
                         context.source.sendFeedback(TextUtils.rfuLiteral("You don't have a RFU back-end token!",
-                            TextStyle(TextColor.LIGHT_RED)))
+                            TextStyle(LIGHT_RED)))
                     }
                     return@executes 1
                 }
@@ -198,6 +220,15 @@ object Network : RegisteredEvent {
      * and rfu back-end if the token has expired or is invalid
      */
     fun authenticateUser() {
+        if (!BackendSettings.decisionMade) {
+            sendAcknowledgementMessage()
+            return
+        }
+
+        if (!BackendSettings.backendAccepted) {
+            return
+        }
+
         if(isTokenExpired()) {
             val session = minecraft.session
             val serverId = UUID.randomUUID().toString().replace("-", "")
@@ -228,5 +259,20 @@ object Network : RegisteredEvent {
                 RFULogger.error("Verification failed: ${e.message}")
             }
         }
+    }
+
+    private fun sendAcknowledgementMessage() {
+        val message = TextUtils.rfuLiteral("This mod utilizes a separate back-end for features like party finder. Do you want to enable it? ", TextStyle(YELLOW))
+
+        val accept = Text.literal("$LIGHT_GREEN$BOLD[ACCEPT]")
+            .styled { it.withClickEvent(ClickEvent.RunCommand("/rfubackend accept"))
+                .withHoverEvent(HoverEvent.ShowText(Text.literal("${LIGHT_GREEN}Accept backend connection"))) }
+
+        val deny = Text.literal(" $LIGHT_RED$BOLD[DENY]")
+            .styled { it.withClickEvent(ClickEvent.RunCommand("/rfubackend deny"))
+                .withHoverEvent(HoverEvent.ShowText(Text.literal("${LIGHT_RED}Deny backend connection"))) }
+
+        message.append(accept).append(deny)
+        minecraft.player?.sendMessage(message, false)
     }
 }
