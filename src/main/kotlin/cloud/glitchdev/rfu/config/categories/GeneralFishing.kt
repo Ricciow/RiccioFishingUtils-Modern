@@ -105,6 +105,18 @@ object GeneralFishing : CategoryKt("General Fishing") {
         condition = { customRareDropMessage }
     }
 
+    init {
+        dualSeparator {
+            title = "Deployables"
+            description = "Everything deployables related, Flares, Fluxes, You name it!"
+        }
+    }
+
+    var flareTimerDisplay by boolean(true) {
+        name = Literal("Flare Timer")
+        description = Literal("Enables the Flare Timer display")
+    }
+
     fun dualSeparator(builder: SeparatorBuilder.() -> Unit) {
         separator {}
         separator(builder)
