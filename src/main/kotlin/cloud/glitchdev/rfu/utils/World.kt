@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.utils
 
+import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.FishingIslands
 
 object World {
@@ -8,7 +9,7 @@ object World {
 
         val area = tablist.find { it.startsWith("Area: ")}
 
-        return area != null
+        return area != null || (DevSettings.devMode && DevSettings.isInSkyblock)
     }
 
     /**

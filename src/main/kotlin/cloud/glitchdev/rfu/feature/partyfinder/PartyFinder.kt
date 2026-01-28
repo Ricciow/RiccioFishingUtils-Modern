@@ -1,7 +1,7 @@
 package cloud.glitchdev.rfu.feature.partyfinder
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.minecraft
-import cloud.glitchdev.rfu.config.categories.DevSettings
+import cloud.glitchdev.rfu.config.categories.BackendSettings
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.constants.text.TextStyle
@@ -20,12 +20,19 @@ object PartyFinder : Feature {
         Command.registerCommand(
             literal("rfupf")
                 .executes { context ->
-                    if(World.isInSkyblock() || DevSettings.devMode) {
-                        Gui.openGui(PartyFinderWindow())
-                    } else {
+                    if(!BackendSettings.backendAccepted) {
+                        context.source.sendFeedback(TextUtils.rfuLiteral("Must accept the backend features to use this feature!",
+                            TextStyle(TextColor.LIGHT_RED, TextEffects.UNDERLINE)))
+                        return@executes 1
+                    }
+
+                    if(!World.isInSkyblock()) {
                         context.source.sendFeedback(TextUtils.rfuLiteral("Must be in skyblock to use this feature!",
                             TextStyle(TextColor.LIGHT_RED, TextEffects.UNDERLINE)))
+                        return@executes 1
                     }
+
+                    Gui.openGui(PartyFinderWindow())
                     return@executes 1
                 }
         )

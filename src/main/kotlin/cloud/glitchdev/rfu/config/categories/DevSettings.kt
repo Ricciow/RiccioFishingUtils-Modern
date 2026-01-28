@@ -1,5 +1,7 @@
 package cloud.glitchdev.rfu.config.categories
 
+import cloud.glitchdev.rfu.RiccioFishingUtils.minecraft
+import cloud.glitchdev.rfu.access.ConfigScreenInvoker
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 import com.teamresourceful.resourcefulconfigkt.api.CategoryKt
 
@@ -7,8 +9,21 @@ object DevSettings : CategoryKt("Developer") {
     override val description: TranslatableValue
         get() = Literal("These settings are for developers, don't mess with them if you don't know what you're doing!")
 
-    var devMode by boolean(false) {
+    var devMode by observable(boolean(false) {
         name = Literal("Developer Mode")
         description = Literal("Enable developer mode.")
+    }) { _, _ ->
+       reloadScreen()
+    }
+
+    var isInSkyblock by boolean(true) {
+        name = Literal("Force In Skyblock")
+        description = Literal("Forces the mod to consider you're inside skyblock.")
+        condition = { devMode }
+    }
+
+    fun reloadScreen() {
+        val screen = minecraft.currentScreen as? ConfigScreenInvoker
+        screen?.rfuReloadAndScroll()
     }
 }
