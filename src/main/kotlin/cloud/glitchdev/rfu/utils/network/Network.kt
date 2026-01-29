@@ -232,11 +232,7 @@ object Network : RegisteredEvent {
         if(isTokenExpired()) {
             val session = minecraft.session
             val serverId = UUID.randomUUID().toString().replace("-", "")
-            //? if <1.21.10 {
-            /*val sessionService = minecraft.sessionService
-            *///?} else {
             val sessionService = minecraft.apiServices.sessionService
-            //?}
 
             try {
                 sessionService.joinServer(

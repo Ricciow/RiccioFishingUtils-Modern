@@ -6,7 +6,7 @@ RiccioFishingUtils is a Minecraft Mod for Hypixel SkyBlock, specifically focusin
 ## Key Technologies
 *   **Language:** Kotlin (primary), Java.
 *   **Loader:** Fabric Loader.
-*   **Multi-version Support:** Uses `Stonecutter` to manage multiple Minecraft versions (e.g., 1.21.5 - 1.21.11).
+*   **Multi-version Support:** Uses `Stonecutter` to manage multiple Minecraft versions (e.g., 1.21.10 - 1.21.11).
 *   **Libraries:**
     *   **UniversalCraft / Elementa:** For UI/rendering (EssentialGG libs).
     *   **ResourcefulConfig:** For configuration management.

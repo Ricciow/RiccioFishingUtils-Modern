@@ -3,13 +3,8 @@ package cloud.glitchdev.rfu.events.managers
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-//? if >=1.21.10 {
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents
-//?} else {
-/*import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents
-*///?}
 
 /**
  * Manages dynamic rendering tasks that execute during the World Render phase.

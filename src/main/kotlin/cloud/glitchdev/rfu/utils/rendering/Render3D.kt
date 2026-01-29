@@ -1,17 +1,13 @@
 package cloud.glitchdev.rfu.utils.rendering
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.minecraft
-//? if >=1.21.10 {
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext
-//?} else {
-/*import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext
-*///?}
 import net.minecraft.client.render.Camera
 //? if >=1.21.11 {
-import net.minecraft.client.render.RenderLayers
-//?} else {
-/*import net.minecraft.client.render.RenderLayer
-*///?}
+/*import net.minecraft.client.render.RenderLayers
+*///?} else {
+import net.minecraft.client.render.RenderLayer
+//?}
 
 import net.minecraft.client.render.RenderTickCounter
 import net.minecraft.client.render.VertexConsumer
@@ -52,12 +48,8 @@ object Render3D {
         slices : Int = 16,
         lineWidth : Float = 2.0f
     ) {
-        //Consumers may be null on <1.21.10
-        @Suppress("USELESS_ELVIS")
-        val consumers = context.consumers() ?: return
-        
-        val camPos = camera.getPosition()
-
+        val consumers = context.consumers()
+        val camPos = camera.cameraPos
         val vecToSphere = location.subtract(camPos)
         val lookVec = Vec3d.fromPolar(camera.pitch, camera.yaw)
         val projection = vecToSphere.dotProduct(lookVec)
@@ -66,11 +58,7 @@ object Render3D {
             return
         }
 
-        //? if >=1.21.10 {
         val matrixStack = context.matrices()
-        //?} else {
-        /*val matrixStack = context.matrixStack() ?: return
-        *///?}
 
         matrixStack.push()
         matrixStack.translate(
@@ -80,10 +68,10 @@ object Render3D {
         )
 
         //? if >=1.21.11 {
-        val buffer = consumers.getBuffer(RenderLayers.LINES)
-        //?} else {
-        /*val buffer = consumers.getBuffer(RenderLayer.getLines())
-        *///?}
+        /*val buffer = consumers.getBuffer(RenderLayers.LINES)
+        *///?} else {
+        val buffer = consumers.getBuffer(RenderLayer.getLines())
+        //?}
 
         val matrix = matrixStack.peek().positionMatrix
 
@@ -128,7 +116,7 @@ object Render3D {
             .color(color.red, color.green, color.blue, color.alpha)
             .normal(1f, 0f, 0f)
         //? if >=1.21.11 {
-            .lineWidth(lineWidth)
-        //?}
+            /*.lineWidth(lineWidth)
+        *///?}
     }
 }

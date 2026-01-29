@@ -6,11 +6,7 @@ import cloud.glitchdev.rfu.events.managers.RenderEvents
 import cloud.glitchdev.rfu.events.managers.RenderEvents.registerRenderEvent
 import cloud.glitchdev.rfu.utils.rendering.Render3D.renderSphereOnMob
 import gg.essential.universal.utils.toUnformattedString
-//? if >=1.21.10 {
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext
-//?} else {
-/*import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext
-*///?}
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.decoration.ArmorStandEntity
 import java.awt.Color

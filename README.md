@@ -14,7 +14,7 @@ Minecraft Mod for Hypixel SkyBlock
 
 ## What it does
 
-RicciosFinestUtilities is a Chattriggers module for Minecraft 1.21.5-1.21.10 that adds many useful features to [Hypixel SkyBlock](https://wiki.hypixel.net/Fishing) focused mostly on fishing.
+RicciosFinestUtilities is a Chattriggers module for Minecraft 1.21.10-1.21.11 that adds many useful features to [Hypixel SkyBlock](https://wiki.hypixel.net/Fishing) focused mostly on fishing.
 
 * **Party Finder:** Get parties for your fishing duties!
 
