@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.utils.gui
 
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
+import cloud.glitchdev.rfu.utils.RFULogger
 import gg.essential.universal.UScreen
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.minecraft.client.gui.screen.Screen
@@ -12,12 +13,12 @@ object Gui : RegisteredEvent {
     private var shouldOpen = false
 
     override fun register() {
-        ClientTickEvents.END_CLIENT_TICK.register(ClientTickEvents.EndTick { _ ->
+        ClientTickEvents.END_CLIENT_TICK.register { _ ->
             if (shouldOpen && queuedInterface != null) {
                 shouldOpen = false
                 UScreen.displayScreen(queuedInterface)
             }
-        })
+        }
     }
 
     fun openGui(gui: Screen) {
@@ -26,7 +27,7 @@ object Gui : RegisteredEvent {
             shouldOpen = true
         }
         else {
-            throw Exception("Tried to open a screen while one was already queued")
+            RFULogger.warn("Tried to open a screen while one was already queued")
         }
     }
 }
