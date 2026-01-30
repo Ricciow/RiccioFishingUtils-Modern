@@ -46,3 +46,6 @@ fun <T : UIComponent> T.addHoverColoring(strategy: AnimationStrategy, duration :
 
 fun String.height(textScale: Float = 1f, fontProvider: FontProvider = DefaultFonts.VANILLA_FONT_RENDERER) =
     fontProvider.getStringHeight(this, 10f) * textScale
+
+fun String.width(textScale: Float = 1f, fontProvider: FontProvider = DefaultFonts.VANILLA_FONT_RENDERER) =
+    fontProvider.getStringWidth(this, 10f) * textScale

@@ -2,7 +2,8 @@ package cloud.glitchdev.rfu.gui.components.dropdown
 
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.model.data.DataOption
-import cloud.glitchdev.rfu.utils.gui.height
+import cloud.glitchdev.rfu.utils.gui.height as textHeight
+import cloud.glitchdev.rfu.utils.gui.width as textWidth
 import cloud.glitchdev.rfu.utils.gui.setHidden
 import gg.essential.elementa.components.ScrollComponent
 import gg.essential.elementa.components.UIContainer
@@ -49,7 +50,7 @@ abstract class UIAbstractDropdown(
     abstract fun isOptionSelected(index: Int): Boolean
     abstract fun getDropdownDisplayText(): String
 
-    var fontSize: Float = 1.5f
+    var fontSize: Float = 1.0f
         set(value) {
             field = value
             if (::text.isInitialized) {
@@ -60,6 +61,8 @@ abstract class UIAbstractDropdown(
         }
 
     private var lastHeight = -1f
+
+    var maxFontSize: Float = 1.0f
 
     init {
         create()
@@ -300,16 +303,11 @@ abstract class UIAbstractDropdown(
 
     private fun updateFontSize() {
         if (values.isEmpty()) return
-        var font = fontSize
+        var font = maxFontSize
         for (option in values) {
-            while (option.label.height(font) < textContainer.getHeight() * 0.9) {
-                font += 0.1f
-            }
-        }
-        for (option in values) {
-            while (option.label.height(font) > textContainer.getHeight() * 0.9 ||
-                option.label.width(font) > textContainer.getWidth() * 0.8
-            ) {
+            while (font > 0.1f && (option.label.textHeight(font) > textContainer.getHeight() * 0.9 ||
+                option.label.textWidth(font) > textContainer.getWidth() * 0.8
+            )) {
                 font -= 0.1f
             }
         }

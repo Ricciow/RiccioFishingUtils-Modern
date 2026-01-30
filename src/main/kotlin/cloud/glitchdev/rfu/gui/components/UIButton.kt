@@ -2,6 +2,8 @@ package cloud.glitchdev.rfu.gui.components
 
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.utils.gui.setHidden
+import cloud.glitchdev.rfu.utils.gui.height as textHeight
+import cloud.glitchdev.rfu.utils.gui.width as textWidth
 import gg.essential.elementa.components.UIImage
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
@@ -11,16 +13,15 @@ import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.animate
 import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
-import gg.essential.elementa.dsl.min
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.toConstraint
-import gg.essential.elementa.dsl.minus
+import gg.essential.universal.UMatrixStack
 
 /**
  * Simple Button Component
  */
-class UIButton(val text: String, radius: Float = 0f, val image : UIImage? = null, var onClick : () -> Unit = {}) : UIRoundedRectangle(radius) {
+class UIButton(val text: String, radius: Float = 0f, val image : UIImage? = null, val baseTextScale: Float = 1.0f, var onClick : () -> Unit = {}) : UIRoundedRectangle(radius) {
     val primaryColor = UIScheme.secondaryColorOpaque.toConstraint()
     val hoverColor = UIScheme.secondaryColor.toConstraint()
     val textColor = UIScheme.primaryTextColor.toConstraint()
@@ -46,6 +47,8 @@ class UIButton(val text: String, radius: Float = 0f, val image : UIImage? = null
         }
 
     lateinit var textArea : UIText
+    private var lastWidth = -1f
+    private var lastHeight = -1f
 
     init {
         create()
@@ -53,6 +56,7 @@ class UIButton(val text: String, radius: Float = 0f, val image : UIImage? = null
 
     fun setText(text : String) {
         textArea.setText(text)
+        updateFontSize()
     }
 
     fun create() {
@@ -60,11 +64,13 @@ class UIButton(val text: String, radius: Float = 0f, val image : UIImage? = null
             color = primaryColor
         }
 
+        val initialHeight = 9f * baseTextScale
         textArea = UIText(text).constrain {
             x = CenterConstraint()
             y = CenterConstraint()
-            width = min(TextAspectConstraint() - 5.pixels(), 90.percent())
-            height = 90.percent() - 5.pixels()
+            // Will be updated by updateFontSize
+            height = initialHeight.pixels()
+            width = TextAspectConstraint()
             color = textColor
         } childOf this
 
@@ -116,10 +122,39 @@ class UIButton(val text: String, radius: Float = 0f, val image : UIImage? = null
         }
 
     }
+
+    override fun draw(matrixStack: UMatrixStack) {
+        val currentWidth = this.getWidth()
+        val currentHeight = this.getHeight()
+        if (currentWidth != lastWidth || currentHeight != lastHeight) {
+            lastWidth = currentWidth
+            lastHeight = currentHeight
+            updateFontSize()
+        }
+        super.draw(matrixStack)
+    }
+
+    private fun updateFontSize() {
+        if (!::textArea.isInitialized) return
+        var scale = baseTextScale
+        val txt = textArea.getText()
+
+        while (scale > 0.1f && (
+            txt.textWidth(scale) > this.getWidth() * 0.9f || 
+            txt.textHeight(scale) > this.getHeight() * 0.9f
+        )) {
+            scale -= 0.1f
+        }
+        
+        val newHeight = 9f * scale
+        textArea.constrain {
+            height = newHeight.pixels()
+        }
+    }
     
     companion object {
         fun withImage(image: UIImage, radius: Float = 0f, onClick: () -> Unit = {}) : UIButton {
-            return UIButton("", radius, image, onClick)
+            return UIButton("", radius, image, 1.0f, onClick)
         }
     }
 }

@@ -99,8 +99,8 @@ class UIPartyCard(val party: FishingParty, radius : Float, var onDelete : () -> 
         UIText("Type: ${party.fishingType.type}").constrain {
             x = 0.pixels()
             y = SiblingConstraint(2f)
-            width = TextAspectConstraint()
-            height = ScaledTextConstraint(fontSize)
+            width = ScaledTextConstraint(fontSize)
+            height = TextAspectConstraint()
             color = textColor
         } childOf rightArea
 
