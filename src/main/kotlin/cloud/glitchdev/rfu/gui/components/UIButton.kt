@@ -1,6 +1,8 @@
 package cloud.glitchdev.rfu.gui.components
 
 import cloud.glitchdev.rfu.gui.UIScheme
+import cloud.glitchdev.rfu.utils.gui.setHidden
+import gg.essential.elementa.components.UIImage
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
 import gg.essential.elementa.constraints.CenterConstraint
@@ -18,7 +20,7 @@ import gg.essential.elementa.dsl.minus
 /**
  * Simple Button Component
  */
-class UIButton(val text: String, radius: Float = 0f, var onClick : () -> Unit = {}) : UIRoundedRectangle(radius) {
+class UIButton(val text: String, radius: Float = 0f, val image : UIImage? = null, var onClick : () -> Unit = {}) : UIRoundedRectangle(radius) {
     val primaryColor = UIScheme.secondaryColorOpaque.toConstraint()
     val hoverColor = UIScheme.secondaryColor.toConstraint()
     val textColor = UIScheme.primaryTextColor.toConstraint()
@@ -35,6 +37,11 @@ class UIButton(val text: String, radius: Float = 0f, var onClick : () -> Unit = 
             }
             textArea.constrain {
                 color = if (disabled) secondaryTextColor else textColor
+            }
+            if(image != null) {
+                image.constrain {
+                    color = if (disabled) secondaryTextColor else textColor
+                }
             }
         }
 
@@ -61,10 +68,24 @@ class UIButton(val text: String, radius: Float = 0f, var onClick : () -> Unit = 
             color = textColor
         } childOf this
 
+        if(image != null) {
+            textArea.setHidden(true)
+            image.constrain {
+                x = CenterConstraint()
+                y = CenterConstraint()
+                width = 70.percent()
+                height = 70.percent()
+                color = textColor
+            } childOf this
+        }
+
         this.onMouseClick {
             if(!disabled) {
                 onClick()
                 textArea.animate {
+                    setColorAnimation(Animations.IN_EXP, clickDuration, secondaryTextColor)
+                }
+                image?.animate {
                     setColorAnimation(Animations.IN_EXP, clickDuration, secondaryTextColor)
                 }
             }
@@ -72,6 +93,9 @@ class UIButton(val text: String, radius: Float = 0f, var onClick : () -> Unit = 
         .onMouseRelease {
             if(!disabled) {
                 textArea.animate {
+                    setColorAnimation(Animations.IN_EXP, clickDuration, textColor)
+                }
+                image?.animate {
                     setColorAnimation(Animations.IN_EXP, clickDuration, textColor)
                 }
             }
@@ -91,5 +115,11 @@ class UIButton(val text: String, radius: Float = 0f, var onClick : () -> Unit = 
             }
         }
 
+    }
+    
+    companion object {
+        fun withImage(image: UIImage, radius: Float = 0f, onClick: () -> Unit = {}) : UIButton {
+            return UIButton("", radius, image, onClick)
+        }
     }
 }

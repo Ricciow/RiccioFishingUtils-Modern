@@ -11,6 +11,7 @@ import cloud.glitchdev.rfu.utils.gui.setHidden
 import cloud.glitchdev.rfu.utils.network.PartyHttp
 import gg.essential.elementa.components.ScrollComponent
 import gg.essential.elementa.components.UIContainer
+import gg.essential.elementa.components.UIImage
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
 import gg.essential.elementa.components.Window
@@ -29,7 +30,7 @@ import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.toConstraint
 
-class PartyFinderWindow : BaseWindow(false) {
+object PartyFinderWindow : BaseWindow(false) {
     val primaryColor = UIScheme.primaryColorOpaque.toConstraint()
     val secondaryColor = UIScheme.secondaryColorOpaque.toConstraint()
     val textColor = UIScheme.primaryTextColor.toConstraint()
@@ -38,6 +39,8 @@ class PartyFinderWindow : BaseWindow(false) {
     var parties : MutableList<FishingParty> = mutableListOf()
     var displayParties : MutableList<FishingParty> = mutableListOf()
     val partyCards : MutableList<UIPartyCard> = mutableListOf()
+    var filterOpen = false
+    var partyCreationOpen = false
 
     lateinit var background : UIRoundedRectangle
     lateinit var filterArea : UIFilterArea
@@ -200,7 +203,7 @@ class PartyFinderWindow : BaseWindow(false) {
             height = 100.percent()
         } childOf rightContainer
 
-        reloadButton = UIButton("\uD83D\uDDD8", 3f) {
+        reloadButton = UIButton.withImage(UIImage.ofResourceCached("/assets/rfu/ui/refresh.png"), 3f) {
             getParties()
         }.constrain {
             x = SiblingConstraint(2f, true)
@@ -208,11 +211,6 @@ class PartyFinderWindow : BaseWindow(false) {
             width = AspectConstraint(1f)
             height = 100.percent()
         } childOf rightContainer
-
-        reloadButton.textArea.constrain {
-            width = 60.percent()
-            height = TextAspectConstraint()
-        }
 
         rightContainer.constrain {
             x = 98.percent() - rightContainer.getWidth().pixels()
@@ -228,10 +226,5 @@ class PartyFinderWindow : BaseWindow(false) {
             filterButton.disabled = partyCreationOpen
             reloadButton.disabled = partyCreationOpen
         }
-    }
-
-    companion object {
-        var filterOpen = false
-        var partyCreationOpen = false
     }
 }
