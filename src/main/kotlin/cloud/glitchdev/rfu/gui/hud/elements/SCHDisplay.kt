@@ -8,7 +8,6 @@ import cloud.glitchdev.rfu.gui.hud.AbstractHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 import cloud.glitchdev.rfu.utils.dsl.toReadableString
 import gg.essential.elementa.components.UIText
-import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ScaledTextConstraint
 import gg.essential.elementa.constraints.TextAspectConstraint
 import gg.essential.elementa.dsl.childOf
@@ -24,14 +23,12 @@ object SCHDisplay : AbstractHudElement("schDisplay") {
         get() = timeElapsed != Duration.ZERO
 
     var text : UIText = UIText().constrain {
-        x = CenterConstraint()
-        y = CenterConstraint()
         width = ScaledTextConstraint(scale)
         height = TextAspectConstraint()
     } childOf this
 
     override val enabled: Boolean
-        get() = GeneralFishing.schDisplay && (!GeneralFishing.schOnlyWhenFishing || isFishing)
+        get() = GeneralFishing.schDisplay && (super.enabled || !GeneralFishing.schOnlyWhenFishing || isFishing)
 
     override fun onInitialize() {
         //Required because otherwise the width is sized incorrectly

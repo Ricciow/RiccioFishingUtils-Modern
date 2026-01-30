@@ -26,7 +26,8 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
     open val defaultY = 10f
     var currentX = defaultX
     var currentY = defaultY
-    open val enabled = false
+    open val enabled
+        get() = isEditing
     open var scale = 1f
     open val skyblockOnly = true
 
@@ -43,6 +44,7 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
             y = defaultY.pixels()
             width = ChildBasedSizeConstraint()
             height = ChildBasedSizeConstraint()
+            isFloating = true
         }
 
         this.onMouseClick { event ->

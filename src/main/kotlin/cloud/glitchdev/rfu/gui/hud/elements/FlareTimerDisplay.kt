@@ -30,7 +30,7 @@ object FlareTimerDisplay : AbstractHudElement("flareTimerDisplay") {
     } childOf this
 
     override val enabled: Boolean
-        get() = GeneralFishing.flareTimerDisplay && (remainingTime != null || isEditing)
+        get() = GeneralFishing.flareTimerDisplay && (super.enabled || remainingTime != null)
 
     override fun onInitialize() {
         text.setText("Flare Timer")
