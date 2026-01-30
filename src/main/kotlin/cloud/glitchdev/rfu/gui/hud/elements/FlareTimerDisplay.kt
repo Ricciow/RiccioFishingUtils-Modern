@@ -7,7 +7,7 @@ import cloud.glitchdev.rfu.constants.text.TextColor.YELLOW
 import cloud.glitchdev.rfu.constants.text.TextEffects.BOLD
 import cloud.glitchdev.rfu.gui.hud.AbstractHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
-import cloud.glitchdev.rfu.manager.mob.MobManager
+import cloud.glitchdev.rfu.manager.mob.DeployableManager
 import cloud.glitchdev.rfu.utils.dsl.toReadableString
 import gg.essential.elementa.components.UIText
 import gg.essential.elementa.constraints.CenterConstraint
@@ -20,7 +20,7 @@ import kotlin.time.Duration
 @HudElement
 object FlareTimerDisplay : AbstractHudElement("flareTimerDisplay") {
     var remainingTime: Duration? = null
-    var activeType: MobManager.FlareType = MobManager.FlareType.NONE
+    var activeType: DeployableManager.FlareType = DeployableManager.FlareType.NONE
 
     var text : UIText = UIText().constrain {
         x = CenterConstraint()
@@ -46,7 +46,7 @@ object FlareTimerDisplay : AbstractHudElement("flareTimerDisplay") {
             buildString {
                 append("$GOLD${BOLD}Flare:")
                 append(" $YELLOW${time.toReadableString()}")
-                if (activeType != MobManager.FlareType.NONE) {
+                if (activeType != DeployableManager.FlareType.NONE) {
                     append(" $AQUAMARINE${activeType.bonus}")
                 }
             }
@@ -57,7 +57,7 @@ object FlareTimerDisplay : AbstractHudElement("flareTimerDisplay") {
         text.setText(finalText)
     }
 
-    fun updateTime(remaining: Duration?, type: MobManager.FlareType = MobManager.FlareType.NONE) {
+    fun updateTime(remaining: Duration?, type: DeployableManager.FlareType = DeployableManager.FlareType.NONE) {
         this.remainingTime = remaining
         this.activeType = type
         updateState()

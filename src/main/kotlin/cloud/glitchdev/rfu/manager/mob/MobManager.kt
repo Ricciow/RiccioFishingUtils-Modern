@@ -8,35 +8,20 @@ import cloud.glitchdev.rfu.events.managers.WorldChangeEvents.registerWorldChange
 import cloud.glitchdev.rfu.utils.Tablist.getPlayerNames
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.client.world.ClientWorld
-import net.minecraft.component.DataComponentTypes
-import net.minecraft.entity.EquipmentSlot
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.decoration.ArmorStandEntity
 import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.item.PlayerHeadItem
 import net.minecraft.util.math.Box
 
 @AutoRegister
 object MobManager : RegisteredEvent {
     private val sbEntities = HashMap<Int, SkyblockEntity>()
     private val uniqueSbEntities = HashSet<SkyblockEntity>()
-    private val seenFlares = HashSet<Int>()
-    var activeFlareEndTime: Long? = null
-        private set
-    var activeFlareType: FlareType = FlareType.NONE
-        private set
-
-    enum class FlareType(val bonus: String, val texture: String) {
-        SOS("+125%", "ewogICJ0aW1lc3RhbXAiIDogMTY2MjY4Mjc3NjUxNiwKICAicHJvZmlsZUlkIiA6ICI4YjgyM2E1YmU0Njk0YjhiOTE0NmE5MWRhMjk4ZTViNSIsCiAgInByb2ZpbGVOYW1lIiA6ICJTZXBoaXRpcyIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9jMDA2MmNjOThlYmRhNzJhNmE0Yjg5NzgzYWRjZWYyODE1YjQ4M2EwMWQ3M2VhODdiM2RmNzYwNzJhODlkMTNiIiwKICAgICAgIm1ldGFkYXRhIiA6IHsKICAgICAgICAibW9kZWwiIDogInNsaW0iCiAgICAgIH0KICAgIH0KICB9Cn0="),
-        ALERT("+50%", "ewogICJ0aW1lc3RhbXAiIDogMTcxOTg1MDQzMTY4MywKICAicHJvZmlsZUlkIiA6ICJmODg2ZDI3YjhjNzU0NjAyODYyYTM1M2NlYmYwZTgwZiIsCiAgInByb2ZpbGVOYW1lIiA6ICJOb2JpbkdaIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzlkMmJmOTg2NDcyMGQ4N2ZkMDZiODRlZmE4MGI3OTVjNDhlZDUzOWIxNjUyM2MzYjFmMTk5MGI0MGMwMDNmNmIiLAogICAgICAibWV0YWRhdGEiIDogewogICAgICAgICJtb2RlbCIgOiAic2xpbSIKICAgICAgfQogICAgfQogIH0KfQ=="),
-        NONE("", "")
-    }
 
     override fun register() {
         TickEvents.registerTickEvent(0, 10) { client ->
             val world = client.world ?: return@registerTickEvent
-            scanForSbEntities(world)
-            scanForDeployables(world)
+            scanEntities(world)
             validateCurrentEntities()
             MobDetectEvents.runTasks(uniqueSbEntities.toSet())
         }
@@ -46,57 +31,39 @@ object MobManager : RegisteredEvent {
         }
     }
 
-    private fun scanForSbEntities(world: ClientWorld) {
+    private fun scanEntities(world: ClientWorld) {
         world.entities.forEach { entity ->
             if (entity !is ArmorStandEntity) return@forEach
-
-            val trackedEntity = sbEntities[entity.id]
-            if (trackedEntity != null && !trackedEntity.nameTagEntity.isRemoved) return@forEach
-
-            if (!entity.isInvisible) return@forEach
-
-            val sbName = SkyblockEntity.parseNameFromTag(entity) ?: return@forEach
-
-            val foundModel = findModelForNametag(entity, world)
-
-            if (foundModel != null) {
-                val existingLink = sbEntities[foundModel.id]
-
-                if (existingLink != null) {
-                    if (existingLink.nameTagEntity.isRemoved) {
-                        sbEntities.remove(existingLink.nameTagEntity.id)
-                        existingLink.updateNametag(entity)
-                        sbEntities[entity.id] = existingLink
-                    }
-                } else {
-                    val sbEntity = SkyblockEntity(entity, foundModel, sbName)
-                    sbEntities[entity.id] = sbEntity
-                    sbEntities[foundModel.id] = sbEntity
-                    uniqueSbEntities.add(sbEntity)
-                }
-            }
+            
+            DeployableManager.checkEntity(entity)
+            checkSbEntity(entity, world)
         }
     }
 
-    private fun scanForDeployables(world: ClientWorld) {
-        world.entities.forEach { entity ->
-            if (entity !is ArmorStandEntity) return@forEach
-            if (seenFlares.contains(entity.id)) return@forEach
+    private fun checkSbEntity(entity: ArmorStandEntity, world: ClientWorld) {
+        val trackedEntity = sbEntities[entity.id]
+        if (trackedEntity != null && !trackedEntity.nameTagEntity.isRemoved) return
 
-            val helmet = entity.getEquippedStack(EquipmentSlot.HEAD)
+        if (!entity.isInvisible) return
 
-            if (helmet.item !is PlayerHeadItem) return@forEach
+        val sbName = SkyblockEntity.parseNameFromTag(entity) ?: return
 
-            val component = helmet.get(DataComponentTypes.PROFILE)
+        val foundModel = findModelForNametag(entity, world)
 
-            if (component != null) {
-                val textures = component.gameProfile.properties.get("textures").map { it.value }
-                val type = FlareType.entries.find { type -> textures.contains(type.texture) }
-                if (type != null && type != FlareType.NONE) {
-                    seenFlares.add(entity.id)
-                    activeFlareEndTime = System.currentTimeMillis() + 180_000 // 3 minutes
-                    activeFlareType = type
+        if (foundModel != null) {
+            val existingLink = sbEntities[foundModel.id]
+
+            if (existingLink != null) {
+                if (existingLink.nameTagEntity.isRemoved) {
+                    sbEntities.remove(existingLink.nameTagEntity.id)
+                    existingLink.updateNametag(entity)
+                    sbEntities[entity.id] = existingLink
                 }
+            } else {
+                val sbEntity = SkyblockEntity(entity, foundModel, sbName)
+                sbEntities[entity.id] = sbEntity
+                sbEntities[foundModel.id] = sbEntity
+                uniqueSbEntities.add(sbEntity)
             }
         }
     }
@@ -137,12 +104,5 @@ object MobManager : RegisteredEvent {
         sbEntities.clear()
         uniqueSbEntities.forEach { it.renderEvent = null }
         uniqueSbEntities.clear()
-        resetFlare()
-    }
-
-    fun resetFlare() {
-        seenFlares.clear()
-        activeFlareEndTime = null
-        activeFlareType = FlareType.NONE
     }
 }
