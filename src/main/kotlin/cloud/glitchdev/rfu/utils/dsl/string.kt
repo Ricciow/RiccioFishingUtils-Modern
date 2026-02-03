@@ -6,7 +6,6 @@ import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.User
 import net.minecraft.text.ClickEvent
 import net.minecraft.text.HoverEvent
-import net.minecraft.text.MutableText
 import net.minecraft.text.Style
 import net.minecraft.text.Text
 import java.util.regex.Pattern
@@ -28,7 +27,7 @@ fun String.isUser() : Boolean {
 }
 
 fun String.toInteractiveText(command: String, hoverText: Text = Text.literal("Click to execute: $command")): Text {
-    val root = TextUtils.rfuLiteral("", TextStyle(TextColor.WHITE)) as MutableText
+    val root = TextUtils.rfuLiteral("", TextStyle(TextColor.WHITE))
 
     val pattern = Pattern.compile("\\{(.*?)\\}")
     val matcher = pattern.matcher(this)
