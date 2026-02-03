@@ -12,6 +12,7 @@ import cloud.glitchdev.rfu.utils.gui.Gui
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.World
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
+import net.minecraft.text.Text
 
 @RFUFeature
 object PartyFinder : Feature {
@@ -19,15 +20,25 @@ object PartyFinder : Feature {
         Command.registerCommand(
             literal("rfupf")
                 .executes { context ->
-                    if(!BackendSettings.backendAccepted) {
-                        context.source.sendFeedback(TextUtils.rfuLiteral("Must accept the backend features to use this feature!",
-                            TextStyle(TextColor.LIGHT_RED, TextEffects.UNDERLINE)))
+                    if (!BackendSettings.backendAccepted) {
+                        context.source.sendFeedback(
+                            TextUtils.rfuLiteral(
+                                "Must accept the backend features to use this feature!",
+                                TextStyle(TextColor.LIGHT_RED, TextEffects.UNDERLINE)
+                            ).append(
+                                Text.literal("\n\n${TextColor.LIGHT_RED}/rfu -> Backend Settings -> Connect to Backend")
+                            )
+                        )
                         return@executes 1
                     }
 
-                    if(!World.isInSkyblock()) {
-                        context.source.sendFeedback(TextUtils.rfuLiteral("Must be in skyblock to use this feature!",
-                            TextStyle(TextColor.LIGHT_RED, TextEffects.UNDERLINE)))
+                    if (!World.isInSkyblock()) {
+                        context.source.sendFeedback(
+                            TextUtils.rfuLiteral(
+                                "Must be in skyblock to use this feature!",
+                                TextStyle(TextColor.LIGHT_RED, TextEffects.UNDERLINE)
+                            )
+                        )
                         return@executes 1
                     }
 
