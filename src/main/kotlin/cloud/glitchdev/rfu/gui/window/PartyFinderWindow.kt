@@ -50,6 +50,7 @@ object PartyFinderWindow : BaseWindow(false) {
     lateinit var filterButton : UIButton
     lateinit var reloadButton : UIButton
     lateinit var partyCreationButton : UIButton
+    lateinit var errorText : UIText
 
     init {
         create()
@@ -61,10 +62,15 @@ object PartyFinderWindow : BaseWindow(false) {
         reloadButton.disabled = true
         parties.clear()
         updateFiltering()
-        PartyHttp.getExistingParties { newParties ->
+        if (::errorText.isInitialized) errorText.setHidden(true)
+        PartyHttp.getExistingParties { (success, newParties) ->
             minecraft.execute {
-                parties.addAll(newParties)
-                updateFiltering()
+                if (success) {
+                    parties.addAll(newParties)
+                    updateFiltering()
+                } else {
+                    errorText.setHidden(false)
+                }
                 if(!partyCreationOpen) reloadButton.disabled = false
             }
         }
@@ -156,6 +162,13 @@ object PartyFinderWindow : BaseWindow(false) {
         } childOf partyArea
 
         scrollArea.setScrollBarComponent(scrollbar, false, false)
+
+        errorText = UIText("Unable to load parties").constrain {
+            x = CenterConstraint()
+            y = CenterConstraint()
+            color = UIScheme.denyColor.toConstraint()
+        } childOf partyArea
+        errorText.setHidden(true)
     }
 
     fun createHeader() {

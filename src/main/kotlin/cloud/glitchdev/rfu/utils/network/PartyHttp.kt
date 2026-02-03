@@ -16,19 +16,19 @@ object PartyHttp {
     private val gson = Gson()
     var currentParty : FishingParty? = null
 
-    fun getExistingParties(callback: (List<FishingParty>) -> Unit) {
+    fun getExistingParties(callback: (Pair<Boolean, List<FishingParty>>) -> Unit) {
         getRequest("${API_URL}/party") { response ->
             if(!response.isSuccessful()) {
-                callback(mutableListOf())
+                callback(Pair(false, mutableListOf()))
                 return@getRequest
             }
 
             try {
                 val partiesArray = gson.fromJson(response.body, Array<FishingParty>::class.java)
-                callback(partiesArray.toList())
+                callback(Pair(true, partiesArray.toList()))
             } catch (e: Exception) {
                 e.printStackTrace()
-                callback(mutableListOf())
+                callback(Pair(false, mutableListOf()))
             }
         }
     }
