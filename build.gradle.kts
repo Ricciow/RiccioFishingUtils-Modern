@@ -94,14 +94,14 @@ tasks {
     processResources {
         inputs.property("id", project.property("mod.id"))
         inputs.property("name", project.property("mod.name"))
-        inputs.property("version", version)
+        inputs.property("version", project.version)
         inputs.property("minecraft", project.property("mod.mc_dep"))
         inputs.property("fabric_language_kotlin", project.property("fabric_language_kotlin"))
 
         val props = mapOf(
             "id" to project.property("mod.id"),
             "name" to project.property("mod.name"),
-            "version" to project.property("mod.version"),
+            "version" to project.version,
             "minecraft" to project.property("mod.mc_dep"),
             "fabric_language_kotlin" to project.property("fabric_language_kotlin")
         )

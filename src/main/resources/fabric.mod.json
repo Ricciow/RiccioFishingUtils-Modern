@@ -11,7 +11,7 @@
     "homepage": "https://rfu.glitchdev.cloud/",
     "sources": "https://github.com/Ricciow/RiccioFishingUtilsV2"
   },
-  "license": "MIT",
+  "license": "GPL-3.0-or-later",
   "icon": "assets/rfu/icon.png",
   "environment": "*",
   "entrypoints": {
