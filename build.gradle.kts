@@ -41,38 +41,36 @@ repositories {
 
 dependencies {
     minecraft("com.mojang:minecraft:${stonecutter.current.version}")
+
     mappings("net.fabricmc:yarn:${property("yarn_mappings")}:v2")
 
     modImplementation("net.fabricmc:fabric-loader:${property("deps.fabric_loader")}")
-
     modImplementation("net.fabricmc:fabric-language-kotlin:${property("fabric_language_kotlin")}")
-
     modImplementation(include("gg.essential:universalcraft-${property("universalcraft_mc_version")}-fabric:${property("universalcraft_version")}")!!)
-    implementation(include("gg.essential:elementa:${property("elementa_version")}")!!)
-
-
     modImplementation("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric_api")}")
+    modImplementation(include("com.teamresourceful.resourcefulconfig:resourcefulconfig-fabric-${property("resourceful_mc_version")}:${property("resourceful_version")}")!!)
+    modImplementation(include("com.teamresourceful.resourcefulconfigkt:resourcefulconfigkt-fabric-${property("resourcefulkt_mc_version")}:${property("resourcefulkt_version")}")!!)
+
+    implementation(include("gg.essential:elementa:${property("elementa_version")}")!!)
 
     modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:${property("devauth_version")}")
 
     ksp(project(":processor"))
 
-    modImplementation(include("com.teamresourceful.resourcefulconfig:resourcefulconfig-fabric-${property("resourceful_mc_version")}:${property("resourceful_version")}")!!)
-    modImplementation(include("com.teamresourceful.resourcefulconfigkt:resourcefulconfigkt-fabric-${property("resourcefulkt_mc_version")}:${property("resourcefulkt_version")}")!!)
 }
 
 loom {
-    fabricModJsonPath = rootProject.file("src/main/resources/fabric.mod.json") // Useful for interface injection
+    fabricModJsonPath = rootProject.file("src/main/resources/fabric.mod.json")
     accessWidenerPath = rootProject.file("src/main/resources/rfu.accesswidener")
 
     decompilerOptions.named("vineflower") {
-        options.put("mark-corresponding-synthetics", "1") // Adds names to lambdas - useful for mixins
+        options.put("mark-corresponding-synthetics", "1")
     }
 
     runConfigs.all {
         ideConfigGenerated(true)
-        vmArgs("-Dmixin.debug.export=true") // Exports transformed classes for debugging
-        runDir = "../../run" // Shares the run directory between versions
+        vmArgs("-Dmixin.debug.export=true")
+        runDir = "../../run"
     }
 }
 
@@ -96,7 +94,7 @@ tasks {
     processResources {
         inputs.property("id", project.property("mod.id"))
         inputs.property("name", project.property("mod.name"))
-        inputs.property("version", project.property("mod.version"))
+        inputs.property("version", version)
         inputs.property("minecraft", project.property("mod.mc_dep"))
         inputs.property("fabric_language_kotlin", project.property("fabric_language_kotlin"))
 
@@ -114,10 +112,11 @@ tasks {
         filesMatching("*.mixins.json") { expand("java" to mixinJava) }
     }
 
-    register<Copy>("buildAndCollect") {
-        group = "build"
-        from(remapJar.map { it.archiveFile }, remapSourcesJar.map { it.archiveFile })
-        into(rootProject.layout.buildDirectory.file("libs/${project.property("mod.version")}"))
-        dependsOn("build")
+    clean {
+        delete(rootProject.layout.buildDirectory.file("libs/${base.archivesName.get()}-${version}.jar"))
+    }
+
+    remapJar {
+        destinationDirectory.set(rootProject.layout.buildDirectory.dir("libs"))
     }
 }
