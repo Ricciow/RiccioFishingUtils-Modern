@@ -10,6 +10,7 @@ Minecraft Mod for Hypixel SkyBlock
 
 [![Discord](https://img.shields.io/discord/1210734539186376774?label=discord&color=7289da&logo=discord&style=for-the-badge)](https://discord.gg/JfrXm6TqXz)
 [![Downloads](https://img.shields.io/github/downloads/ricciow/RiccioFishingUtils-Modern/total?label=downloads&color=055ca3&logo=github&style=for-the-badge)](https://github.com/ricciow/RiccioFishingUtils-Modern/releases)
+[![Modrinth](https://img.shields.io/modrinth/dt/rfu?style=for-the-badge&logo=Modrinth&color=17ad56)](https://modrinth.com/mod/rfu)
 </div>
 
 ## What it does
@@ -27,8 +28,5 @@ Give feedback or just chat with others on our Discord
 * **Bug Reports:** Use the `#bug-reporting` channel when you find broken stuff.
 * **Feature Suggestions:** Feel free to tell your ideas in `#suggestions` channel for new features and improvements to the mod.
 * **Chatting:** Chat with other RFU users in `#general` channel.
-
-## Install/Update:
-Download on [Modrinth]() (TBD)
 
 ---
