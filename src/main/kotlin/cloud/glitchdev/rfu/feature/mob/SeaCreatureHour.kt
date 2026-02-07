@@ -1,11 +1,15 @@
 package cloud.glitchdev.rfu.feature.mob
 
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
+import cloud.glitchdev.rfu.constants.text.TextColor
+import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.gui.hud.elements.SCHDisplay
+import cloud.glitchdev.rfu.utils.TextUtils
+import cloud.glitchdev.rfu.utils.command.Command
 import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
@@ -29,6 +33,19 @@ object SeaCreatureHour : Feature {
 
         registerTickEvent(interval = 20) {
             updateRate()
+        }
+
+        Command.registerCommand("rfuresetsch") { context ->
+            currentScPerHour = 0.0
+            lastSC = Instant.DISTANT_PAST
+            startFishing = Instant.DISTANT_PAST
+            total = 0
+            catchHistory.clear()
+            updateRate()
+
+            context.source.sendFeedback(TextUtils.rfuLiteral("The SC/h tracker has been reset!", TextStyle(TextColor.LIGHT_GREEN)))
+
+            1
         }
     }
 
