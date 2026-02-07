@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.utils
 
+import cloud.glitchdev.rfu.RiccioFishingUtils.minecraft
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.constants.text.TextStyle
@@ -36,6 +37,8 @@ object Party : RegisteredEvent {
         }
 
         registerJoinEvent { wasConnected ->
+            if(minecraft.isInSingleplayer) return@registerJoinEvent
+            if(minecraft.currentServerEntry?.address != "hypixel.net") return@registerJoinEvent
             if(!wasConnected) hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
         }
 

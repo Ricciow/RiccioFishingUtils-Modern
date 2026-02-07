@@ -10,13 +10,12 @@ object ConnectionEvents : RegisteredEvent {
     var wasConnected = false
 
     override fun register() {
-        ClientPlayConnectionEvents.JOIN.register{ _, _, _ ->
+        ClientPlayConnectionEvents.JOIN.register { _, _, _ ->
             JoinEventManager.runTasks(wasConnected)
             wasConnected = true
         }
 
         ClientPlayConnectionEvents.DISCONNECT.register { _, _ ->
-            println("Disconnected")
             DisconnectEventManager.runTasks()
             wasConnected = false
         }
