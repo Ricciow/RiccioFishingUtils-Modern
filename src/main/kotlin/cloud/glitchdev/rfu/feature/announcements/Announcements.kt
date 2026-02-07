@@ -15,11 +15,11 @@ import cloud.glitchdev.rfu.utils.dsl.toInteractiveText
 import cloud.glitchdev.rfu.utils.network.AnnouncementsHttp
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
 import net.minecraft.text.Text
+import java.time.Instant
 
 @RFUFeature
 object Announcements : Feature {
-    var hasJoined : Boolean = false
-    var announcement : Announcement? = null
+    var announcement: Announcement? = null
 
     override fun onInitialize() {
         AnnouncementsHttp.getLatestAnnouncement { newAnnouncement ->
@@ -29,21 +29,63 @@ object Announcements : Feature {
         Command.registerCommand(
             literal("rfulatestannouncement")
                 .executes { context ->
-                    if(announcement != null) {
-                        Gui.openGui(AnnouncementWindow(announcement!!))
+                    AnnouncementsHttp.getLatestAnnouncement { newAnnouncement ->
+                        if (newAnnouncement != null) {
+                            Gui.openGui(AnnouncementWindow(newAnnouncement))
+                        } else {
+                            context.source.sendFeedback(
+                                TextUtils.rfuLiteral(
+                                    "Unable to get latest announcement.",
+                                    TextStyle(TextColor.LIGHT_RED)
+                                )
+                            )
+                        }
+
+                        announcement = newAnnouncement
                     }
-                    else {
-                        context.source.sendFeedback(TextUtils.rfuLiteral("Unable to get latest announcement.",
-                            TextStyle(TextColor.LIGHT_RED)))
-                    }
+
                     return@executes 1
                 }
         )
 
-        registerJoinEvent {
-            if(!hasJoined) {
-                hasJoined = true
-                announcement?.let { Chat.sendMessage(it.message.toInteractiveText("/rfulatestannouncement", Text.literal("Open announcement"))) }
+        Command.registerCommand(
+            literal("rfuopenannouncement")
+                .executes { context ->
+                    if (announcement != null) {
+                        Gui.openGui(
+                            AnnouncementWindow(
+                                announcement ?: Announcement(
+                                    "Nancy Announcement",
+                                    "This is an error",
+                                    "Hmm i shouldnt be here",
+                                    "Hmm i shouldnt be here",
+                                    Instant.now()
+                                )
+                            )
+                        )
+                    } else {
+                        context.source.sendFeedback(
+                            TextUtils.rfuLiteral(
+                                "Unable to get latest announcement.",
+                                TextStyle(TextColor.LIGHT_RED)
+                            )
+                        )
+                    }
+
+                    return@executes 1
+                }
+        )
+
+        registerJoinEvent { wasConnected ->
+            if (!wasConnected) {
+                announcement?.let {
+                    Chat.sendMessage(
+                        it.message.toInteractiveText(
+                            "/rfuopenannouncement",
+                            Text.literal("Open announcement")
+                        )
+                    )
+                }
             }
         }
 
