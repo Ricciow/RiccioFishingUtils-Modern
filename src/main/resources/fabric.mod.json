@@ -28,6 +28,7 @@
   "depends": {
     "fabricloader": ">=0.18.4",
     "minecraft": "${minecraft}",
-    "fabric-language-kotlin": ">=${fabric_language_kotlin}"
+    "fabric-language-kotlin": ">=${fabric_language_kotlin}",
+    "hypixel-mod-api": ">=${hypixel_mod_api}"
   }
 }

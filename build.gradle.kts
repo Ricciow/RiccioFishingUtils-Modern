@@ -37,6 +37,10 @@ repositories {
     maven(url = "https://maven.teamresourceful.com/repository/maven-public/") {
         name = "Resourceful Config"
     }
+
+    maven(url = "https://repo.hypixel.net/repository/Hypixel/") {
+        name = "Hypixel Api"
+    }
 }
 
 dependencies {
@@ -46,17 +50,17 @@ dependencies {
 
     modImplementation("net.fabricmc:fabric-loader:${property("deps.fabric_loader")}")
     modImplementation("net.fabricmc:fabric-language-kotlin:${property("fabric_language_kotlin")}")
-    modImplementation(include("gg.essential:universalcraft-${property("universalcraft_mc_version")}-fabric:${property("universalcraft_version")}")!!)
     modImplementation("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric_api")}")
     modImplementation(include("com.teamresourceful.resourcefulconfig:resourcefulconfig-fabric-${property("resourceful_mc_version")}:${property("resourceful_version")}")!!)
     modImplementation(include("com.teamresourceful.resourcefulconfigkt:resourcefulconfigkt-fabric-${property("resourcefulkt_mc_version")}:${property("resourcefulkt_version")}")!!)
+    modImplementation(include("gg.essential:universalcraft-${property("universalcraft_mc_version")}-fabric:${property("universalcraft_version")}")!!)
 
     implementation(include("gg.essential:elementa:${property("elementa_version")}")!!)
+    implementation("net.hypixel:mod-api:${property("hypixel_mod_api_version")}")
 
     modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:${property("devauth_version")}")
 
     ksp(project(":processor"))
-
 }
 
 loom {
@@ -97,13 +101,15 @@ tasks {
         inputs.property("version", project.version)
         inputs.property("minecraft", project.property("mod.mc_dep"))
         inputs.property("fabric_language_kotlin", project.property("fabric_language_kotlin"))
+        inputs.property("hypixel_mod_api", project.property("hypixel_mod_api_version"))
 
         val props = mapOf(
             "id" to project.property("mod.id"),
             "name" to project.property("mod.name"),
             "version" to project.version,
             "minecraft" to project.property("mod.mc_dep"),
-            "fabric_language_kotlin" to project.property("fabric_language_kotlin")
+            "fabric_language_kotlin" to project.property("fabric_language_kotlin"),
+            "hypixel_mod_api" to project.property("hypixel_mod_api_version")
         )
 
         filesMatching("fabric.mod.json") { expand(props) }
