@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.config
 import cloud.glitchdev.rfu.config.categories.BackendSettings
 import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
+import cloud.glitchdev.rfu.config.categories.LavaFishing
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 import com.teamresourceful.resourcefulconfigkt.api.ConfigKt
 
@@ -14,6 +15,7 @@ object RFUSettings : ConfigKt("rfu/settings") {
 
     init {
         category(GeneralFishing)
+        category(LavaFishing)
         category(BackendSettings)
         category(DevSettings)
     }
