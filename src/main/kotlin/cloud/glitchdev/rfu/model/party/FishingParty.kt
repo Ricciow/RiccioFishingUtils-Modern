@@ -70,7 +70,7 @@ data class FishingParty(
         }
 
         fun blankParty(): FishingParty {
-            val island = World.getCurrentFishingIsland()
+            val island = World.island ?: FishingIslands.ISLE
             return FishingParty(
                 "?",
                 User.getUsername(),

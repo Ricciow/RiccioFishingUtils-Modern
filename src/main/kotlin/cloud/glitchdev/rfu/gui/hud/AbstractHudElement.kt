@@ -1,7 +1,7 @@
 package cloud.glitchdev.rfu.gui.hud
 
 import cloud.glitchdev.rfu.events.managers.CloseConfigEvents.registerCloseConfigEvent
-import cloud.glitchdev.rfu.events.managers.WorldChangeEvents.registerWorldChangeEvent
+import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.window.HudWindow
 import cloud.glitchdev.rfu.utils.World
@@ -102,7 +102,7 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
             updateState()
         }
 
-        registerWorldChangeEvent(delayed = true) {
+        registerLocationEvent {
             updateState()
         }
 
@@ -118,7 +118,7 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
             y = currentY.pixels()
         }
 
-        this.setHidden(!enabled || skyblockOnly && !World.isInSkyblock())
+        this.setHidden(!enabled || skyblockOnly && !World.isInSkyblock)
 
         onUpdateState()
     }

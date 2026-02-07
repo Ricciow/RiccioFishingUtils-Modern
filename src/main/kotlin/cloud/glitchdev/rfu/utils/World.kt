@@ -2,27 +2,32 @@ package cloud.glitchdev.rfu.utils
 
 import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.FishingIslands
+import cloud.glitchdev.rfu.events.AutoRegister
+import cloud.glitchdev.rfu.events.RegisteredEvent
+import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
+import kotlin.jvm.optionals.getOrElse
+import kotlin.jvm.optionals.getOrNull
 
-object World {
-    fun isInSkyblock() : Boolean {
-        val tablist = Tablist.getTablistAsStrings()
+@AutoRegister
+object World : RegisteredEvent {
+    var isInSkyblock = false
+        get() {
+            return field || (DevSettings.devMode && DevSettings.isInSkyblock)
+        }
+    var lobby : String? = null
+    var island : FishingIslands? = null
 
-        val area = tablist.find { it.startsWith("Area: ")}
+    override fun register() {
+        registerLocationEvent(-1) { event ->
+            isInSkyblock = event.serverType.getOrNull()?.name == "SkyBlock"
+            lobby = event.serverName
 
-        return area != null || (DevSettings.devMode && DevSettings.isInSkyblock)
-    }
+            val islandName = event.map.getOrElse {
+                island = null
+                return@registerLocationEvent
+            }
 
-    /**
-     * Gets the current fishing island, defaults to ISLE if the player isn't on a fishing island
-     */
-    fun getCurrentFishingIsland() : FishingIslands {
-        val tablist = Tablist.getTablistAsStrings()
-
-        val area = tablist.find { it.startsWith("Area: ")}
-        if(area == null) return FishingIslands.ISLE
-
-        val islandName = area.slice(IntRange(6, area.length-1))
-
-        return FishingIslands.findIslandObject(islandName, FishingIslands.ISLE)
+            island = FishingIslands.findIslandObject(islandName)
+        }
     }
 }

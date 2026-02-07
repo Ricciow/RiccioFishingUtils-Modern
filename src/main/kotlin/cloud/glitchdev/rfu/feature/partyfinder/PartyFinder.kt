@@ -32,7 +32,7 @@ object PartyFinder : Feature {
                         return@executes 1
                     }
 
-                    if (!World.isInSkyblock()) {
+                    if (!World.isInSkyblock) {
                         context.source.sendFeedback(
                             TextUtils.rfuLiteral(
                                 "Must be in skyblock to use this feature!",

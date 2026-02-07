@@ -51,8 +51,8 @@ enum class FishingIslands(val island: String, val availableLiquids : List<Liquid
             } as ArrayList<DataOption>
         }
 
-        fun findIslandObject(name : String, default : FishingIslands = OTHER) : FishingIslands {
-            return entries.find { fishingIslands -> fishingIslands.island == name } ?: default
+        fun findIslandObject(name : String) : FishingIslands? {
+            return entries.find { fishingIslands -> fishingIslands.island == name }
         }
     }
 }
