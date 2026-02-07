@@ -4,7 +4,7 @@ import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.MobDetectEvents
 import cloud.glitchdev.rfu.events.managers.TickEvents
-import cloud.glitchdev.rfu.events.managers.WorldChangeEvents.registerWorldChangeEvent
+import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.utils.Tablist.getPlayerNames
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.client.world.ClientWorld
@@ -26,7 +26,7 @@ object MobManager : RegisteredEvent {
             MobDetectEvents.runTasks(uniqueSbEntities.toSet())
         }
 
-        registerWorldChangeEvent {
+        registerJoinEvent {
             clearAll()
         }
     }

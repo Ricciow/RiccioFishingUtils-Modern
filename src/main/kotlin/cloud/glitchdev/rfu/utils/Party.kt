@@ -6,12 +6,16 @@ import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
+import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.hypixelModAPI
 import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.utils.dsl.isUser
 import cloud.glitchdev.rfu.utils.dsl.removeRankTag
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import cloud.glitchdev.rfu.utils.network.PartyHttp
+import net.hypixel.modapi.packet.impl.clientbound.ClientboundPartyInfoPacket
+import net.hypixel.modapi.packet.impl.serverbound.ServerboundPartyInfoPacket
 import net.minecraft.text.ClickEvent
 import net.minecraft.text.HoverEvent
 import net.minecraft.text.Style
@@ -27,6 +31,14 @@ object Party : RegisteredEvent {
     private const val PLAYER_REGEX = "(?:\\[[A-Z]+\\+*\\] )?[0-9a-zA-Z_]{3,16}"
 
     override fun register() {
+        hypixelModAPI.createHandler(ClientboundPartyInfoPacket::class.java) { event ->
+            inParty = event.isInParty
+        }
+
+        registerJoinEvent { wasConnected ->
+            if(!wasConnected) hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
+        }
+
         registerGameEvent("""Party > .+: .+""".toExactRegex()) { _, _, _ ->
             inParty = true
             executePartyChange()

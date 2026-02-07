@@ -2,7 +2,7 @@ package cloud.glitchdev.rfu.feature.announcements
 
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextStyle
-import cloud.glitchdev.rfu.events.managers.WorldChangeEvents.registerWorldChangeEvent
+import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.gui.window.AnnouncementWindow
@@ -40,7 +40,7 @@ object Announcements : Feature {
                 }
         )
 
-        registerWorldChangeEvent {
+        registerJoinEvent {
             if(!hasJoined) {
                 hasJoined = true
                 announcement?.let { Chat.sendMessage(it.message.toInteractiveText("/rfulatestannouncement", Text.literal("Open announcement"))) }

@@ -2,7 +2,7 @@ package cloud.glitchdev.rfu.manager.drops
 
 import cloud.glitchdev.rfu.events.managers.DropEvents
 import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
-import cloud.glitchdev.rfu.events.managers.WorldChangeEvents.registerWorldChangeEvent
+import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.utils.JsonFile
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
@@ -22,7 +22,7 @@ object DropManager : RegisteredEvent {
             dropHistory.registerDrop(rareDrop, magicFind)
         }
 
-        registerWorldChangeEvent {
+        registerJoinEvent {
             dropsFile.save()
         }
 

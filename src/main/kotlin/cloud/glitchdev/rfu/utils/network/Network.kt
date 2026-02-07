@@ -10,7 +10,7 @@ import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.config.categories.BackendSettings
-import cloud.glitchdev.rfu.events.managers.WorldChangeEvents.registerWorldChangeEvent
+import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import net.minecraft.text.ClickEvent
 import net.minecraft.text.HoverEvent
 import net.minecraft.text.Text
@@ -42,7 +42,7 @@ object Network : RegisteredEvent {
     private val client = HttpClient.newHttpClient()
 
     override fun register() {
-        registerWorldChangeEvent {
+        registerJoinEvent {
             authenticateUser()
         }
 

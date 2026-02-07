@@ -8,12 +8,14 @@ import net.hypixel.modapi.packet.impl.clientbound.event.ClientboundLocationPacke
 
 @AutoRegister
 object HypixelModApiEvents : RegisteredEvent {
+    val hypixelModAPI : HypixelModAPI = HypixelModAPI.getInstance()
+
     override fun register() {
-        HypixelModAPI.getInstance().createHandler(ClientboundLocationPacket::class.java) { event ->
+        hypixelModAPI.createHandler(ClientboundLocationPacket::class.java) { event ->
             LocationEventManager.runTasks(event)
         }
 
-        HypixelModAPI.getInstance().subscribeToEventPacket(ClientboundLocationPacket::class.java)
+        hypixelModAPI.subscribeToEventPacket(ClientboundLocationPacket::class.java)
     }
 
     fun registerLocationEvent(priority: Int = 20, callback: (ClientboundLocationPacket) -> Unit) : LocationEventManager.LocationEvent {

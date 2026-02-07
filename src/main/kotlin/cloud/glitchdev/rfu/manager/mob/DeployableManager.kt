@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.manager.mob
 
-import cloud.glitchdev.rfu.events.managers.WorldChangeEvents.registerWorldChangeEvent
+import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import net.minecraft.component.DataComponentTypes
@@ -23,7 +23,7 @@ object DeployableManager : RegisteredEvent {
     }
 
     override fun register() {
-        registerWorldChangeEvent {
+        registerJoinEvent {
             resetFlare()
         }
     }
