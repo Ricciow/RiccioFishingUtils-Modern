@@ -54,7 +54,6 @@ object DebugCommand : Feature {
         val text = Text.literal(argument.removeSurrounding("\""))
         Chat.sendMessage(text)
         ChatEvents.ChatEventManager.runTasks(text)
-        ChatEvents.GameEventManager.runTasks(text, false)
         ChatEvents.GameEventManager.runTasks(text, true)
     }
 }
