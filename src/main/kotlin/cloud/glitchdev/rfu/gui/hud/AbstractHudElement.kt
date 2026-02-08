@@ -14,6 +14,7 @@ import gg.essential.elementa.constraints.ColorConstraint
 import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.toConstraint
+import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
@@ -63,6 +64,58 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
 
                 currentX = absoluteMouseX - dragOffsetX
                 currentY = absoluteMouseY - dragOffsetY
+
+                // Snapping
+                val snapThreshold = 5f
+                val thisWidth = this.getWidth()
+                val thisHeight = this.getHeight()
+                var snappedX = false
+                var snappedY = false
+
+                for (other in HudWindow.hudElements) {
+                    if (other === this || !other.enabled) continue
+
+                    val otherLeft = other.getLeft()
+                    val otherRight = other.getRight()
+                    val otherTop = other.getTop()
+                    val otherBottom = other.getBottom()
+
+                    // X-axis snapping
+                    if (!snappedX) {
+                        if (abs(currentX - otherLeft) < snapThreshold) {
+                            currentX = otherLeft
+                            snappedX = true
+                        } else if (abs(currentX - otherRight) < snapThreshold) {
+                            currentX = otherRight
+                            snappedX = true
+                        } else if (abs(currentX + thisWidth - otherLeft) < snapThreshold) {
+                            currentX = otherLeft - thisWidth
+                            snappedX = true
+                        } else if (abs(currentX + thisWidth - otherRight) < snapThreshold) {
+                            currentX = otherRight - thisWidth
+                            snappedX = true
+                        }
+                    }
+
+                    // Y-axis snapping
+                    if (!snappedY) {
+                        if (abs(currentY - otherTop) < snapThreshold) {
+                            currentY = otherTop
+                            snappedY = true
+                        } else if (abs(currentY - otherBottom) < snapThreshold) {
+                            currentY = otherBottom
+                            snappedY = true
+                        } else if (abs(currentY + thisHeight - otherTop) < snapThreshold) {
+                            currentY = otherTop - thisHeight
+                            snappedY = true
+                        } else if (abs(currentY + thisHeight - otherBottom) < snapThreshold) {
+                            currentY = otherBottom - thisHeight
+                            snappedY = true
+                        }
+                    }
+
+                    if (snappedX && snappedY) break
+                }
 
                 //Limit within screen
                 currentX = min(max(currentX, 0f), window.getWidth()-this.getWidth())
