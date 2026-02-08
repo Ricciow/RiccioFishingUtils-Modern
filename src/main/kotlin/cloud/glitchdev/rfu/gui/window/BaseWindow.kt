@@ -10,10 +10,10 @@ abstract class BaseWindow(drawDefaultBackground : Boolean = false) : WindowScree
         window.onKeyType { _, id ->
             if(id == UKeyboard.KEY_ESCAPE) {
                 onWindowClose()
-            }
 
-            mc.schedule {
-                displayScreen(null)
+                mc.schedule {
+                    displayScreen(null)
+                }
             }
         }
     }

@@ -14,14 +14,15 @@ import gg.essential.elementa.constraints.ColorConstraint
 import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.toConstraint
+import gg.essential.universal.UKeyboard
 import kotlin.math.abs
 import kotlin.math.max
-import kotlin.math.min
 
 abstract class AbstractHudElement(val id: String) : UIBlock() {
     private val selectionColor = UIScheme.secondaryColorOpaque.toConstraint()
     private val holdColor = UIScheme.secondaryColorDisabledOpaque.toConstraint()
     private val transparent = UIScheme.transparent.toConstraint()
+    private val snapThreshold = 5f
 
     open val defaultX = 10f
     open val defaultY = 10f
@@ -59,69 +60,7 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
 
         this.onMouseDrag { mouseX, mouseY, _ ->
             if (isDragging) {
-                val absoluteMouseX = this.getLeft() + mouseX
-                val absoluteMouseY = this.getTop() + mouseY
-
-                currentX = absoluteMouseX - dragOffsetX
-                currentY = absoluteMouseY - dragOffsetY
-
-                // Snapping
-                val snapThreshold = 5f
-                val thisWidth = this.getWidth()
-                val thisHeight = this.getHeight()
-                var snappedX = false
-                var snappedY = false
-
-                for (other in HudWindow.hudElements) {
-                    if (other === this || !other.enabled) continue
-
-                    val otherLeft = other.getLeft()
-                    val otherRight = other.getRight()
-                    val otherTop = other.getTop()
-                    val otherBottom = other.getBottom()
-
-                    // X-axis snapping
-                    if (!snappedX) {
-                        if (abs(currentX - otherLeft) < snapThreshold) {
-                            currentX = otherLeft
-                            snappedX = true
-                        } else if (abs(currentX - otherRight) < snapThreshold) {
-                            currentX = otherRight
-                            snappedX = true
-                        } else if (abs(currentX + thisWidth - otherLeft) < snapThreshold) {
-                            currentX = otherLeft - thisWidth
-                            snappedX = true
-                        } else if (abs(currentX + thisWidth - otherRight) < snapThreshold) {
-                            currentX = otherRight - thisWidth
-                            snappedX = true
-                        }
-                    }
-
-                    // Y-axis snapping
-                    if (!snappedY) {
-                        if (abs(currentY - otherTop) < snapThreshold) {
-                            currentY = otherTop
-                            snappedY = true
-                        } else if (abs(currentY - otherBottom) < snapThreshold) {
-                            currentY = otherBottom
-                            snappedY = true
-                        } else if (abs(currentY + thisHeight - otherTop) < snapThreshold) {
-                            currentY = otherTop - thisHeight
-                            snappedY = true
-                        } else if (abs(currentY + thisHeight - otherBottom) < snapThreshold) {
-                            currentY = otherBottom - thisHeight
-                            snappedY = true
-                        }
-                    }
-
-                    if (snappedX && snappedY) break
-                }
-
-                //Limit within screen
-                currentX = min(max(currentX, 0f), window.getWidth()-this.getWidth())
-                currentY = min(max(currentY, 0f), window.getHeight()-this.getHeight())
-
-                updateState()
+                updatePosition(mouseX, mouseY)
             }
         }
 
@@ -143,9 +82,67 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
         this.onMouseRelease {
             if (isDragging) {
                 isDragging = false
+                HudWindow.showSnapLines(null, null)
             }
             updateState()
         }
+    }
+
+    private fun updatePosition(mouseX: Float, mouseY: Float) {
+        val absoluteMouseX = this.getLeft() + mouseX
+        val absoluteMouseY = this.getTop() + mouseY
+        currentX = absoluteMouseX - dragOffsetX
+        currentY = absoluteMouseY - dragOffsetY
+
+        var snapLineX: Float? = null
+        var snapLineY: Float? = null
+
+        val isSnappingSuppressed = UKeyboard.isShiftKeyDown() || UKeyboard.isCtrlKeyDown()
+
+        if (!isSnappingSuppressed) {
+            val (newX, lineX) = resolveSnap(currentX, this.getWidth()) { other ->
+                other.getLeft() to other.getRight()
+            }
+
+            val (newY, lineY) = resolveSnap(currentY, this.getHeight()) { other ->
+                other.getTop() to other.getBottom()
+            }
+
+            currentX = newX
+            currentY = newY
+            snapLineX = lineX
+            snapLineY = lineY
+        }
+
+        HudWindow.showSnapLines(snapLineX, snapLineY)
+
+        currentX = currentX.coerceIn(0f, window.getWidth() - this.getWidth())
+        currentY = currentY.coerceIn(0f, window.getHeight() - this.getHeight())
+
+        updateState()
+    }
+
+    /**
+     * Generic helper to calculate snapping for a single axis.
+     * Returns a Pair(NewPosition, SnapLineCoordinate?)
+     */
+    private fun resolveSnap(
+        currentPos: Float,
+        size: Float,
+        getBounds: (AbstractHudElement) -> Pair<Float, Float>
+    ): Pair<Float, Float?> {
+        for (other in HudWindow.hudElements) {
+            if (other === this || !other.enabled) continue
+
+            val (otherStart, otherEnd) = getBounds(other)
+
+            if (abs(currentPos - otherStart) < snapThreshold) return Pair(otherStart, otherStart)
+            if (abs(currentPos - otherEnd) < snapThreshold) return Pair(otherEnd, otherEnd)
+            if (abs((currentPos + size) - otherStart) < snapThreshold) return Pair(otherStart - size, otherStart)
+            if (abs((currentPos + size) - otherEnd) < snapThreshold) return Pair(otherEnd - size, otherEnd)
+        }
+
+        return Pair(currentPos, null)
     }
 
     fun initialize() {
