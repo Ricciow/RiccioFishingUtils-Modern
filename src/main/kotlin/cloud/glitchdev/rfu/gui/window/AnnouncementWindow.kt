@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.gui.window
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.model.announcement.Announcement
 import cloud.glitchdev.rfu.utils.dsl.toFormattedDate
+import gg.essential.elementa.components.ScrollComponent
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
@@ -16,6 +17,7 @@ import gg.essential.elementa.constraints.TextAspectConstraint
 import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.dsl.max
+import gg.essential.elementa.dsl.minus
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.toConstraint
@@ -23,6 +25,7 @@ import gg.essential.elementa.markdown.MarkdownComponent
 
 class AnnouncementWindow(val announcement: Announcement) : BaseWindow() {
     val primaryColor = UIScheme.primaryColorOpaque.toConstraint()
+    val secondaryColor = UIScheme.secondaryColorOpaque.toConstraint()
     val radius = 5f
     val windowSize = 0.8f
 
@@ -67,11 +70,31 @@ class AnnouncementWindow(val announcement: Announcement) : BaseWindow() {
             height = ScaledTextConstraint(1f)
         } childOf header
 
-        MarkdownComponent(announcement.content).constrain {
+        val mainArea = UIContainer().constrain {
             x = CenterConstraint()
             y = SiblingConstraint(2f)
             width = 100.percent()
             height = FillConstraint()
         } childOf innerContainer
+
+        val scrollComponent = ScrollComponent().constrain {
+            x = CenterConstraint()
+            y = SiblingConstraint(2f)
+            width = 100.percent() - 12.pixels()
+            height = 100.percent()
+        } childOf mainArea
+
+        val scrollbar = UIRoundedRectangle(5f).constrain {
+            x = 0.pixels(true)
+            width = 5.pixels()
+            color = secondaryColor
+        } childOf mainArea
+
+        scrollComponent.setScrollBarComponent(scrollbar, false, false)
+
+        MarkdownComponent(announcement.content).constrain {
+            x = CenterConstraint()
+            width = 100.percent()
+        } childOf scrollComponent
     }
 }
