@@ -111,6 +111,42 @@ object GeneralFishing : CategoryKt("General Fishing") {
         description = Literal("Enables the Flare Timer display")
     }
 
+    init {
+        dualSeparator {
+            title = "Double Hook"
+            description = "Double hook shenanigans"
+        }
+    }
+
+    var toggleDoubleHookMessages by observable(boolean(false) {
+        name = Literal("Toggle Double Hook Messages")
+        description = Literal("Automatically send messages when you get a double hook!")
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var doubleHookMessages by strings(
+        "o/ ~~~~~~~|_|",
+        "o| ~~~~~~~.~",
+        "o| ~~~~~~~*~",
+        "o| ~~~~~~<><",
+        "o| ~~~~<><~~",
+        "o| ~~<><~~~~",
+        "\\o/ <><~~~~~",
+        "( ^_^) [ <>< ]",
+        "( >_<) [ RFU ]"
+    ) {
+        name = Literal("Double Hook messages")
+        description = Literal("Select what words will be sent when you get a double hook. Each line is one phrase.")
+        condition = { toggleDoubleHookMessages }
+    }
+
+    var randomDoubleHookMessages by boolean(false) {
+        name = Literal("Random Double Hook Messages")
+        description = Literal("Makes double hook messages random")
+        condition = { toggleDoubleHookMessages }
+    }
+
     fun dualSeparator(builder: SeparatorBuilder.() -> Unit) {
         separator {}
         separator(builder)
