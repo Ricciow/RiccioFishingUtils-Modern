@@ -38,7 +38,7 @@ object Party : RegisteredEvent {
 
         registerJoinEvent { wasConnected ->
             if(mc.isLocalServer) return@registerJoinEvent
-            if(mc.currentServer?.ip != "hypixel.net") return@registerJoinEvent
+            if(mc.currentServer?.ip?.endsWith("hypixel.net") == true) return@registerJoinEvent
             if(!wasConnected) hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
         }
 
