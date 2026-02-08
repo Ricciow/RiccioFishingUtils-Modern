@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.access;
 
 public interface ListWidgetExtension {
-    double rfuGetScroll();
-    void rfuSetScroll(double scroll);
+    double rfu$GetScroll();
+    void rfu$SetScroll(double scroll);
 }

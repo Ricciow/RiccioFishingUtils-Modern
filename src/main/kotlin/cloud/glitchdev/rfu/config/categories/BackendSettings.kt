@@ -1,10 +1,10 @@
 package cloud.glitchdev.rfu.config.categories
 
+import cloud.glitchdev.rfu.config.Category
 import cloud.glitchdev.rfu.utils.network.Network
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
-import com.teamresourceful.resourcefulconfigkt.api.CategoryKt
 
-object BackendSettings : CategoryKt("Backend Settings") {
+object BackendSettings : Category("Backend Settings") {
     override val description: TranslatableValue
         get() = Literal("Settings for the RFU Backend connection.")
 

@@ -35,10 +35,10 @@ object DeployableManager : RegisteredEvent {
 
         if (helmet.item !is PlayerHeadItem) return
 
-        val component = helmet.get(DataComponents.PROFILE)
+        val component = helmet[DataComponents.PROFILE]
 
         if (component != null) {
-            val textures = component.partialProfile().properties.get("textures").map { it.value }
+            val textures = component.partialProfile().properties["textures"].map { it.value }
             val type = FlareType.entries.find { type -> textures.contains(type.texture) }
             if (type != null && type != FlareType.NONE) {
                 seenFlares.add(entity.id)

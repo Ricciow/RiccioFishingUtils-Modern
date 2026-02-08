@@ -29,16 +29,16 @@ public abstract class ConfigScreenMixin implements ConfigScreenInvoker {
 
     @Override
     @Unique
-    public void rfuReloadAndScroll() {
+    public void rfu$ReloadAndScroll() {
         double savedScroll = 0.0;
         if (this.optionsList instanceof ListWidgetExtension ext) {
-            savedScroll = ext.rfuGetScroll();
+            savedScroll = ext.rfu$GetScroll();
         }
 
         this.invokeRebuildWidgets();
 
         if (this.optionsList instanceof ListWidgetExtension ext) {
-            ext.rfuSetScroll(savedScroll);
+            ext.rfu$SetScroll(savedScroll);
         }
     }
 }

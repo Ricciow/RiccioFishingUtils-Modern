@@ -15,13 +15,13 @@ public abstract class ListWidgetMixin implements ListWidgetExtension {
 
     @Override
     @Unique
-    public double rfuGetScroll() {
+    public double rfu$GetScroll() {
         return this.scroll;
     }
 
     @Override
     @Unique
-    public void rfuSetScroll(double newScroll) {
+    public void rfu$SetScroll(double newScroll) {
         this.scroll = newScroll;
         this.updateScrollBar();
     }

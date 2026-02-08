@@ -1,15 +1,12 @@
 package cloud.glitchdev.rfu.config.categories
 
-import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.constants.SeaCreatures
-import cloud.glitchdev.rfu.access.ConfigScreenInvoker
+import cloud.glitchdev.rfu.config.Category
 import cloud.glitchdev.rfu.constants.RareDrops
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
-import com.teamresourceful.resourcefulconfigkt.api.CategoryKt
-import com.teamresourceful.resourcefulconfigkt.api.builders.SeparatorBuilder
 
-object GeneralFishing : CategoryKt("General Fishing") {
+object GeneralFishing : Category("General Fishing") {
     override val description: TranslatableValue
         get() = Literal("Settings for all kinds of fishing!")
 
@@ -145,15 +142,5 @@ object GeneralFishing : CategoryKt("General Fishing") {
         name = Literal("Random Double Hook Messages")
         description = Literal("Makes double hook messages random")
         condition = { toggleDoubleHookMessages }
-    }
-
-    fun dualSeparator(builder: SeparatorBuilder.() -> Unit) {
-        separator {}
-        separator(builder)
-    }
-
-    fun reloadScreen() {
-        val screen = mc.screen as? ConfigScreenInvoker
-        screen?.rfuReloadAndScroll()
     }
 }

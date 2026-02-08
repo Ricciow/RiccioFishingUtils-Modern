@@ -1,11 +1,9 @@
 package cloud.glitchdev.rfu.config.categories
 
-import cloud.glitchdev.rfu.RiccioFishingUtils.mc
-import cloud.glitchdev.rfu.access.ConfigScreenInvoker
+import cloud.glitchdev.rfu.config.Category
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
-import com.teamresourceful.resourcefulconfigkt.api.CategoryKt
 
-object DevSettings : CategoryKt("Developer") {
+object DevSettings : Category("Developer") {
     override val description: TranslatableValue
         get() = Literal("These settings are for developers, don't mess with them if you don't know what you're doing!")
 
@@ -20,10 +18,5 @@ object DevSettings : CategoryKt("Developer") {
         name = Literal("Force In Skyblock")
         description = Literal("Forces the mod to consider you're inside skyblock.")
         condition = { devMode }
-    }
-
-    fun reloadScreen() {
-        val screen = mc.screen as? ConfigScreenInvoker
-        screen?.rfuReloadAndScroll()
     }
 }
