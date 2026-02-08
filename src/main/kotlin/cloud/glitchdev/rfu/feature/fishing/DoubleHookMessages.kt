@@ -7,7 +7,7 @@ import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
-import net.minecraft.text.Text
+import net.minecraft.network.chat.Component
 
 @RFUFeature
 object DoubleHookMessages : Feature {
@@ -28,7 +28,7 @@ object DoubleHookMessages : Feature {
                 if(Party.inParty) {
                     Chat.sendServerCommand("p $message")
                 } else {
-                    Chat.sendMessage(Text.literal(message))
+                    Chat.sendMessage(Component.literal(message))
                 }
             }
         }

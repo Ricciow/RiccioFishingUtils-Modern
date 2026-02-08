@@ -3,10 +3,10 @@ package cloud.glitchdev.rfu.manager.mob
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import net.minecraft.component.DataComponentTypes
-import net.minecraft.entity.EquipmentSlot
-import net.minecraft.entity.decoration.ArmorStandEntity
-import net.minecraft.item.PlayerHeadItem
+import net.minecraft.core.component.DataComponents
+import net.minecraft.world.entity.EquipmentSlot
+import net.minecraft.world.entity.decoration.ArmorStand
+import net.minecraft.world.item.PlayerHeadItem
 
 @AutoRegister
 object DeployableManager : RegisteredEvent {
@@ -28,17 +28,17 @@ object DeployableManager : RegisteredEvent {
         }
     }
 
-    fun checkEntity(entity: ArmorStandEntity) {
+    fun checkEntity(entity: ArmorStand) {
         if (seenFlares.contains(entity.id)) return
 
-        val helmet = entity.getEquippedStack(EquipmentSlot.HEAD)
+        val helmet = entity.getItemBySlot(EquipmentSlot.HEAD)
 
         if (helmet.item !is PlayerHeadItem) return
 
-        val component = helmet.get(DataComponentTypes.PROFILE)
+        val component = helmet.get(DataComponents.PROFILE)
 
         if (component != null) {
-            val textures = component.gameProfile.properties.get("textures").map { it.value }
+            val textures = component.partialProfile().properties.get("textures").map { it.value }
             val type = FlareType.entries.find { type -> textures.contains(type.texture) }
             if (type != null && type != FlareType.NONE) {
                 seenFlares.add(entity.id)

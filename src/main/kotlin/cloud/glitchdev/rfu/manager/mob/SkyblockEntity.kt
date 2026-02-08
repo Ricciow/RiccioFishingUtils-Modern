@@ -7,12 +7,12 @@ import cloud.glitchdev.rfu.events.managers.RenderEvents.registerRenderEvent
 import cloud.glitchdev.rfu.utils.rendering.Render3D.renderSphereOnMob
 import gg.essential.universal.utils.toUnformattedString
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext
-import net.minecraft.entity.LivingEntity
-import net.minecraft.entity.decoration.ArmorStandEntity
+import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.entity.decoration.ArmorStand
 import java.awt.Color
 
 data class SkyblockEntity(
-    var nameTagEntity: ArmorStandEntity,
+    var nameTagEntity: ArmorStand,
     val modelEntity: LivingEntity,
     var sbName: String
 ) {
@@ -22,7 +22,7 @@ data class SkyblockEntity(
         private val entityRegex = """(?:﴾ )?\[Lv\d+\] [^\s]+ (.+) \d+[\.,]?\d*[kM]?\/\d+[\.,]?\d*[kM]?❤(?: ✯)?(?: ﴿)?""".toRegex()
         private val corruptedRegex = """^aCorrupted (.+)a$""".toRegex()
 
-        fun parseNameFromTag(entity: ArmorStandEntity): String? {
+        fun parseNameFromTag(entity: ArmorStand): String? {
             if (!entity.hasCustomName()) return null
             val name = entity.name.toUnformattedString()
 
@@ -41,7 +41,7 @@ data class SkyblockEntity(
      * Updates the nametag entity and automatically refreshes the sbName
      * based on the new tag's value.
      */
-    fun updateNametag(newTag: ArmorStandEntity) {
+    fun updateNametag(newTag: ArmorStand) {
         val newName = parseNameFromTag(newTag)
         if (newName != null) {
             this.nameTagEntity = newTag

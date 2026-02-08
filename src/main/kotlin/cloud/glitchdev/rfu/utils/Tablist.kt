@@ -1,23 +1,23 @@
 package cloud.glitchdev.rfu.utils
 
-import net.minecraft.client.MinecraftClient
-import net.minecraft.client.network.PlayerListEntry
+import net.minecraft.client.Minecraft
+import net.minecraft.client.multiplayer.PlayerInfo
 
 object Tablist {
     val playerRegex = """^\[\d+\] ([^\s]+)(?: [^\s]+)?$""".toRegex()
 
-    fun getTabListPlayers(): Collection<PlayerListEntry> {
-        val client = MinecraftClient.getInstance()
+    fun getTabListPlayers(): Collection<PlayerInfo> {
+        val client = Minecraft.getInstance()
 
-        val networkHandler = client.networkHandler
+        val networkHandler = client.connection
 
-        return networkHandler?.playerList ?: emptyList()
+        return networkHandler?.onlinePlayers ?: emptyList()
     }
 
     fun getTablistAsStrings() : List<String> {
         val players = getTabListPlayers()
         return players.mapNotNull { player ->
-            val name = player.displayName?.string
+            val name = player.tabListDisplayName?.string
             if (name.isNullOrEmpty()) null else name
         }
     }

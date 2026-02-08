@@ -45,7 +45,7 @@ object HudWindow : BaseWindow(false) {
         Gui.openGui(this)
     }
 
-    override fun onClose() {
+    override fun onWindowClose() {
         isEditingOpen = false
         updateState()
         for(element in hudElements) {

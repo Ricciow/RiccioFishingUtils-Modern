@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.config.categories
 
-import cloud.glitchdev.rfu.RiccioFishingUtils.minecraft
+import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.constants.SeaCreatures
 import cloud.glitchdev.rfu.access.ConfigScreenInvoker
 import cloud.glitchdev.rfu.constants.RareDrops
@@ -153,7 +153,7 @@ object GeneralFishing : CategoryKt("General Fishing") {
     }
 
     fun reloadScreen() {
-        val screen = minecraft.currentScreen as? ConfigScreenInvoker
+        val screen = mc.screen as? ConfigScreenInvoker
         screen?.rfuReloadAndScroll()
     }
 }

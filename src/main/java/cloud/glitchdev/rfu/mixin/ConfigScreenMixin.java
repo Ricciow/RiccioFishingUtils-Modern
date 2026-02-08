@@ -19,10 +19,10 @@ public abstract class ConfigScreenMixin implements ConfigScreenInvoker {
 
     @Shadow private OptionsListWidget optionsList;
 
-    @Invoker("clearAndInit")
-    protected abstract void invokeClearAndInit();
+    @Invoker("rebuildWidgets")
+    protected abstract void invokeRebuildWidgets();
 
-    @Inject(method = "close", at = @At("HEAD"))
+    @Inject(method = "onClose", at = @At("HEAD"))
     void onClose(CallbackInfo ci) {
         CloseConfigEvents.INSTANCE.runTasks();
     }
@@ -35,7 +35,7 @@ public abstract class ConfigScreenMixin implements ConfigScreenInvoker {
             savedScroll = ext.rfuGetScroll();
         }
 
-        this.invokeClearAndInit();
+        this.invokeRebuildWidgets();
 
         if (this.optionsList instanceof ListWidgetExtension ext) {
             ext.rfuSetScroll(savedScroll);

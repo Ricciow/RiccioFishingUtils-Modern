@@ -8,7 +8,7 @@ import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.manager.drops.DropManager
 import cloud.glitchdev.rfu.utils.Chat.sendMessage
 import cloud.glitchdev.rfu.utils.dsl.toReadableString
-import net.minecraft.text.Text
+import net.minecraft.network.chat.Component
 
 @RFUFeature
 object CustomRareDropMessage : Feature {
@@ -39,6 +39,6 @@ object CustomRareDropMessage : Feature {
             .replace("{time}", timeSinceLast)
             .replace("&", "§")
 
-        sendMessage(Text.literal(messageString))
+        sendMessage(Component.literal(messageString))
     }
 }

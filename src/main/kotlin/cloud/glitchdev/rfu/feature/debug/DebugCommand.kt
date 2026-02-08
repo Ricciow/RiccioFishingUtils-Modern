@@ -14,7 +14,7 @@ import cloud.glitchdev.rfu.utils.command.StringSuggestionProvider
 import com.mojang.brigadier.arguments.StringArgumentType
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
-import net.minecraft.text.Text
+import net.minecraft.network.chat.Component
 
 @RFUFeature
 object DebugCommand : Feature {
@@ -51,7 +51,7 @@ object DebugCommand : Feature {
     }
 
     fun debugChat(argument: String) {
-        val text = Text.literal(argument.removeSurrounding("\""))
+        val text = Component.literal(argument.removeSurrounding("\""))
         Chat.sendMessage(text)
         ChatEvents.ChatEventManager.runTasks(text)
         ChatEvents.GameEventManager.runTasks(text, true)

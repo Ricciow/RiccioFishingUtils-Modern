@@ -1,10 +1,10 @@
 package cloud.glitchdev.rfu.utils
 
-import cloud.glitchdev.rfu.RiccioFishingUtils.minecraft
+import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 
 object User {
     fun getUsername() : String {
-        return minecraft.session.username
+        return mc.user.name
     }
 
     fun isUser(username : String) : Boolean {

@@ -7,11 +7,11 @@ import cloud.glitchdev.rfu.events.managers.TickEvents
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.utils.Tablist.getPlayerNames
 import gg.essential.universal.utils.toUnformattedString
-import net.minecraft.client.world.ClientWorld
-import net.minecraft.entity.LivingEntity
-import net.minecraft.entity.decoration.ArmorStandEntity
-import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.util.math.Box
+import net.minecraft.client.multiplayer.ClientLevel
+import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.entity.decoration.ArmorStand
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.phys.AABB
 
 @AutoRegister
 object MobManager : RegisteredEvent {
@@ -20,7 +20,7 @@ object MobManager : RegisteredEvent {
 
     override fun register() {
         TickEvents.registerTickEvent(0, 10) { client ->
-            val world = client.world ?: return@registerTickEvent
+            val world = client.level ?: return@registerTickEvent
             scanEntities(world)
             validateCurrentEntities()
             MobDetectEvents.runTasks(uniqueSbEntities.toSet())
@@ -31,16 +31,16 @@ object MobManager : RegisteredEvent {
         }
     }
 
-    private fun scanEntities(world: ClientWorld) {
-        world.entities.forEach { entity ->
-            if (entity !is ArmorStandEntity) return@forEach
+    private fun scanEntities(world: ClientLevel) {
+        world.entitiesForRendering().forEach { entity ->
+            if (entity !is ArmorStand) return@forEach
             
             DeployableManager.checkEntity(entity)
             checkSbEntity(entity, world)
         }
     }
 
-    private fun checkSbEntity(entity: ArmorStandEntity, world: ClientWorld) {
+    private fun checkSbEntity(entity: ArmorStand, world: ClientLevel) {
         val trackedEntity = sbEntities[entity.id]
         if (trackedEntity != null && !trackedEntity.nameTagEntity.isRemoved) return
 
@@ -73,15 +73,15 @@ object MobManager : RegisteredEvent {
         toRemove.forEach { removeEntity(it) }
     }
 
-    private fun findModelForNametag(nametag: ArmorStandEntity, world: ClientWorld): LivingEntity? {
-        val searchBox = Box(
+    private fun findModelForNametag(nametag: ArmorStand, world: ClientLevel): LivingEntity? {
+        val searchBox = AABB(
             nametag.x - 0.5, nametag.y - 4.0, nametag.z - 0.5,
             nametag.x + 0.5, nametag.y + 0.5, nametag.z + 0.5
         )
 
-        val candidates = world.getOtherEntities(nametag, searchBox) { candidate ->
-            if (candidate !is LivingEntity || candidate is ArmorStandEntity) return@getOtherEntities false
-            if (candidate is PlayerEntity && getPlayerNames().contains(candidate.name.toUnformattedString())) return@getOtherEntities false
+        val candidates = world.getEntities(nametag, searchBox) { candidate ->
+            if (candidate !is LivingEntity || candidate is ArmorStand) return@getEntities false
+            if (candidate is Player && getPlayerNames().contains(candidate.name.toUnformattedString())) return@getEntities false
             val existingLink = sbEntities[candidate.id]
             existingLink == null || existingLink.nameTagEntity.isRemoved
         }.toList()

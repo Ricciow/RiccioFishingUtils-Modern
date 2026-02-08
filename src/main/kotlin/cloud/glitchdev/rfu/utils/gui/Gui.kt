@@ -5,7 +5,7 @@ import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.utils.RFULogger
 import gg.essential.universal.UScreen
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
-import net.minecraft.client.gui.screen.Screen
+import net.minecraft.client.gui.screens.Screen
 
 @AutoRegister
 object Gui : RegisteredEvent {

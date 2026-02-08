@@ -1,18 +1,18 @@
 package cloud.glitchdev.rfu.utils.rendering
 
-import cloud.glitchdev.rfu.RiccioFishingUtils.minecraft
+import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext
-import net.minecraft.client.render.Camera
+import net.minecraft.client.Camera
 //? if >=1.21.11 {
-/*import net.minecraft.client.render.RenderLayers
+/*import net.minecraft.client.renderer.rendertype.RenderTypes
 *///?} else {
-import net.minecraft.client.render.RenderLayer
+import net.minecraft.client.renderer.RenderType
 //?}
 
-import net.minecraft.client.render.RenderTickCounter
-import net.minecraft.client.render.VertexConsumer
-import net.minecraft.entity.Entity
-import net.minecraft.util.math.Vec3d
+import net.minecraft.client.DeltaTracker
+import com.mojang.blaze3d.vertex.VertexConsumer
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.phys.Vec3
 import org.joml.Matrix4f
 import java.awt.Color
 import kotlin.math.cos
@@ -20,9 +20,9 @@ import kotlin.math.sin
 
 object Render3D {
     val camera : Camera
-        get() = minecraft.gameRenderer.camera
-    val tickCounter : RenderTickCounter
-        get() = minecraft.renderTickCounter
+        get() = mc.gameRenderer.mainCamera
+    val tickCounter : DeltaTracker
+        get() = mc.deltaTracker
 
     fun renderSphereOnMob(
         entity: Entity,
@@ -31,16 +31,16 @@ object Render3D {
         centered : Boolean = false,
         context : WorldRenderContext
     ) {
-        val tickDelta = tickCounter.getTickProgress(true)
-        var entityPos = entity.getLerpedPos(tickDelta)
+        val tickDelta = tickCounter.getGameTimeDeltaPartialTick(true)
+        var entityPos = entity.getPosition(tickDelta)
         if(centered) {
-            entityPos = entityPos.add(0.0, (entity.height/2).toDouble(), 0.0)
+            entityPos = entityPos.add(0.0, (entity.bbHeight /2).toDouble(), 0.0)
         }
         renderSphere(entityPos, radius, color, context, 32, 32)
     }
 
     fun renderSphere(
-        location: Vec3d,
+        location: Vec3,
         radius: Float,
         color : Color,
         context: WorldRenderContext,
@@ -49,10 +49,14 @@ object Render3D {
         lineWidth : Float = 2.0f
     ) {
         val consumers = context.consumers()
-        val camPos = camera.cameraPos
+        val camPos = camera.position()
         val vecToSphere = location.subtract(camPos)
-        val lookVec = Vec3d.fromPolar(camera.pitch, camera.yaw)
-        val projection = vecToSphere.dotProduct(lookVec)
+        //? if >=1.21.11 {
+        /*val lookVec = Vec3.directionFromRotation(camera.xRot(), camera.yRot())
+        *///?} else {
+        val lookVec = Vec3.directionFromRotation(camera.xRot, camera.yRot)
+        //?}
+        val projection = vecToSphere.dot(lookVec)
 
         if (projection < -radius) {
             return
@@ -60,7 +64,7 @@ object Render3D {
 
         val matrixStack = context.matrices()
 
-        matrixStack.push()
+        matrixStack.pushPose()
         matrixStack.translate(
             vecToSphere.x,
             vecToSphere.y,
@@ -68,12 +72,12 @@ object Render3D {
         )
 
         //? if >=1.21.11 {
-        /*val buffer = consumers.getBuffer(RenderLayers.LINES)
+        /*val buffer = consumers.getBuffer(RenderTypes.LINES)
         *///?} else {
-        val buffer = consumers.getBuffer(RenderLayer.getLines())
+        val buffer = consumers.getBuffer(RenderType.lines())
         //?}
 
-        val matrix = matrixStack.peek().positionMatrix
+        val matrix = matrixStack.last().pose()
 
         for (i in 0 until stacks) {
             val lat0 = Math.PI * (-0.5 + (i.toDouble() - 1) / stacks)
@@ -101,7 +105,7 @@ object Render3D {
             }
         }
 
-        matrixStack.pop()
+        matrixStack.popPose()
     }
 
     private fun drawVertex(
@@ -112,11 +116,11 @@ object Render3D {
         @Suppress("unused")
         lineWidth: Float
     ) {
-        buffer.vertex(matrix, x, y, z)
-            .color(color.red, color.green, color.blue, color.alpha)
-            .normal(1f, 0f, 0f)
+        buffer.addVertex(matrix, x, y, z)
+            .setColor(color.red, color.green, color.blue, color.alpha)
+            .setNormal(1f, 0f, 0f)
         //? if >=1.21.11 {
-            /*.lineWidth(lineWidth)
+            /*.setLineWidth(lineWidth)
         *///?}
     }
 }

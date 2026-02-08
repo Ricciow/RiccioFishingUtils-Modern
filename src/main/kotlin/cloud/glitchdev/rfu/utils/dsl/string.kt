@@ -4,10 +4,10 @@ import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.User
-import net.minecraft.text.ClickEvent
-import net.minecraft.text.HoverEvent
-import net.minecraft.text.Style
-import net.minecraft.text.Text
+import net.minecraft.network.chat.ClickEvent
+import net.minecraft.network.chat.HoverEvent
+import net.minecraft.network.chat.Style
+import net.minecraft.network.chat.Component
 import java.util.regex.Pattern
 
 fun String.removeFormatting() : String {
@@ -26,7 +26,7 @@ fun String.isUser() : Boolean {
     return User.isUser(this)
 }
 
-fun String.toInteractiveText(command: String, hoverText: Text = Text.literal("Click to execute: $command")): Text {
+fun String.toInteractiveText(command: String, hoverText: Component = Component.literal("Click to execute: $command")): Component {
     val root = TextUtils.rfuLiteral("", TextStyle(TextColor.WHITE))
 
     val pattern = Pattern.compile("\\{(.*?)\\}")
@@ -37,12 +37,12 @@ fun String.toInteractiveText(command: String, hoverText: Text = Text.literal("Cl
     while (matcher.find()) {
         val textBefore = this.substring(lastEnd, matcher.start())
         if (textBefore.isNotEmpty()) {
-            root.append(Text.literal(textBefore))
+            root.append(Component.literal(textBefore))
         }
 
         val clickableContent = matcher.group(1)
 
-        val interactivePart = Text.literal(clickableContent).setStyle(
+        val interactivePart = Component.literal(clickableContent).setStyle(
             Style.EMPTY
                 .withClickEvent(ClickEvent.RunCommand(command))
                 .withHoverEvent(HoverEvent.ShowText(hoverText))
@@ -53,7 +53,7 @@ fun String.toInteractiveText(command: String, hoverText: Text = Text.literal("Cl
     }
 
     if (lastEnd < this.length) {
-        root.append(Text.literal(this.substring(lastEnd)))
+        root.append(Component.literal(this.substring(lastEnd)))
     }
 
     return root

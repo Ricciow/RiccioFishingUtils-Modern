@@ -12,7 +12,7 @@ import cloud.glitchdev.rfu.utils.gui.Gui
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.World
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
-import net.minecraft.text.Text
+import net.minecraft.network.chat.Component
 
 @RFUFeature
 object PartyFinder : Feature {
@@ -26,7 +26,7 @@ object PartyFinder : Feature {
                                 "Must accept the backend features to use this feature!",
                                 TextStyle(TextColor.LIGHT_RED, TextEffects.UNDERLINE)
                             ).append(
-                                Text.literal("\n\n${TextColor.LIGHT_RED}/rfu -> Backend Settings -> Connect to Backend")
+                                Component.literal("\n\n${TextColor.LIGHT_RED}/rfu -> Backend Settings -> Connect to Backend")
                             )
                         )
                         return@executes 1

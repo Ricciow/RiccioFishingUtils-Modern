@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.gui.window
 
-import cloud.glitchdev.rfu.RiccioFishingUtils.minecraft
+import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.partyfinder.UICreateParty
@@ -64,7 +64,7 @@ object PartyFinderWindow : BaseWindow(false) {
         updateFiltering()
         if (::errorText.isInitialized) errorText.setHidden(true)
         PartyHttp.getExistingParties { (success, newParties) ->
-            minecraft.execute {
+            mc.execute {
                 if (success) {
                     parties.addAll(newParties)
                     updateFiltering()

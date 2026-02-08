@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.config.categories
 
-import cloud.glitchdev.rfu.RiccioFishingUtils.minecraft
+import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.access.ConfigScreenInvoker
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 import com.teamresourceful.resourcefulconfigkt.api.CategoryKt
@@ -23,7 +23,7 @@ object DevSettings : CategoryKt("Developer") {
     }
 
     fun reloadScreen() {
-        val screen = minecraft.currentScreen as? ConfigScreenInvoker
+        val screen = mc.screen as? ConfigScreenInvoker
         screen?.rfuReloadAndScroll()
     }
 }

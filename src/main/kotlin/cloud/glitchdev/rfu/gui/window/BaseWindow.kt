@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.gui.window
 
-import cloud.glitchdev.rfu.RiccioFishingUtils.minecraft
+import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import gg.essential.elementa.ElementaVersion
 import gg.essential.elementa.WindowScreen
 import gg.essential.universal.UKeyboard
@@ -9,14 +9,14 @@ abstract class BaseWindow(drawDefaultBackground : Boolean = false) : WindowScree
     init {
         window.onKeyType { _, id ->
             if(id == UKeyboard.KEY_ESCAPE) {
-                onClose()
+                onWindowClose()
             }
 
-            minecraft.send {
+            mc.schedule {
                 displayScreen(null)
             }
         }
     }
 
-     open fun onClose() {}
+     open fun onWindowClose() {}
 }

@@ -14,7 +14,7 @@ import cloud.glitchdev.rfu.utils.dsl.toFormattedDate
 import com.mojang.brigadier.arguments.StringArgumentType
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
-import net.minecraft.text.Text
+import net.minecraft.network.chat.Component
 
 @RFUFeature
 object DropsHistory : Feature {
@@ -31,7 +31,7 @@ object DropsHistory : Feature {
                         .executes { context ->
                             val dropName = StringArgumentType.getString(context, "dropName")
                             val drop = RareDrops.getRelatedDrop(dropName)
-                            var message : Text = TextUtils.rfuLiteral("Drop $dropName doesnt exist!", TextStyle(RED))
+                            var message : Component = TextUtils.rfuLiteral("Drop $dropName doesnt exist!", TextStyle(RED))
                             if (drop != null) {
                                 message = singleDropMessage(drop)
                             }
@@ -42,25 +42,25 @@ object DropsHistory : Feature {
         )
     }
 
-    private fun allDropsMessage() : Text {
+    private fun allDropsMessage() : Component {
         val text = TextUtils.rfuLiteral("Drop History:", TextStyle(GOLD))
 
         val drops = DropManager.dropHistory.drops
 
         if(drops.isEmpty()) {
-            return text.append(Text.literal("\n $LIGHT_RED${BOLD}No drops :("))
+            return text.append(Component.literal("\n $LIGHT_RED${BOLD}No drops :("))
         }
 
         drops.forEach { dropEntry ->
             val itemName = dropEntry.type.toString()
             val lastDrop = dropEntry.history.lastOrNull() ?: return@forEach
-            text.append(Text.literal("\n $YELLOW$BOLD- $itemName: ${YELLOW}Total: $WHITE${dropEntry.history.size} ${YELLOW}- Last: $WHITE${lastDrop.date.toFormattedDate()} (${lastDrop.sinceCount}) $AQUAMARINE(${lastDrop.magicFind}% ✯)"))
+            text.append(Component.literal("\n $YELLOW$BOLD- $itemName: ${YELLOW}Total: $WHITE${dropEntry.history.size} ${YELLOW}- Last: $WHITE${lastDrop.date.toFormattedDate()} (${lastDrop.sinceCount}) $AQUAMARINE(${lastDrop.magicFind}% ✯)"))
         }
 
         return text
     }
 
-    private fun singleDropMessage(drop : RareDrops) : Text {
+    private fun singleDropMessage(drop : RareDrops) : Component {
         val dropObj = DropManager.dropHistory.getOrAdd(drop)
         val dropHistory = dropObj.history
 
@@ -68,13 +68,13 @@ object DropsHistory : Feature {
 
 
         if(dropHistory.isEmpty()) {
-            return text.append(Text.literal("\n $LIGHT_RED${BOLD}No drops :("))
+            return text.append(Component.literal("\n $LIGHT_RED${BOLD}No drops :("))
         }
 
-        text.append(Text.literal("\n $YELLOW${BOLD}Total: $WHITE${dropHistory.size}"))
+        text.append(Component.literal("\n $YELLOW${BOLD}Total: $WHITE${dropHistory.size}"))
 
         dropHistory.forEach { drop ->
-            text.append(Text.literal("\n $YELLOW$BOLD- $YELLOW${drop.date.toFormattedDate()}$YELLOW: $WHITE${drop.sinceCount} $AQUAMARINE(${drop.magicFind}% ✯)"))
+            text.append(Component.literal("\n $YELLOW$BOLD- $YELLOW${drop.date.toFormattedDate()}$YELLOW: $WHITE${drop.sinceCount} $AQUAMARINE(${drop.magicFind}% ✯)"))
         }
 
         return text

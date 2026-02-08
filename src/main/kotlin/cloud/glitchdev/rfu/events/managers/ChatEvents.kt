@@ -7,7 +7,7 @@ import cloud.glitchdev.rfu.utils.RFULogger
 import gg.essential.universal.utils.toFormattedString
 import gg.essential.universal.utils.toUnformattedString
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
-import net.minecraft.text.Text
+import net.minecraft.network.chat.Component
 
 @AutoRegister
 object ChatEvents : RegisteredEvent {
@@ -29,7 +29,7 @@ object ChatEvents : RegisteredEvent {
     fun registerAnyChatEvent(
         filter: Regex? = null,
         priority: Int = 20,
-        callback: (text: Text, matches: MatchResult?) -> Unit
+        callback: (text: Component, matches: MatchResult?) -> Unit
     ): Pair<ChatEventManager.ChatEvent, GameEventManager.GameEvent> {
         val chatEvent = registerChatEvent(filter, priority, callback)
         val gameEvent = registerGameEvent(filter, priority, false) { text, _, matches ->
@@ -41,7 +41,7 @@ object ChatEvents : RegisteredEvent {
     fun registerChatEvent(
         filter: Regex? = null,
         priority: Int = 20,
-        callback: (text: Text, matches: MatchResult?) -> Unit
+        callback: (text: Component, matches: MatchResult?) -> Unit
     ): ChatEventManager.ChatEvent {
         return registerAllowChatEvent(filter, priority) { text, matches ->
             callback(text, matches)
@@ -53,7 +53,7 @@ object ChatEvents : RegisteredEvent {
         filter: Regex? = null,
         priority: Int = 20,
         isOverlay: Boolean = false,
-        callback: (text: Text, overlay: Boolean, matches: MatchResult?) -> Unit
+        callback: (text: Component, overlay: Boolean, matches: MatchResult?) -> Unit
     ): GameEventManager.GameEvent {
         return registerAllowGameEvent(filter, priority) { text, overlay, matches ->
             if (isOverlay != overlay) return@registerAllowGameEvent true
@@ -66,7 +66,7 @@ object ChatEvents : RegisteredEvent {
     fun registerAllowChatEvent(
         filter: Regex? = null,
         priority: Int = 20,
-        callback: (text: Text, matches: MatchResult?) -> Boolean
+        callback: (text: Component, matches: MatchResult?) -> Boolean
     ): ChatEventManager.ChatEvent {
         return ChatEventManager.register(priority) { text ->
             if (filter != null) {
@@ -81,7 +81,7 @@ object ChatEvents : RegisteredEvent {
     fun registerAllowGameEvent(
         filter: Regex? = null,
         priority: Int = 20,
-        callback: (text: Text, overlay: Boolean, matches: MatchResult?) -> Boolean
+        callback: (text: Component, overlay: Boolean, matches: MatchResult?) -> Boolean
     ): GameEventManager.GameEvent {
         return GameEventManager.register(priority) { text, overlay ->
             if (filter != null) {
@@ -93,37 +93,37 @@ object ChatEvents : RegisteredEvent {
         }
     }
 
-    object ChatEventManager : AbstractEventManager<(text: Text) -> Boolean, ChatEventManager.ChatEvent>() {
-        fun runTasks(text: Text): Boolean {
+    object ChatEventManager : AbstractEventManager<(text: Component) -> Boolean, ChatEventManager.ChatEvent>() {
+        fun runTasks(text: Component): Boolean {
             return tasks.fold(true) { acc, event -> acc && event.callback(text) }
         }
 
-        fun register(priority: Int = 20, callback: (text: Text) -> Boolean): ChatEvent {
+        fun register(priority: Int = 20, callback: (text: Component) -> Boolean): ChatEvent {
             return ChatEvent(priority, callback).register()
         }
 
         class ChatEvent(
             priority: Int = 20,
-            callback: (text: Text) -> Boolean
-        ) : ManagedTask<(text: Text) -> Boolean, ChatEvent>(priority, callback) {
+            callback: (text: Component) -> Boolean
+        ) : ManagedTask<(text: Component) -> Boolean, ChatEvent>(priority, callback) {
             override fun register() = submitTask(this)
             override fun unregister() = removeTask(this)
         }
     }
 
-    object GameEventManager : AbstractEventManager<(text: Text, overlay: Boolean) -> Boolean, GameEventManager.GameEvent>() {
-        fun runTasks(text: Text, overlay: Boolean): Boolean {
+    object GameEventManager : AbstractEventManager<(text: Component, overlay: Boolean) -> Boolean, GameEventManager.GameEvent>() {
+        fun runTasks(text: Component, overlay: Boolean): Boolean {
             return tasks.fold(true) { acc, event -> acc && event.callback(text, overlay) }
         }
 
-        fun register(priority: Int = 20, callback: (text: Text, overlay: Boolean) -> Boolean): GameEvent {
+        fun register(priority: Int = 20, callback: (text: Component, overlay: Boolean) -> Boolean): GameEvent {
             return GameEvent(priority, callback).register()
         }
 
         class GameEvent(
             priority: Int = 20,
-            callback: (text: Text, overlay: Boolean) -> Boolean
-        ) : ManagedTask<(text: Text, overlay: Boolean) -> Boolean, GameEvent>(priority, callback) {
+            callback: (text: Component, overlay: Boolean) -> Boolean
+        ) : ManagedTask<(text: Component, overlay: Boolean) -> Boolean, GameEvent>(priority, callback) {
             override fun register() = submitTask(this)
             override fun unregister() = removeTask(this)
         }

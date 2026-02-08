@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.utils
 
-import cloud.glitchdev.rfu.RiccioFishingUtils.minecraft
+import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.constants.text.TextStyle
@@ -17,10 +17,10 @@ import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import cloud.glitchdev.rfu.utils.network.PartyHttp
 import net.hypixel.modapi.packet.impl.clientbound.ClientboundPartyInfoPacket
 import net.hypixel.modapi.packet.impl.serverbound.ServerboundPartyInfoPacket
-import net.minecraft.text.ClickEvent
-import net.minecraft.text.HoverEvent
-import net.minecraft.text.Style
-import net.minecraft.text.Text
+import net.minecraft.network.chat.ClickEvent
+import net.minecraft.network.chat.HoverEvent
+import net.minecraft.network.chat.Style
+import net.minecraft.network.chat.Component
 
 @AutoRegister
 object Party : RegisteredEvent {
@@ -37,8 +37,8 @@ object Party : RegisteredEvent {
         }
 
         registerJoinEvent { wasConnected ->
-            if(minecraft.isInSingleplayer) return@registerJoinEvent
-            if(minecraft.currentServerEntry?.address != "hypixel.net") return@registerJoinEvent
+            if(mc.isLocalServer) return@registerJoinEvent
+            if(mc.currentServer?.ip != "hypixel.net") return@registerJoinEvent
             if(!wasConnected) hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
         }
 
@@ -190,14 +190,14 @@ object Party : RegisteredEvent {
             )
         )
         text.append(
-            Text.literal("§a[Accept]")
+            Component.literal("§a[Accept]")
                 .setStyle(
                     Style.EMPTY
                         .withClickEvent(ClickEvent.RunCommand("party $username"))
-                        .withHoverEvent(HoverEvent.ShowText(Text.literal("/party $username")))
+                        .withHoverEvent(HoverEvent.ShowText(Component.literal("/party $username")))
                 )
         )
-        Chat.sendMessage(text as Text)
+        Chat.sendMessage(text as Component)
     }
 
     private var wasInParty: Boolean = false

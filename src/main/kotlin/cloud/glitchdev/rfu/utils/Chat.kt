@@ -1,18 +1,18 @@
 package cloud.glitchdev.rfu.utils
 
-import net.minecraft.text.Text
-import cloud.glitchdev.rfu.RiccioFishingUtils.minecraft
+import net.minecraft.network.chat.Component
+import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 
 object Chat {
     fun sendServerMessage(message : String) {
-        minecraft.networkHandler?.sendChatMessage(message)
+        mc.connection?.sendChat(message)
     }
 
     fun sendServerCommand(command : String) {
-        minecraft.networkHandler?.sendChatCommand(command)
+        mc.connection?.sendCommand(command)
     }
 
-    fun sendMessage(message : Text) {
-        minecraft.player?.sendMessage(message, false)
+    fun sendMessage(message : Component) {
+        mc.player?.displayClientMessage(message, false)
     }
 }

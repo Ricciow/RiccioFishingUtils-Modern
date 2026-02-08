@@ -14,7 +14,7 @@ import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.dsl.toInteractiveText
 import cloud.glitchdev.rfu.utils.network.AnnouncementsHttp
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
-import net.minecraft.text.Text
+import net.minecraft.network.chat.Component
 import java.time.Instant
 
 @RFUFeature
@@ -82,7 +82,7 @@ object Announcements : Feature {
                     Chat.sendMessage(
                         it.message.toInteractiveText(
                             "/rfuopenannouncement",
-                            Text.literal("Open announcement")
+                            Component.literal("Open announcement")
                         )
                     )
                 }

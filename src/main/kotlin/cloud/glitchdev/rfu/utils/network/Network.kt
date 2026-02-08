@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.utils.network
 
-import cloud.glitchdev.rfu.RiccioFishingUtils.minecraft
+import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.RiccioFishingUtils.API_URL
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.events.AutoRegister
@@ -11,9 +11,9 @@ import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.config.categories.BackendSettings
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
-import net.minecraft.text.ClickEvent
-import net.minecraft.text.HoverEvent
-import net.minecraft.text.Text
+import net.minecraft.network.chat.ClickEvent
+import net.minecraft.network.chat.HoverEvent
+import net.minecraft.network.chat.Component
 import cloud.glitchdev.rfu.constants.text.TextColor.*
 import cloud.glitchdev.rfu.constants.text.TextEffects.*
 import com.google.gson.JsonParser
@@ -67,7 +67,7 @@ object Network : RegisteredEvent {
             literal("rfubackendtoken")
                 .executes { context ->
                     if(token != null) {
-                        minecraft.keyboard.clipboard = token
+                        mc.keyboardHandler.clipboard = token ?: "ERROR Blank Token"
                         context.source.sendFeedback(TextUtils.rfuLiteral("Your rfu back-end token has been copied to your clipboard!",
                             TextStyle(LIGHT_GREEN)))
                     }
@@ -230,13 +230,13 @@ object Network : RegisteredEvent {
         }
 
         if(isTokenExpired()) {
-            val session = minecraft.session
+            val session = mc.user
             val serverId = UUID.randomUUID().toString().replace("-", "")
-            val sessionService = minecraft.apiServices.sessionService
+            val sessionService = mc.services().sessionService
 
             try {
                 sessionService.joinServer(
-                    session.uuidOrNull,
+                    session.profileId,
                     session.accessToken,
                     serverId
                 )
@@ -260,15 +260,15 @@ object Network : RegisteredEvent {
     private fun sendAcknowledgementMessage() {
         val message = TextUtils.rfuLiteral("This mod utilizes a separate back-end for features like party finder. Do you want to enable it? ", TextStyle(YELLOW))
 
-        val accept = Text.literal("$LIGHT_GREEN$BOLD[ACCEPT]")
-            .styled { it.withClickEvent(ClickEvent.RunCommand("/rfubackend accept"))
-                .withHoverEvent(HoverEvent.ShowText(Text.literal("${LIGHT_GREEN}Accept backend connection"))) }
+        val accept = Component.literal("$LIGHT_GREEN$BOLD[ACCEPT]")
+            .withStyle { it.withClickEvent(ClickEvent.RunCommand("/rfubackend accept"))
+                .withHoverEvent(HoverEvent.ShowText(Component.literal("${LIGHT_GREEN}Accept backend connection"))) }
 
-        val deny = Text.literal(" $LIGHT_RED$BOLD[DENY]")
-            .styled { it.withClickEvent(ClickEvent.RunCommand("/rfubackend deny"))
-                .withHoverEvent(HoverEvent.ShowText(Text.literal("${LIGHT_RED}Deny backend connection"))) }
+        val deny = Component.literal(" $LIGHT_RED$BOLD[DENY]")
+            .withStyle { it.withClickEvent(ClickEvent.RunCommand("/rfubackend deny"))
+                .withHoverEvent(HoverEvent.ShowText(Component.literal("${LIGHT_RED}Deny backend connection"))) }
 
         message.append(accept).append(deny)
-        minecraft.player?.sendMessage(message, false)
+        mc.player?.displayClientMessage(message, false)
     }
 }
