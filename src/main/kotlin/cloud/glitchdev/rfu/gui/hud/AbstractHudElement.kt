@@ -5,18 +5,26 @@ import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationE
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.window.HudWindow
 import cloud.glitchdev.rfu.utils.World
-import cloud.glitchdev.rfu.utils.dsl.roundToDecimal
 import cloud.glitchdev.rfu.utils.gui.setHidden
 import gg.essential.elementa.components.UIBlock
+import gg.essential.elementa.components.UIText
 import gg.essential.elementa.components.Window
+import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
 import gg.essential.elementa.constraints.ColorConstraint
+import gg.essential.elementa.constraints.ScaledTextConstraint
+import gg.essential.elementa.constraints.TextAspectConstraint
+import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
+import gg.essential.elementa.dsl.minus
+import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
+import gg.essential.elementa.dsl.plus
 import gg.essential.elementa.dsl.toConstraint
 import gg.essential.universal.UKeyboard
 import kotlin.math.abs
 import kotlin.math.max
+import kotlin.math.round
 
 abstract class AbstractHudElement(val id: String) : UIBlock() {
     private val selectionColor = UIScheme.secondaryColorOpaque.toConstraint()
@@ -40,6 +48,13 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
     private val window : Window
         get() = Window.of(this)
 
+    private var scaleTextEnabled = false
+    private var scaleText = UIText("Scale: 1.00x").constrain {
+        x = CenterConstraint()
+        width = ScaledTextConstraint(1f)
+        height = TextAspectConstraint()
+    } childOf this
+
     init {
         this.constrain {
             x = defaultX.pixels()
@@ -49,32 +64,45 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
             isFloating = true
         }
 
+        scaleText.hide()
+
         this.onMouseClick { event ->
+            grabWindowFocus()
             if (HudWindow.isEditingOpen && isEditing) {
                 isDragging = true
                 dragOffsetX = event.absoluteX - this.getLeft()
                 dragOffsetY = event.absoluteY - this.getTop()
                 updateState()
             }
+
+            scaleTextEnabled = true
         }
 
         this.onMouseDrag { mouseX, mouseY, _ ->
+            grabWindowFocus()
             if (isDragging) {
                 updatePosition(mouseX, mouseY)
             }
+
+            scaleTextEnabled = true
         }
 
         this.onMouseScroll { event ->
-            val effect = event.delta.toFloat()/10
+            grabWindowFocus()
+            val shiftDown = UKeyboard.isShiftKeyDown()
+            val ctrlDown = UKeyboard.isCtrlKeyDown()
 
-            if(scale >= 1) {
-                scale *= 1f + effect
-                scale = scale.roundToDecimal()
-            } else if (scale >= 0.3f) {
-                scale = max(0.3f, scale + effect)
-            } else {
-                scale = 0.3f
+            var supression = when {
+                shiftDown && ctrlDown -> 1000
+                shiftDown || ctrlDown -> 100
+                else -> 10
             }
+
+            val effect = event.delta.toFloat() / supression
+
+            scale = round(max(0.3f, scale + effect) * 1000) / 1000
+
+            scaleTextEnabled = true
 
             updateState()
         }
@@ -84,7 +112,28 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
                 isDragging = false
                 HudWindow.showSnapLines(null, null)
             }
+
+            scaleTextEnabled = false
+
             updateState()
+        }
+
+        this.onFocus {
+            scaleTextEnabled = true
+            HudWindow.setInfotextState(false)
+            updateState()
+        }
+
+        this.onFocusLost {
+            scaleTextEnabled = false
+            HudWindow.setInfotextState(true)
+            updateState()
+        }
+
+        this.onKeyType { _, id ->
+            if(id == UKeyboard.KEY_ESCAPE) {
+                HudWindow.closeScreen()
+            }
         }
     }
 
@@ -193,10 +242,24 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
     private fun currentColor() : ColorConstraint = if (isEditing) if(isDragging) holdColor else selectionColor else transparent
 
     fun updateState() {
+        scaleText.setHidden(!scaleTextEnabled)
+
+        val gap = 5f
+        scaleText.constrain {
+            y = when {
+                getBottom() + gap + 11 < window.getBottom() -> 100.percent() + gap.pixels()
+                else -> (-gap - 9).pixels()
+            }
+        }
+
+        scaleText.setText("Scale: %.3fx".format(scale))
+
         this.constrain {
             color = currentColor()
             x = currentX.pixels()
             y = currentY.pixels()
+            width = ChildBasedSizeConstraint() - if(scaleTextEnabled) scaleText.getWidth().pixels() else 0.pixels()
+            height = ChildBasedSizeConstraint() - if(scaleTextEnabled) scaleText.getHeight().pixels() else 0.pixels()
         }
 
         this.setHidden(!enabled || skyblockOnly && !World.isInSkyblock)

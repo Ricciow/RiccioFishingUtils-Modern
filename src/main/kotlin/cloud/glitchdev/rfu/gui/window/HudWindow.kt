@@ -9,6 +9,7 @@ import cloud.glitchdev.rfu.utils.gui.Gui
 import cloud.glitchdev.rfu.utils.gui.setHidden
 import gg.essential.elementa.components.UIBlock
 import gg.essential.elementa.components.UIContainer
+import gg.essential.elementa.components.UIWrappedText
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.RelativeWindowConstraint
 import gg.essential.elementa.constraints.SiblingConstraint
@@ -26,6 +27,7 @@ object HudWindow : BaseWindow(false) {
 
     lateinit var vSnapLine: UIContainer
     lateinit var hSnapLine: UIContainer
+    lateinit var infoText : UIWrappedText
 
     init {
         create()
@@ -75,6 +77,10 @@ object HudWindow : BaseWindow(false) {
         }
     }
 
+    fun setInfotextState(state : Boolean) {
+        infoText.setHidden(!state)
+    }
+
     fun create() {
         background = UIBlock(backgroundColor).constrain {
             x = CenterConstraint()
@@ -82,6 +88,16 @@ object HudWindow : BaseWindow(false) {
             width = RelativeWindowConstraint(1f)
             height = RelativeWindowConstraint(1f)
         } childOf window
+
+        infoText = UIWrappedText(
+            text = """Hold Ctrl/Shift to disable snapping
+                     |Scroll up/down to resize, hold Ctrl/Shift for more precision""".trimMargin(),
+            shadow = true,
+            centered = true
+        ).constrain {
+            x = CenterConstraint()
+            y = CenterConstraint()
+        } childOf background
 
         vSnapLine = UIContainer().constrain {
             x = (-1000).pixels()
@@ -100,7 +116,7 @@ object HudWindow : BaseWindow(false) {
         hSnapLine.isFloating = true
 
         // Create dots for lines
-        for (i in 0 until 200 step 2) {
+        for (i in 0 until 100) {
             UIBlock(Color.WHITE).constrain {
                 x = CenterConstraint()
                 y = SiblingConstraint(5f)
