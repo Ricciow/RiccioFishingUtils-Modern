@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.utils.network
 
+import cloud.glitchdev.rfu.RiccioFishingUtils
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.RiccioFishingUtils.API_URL
 import cloud.glitchdev.rfu.constants.text.TextStyle
@@ -52,12 +53,14 @@ object Network : RegisteredEvent {
                     BackendSettings.backendAccepted = true
                     BackendSettings.decisionMade = true
                     authenticateUser()
+                    RiccioFishingUtils.saveConfig()
                     it.source.sendFeedback(TextUtils.rfuLiteral("Backend connection accepted. If you wish to disable it head to Backend Settings on /rfu", TextStyle(LIGHT_GREEN)))
                     return@executes 1
                 })
                 .then(literal("deny").executes {
                     BackendSettings.backendAccepted = false
                     BackendSettings.decisionMade = true
+                    RiccioFishingUtils.saveConfig()
                     it.source.sendFeedback(TextUtils.rfuLiteral("Backend connection denied. If you change your mind head to Backend Settings on /rfu", TextStyle(LIGHT_RED)))
                     return@executes 1
                 })

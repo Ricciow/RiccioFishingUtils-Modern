@@ -24,4 +24,8 @@ object RiccioFishingUtils : ClientModInitializer {
             RFULoader.registerHud()
         }
     }
+
+    fun saveConfig() {
+        configurator.saveConfig(settings)
+    }
 }
