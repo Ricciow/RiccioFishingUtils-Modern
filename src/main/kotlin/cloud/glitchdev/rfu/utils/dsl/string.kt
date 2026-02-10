@@ -58,3 +58,24 @@ fun String.toInteractiveText(command: String, hoverText: Component = Component.l
 
     return root
 }
+
+fun String.parseHealthValue(): Int {
+    var str = this
+    var multiplier = 1.0
+
+    if (str.endsWith("k", true)) {
+        multiplier = 1000.0
+        str = str.dropLast(1)
+    } else if (str.endsWith("M", true)) {
+        multiplier = 1_000_000.0
+        str = str.dropLast(1)
+    }
+
+    str = if (multiplier > 1.0) {
+        str.replace(",", ".")
+    } else {
+        str.replace(",", "")
+    }
+
+    return str.toDoubleOrNull()?.times(multiplier)?.toInt() ?: 0
+}

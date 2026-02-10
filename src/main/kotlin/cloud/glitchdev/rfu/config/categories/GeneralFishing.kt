@@ -10,6 +10,13 @@ object GeneralFishing : Category("General Fishing") {
     override val description: TranslatableValue
         get() = Literal("Settings for all kinds of fishing!")
 
+    init {
+        dualSeparator {
+            title = "Rare Sea Creatures"
+            description  = ""
+        }
+    }
+
     var rareSC by draggable(*SeaCreatures.entries.filter { it.special }.toTypedArray()) {
         name = Literal("Rare Sea Creatures")
         description = Literal("Select which sea creatures are considered rare for the mod.")
@@ -22,6 +29,22 @@ object GeneralFishing : Category("General Fishing") {
         name = Literal("Lootshare Range")
         description = Literal("Shows a sphere around rare sea creatures to display their lootshare range")
     }
+
+    var bossHealthBars by observable(boolean(true) {
+        name = Literal("Boss Health Bars")
+        description = Literal("Enable health bars that appear when there's a rare mob in sight")
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var healthBarMobs by draggable(*SeaCreatures.entries.filter { it.special }.toTypedArray()) {
+        name = Literal("Boss Health Bar mobs")
+        description = Literal("Select which mobs will have their health bars displayed")
+        condition = { bossHealthBars }
+    }
+
+    val HEALTH_BAR_REGEX
+        get() = healthBarMobs.joinToString("|").toExactRegex()
 
     init {
         dualSeparator {

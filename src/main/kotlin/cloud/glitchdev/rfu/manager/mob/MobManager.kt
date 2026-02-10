@@ -46,7 +46,7 @@ object MobManager : RegisteredEvent {
 
         if (!entity.isInvisible) return
 
-        val sbName = SkyblockEntity.parseNameFromTag(entity) ?: return
+        if (!SkyblockEntity.isNameTagEntity(entity)) return
 
         val foundModel = findModelForNametag(entity, world)
 
@@ -60,7 +60,7 @@ object MobManager : RegisteredEvent {
                     sbEntities[entity.id] = existingLink
                 }
             } else {
-                val sbEntity = SkyblockEntity(entity, foundModel, sbName)
+                val sbEntity = SkyblockEntity(entity, foundModel)
                 sbEntities[entity.id] = sbEntity
                 sbEntities[foundModel.id] = sbEntity
                 uniqueSbEntities.add(sbEntity)
@@ -69,7 +69,10 @@ object MobManager : RegisteredEvent {
     }
 
     private fun validateCurrentEntities() {
-        val toRemove = uniqueSbEntities.filter { it.isRemoved() }
+        val toRemove = uniqueSbEntities.filter {
+            it.updateEntityData()
+            it.isRemoved()
+        }
         toRemove.forEach { removeEntity(it) }
     }
 
