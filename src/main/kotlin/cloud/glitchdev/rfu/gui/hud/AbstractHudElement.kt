@@ -100,11 +100,11 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
         val isSnappingSuppressed = UKeyboard.isShiftKeyDown() || UKeyboard.isCtrlKeyDown()
 
         if (!isSnappingSuppressed) {
-            val (newX, lineX) = resolveSnap(currentX, this.getWidth()) { other ->
+            val (newX, lineX) = resolveSnap(currentX, this.getWidth(), window.getWidth()) { other ->
                 other.getLeft() to other.getRight()
             }
 
-            val (newY, lineY) = resolveSnap(currentY, this.getHeight()) { other ->
+            val (newY, lineY) = resolveSnap(currentY, this.getHeight(), window.getHeight()) { other ->
                 other.getTop() to other.getBottom()
             }
 
@@ -121,19 +121,34 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
 
         updateState()
     }
-    
+
     /**
-     * Generic helper to calculate snapping for a single axis.
-     * Returns a Pair(NewPosition, SnapLineCoordinate?)
+     * Calculates snapping for a single axis.
+     * Checks:
+     * 1. Window Center
+     * 2. Edges of all other elements
+     * Returns the position that requires the least movement.
      */
     private fun resolveSnap(
         currentPos: Float,
         size: Float,
+        windowDimension: Float,
         getBounds: (AbstractHudElement) -> Pair<Float, Float>
     ): Pair<Float, Float?> {
         var bestPos = currentPos
         var bestSnapLine: Float? = null
         var minDistance = snapThreshold
+
+        // Verify Window Snapping
+        val windowCenter = windowDimension / 2f
+        val centerTarget = windowCenter - (size / 2f)
+        val distToCenter = abs(currentPos - centerTarget)
+
+        if (distToCenter < minDistance) {
+            minDistance = distToCenter
+            bestPos = centerTarget
+            bestSnapLine = windowCenter
+        }
 
         for (other in HudWindow.hudElements) {
             if (other === this || !other.enabled) continue
@@ -141,15 +156,13 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
             val (start, end) = getBounds(other)
 
             val candidates = listOf(
-                start to start,          // Align Top/Left to Top/Left
-                end to end,              // Align Top/Left to Bottom/Right
-                (start - size) to start, // Align Bottom/Right to Top/Left
-                (end - size) to end      // Align Bottom/Right to Bottom/Right
+                start to start,                  // Align Top/Left to Top/Left
+                end to end,                      // Align Top/Left to Bottom/Right
+                (start - size) to start,         // Align Bottom/Right to Top/Left
+                (end - size) to end              // Align Bottom/Right to Bottom/Right
             )
 
-            //Pick Closest
             for ((pos, line) in candidates) {
-                //Snap Distance
                 val distance = abs(currentPos - pos)
 
                 if (distance < minDistance) {
@@ -160,7 +173,7 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
             }
         }
 
-        return bestPos to bestSnapLine
+        return Pair(bestPos, bestSnapLine)
     }
 
     fun initialize() {
