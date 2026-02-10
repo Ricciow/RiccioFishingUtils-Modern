@@ -121,7 +121,7 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
 
         updateState()
     }
-
+    
     /**
      * Generic helper to calculate snapping for a single axis.
      * Returns a Pair(NewPosition, SnapLineCoordinate?)
@@ -131,18 +131,36 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
         size: Float,
         getBounds: (AbstractHudElement) -> Pair<Float, Float>
     ): Pair<Float, Float?> {
+        var bestPos = currentPos
+        var bestSnapLine: Float? = null
+        var minDistance = snapThreshold
+
         for (other in HudWindow.hudElements) {
             if (other === this || !other.enabled) continue
 
-            val (otherStart, otherEnd) = getBounds(other)
+            val (start, end) = getBounds(other)
 
-            if (abs(currentPos - otherStart) < snapThreshold) return Pair(otherStart, otherStart)
-            if (abs(currentPos - otherEnd) < snapThreshold) return Pair(otherEnd, otherEnd)
-            if (abs((currentPos + size) - otherStart) < snapThreshold) return Pair(otherStart - size, otherStart)
-            if (abs((currentPos + size) - otherEnd) < snapThreshold) return Pair(otherEnd - size, otherEnd)
+            val candidates = listOf(
+                start to start,          // Align Top/Left to Top/Left
+                end to end,              // Align Top/Left to Bottom/Right
+                (start - size) to start, // Align Bottom/Right to Top/Left
+                (end - size) to end      // Align Bottom/Right to Bottom/Right
+            )
+
+            //Pick Closest
+            for ((pos, line) in candidates) {
+                //Snap Distance
+                val distance = abs(currentPos - pos)
+
+                if (distance < minDistance) {
+                    minDistance = distance
+                    bestPos = pos
+                    bestSnapLine = line
+                }
+            }
         }
 
-        return Pair(currentPos, null)
+        return bestPos to bestSnapLine
     }
 
     fun initialize() {
