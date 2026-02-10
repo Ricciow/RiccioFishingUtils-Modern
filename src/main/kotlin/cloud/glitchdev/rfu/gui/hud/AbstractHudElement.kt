@@ -49,6 +49,12 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
         get() = Window.of(this)
 
     private var scaleTextEnabled = false
+        set(value) {
+            field = value
+            if(value) {
+                println("Changed $id $value")
+            }
+        }
     private var scaleText = UIText("Scale: 1.00x").constrain {
         x = CenterConstraint()
         width = ScaledTextConstraint(1f)
@@ -79,12 +85,11 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
         }
 
         this.onMouseDrag { mouseX, mouseY, _ ->
-            grabWindowFocus()
             if (isDragging) {
+                grabWindowFocus()
                 updatePosition(mouseX, mouseY)
+                scaleTextEnabled = true
             }
-
-            scaleTextEnabled = true
         }
 
         this.onMouseScroll { event ->
