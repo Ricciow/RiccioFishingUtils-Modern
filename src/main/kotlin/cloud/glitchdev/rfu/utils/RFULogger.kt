@@ -34,7 +34,7 @@ object RFULogger {
     }
 
     fun debug(message: String, prefix: String? = "[RFU]") {
-        log(message, Level.DEBUG, prefix)
+        log(message, Level.INFO, prefix)
     }
 
     fun trace(message: String, prefix: String? = "[RFU]") {
