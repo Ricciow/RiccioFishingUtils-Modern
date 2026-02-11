@@ -10,11 +10,19 @@ import net.minecraft.commands.SharedSuggestionProvider
 import net.minecraft.network.chat.Component
 import java.util.concurrent.CompletableFuture
 
-class StringListArgumentType(private val stringList: List<String>) : ArgumentType<String> {
-    constructor(vararg strings: String) : this(strings.toList())
+class StringListArgumentType(
+    private val stringList: List<String>,
+    private val greedy: Boolean = false
+) : ArgumentType<String> {
+    constructor(vararg strings : String, greedy: Boolean = false) : this(strings.toList(), greedy)
 
     override fun parse(reader: StringReader): String {
-        val input = reader.readString()
+        val input = if(greedy) reader.remaining else reader.readString()
+
+        if(greedy) {
+            reader.cursor = reader.totalLength
+        }
+
         return stringList.find { it == input }
             ?: throw SimpleCommandExceptionType(
                 Component.literal(

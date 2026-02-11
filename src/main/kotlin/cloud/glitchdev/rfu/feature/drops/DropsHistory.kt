@@ -33,7 +33,7 @@ object DropsHistory : Feature {
                     1
                 }
                 .then(
-                    arg("dropName", StringListArgumentType(RareDrops.entries.map { it.toString() }))
+                    arg("dropName", StringListArgumentType(RareDrops.entries.map { it.toString() }, true))
                         .executes { context ->
                             val dropName = StringArgumentType.getString(context, "dropName")
                             val drop = RareDrops.getRelatedDrop(dropName)
