@@ -23,7 +23,7 @@ class DropHistory {
         val dropEntry = getOrAdd(drop)
 
         val count = drop.relatedScs.sumOf { sc ->
-            catchHistory.getOrAdd(sc).count
+            catchHistory.getOrAdd(sc).total
         }
 
         dropEntry.addDrop(count, magicFind)

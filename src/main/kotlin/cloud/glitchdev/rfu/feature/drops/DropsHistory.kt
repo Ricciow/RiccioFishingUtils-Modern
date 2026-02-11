@@ -7,6 +7,7 @@ import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.manager.drops.DropManager
+import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.command.AbstractCommand
 import cloud.glitchdev.rfu.utils.command.Command
@@ -57,9 +58,13 @@ object DropsHistory : Feature {
         }
 
         drops.forEach { dropEntry ->
-            val itemName = dropEntry.type.toString()
-            val lastDrop = dropEntry.history.lastOrNull() ?: return@forEach
-            text.append(Component.literal("\n $YELLOW$BOLD- $itemName: ${YELLOW}Total: $WHITE${dropEntry.history.size} ${YELLOW}- Last: $WHITE${lastDrop.date.toFormattedDate()} (${lastDrop.sinceCount}) $AQUAMARINE(${lastDrop.magicFind}% ✯)"))
+            try {
+                val itemName = dropEntry.type.toString()
+                val lastDrop = dropEntry.history.lastOrNull() ?: return@forEach
+                text.append(Component.literal("\n $YELLOW$BOLD- $itemName: ${YELLOW}Total: $WHITE${dropEntry.history.size} ${YELLOW}- Last: $WHITE${lastDrop.date.toFormattedDate()} (${lastDrop.sinceCount}) $AQUAMARINE(${lastDrop.magicFind}% ✯)"))
+            } catch (e : Exception) {
+                RFULogger.error("Error on rfudrophistory:", e)
+            }
         }
 
         return text
