@@ -9,7 +9,11 @@ import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.utils.Chat
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 import com.teamresourceful.resourcefulconfigkt.api.ConfigKt
-import net.minecraft.Util
+//? if >=1.21.11 {
+import net.minecraft.util.Util
+//?} else {
+/*import net.minecraft.Util
+*///?}
 
 object RFUSettings : ConfigKt("rfu/settings") {
     override val name: TranslatableValue

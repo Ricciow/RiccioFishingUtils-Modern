@@ -6,10 +6,10 @@ import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import net.minecraft.client.gui.GuiGraphics
 //? if >=1.21.11 {
-/*import net.minecraft.resources.Identifier
-*///?} else {
-import net.minecraft.resources.ResourceLocation
-//?}
+import net.minecraft.resources.Identifier
+//?} else {
+/*import net.minecraft.resources.ResourceLocation
+*///?}
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements
 
@@ -22,10 +22,10 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements
 object HudRenderEvents : AbstractEventManager<(GuiGraphics, Float) -> Unit, HudRenderEvents.HudRenderEvent>(), RegisteredEvent {
 
     //? if >=1.21.11 {
-    /*private val HUD_ID = Identifier.fromNamespaceAndPath(MOD_ID, "hud_renderer")
-    *///?} else {
-    private val HUD_ID = ResourceLocation.fromNamespaceAndPath(MOD_ID, "hud_renderer")
-    //?}
+    private val HUD_ID = Identifier.fromNamespaceAndPath(MOD_ID, "hud_renderer")
+    //?} else {
+    /*private val HUD_ID = ResourceLocation.fromNamespaceAndPath(MOD_ID, "hud_renderer")
+    *///?}
 
     override fun register() {
         HudElementRegistry.attachElementBefore(

@@ -4,10 +4,10 @@ import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext
 import net.minecraft.client.Camera
 //? if >=1.21.11 {
-/*import net.minecraft.client.renderer.rendertype.RenderTypes
-*///?} else {
-import net.minecraft.client.renderer.RenderType
-//?}
+import net.minecraft.client.renderer.rendertype.RenderTypes
+//?} else {
+/*import net.minecraft.client.renderer.RenderType
+*///?}
 
 import net.minecraft.client.DeltaTracker
 import com.mojang.blaze3d.vertex.VertexConsumer
@@ -52,10 +52,10 @@ object Render3D {
         val camPos = camera.position()
         val vecToSphere = location.subtract(camPos)
         //? if >=1.21.11 {
-        /*val lookVec = Vec3.directionFromRotation(camera.xRot(), camera.yRot())
-        *///?} else {
-        val lookVec = Vec3.directionFromRotation(camera.xRot, camera.yRot)
-        //?}
+        val lookVec = Vec3.directionFromRotation(camera.xRot(), camera.yRot())
+        //?} else {
+        /*val lookVec = Vec3.directionFromRotation(camera.xRot, camera.yRot)
+        *///?}
         val projection = vecToSphere.dot(lookVec)
 
         if (projection < -radius) {
@@ -72,10 +72,10 @@ object Render3D {
         )
 
         //? if >=1.21.11 {
-        /*val buffer = consumers.getBuffer(RenderTypes.LINES)
-        *///?} else {
-        val buffer = consumers.getBuffer(RenderType.lines())
-        //?}
+        val buffer = consumers.getBuffer(RenderTypes.LINES)
+        //?} else {
+        /*val buffer = consumers.getBuffer(RenderType.lines())
+        *///?}
 
         val matrix = matrixStack.last().pose()
 
@@ -120,7 +120,7 @@ object Render3D {
             .setColor(color.red, color.green, color.blue, color.alpha)
             .setNormal(1f, 0f, 0f)
         //? if >=1.21.11 {
-            /*.setLineWidth(lineWidth)
-        *///?}
+            .setLineWidth(lineWidth)
+        //?}
     }
 }
