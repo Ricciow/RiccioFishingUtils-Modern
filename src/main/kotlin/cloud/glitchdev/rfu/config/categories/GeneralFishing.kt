@@ -119,6 +119,12 @@ object GeneralFishing : Category("General Fishing") {
         condition = { customRareDropMessage }
     }
 
+    var rareDropPartyChat by boolean(true) {
+        name = Literal("Send in party chat")
+        description = Literal("Sends the drop message in party chat, uses the same message as above but removes the colors")
+        condition = { customRareDropMessage }
+    }
+
     init {
         dualSeparator {
             title = "Deployables"

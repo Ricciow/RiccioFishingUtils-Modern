@@ -6,8 +6,11 @@ import cloud.glitchdev.rfu.events.managers.DropEvents
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.manager.drops.DropManager
+import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.Chat.sendMessage
+import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.dsl.toReadableString
+import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.network.chat.Component
 
 @RFUFeature
@@ -39,6 +42,12 @@ object CustomRareDropMessage : Feature {
             .replace("{time}", timeSinceLast)
             .replace("&", "§")
 
-        sendMessage(Component.literal(messageString))
+        val message = Component.literal(messageString)
+
+        sendMessage(message)
+
+        if(GeneralFishing.rareDropPartyChat && Party.inParty) {
+            Chat.sendCommand("pc ${message.toUnformattedString()}")
+        }
     }
 }
