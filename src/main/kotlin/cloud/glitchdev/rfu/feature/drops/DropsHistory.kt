@@ -8,26 +8,31 @@ import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.manager.drops.DropManager
 import cloud.glitchdev.rfu.utils.TextUtils
+import cloud.glitchdev.rfu.utils.command.AbstractCommand
 import cloud.glitchdev.rfu.utils.command.Command
-import cloud.glitchdev.rfu.utils.command.StringSuggestionProvider
+import cloud.glitchdev.rfu.utils.command.arguments.StringListArgumentType
 import cloud.glitchdev.rfu.utils.dsl.toFormattedDate
 import com.mojang.brigadier.arguments.StringArgumentType
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
+import com.mojang.brigadier.builder.LiteralArgumentBuilder
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.minecraft.network.chat.Component
 
 @RFUFeature
 object DropsHistory : Feature {
-    override fun onInitialize() {
-        Command.registerCommand(
-            literal("rfudrophistory")
+    override fun onInitialize() {}
+
+    @Command
+    object DropHistoryCommand : AbstractCommand("rfudrophistory") {
+        override val description: String = "Sends the latest drop for each item you've dropped or detailed information if specified"
+
+        override fun build(builder: LiteralArgumentBuilder<FabricClientCommandSource>) {
+            builder
                 .executes { context ->
                     context.source.sendFeedback(allDropsMessage())
                     1
                 }
                 .then(
-                    argument("dropName", StringArgumentType.greedyString())
-                        .suggests(StringSuggestionProvider(RareDrops.entries.map { it.toString() }))
+                    arg("dropName", StringListArgumentType(RareDrops.entries.map { it.toString() }))
                         .executes { context ->
                             val dropName = StringArgumentType.getString(context, "dropName")
                             val drop = RareDrops.getRelatedDrop(dropName)
@@ -39,7 +44,7 @@ object DropsHistory : Feature {
                             1
                         }
                 )
-        )
+        }
     }
 
     private fun allDropsMessage() : Component {

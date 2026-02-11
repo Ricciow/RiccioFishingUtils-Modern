@@ -10,9 +10,10 @@ import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.utils.command.Command
 import cloud.glitchdev.rfu.utils.JsonFile
 import cloud.glitchdev.rfu.utils.TextUtils
+import cloud.glitchdev.rfu.utils.command.AbstractCommand
 import com.mojang.brigadier.arguments.IntegerArgumentType
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
+import com.mojang.brigadier.builder.LiteralArgumentBuilder
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 
 @AutoRegister
 object CatchTracker : RegisteredEvent {
@@ -36,10 +37,15 @@ object CatchTracker : RegisteredEvent {
         registerShutdownEvent {
             catchesFile.save()
         }
+    }
 
-        Command.registerCommand(
-            literal("rfucleanexcesshistory")
-                .then(argument("max history", IntegerArgumentType.integer())
+    @Command
+    object CleanCatchHistory : AbstractCommand("rfucleanexcesshistory") {
+        override val description: String = "Removes older entries of catch history exceeding (max history)."
+
+        override fun build(builder: LiteralArgumentBuilder<FabricClientCommandSource>) {
+            builder
+                .then(arg("max history", IntegerArgumentType.integer())
                     .executes { context ->
                         val maxSize = IntegerArgumentType.getInteger(context, "max history")
                         catchHistory.cleanExcessData(maxSize)
@@ -49,6 +55,6 @@ object CatchTracker : RegisteredEvent {
                         1
                     }
                 )
-        )
+        }
     }
 }

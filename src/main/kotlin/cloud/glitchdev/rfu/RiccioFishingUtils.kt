@@ -20,6 +20,7 @@ object RiccioFishingUtils : ClientModInitializer {
     override fun onInitializeClient() {
         ClientLifecycleEvents.CLIENT_STARTED.register {
             RFULoader.loadFeatures()
+            RFULoader.registerCommands()
             RFULoader.registerEvents()
             RFULoader.registerHud()
         }

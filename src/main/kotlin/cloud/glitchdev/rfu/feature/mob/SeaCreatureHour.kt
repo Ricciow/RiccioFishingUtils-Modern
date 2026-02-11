@@ -10,6 +10,9 @@ import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.gui.hud.elements.SCHDisplay
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.command.Command
+import cloud.glitchdev.rfu.utils.command.SimpleCommand
+import com.mojang.brigadier.context.CommandContext
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
@@ -34,8 +37,13 @@ object SeaCreatureHour : Feature {
         registerTickEvent(interval = 20) {
             updateRate()
         }
+    }
 
-        Command.registerCommand("rfuresetsch") { context ->
+    @Command
+    object ResetCommand : SimpleCommand("rfuresetsch") {
+        override val description: String = "Resets your current SC/h tracker."
+
+        override fun execute(context: CommandContext<FabricClientCommandSource>): Int {
             currentScPerHour = 0.0
             lastSC = Instant.DISTANT_PAST
             startFishing = Instant.DISTANT_PAST
@@ -45,7 +53,7 @@ object SeaCreatureHour : Feature {
 
             context.source.sendFeedback(TextUtils.rfuLiteral("The SC/h tracker has been reset!", TextStyle(TextColor.LIGHT_GREEN)))
 
-            1
+            return 1
         }
     }
 

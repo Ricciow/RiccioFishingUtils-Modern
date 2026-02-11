@@ -38,6 +38,12 @@ class FeatureProcessor(
                 loaderFuncName = "registerHud",
                 methodToCall = "initialize",
                 requiredSuperType = "cloud.glitchdev.rfu.gui.hud.AbstractHudElement"
+            ),
+            GeneratorSpec(
+                annotation = "cloud.glitchdev.rfu.utils.command.Command",
+                loaderFuncName = "registerCommands",
+                methodToCall = "register",
+                requiredSuperType = "cloud.glitchdev.rfu.utils.command.AbstractCommand"
             )
         )
 

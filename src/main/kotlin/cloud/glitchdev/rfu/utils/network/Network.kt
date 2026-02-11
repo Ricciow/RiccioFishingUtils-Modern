@@ -17,8 +17,13 @@ import net.minecraft.network.chat.HoverEvent
 import net.minecraft.network.chat.Component
 import cloud.glitchdev.rfu.constants.text.TextColor.*
 import cloud.glitchdev.rfu.constants.text.TextEffects.*
+import cloud.glitchdev.rfu.utils.command.AbstractCommand
+import cloud.glitchdev.rfu.utils.command.SimpleCommand
 import com.google.gson.JsonParser
+import com.mojang.brigadier.builder.LiteralArgumentBuilder
+import com.mojang.brigadier.context.CommandContext
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -46,41 +51,6 @@ object Network : RegisteredEvent {
         registerJoinEvent {
             authenticateUser()
         }
-
-        Command.registerCommand(
-            literal("rfubackend")
-                .then(literal("accept").executes {
-                    BackendSettings.backendAccepted = true
-                    BackendSettings.decisionMade = true
-                    authenticateUser()
-                    RiccioFishingUtils.saveConfig()
-                    it.source.sendFeedback(TextUtils.rfuLiteral("Backend connection accepted. If you wish to disable it head to Backend Settings on /rfu", TextStyle(LIGHT_GREEN)))
-                    return@executes 1
-                })
-                .then(literal("deny").executes {
-                    BackendSettings.backendAccepted = false
-                    BackendSettings.decisionMade = true
-                    RiccioFishingUtils.saveConfig()
-                    it.source.sendFeedback(TextUtils.rfuLiteral("Backend connection denied. If you change your mind head to Backend Settings on /rfu", TextStyle(LIGHT_RED)))
-                    return@executes 1
-                })
-        )
-
-        Command.registerCommand(
-            literal("rfubackendtoken")
-                .executes { context ->
-                    if(token != null) {
-                        mc.keyboardHandler.clipboard = token ?: "ERROR Blank Token"
-                        context.source.sendFeedback(TextUtils.rfuLiteral("Your rfu back-end token has been copied to your clipboard!",
-                            TextStyle(LIGHT_GREEN)))
-                    }
-                    else {
-                        context.source.sendFeedback(TextUtils.rfuLiteral("You don't have a RFU back-end token!",
-                            TextStyle(LIGHT_RED)))
-                    }
-                    return@executes 1
-                }
-        )
     }
 
     fun getRequest(url : String, useToken : Boolean = false, callback: (Response) -> Unit) {
@@ -273,5 +243,47 @@ object Network : RegisteredEvent {
 
         message.append(accept).append(deny)
         mc.player?.displayClientMessage(message, false)
+    }
+
+    @Command
+    object BackEndCommand : AbstractCommand("rfubackend") {
+        override val description: String = "Used for accepting/denying back-end features upon first install."
+
+        override fun build(builder: LiteralArgumentBuilder<FabricClientCommandSource>) {
+            builder
+                .then(literal("accept").executes {
+                    BackendSettings.backendAccepted = true
+                    BackendSettings.decisionMade = true
+                    authenticateUser()
+                    RiccioFishingUtils.saveConfig()
+                    it.source.sendFeedback(TextUtils.rfuLiteral("Backend connection accepted. If you wish to disable it head to Backend Settings on /rfu", TextStyle(LIGHT_GREEN)))
+                    return@executes 1
+                })
+                .then(literal("deny").executes {
+                    BackendSettings.backendAccepted = false
+                    BackendSettings.decisionMade = true
+                    RiccioFishingUtils.saveConfig()
+                    it.source.sendFeedback(TextUtils.rfuLiteral("Backend connection denied. If you change your mind head to Backend Settings on /rfu", TextStyle(LIGHT_RED)))
+                    return@executes 1
+                })
+        }
+    }
+
+    @Command
+    object TokenCommand : SimpleCommand("rfubackendtoken") {
+        override val description: String = "Copies your RFU Back-end token to your clipboard."
+
+        override fun execute(context: CommandContext<FabricClientCommandSource>): Int {
+            if(token != null) {
+                mc.keyboardHandler.clipboard = token ?: "ERROR Blank Token"
+                context.source.sendFeedback(TextUtils.rfuLiteral("Your rfu back-end token has been copied to your clipboard!",
+                    TextStyle(LIGHT_GREEN)))
+            }
+            else {
+                context.source.sendFeedback(TextUtils.rfuLiteral("You don't have a RFU back-end token!",
+                    TextStyle(LIGHT_RED)))
+            }
+            return 1
+        }
     }
 }

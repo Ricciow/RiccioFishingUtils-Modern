@@ -1,16 +1,15 @@
 package cloud.glitchdev.rfu.feature.settings
 
-import cloud.glitchdev.rfu.feature.Feature
-import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.gui.window.HudWindow
-import cloud.glitchdev.rfu.utils.command.Command
+import cloud.glitchdev.rfu.utils.command.SimpleCommand
+import com.mojang.brigadier.context.CommandContext
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 
-@RFUFeature
-object Hud : Feature {
-    override fun onInitialize() {
-        Command.registerCommand("rfumove") { _ ->
-            HudWindow.openEditingGui()
-            return@registerCommand 1
-        }
+object Hud : SimpleCommand("rfumove") {
+    override val description: String = "Opens the GUI to move Hud Elements."
+
+    override fun execute(context: CommandContext<FabricClientCommandSource>): Int {
+        HudWindow.openEditingGui()
+        return 1
     }
 }
