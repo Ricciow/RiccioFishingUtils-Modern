@@ -8,7 +8,7 @@ object Chat {
         mc.connection?.sendChat(message)
     }
 
-    fun sendServerCommand(command : String) {
+    fun sendCommand(command : String) {
         mc.connection?.sendCommand(command)
     }
 

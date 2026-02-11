@@ -26,7 +26,7 @@ object DoubleHookMessages : Feature {
                 }
 
                 if(Party.inParty) {
-                    Chat.sendServerCommand("p $message")
+                    Chat.sendCommand("p $message")
                 } else {
                     Chat.sendMessage(Component.literal(message))
                 }

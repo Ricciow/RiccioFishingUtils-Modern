@@ -223,6 +223,6 @@ object Party : RegisteredEvent {
     }
 
     fun requestEntry(username: String) {
-        Chat.sendServerCommand("w $username [RFUPF] I would like to join your party!")
+        Chat.sendCommand("w $username [RFUPF] I would like to join your party!")
     }
 }
