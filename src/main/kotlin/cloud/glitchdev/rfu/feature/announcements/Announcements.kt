@@ -11,6 +11,8 @@ import cloud.glitchdev.rfu.utils.command.Command
 import cloud.glitchdev.rfu.utils.command.AbstractCommand
 import cloud.glitchdev.rfu.utils.dsl.toInteractiveText
 import cloud.glitchdev.rfu.utils.network.AnnouncementsHttp
+import com.mojang.brigadier.builder.LiteralArgumentBuilder
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.minecraft.network.chat.Component
 
 @RFUFeature
@@ -38,7 +40,13 @@ object Announcements : Feature {
 
     @Command
     object AnnouncementCommand : AbstractCommand("rfuannouncement") {
-        override val description: String = "Base command for announcements"
+        override val description: String = ""
+
+        override fun build(builder: LiteralArgumentBuilder<FabricClientCommandSource>) {
+            builder.executes { context ->
+                Open.execute(context)
+            }
+        }
 
         init {
             append(Fetch)

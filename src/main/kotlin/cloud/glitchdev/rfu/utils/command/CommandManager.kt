@@ -10,8 +10,11 @@ import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
+import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.HoverEvent
 import net.minecraft.network.chat.MutableComponent
+import net.minecraft.network.chat.Style
 
 @AutoRegister
 object CommandManager : RegisteredEvent{
@@ -35,6 +38,22 @@ object CommandManager : RegisteredEvent{
 
         override fun build(builder: LiteralArgumentBuilder<FabricClientCommandSource>) {
             builder
+                .executes { context ->
+                    val text = rfuLiteral("Commands: ", TextStyle(YELLOW))
+
+                    commands.forEachIndexed { index, command ->
+                        if(index != 0) text.append(", ")
+                        text.append(Component.literal(command.name).setStyle(
+                            Style.EMPTY
+                                .withClickEvent(ClickEvent.SuggestCommand("/${command.name}"))
+                                .withHoverEvent(HoverEvent.ShowText(commandText(command, 0, "$GOLD")))
+                        ))
+                    }
+
+                    context.source.sendFeedback(text)
+
+                    1
+                }
                 .then(
                     arg("command", StringListArgumentType(commands.map { it.name }))
                         .executes { context ->
@@ -60,8 +79,8 @@ object CommandManager : RegisteredEvent{
                 )
         }
 
-        fun commandText(command: AbstractCommand, spacing : Int = 0) : MutableComponent {
-            val text = Component.literal("\n${" ".repeat(spacing)}- $GOLD${command.name}: $WHITE${command.description}")
+        fun commandText(command: AbstractCommand, spacing : Int = 0, prefix : String = "\n$GOLD${" ".repeat(spacing)}- ") : MutableComponent {
+            val text = Component.literal("$prefix${command.name}: $WHITE${command.description}")
 
             if(command.subCommands.isNotEmpty()) {
                 text.append("\n${" ".repeat(spacing)}${YELLOW}- Sub Commands:")
