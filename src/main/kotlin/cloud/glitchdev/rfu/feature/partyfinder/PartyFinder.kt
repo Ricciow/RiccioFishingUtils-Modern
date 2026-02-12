@@ -8,11 +8,13 @@ import cloud.glitchdev.rfu.gui.window.PartyFinderWindow
 import cloud.glitchdev.rfu.utils.gui.Gui
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.World
+import cloud.glitchdev.rfu.utils.command.Command
 import cloud.glitchdev.rfu.utils.command.SimpleCommand
 import com.mojang.brigadier.context.CommandContext
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.minecraft.network.chat.Component
 
+@Command
 object PartyFinder : SimpleCommand("rfupf") {
     override val description: String = "Opens the RFU Party Finder window."
 
