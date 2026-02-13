@@ -23,4 +23,10 @@ object BackendSettings : Category("Backend Settings") {
         description = Literal("Internal value to track if the user has made a decision.")
         condition = { false }
     }
+
+    var shareDyeData by boolean(true) {
+        name = Literal("Share Vicent Data")
+        description = Literal("Sends the current dyes in rotation to the RFU back-end when the vincent menu is opened so everyone can know them!")
+        condition = { backendAccepted }
+    }
 }
