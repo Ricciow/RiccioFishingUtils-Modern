@@ -28,7 +28,7 @@ object DyeTracking : Feature {
 
             val currentDyes = DyeHttp.currentDyes
 
-            if(currentDyes != null && !currentDyes.isEmpty()) {
+            if(currentDyes != null && !currentDyes.isOutdated()) {
                 text.append(TextUtils.rfuLiteral("Dyes (Year ${currentDyes.sbYear}): ", TextStyle(YELLOW)))
                 text.append(Component.literal("\n$YELLOW - $WHITE${currentDyes.get3xDye()} $YELLOW(3x)"))
                 currentDyes.get2xDyes().forEach { dye ->
