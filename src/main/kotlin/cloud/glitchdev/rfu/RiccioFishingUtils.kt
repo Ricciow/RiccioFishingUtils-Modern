@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu
 
 import cloud.glitchdev.rfu.config.RFUSettings
+import cloud.glitchdev.rfu.config.categories.DevSettings
 import net.fabricmc.api.ClientModInitializer
 import net.minecraft.client.Minecraft
 import cloud.glitchdev.rfu.generated.RFULoader
@@ -10,7 +11,12 @@ import net.fabricmc.loader.impl.FabricLoaderImpl
 
 object RiccioFishingUtils : ClientModInitializer {
     const val MOD_ID = "rfu"
-    const val API_URL = "https://rfu.glitchdev.cloud/api"
+    val API_URL = "https://rfu.glitchdev.cloud/api"
+        get() {
+            if(DevSettings.devMode) return DevSettings.backEndEnvironment
+            return field
+        }
+
     val CONFIG_DIR = FabricLoaderImpl.INSTANCE.configDir
 
     val mc: Minecraft = Minecraft.getInstance()

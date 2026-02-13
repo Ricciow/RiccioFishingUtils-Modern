@@ -11,12 +11,18 @@ object DevSettings : Category("Developer") {
         name = Literal("Developer Mode")
         description = Literal("Enable developer mode.")
     }) { _, _ ->
-       reloadScreen()
+        reloadScreen()
     }
 
     var isInSkyblock by boolean(true) {
         name = Literal("Force In Skyblock")
         description = Literal("Forces the mod to consider you're inside skyblock.")
+        condition = { devMode }
+    }
+
+    var backEndEnvironment by string("https://rfu.glitchdev.cloud/api") {
+        name = Literal("Back-end Environment")
+        description = Literal("The url which the mod will use for its back-end features")
         condition = { devMode }
     }
 }
