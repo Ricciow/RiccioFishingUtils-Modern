@@ -66,6 +66,20 @@ object RFUSettings : ConfigKt("rfu/settings") {
             }
         }
 
+        button {
+            title = "Move Hud"
+            description = "Click it or use /rfumove!"
+            text = "Move"
+
+            onClick {
+                mc.schedule {
+                    mc.setScreen(null)
+
+                    Chat.sendCommand("rfumove")
+                }
+            }
+        }
+
         category(GeneralFishing)
         category(LavaFishing)
         category(OtherSettings)
