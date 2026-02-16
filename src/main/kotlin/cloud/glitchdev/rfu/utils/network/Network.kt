@@ -17,6 +17,7 @@ import net.minecraft.network.chat.HoverEvent
 import net.minecraft.network.chat.Component
 import cloud.glitchdev.rfu.constants.text.TextColor.*
 import cloud.glitchdev.rfu.constants.text.TextEffects.*
+import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.command.AbstractCommand
 import cloud.glitchdev.rfu.utils.command.SimpleCommand
 import com.google.gson.JsonParser
@@ -242,7 +243,7 @@ object Network : RegisteredEvent {
                 .withHoverEvent(HoverEvent.ShowText(Component.literal("${LIGHT_RED}Deny backend connection"))) }
 
         message.append(accept).append(deny)
-        mc.player?.displayClientMessage(message, false)
+        Chat.sendMessage(message)
     }
 
     @Command

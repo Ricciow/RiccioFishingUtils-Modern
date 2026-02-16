@@ -13,6 +13,9 @@ object Chat {
     }
 
     fun sendMessage(message : Component) {
-        mc.player?.displayClientMessage(message, false)
+        //Ensure it's in the render thread.
+        mc.execute {
+            mc.player?.displayClientMessage(message, false)
+        }
     }
 }

@@ -7,6 +7,7 @@ import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.config.categories.LavaFishing
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.utils.Chat
+import cloud.glitchdev.rfu.utils.network.VersionHttp.isOutdated
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 import com.teamresourceful.resourcefulconfigkt.api.ConfigKt
 //? if >=1.21.11 {
@@ -22,6 +23,18 @@ object RFUSettings : ConfigKt("rfu/settings") {
         get() = Literal("Settings for the greatest hit mod RFU")
 
     init {
+        separator {
+            title = "Your mod is up to date!"
+            description = "Good job!"
+            condition = { !isOutdated }
+        }
+
+        separator {
+            title = "Your mod is outdated!"
+            description = "You should update!"
+            condition = { isOutdated }
+        }
+
         button {
             title = "RFU Discord"
             description = "Join the rfu discord!"

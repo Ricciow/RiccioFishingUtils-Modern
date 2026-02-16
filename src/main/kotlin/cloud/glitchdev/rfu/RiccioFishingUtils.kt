@@ -18,6 +18,8 @@ object RiccioFishingUtils : ClientModInitializer {
         }
 
     val CONFIG_DIR = FabricLoaderImpl.INSTANCE.configDir
+    val CONTAINER = FabricLoaderImpl.INSTANCE.getModContainer(MOD_ID).get()
+    val RFU_VERSION = CONTAINER.metadata.version
 
     val mc: Minecraft = Minecraft.getInstance()
     val configurator = Configurator(MOD_ID)
