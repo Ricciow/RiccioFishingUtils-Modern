@@ -172,4 +172,16 @@ object GeneralFishing : Category("General Fishing") {
         description = Literal("Makes double hook messages random")
         condition = { toggleDoubleHookMessages }
     }
+
+    init {
+        dualSeparator {
+            title = "Fishing"
+            description = "Anything fishing related that didn't fit elsewhere"
+        }
+    }
+
+    var rodTimerDisplay by boolean(false) {
+        name = Literal("Rod Timer Display")
+        description = Literal("Display the current rod timer on screen")
+    }
 }
