@@ -25,6 +25,8 @@ object UIScheme {
     val barMediumHP = Color(255, 255, 85)
     val barLowHP = Color(255, 85, 85)
 
+    val diedColor = Color(120, 7, 7)
+
     const val HOVER_EFFECT_DURATION = 0.1f
 
     fun increaseOpacity(baseColor : Color, amount: Int) : Color {

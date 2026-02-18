@@ -5,6 +5,7 @@
 - Added rod timer
 - Added rare drops party message
 - Added version checking
+- Added an animation to Jawbus Hard Mode
 
 ### Fixes:
 - Fixed drops not counting
