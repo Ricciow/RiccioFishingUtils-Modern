@@ -7,7 +7,8 @@
 - Added version checking
 
 ### Fixes:
-- Correct the count for drop history
+- Fixed drops not counting
+- Fixed the drop history sc count being inaccurate
 
 ### Back-end:
 - Nothing :dog:

@@ -79,3 +79,7 @@ fun String.parseHealthValue(): Int {
 
     return str.toDoubleOrNull()?.times(multiplier)?.toInt() ?: 0
 }
+
+fun String.escapeForRegex(): String {
+    return this.replace("""([\\.*+?^$\[\](){}|])""".toRegex(), "\\\\$1")
+}

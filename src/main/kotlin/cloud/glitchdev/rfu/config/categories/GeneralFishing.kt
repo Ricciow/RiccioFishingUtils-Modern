@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.config.categories
 import cloud.glitchdev.rfu.constants.SeaCreatures
 import cloud.glitchdev.rfu.config.Category
 import cloud.glitchdev.rfu.constants.RareDrops
+import cloud.glitchdev.rfu.utils.dsl.escapeForRegex
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 
@@ -95,7 +96,7 @@ object GeneralFishing : Category("General Fishing") {
     val RARE_DROP_REGEX : Regex
         get() = buildString {
             append("RARE DROP! (")
-            append(rareDrops.filter { !it.isDye }.joinToString("|") { Regex.escape(it.toString()) })
+            append(rareDrops.filter { !it.isDye }.joinToString("|") { it.overrideRegex ?: it.toString().escapeForRegex() })
             append(""") \(\+(\d+) ✯ Magic Find\)""")
         }.toExactRegex()
     val DYE_REGEX : Regex

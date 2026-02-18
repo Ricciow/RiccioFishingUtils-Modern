@@ -17,6 +17,7 @@ import net.minecraft.network.chat.Component
 object CustomRareDropMessage : Feature {
     override fun onInitialize() {
         DropEvents.registerRareDropEvent { rareDrop, magicFind ->
+            println("Rare drop")
             sendCustomMessage(rareDrop, magicFind)
         }
     }
