@@ -20,7 +20,11 @@ object RodTimer : Feature {
             if(!GeneralFishing.rodTimerDisplay) return@registerTickEvent
             val world = client.level ?: return@registerTickEvent
 
-            if(timer?.isRemoved ?: true && mc.player?.mainHandItem?.item?.descriptionId == "item.minecraft.fishing_rod") {
+            if(timer?.isRemoved ?: true) {
+                timer = null
+            }
+
+            if(timer == null && mc.player?.mainHandItem?.item?.descriptionId == "item.minecraft.fishing_rod") {
                 timer = world.entitiesForRendering().find { entity ->
                     if(entity !is ArmorStand) return@find false
                     if (!entity.hasCustomName()) return@find false
