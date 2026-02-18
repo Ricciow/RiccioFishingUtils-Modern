@@ -13,6 +13,7 @@
 
 ### Back-end:
 - Refactor to add an AbstractTextHudElement for simple text hud stuff
+- Modify default positions of hud elements to overlap less
 
 ### Other:
 - Added info buttons to the settings

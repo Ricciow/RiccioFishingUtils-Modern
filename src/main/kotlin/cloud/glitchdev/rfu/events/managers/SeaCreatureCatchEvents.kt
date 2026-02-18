@@ -18,7 +18,6 @@ object SeaCreatureCatchEvents : AbstractEventManager<(SeaCreatures) -> Unit, Sea
             if(sc != null) {
                 runTasks(sc)
             }
-            println("Caught sc")
         }
     }
 

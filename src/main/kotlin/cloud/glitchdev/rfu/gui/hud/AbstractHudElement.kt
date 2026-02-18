@@ -32,8 +32,22 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
     private val transparent = UIScheme.transparent.toConstraint()
     private val snapThreshold = 5f
 
-    open val defaultX = 10f
-    open val defaultY = 10f
+    //Prevent overlapping on default positions
+    open val defaultX = currentDefaultX
+    open val defaultY = run {
+        val y = currentDefaultY
+
+        if(currentYCount < Y_LIMIT) {
+            currentDefaultY += Y_INCREMENT
+        } else {
+            currentDefaultY = Y_INITIAL_VALUE
+            currentDefaultX += X_INCREMENT
+        }
+
+        currentYCount += 1
+        y
+    }
+
     var currentX = defaultX
     var currentY = defaultY
     open val enabled
@@ -49,12 +63,6 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
         get() = Window.of(this)
 
     private var scaleTextEnabled = false
-        set(value) {
-            field = value
-            if(value) {
-                println("Changed $id $value")
-            }
-        }
     private var scaleText = UIText("Scale: 1.00x").constrain {
         x = CenterConstraint()
         width = ScaledTextConstraint(1f)
@@ -289,4 +297,16 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
     open fun onUpdateState() {}
     open fun onOpenEdit() {}
     open fun onCloseEdit() {}
+
+    companion object {
+        private const val Y_LIMIT = 20
+        private const val Y_INCREMENT = 9f
+        private const val X_INCREMENT = 30f
+        private const val X_INITIAL_VALUE = 10f
+        private const val Y_INITIAL_VALUE = 10f
+
+        private var currentYCount = 0
+        private var currentDefaultX = X_INITIAL_VALUE
+        private var currentDefaultY = Y_INITIAL_VALUE
+    }
 }
