@@ -28,7 +28,12 @@ object RodTimer : Feature {
                 } as? ArmorStand
             }
 
-            RodTimerDisplay.rodTime = timer?.name?.string?.toFloatOrNull() ?: -1f
+            RodTimerDisplay.rodTime = if(timer?.name?.string == "!!!") {
+                0f
+            } else {
+                timer?.name?.string?.toFloatOrNull() ?: -1f
+            }
+
             RodTimerDisplay.updateState()
         }
     }
