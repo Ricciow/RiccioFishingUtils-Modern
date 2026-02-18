@@ -6,7 +6,6 @@ import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
-import net.minecraft.commands.SharedSuggestionProvider
 import net.minecraft.network.chat.Component
 import java.util.concurrent.CompletableFuture
 
@@ -35,6 +34,14 @@ class StringListArgumentType(
         context: CommandContext<S>,
         builder: SuggestionsBuilder
     ): CompletableFuture<Suggestions> {
-        return SharedSuggestionProvider.suggest(stringList, builder)
+        val string = builder.remainingLowerCase
+
+        stringList.forEach {
+            if(it.lowercase().contains(string)) {
+                builder.suggest(it)
+            }
+        }
+
+        return builder.buildFuture()
     }
 }
