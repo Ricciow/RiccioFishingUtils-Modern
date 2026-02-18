@@ -14,6 +14,8 @@ import gg.essential.elementa.constraints.ScaledTextConstraint
 import gg.essential.elementa.constraints.TextAspectConstraint
 import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
+import gg.essential.elementa.dsl.pixels
+import gg.essential.elementa.dsl.width
 
 @HudElement
 object RodTimerDisplay : AbstractHudElement("rodTimer") {
@@ -43,6 +45,14 @@ object RodTimerDisplay : AbstractHudElement("rodTimer") {
     override fun onUpdateState() {
         text.constrain {
             width = ScaledTextConstraint(scale)
+        }
+
+        textContainer.constrain {
+            width = if(rodTime == 0f) {
+                "3.0".width(scale).pixels()
+            } else {
+                ChildBasedSizeConstraint()
+            }
         }
 
         val string = if(rodTime > 0) {
