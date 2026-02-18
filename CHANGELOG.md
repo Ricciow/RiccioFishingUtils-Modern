@@ -9,6 +9,7 @@
 ### Fixes:
 - Fixed drops not counting
 - Fixed the drop history sc count being inaccurate
+- Fixed Hud elements disappearing after moving them
 
 ### Back-end:
 - Nothing :dog:
