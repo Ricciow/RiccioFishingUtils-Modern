@@ -5,41 +5,22 @@ import cloud.glitchdev.rfu.constants.text.TextColor.AQUAMARINE
 import cloud.glitchdev.rfu.constants.text.TextColor.GOLD
 import cloud.glitchdev.rfu.constants.text.TextColor.YELLOW
 import cloud.glitchdev.rfu.constants.text.TextEffects.BOLD
-import cloud.glitchdev.rfu.gui.hud.AbstractHudElement
+import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 import cloud.glitchdev.rfu.manager.mob.DeployableManager
 import cloud.glitchdev.rfu.utils.dsl.toReadableString
-import gg.essential.elementa.components.UIText
-import gg.essential.elementa.constraints.CenterConstraint
-import gg.essential.elementa.constraints.ScaledTextConstraint
-import gg.essential.elementa.constraints.TextAspectConstraint
-import gg.essential.elementa.dsl.childOf
-import gg.essential.elementa.dsl.constrain
 import kotlin.time.Duration
 
 @HudElement
-object FlareTimerDisplay : AbstractHudElement("flareTimerDisplay") {
+object FlareTimerDisplay : AbstractTextHudElement("flareTimerDisplay") {
     var remainingTime: Duration? = null
     var activeType: DeployableManager.FlareType = DeployableManager.FlareType.NONE
-
-    var text : UIText = UIText().constrain {
-        x = CenterConstraint()
-        y = CenterConstraint()
-        width = ScaledTextConstraint(scale)
-        height = TextAspectConstraint()
-    } childOf this
 
     override val enabled: Boolean
         get() = GeneralFishing.flareTimerDisplay && (super.enabled || remainingTime != null)
 
-    override fun onInitialize() {
-        text.setText("Flare Timer")
-    }
-
     override fun onUpdateState() {
-        text.constrain {
-            width = ScaledTextConstraint(scale)
-        }
+        super.onUpdateState()
 
         val time = remainingTime
         val finalText = if (time != null) {

@@ -12,7 +12,7 @@
 - Fixed Hud elements disappearing after moving them
 
 ### Back-end:
-- Nothing :dog:
+- Refactor to add an AbstractTextHudElement for simple text hud stuff
 
 ### Other:
 - Added info buttons to the settings

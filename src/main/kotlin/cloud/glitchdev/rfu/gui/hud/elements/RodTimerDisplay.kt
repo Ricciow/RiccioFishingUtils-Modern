@@ -4,50 +4,39 @@ import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.constants.text.TextColor.LIGHT_RED
 import cloud.glitchdev.rfu.constants.text.TextColor.YELLOW
 import cloud.glitchdev.rfu.constants.text.TextEffects.BOLD
-import cloud.glitchdev.rfu.gui.hud.AbstractHudElement
+import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 import gg.essential.elementa.components.UIContainer
-import gg.essential.elementa.components.UIText
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
-import gg.essential.elementa.constraints.ScaledTextConstraint
-import gg.essential.elementa.constraints.TextAspectConstraint
 import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.width
 
 @HudElement
-object RodTimerDisplay : AbstractHudElement("rodTimer") {
+object RodTimerDisplay : AbstractTextHudElement("rodTimer") {
     var rodTime : Float = -1f
 
     override val enabled: Boolean
         get() = GeneralFishing.rodTimerDisplay && (super.enabled || rodTime >= 0)
 
-    var textContainer = UIContainer().constrain {
+    val container = UIContainer().constrain {
         x = CenterConstraint()
         y = CenterConstraint()
         width = ChildBasedSizeConstraint()
         height = ChildBasedSizeConstraint()
     } childOf this
 
-    var text : UIText = UIText().constrain {
-        x = CenterConstraint()
-        y = CenterConstraint()
-        width = ScaledTextConstraint(scale)
-        height = TextAspectConstraint()
-    } childOf textContainer
-
-    override fun onInitialize() {
-        text.setText("Rod Timer")
+    init {
+        this.removeChild(text)
+        text childOf container
     }
 
     override fun onUpdateState() {
-        text.constrain {
-            width = ScaledTextConstraint(scale)
-        }
+        super.onUpdateState()
 
-        textContainer.constrain {
+        container.constrain {
             width = if(rodTime == 0f) {
                 "3.0".width(scale).pixels()
             } else {
