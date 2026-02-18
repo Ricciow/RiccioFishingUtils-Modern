@@ -6,6 +6,7 @@
 - Added rare drops party message
 - Added version checking
 - Added an animation to Jawbus Hard Mode
+- Added rare sc alert
 
 ### Fixes:
 - Fixed drops not counting

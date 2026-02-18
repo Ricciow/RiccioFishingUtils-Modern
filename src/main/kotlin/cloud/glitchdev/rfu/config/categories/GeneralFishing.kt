@@ -31,6 +31,11 @@ object GeneralFishing : Category("General Fishing") {
         description = Literal("Shows a sphere around rare sea creatures to display their lootshare range")
     }
 
+    var detectionAlert by boolean(false) {
+        name = Literal("Rare Sc Alert")
+        description = Literal("Sends an alert whenever a rare SC is found.")
+    }
+
     var bossHealthBars by observable(boolean(true) {
         name = Literal("Boss Health Bars")
         description = Literal("Enable health bars that appear when there's a rare mob in sight")
