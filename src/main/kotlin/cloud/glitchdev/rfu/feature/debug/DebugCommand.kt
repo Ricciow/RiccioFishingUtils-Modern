@@ -8,5 +8,6 @@ object DebugCommand : AbstractCommand("rfudebug") {
     override val description: String = "Command used for debugging rfu"
     init {
         append(Chat)
+        append(Title)
     }
 }
