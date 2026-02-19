@@ -143,6 +143,11 @@ object GeneralFishing : Category("General Fishing") {
         description = Literal("Enables the Flare Timer display")
     }
 
+    var flareAlert by boolean(true) {
+        name = Literal("Expiration Alert")
+        description = Literal("Sends an alert in your screen when the flare expires.")
+    }
+
     init {
         dualSeparator {
             title = "Double Hook"

@@ -7,6 +7,7 @@
 - Added version checking
 - Added an animation to Jawbus Hard Mode
 - Added rare sc alert
+- Added flare expired alert
 
 ### Fixes:
 - Fixed drops not counting
