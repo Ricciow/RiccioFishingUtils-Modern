@@ -13,6 +13,7 @@
 - Fixed drops not counting
 - Fixed the drop history sc count being inaccurate
 - Fixed Hud elements disappearing after moving them
+- Party finder now reloads upon opening
 
 ### Back-end:
 - Refactor to add an AbstractTextHudElement for simple text hud stuff

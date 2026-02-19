@@ -42,6 +42,7 @@ object PartyFinder : SimpleCommand("rfupf") {
         }
 
         Gui.openGui(PartyFinderWindow)
+        PartyFinderWindow.getParties()
 
         return 1
     }
