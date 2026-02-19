@@ -8,6 +8,7 @@
 - Added an animation to Jawbus Hard Mode
 - Added rare sc alert
 - Added flare expired alert
+- Added new party finder alert
 
 ### Fixes:
 - Fixed drops not counting
