@@ -65,6 +65,7 @@ object RFUSettings : ConfigKt("rfu/settings") {
             }
         }
 
+
         button {
             title = "See Commands"
             description = "See what commands RFU has to offer!"
@@ -75,6 +76,20 @@ object RFUSettings : ConfigKt("rfu/settings") {
                     mc.setScreen(null)
 
                     Chat.sendCommand("rfuhelp")
+                }
+            }
+        }
+
+        button {
+            title = "Party Finder"
+            description = "Click it or use /rfupf!"
+            text = "Open"
+
+            onClick {
+                mc.schedule {
+                    mc.setScreen(null)
+
+                    Chat.sendCommand("rfupf")
                 }
             }
         }
