@@ -6,6 +6,7 @@ import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
+import cloud.glitchdev.rfu.events.managers.ChatEvents.registerAllowGameEvent
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.hypixelModAPI
@@ -155,10 +156,18 @@ object Party : RegisteredEvent {
             executePartyChange()
         }
 
-        registerGameEvent("From ($PLAYER_REGEX): \\[RFUPF\\] I would like to join your party!".toExactRegex()) { _, _, matches ->
-            val matchGroups = matches?.groupValues ?: return@registerGameEvent
+        registerAllowGameEvent("From ($PLAYER_REGEX): \\[RFUPF\\] I would like to join your party!".toExactRegex()) { _, _, matches ->
+            val matchGroups = matches?.groupValues ?: return@registerAllowGameEvent true
             val player = matchGroups[1].removeRankTag()
             promptInvite(player)
+            return@registerAllowGameEvent false
+        }
+
+        registerAllowGameEvent("To ($PLAYER_REGEX): \\[RFUPF\\] I would like to join your party!".toExactRegex()) { _, _, matches ->
+            val matchGroups = matches?.groupValues ?: return@registerAllowGameEvent true
+            val player = matchGroups[1].removeRankTag()
+            Chat.sendMessage(TextUtils.rfupfLiteral("Sent a join request to $player", TextColor.YELLOW))
+            return@registerAllowGameEvent false
         }
 
         onPartyChange { inParty, _, members ->
@@ -183,7 +192,7 @@ object Party : RegisteredEvent {
     }
 
     fun promptInvite(username: String) {
-        val text = TextUtils.rfuLiteral(
+        val text = TextUtils.rfupfLiteral(
             "$username ${TextColor.GOLD}would like to join your party ", TextStyle(
                 TextColor.YELLOW,
                 TextEffects.BOLD
