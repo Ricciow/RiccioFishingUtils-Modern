@@ -14,6 +14,7 @@
 - Fixed the drop history sc count being inaccurate
 - Fixed Hud elements disappearing after moving them
 - Party finder now reloads upon opening
+- Fixed party finder not correctly tracking player count on new parties
 
 ### Back-end:
 - Refactor to add an AbstractTextHudElement for simple text hud stuff

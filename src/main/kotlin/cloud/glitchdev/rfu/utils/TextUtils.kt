@@ -13,4 +13,8 @@ object TextUtils {
     fun rfuLiteral(string: String, textColor: TextColor = TextColor.WHITE) : MutableComponent {
         return Component.literal("§b§l[§f§lRFU§b§l] $textColor$string")
     }
+
+    fun rfupfLiteral(string: String, textColor: TextColor = TextColor.WHITE) : MutableComponent {
+        return Component.literal("§b§l[§f§lRFU§9§lPF§b§l] $textColor$string")
+    }
 }

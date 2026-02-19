@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.utils.network
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.API_URL
+import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.network.Network.authenticateUser
@@ -15,20 +16,23 @@ import java.net.http.HttpRequest
 object PartyHttp {
     private val gson = Gson()
     var currentParty : FishingParty? = null
+    var parties : List<FishingParty> = mutableListOf()
+        private set
 
-    fun getExistingParties(callback: (Pair<Boolean, List<FishingParty>>) -> Unit) {
+    fun getParties(callback: (List<FishingParty>?) -> Unit = {}) {
         getRequest("${API_URL}/party") { response ->
             if(!response.isSuccessful()) {
-                callback(Pair(false, mutableListOf()))
+                mc.execute { callback(null) }
                 return@getRequest
             }
 
             try {
                 val partiesArray = gson.fromJson(response.body, Array<FishingParty>::class.java)
-                callback(Pair(true, partiesArray.toList()))
+                parties = partiesArray.toList()
+                mc.execute { callback(parties) }
             } catch (e: Exception) {
                 e.printStackTrace()
-                callback(Pair(false, mutableListOf()))
+                mc.execute { callback(null) }
             }
         }
     }
@@ -36,45 +40,45 @@ object PartyHttp {
     fun createParty(party: FishingParty, callback : (Boolean) -> Unit) {
         if (isTokenExpired()) {
             authenticateUser()
-            callback(false)
+            mc.execute { callback(false) }
             return
         }
 
         postRequest("${API_URL}/party", true, HttpRequest.BodyPublishers.ofString(party.toJson())) { response ->
-            callback(response.isSuccessful())
             if(response.isSuccessful()) {
                 currentParty = party
             }
+            mc.execute { callback(response.isSuccessful()) }
         }
     }
 
     fun updateParty(party : FishingParty, callback: (Boolean) -> Unit) {
         if (isTokenExpired()) {
             authenticateUser()
-            callback(false)
+            mc.execute { callback(false) }
             return
         }
 
         putRequest("${API_URL}/party", true, HttpRequest.BodyPublishers.ofString(party.toJson())) { response ->
-            callback(response.isSuccessful())
             if(response.isSuccessful()) {
                 currentParty = party
             }
+            mc.execute { callback(response.isSuccessful()) }
         }
     }
 
     fun deleteParty(callback: (Boolean) -> Unit) {
         if (isTokenExpired()) {
             authenticateUser()
-            callback(false)
+            mc.execute { callback(false) }
             return
         }
 
         deleteRequest("${API_URL}/party/${User.getUsername()}", true) { response ->
-            callback(response.isSuccessful())
             if(response.isSuccessful()) {
                 currentParty = null
             }
+            mc.execute { callback(response.isSuccessful()) }
         }
     }
 }

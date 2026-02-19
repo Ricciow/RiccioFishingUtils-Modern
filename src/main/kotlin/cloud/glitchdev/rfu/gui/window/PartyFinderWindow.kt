@@ -1,6 +1,5 @@
 package cloud.glitchdev.rfu.gui.window
 
-import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.partyfinder.UICreateParty
@@ -36,7 +35,6 @@ object PartyFinderWindow : BaseWindow(false) {
     val textColor = UIScheme.primaryTextColor.toConstraint()
     val radius = 5f
     val windowSize = 0.8f
-    var parties : MutableList<FishingParty> = mutableListOf()
     var displayParties : MutableList<FishingParty> = mutableListOf()
     val partyCards : MutableList<UIPartyCard> = mutableListOf()
     var filterOpen = false
@@ -60,25 +58,21 @@ object PartyFinderWindow : BaseWindow(false) {
 
     fun getParties() {
         reloadButton.disabled = true
-        parties.clear()
         updateFiltering()
         if (::errorText.isInitialized) errorText.setHidden(true)
-        PartyHttp.getExistingParties { (success, newParties) ->
-            mc.execute {
-                if (success) {
-                    parties.addAll(newParties)
-                    updateFiltering()
-                } else {
-                    errorText.setHidden(false)
-                }
-                if(!partyCreationOpen) reloadButton.disabled = false
+        PartyHttp.getParties { parties ->
+            if (parties != null) {
+                updateFiltering()
+            } else {
+                errorText.setHidden(false)
             }
+            if(!partyCreationOpen) reloadButton.disabled = false
         }
     }
 
     fun updateFiltering() {
         if(::scrollArea.isInitialized) {
-            displayParties = if (filterOpen) filterArea.applyFilter(parties) else parties
+            displayParties = if (filterOpen) filterArea.applyFilter(PartyHttp.parties) else PartyHttp.parties.toMutableList()
             for (partyCard in partyCards) {
                 scrollArea.removeChild(partyCard)
             }
@@ -233,6 +227,7 @@ object PartyFinderWindow : BaseWindow(false) {
     fun updatePartyCreation() {
         Window.enqueueRenderOperation {
             partyCreationArea.setHidden(!partyCreationOpen)
+            partyCreationArea.onOpen()
             partyArea.setHidden(partyCreationOpen)
             filterArea.setHidden(partyCreationOpen || !filterOpen)
             partyCreationButton.setText(if (partyCreationOpen) "Close" else "New Party")

@@ -13,6 +13,7 @@ import cloud.glitchdev.rfu.gui.components.dropdown.UIDropdown
 import cloud.glitchdev.rfu.gui.components.dropdown.UISelectionDropdown
 import cloud.glitchdev.rfu.gui.components.textinput.UIWrappedDecoratedTextInput
 import cloud.glitchdev.rfu.model.party.FishingParty
+import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.network.PartyHttp
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
@@ -324,6 +325,10 @@ class UICreateParty(radius: Float, val onCreateParty : (Boolean) -> Unit) : UIRo
         mobsField.setValues(SeaCreatures.toDataOptions(party.liquid, party.island, party.fishingType))
         mobsField.setOptionsStates(party.seaCreatures.map {it.toDataOption()}, true)
         descriptionField.setText(party.description)
+    }
+
+    fun onOpen() {
+        party.players.current = Party.members.size + 1
     }
 
     override fun draw(matrixStack: UMatrixStack) {
