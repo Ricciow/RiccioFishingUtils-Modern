@@ -1,7 +1,7 @@
-# v1.2.0 - Dye Update
+# v1.2.0 - Tides & Tracking
 
 ### Features:
-- Crowdsourced Dye Tracking (Vincent)
+- Added Crowdsourced Dye Tracking (Vincent)
 - Added rod timer
 - Added rare drops party message
 - Added version checking
