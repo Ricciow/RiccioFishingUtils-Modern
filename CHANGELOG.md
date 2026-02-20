@@ -1,7 +1,7 @@
 # v1.2.0 - Tides & Tracking
 
 ### Features:
-- Added Crowdsourced Dye Tracking (Vincent)
+- Added Crowdsourced Dye Tracking (Vincent) /rfudyes
 - Added rod timer
 - Added rare drops party message
 - Added version checking
