@@ -32,11 +32,18 @@ object MobManager : RegisteredEvent {
     }
 
     private fun scanEntities(world: ClientLevel) {
+        var foundAnyFlare = false
         world.entitiesForRendering().forEach { entity ->
             if (entity !is ArmorStand) return@forEach
-            
-            DeployableManager.checkEntity(entity)
+
+            if (DeployableManager.checkEntity(entity)) {
+                foundAnyFlare = true
+            }
             checkSbEntity(entity, world)
+        }
+
+        if (!foundAnyFlare) {
+            DeployableManager.resetFlare()
         }
     }
 

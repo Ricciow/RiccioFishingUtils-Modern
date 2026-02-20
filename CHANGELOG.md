@@ -18,6 +18,7 @@
 - Party finder now reloads upon opening
 - Fixed party finder not correctly tracking player count on new parties
 - Fixed party join msgs not being hidden
+- Fixed Flares still being tracked even if they disappeared
 
 ### Back-end:
 - Refactor to add an AbstractTextHudElement for simple text hud stuff

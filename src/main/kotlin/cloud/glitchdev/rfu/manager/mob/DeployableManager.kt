@@ -28,12 +28,10 @@ object DeployableManager : RegisteredEvent {
         }
     }
 
-    fun checkEntity(entity: ArmorStand) {
-        if (seenFlares.contains(entity.id)) return
-
+    fun checkEntity(entity: ArmorStand): Boolean {
         val helmet = entity.getItemBySlot(EquipmentSlot.HEAD)
 
-        if (helmet.item !is PlayerHeadItem) return
+        if (helmet.item !is PlayerHeadItem) return false
 
         val component = helmet[DataComponents.PROFILE]
 
@@ -41,11 +39,15 @@ object DeployableManager : RegisteredEvent {
             val textures = component.partialProfile().properties["textures"].map { it.value }
             val type = FlareType.entries.find { type -> textures.contains(type.texture) }
             if (type != null && type != FlareType.NONE) {
-                seenFlares.add(entity.id)
-                activeFlareEndTime = System.currentTimeMillis() + 180_000 // 3 minutes
-                activeFlareType = type
+                if (!seenFlares.contains(entity.id)) {
+                    seenFlares.add(entity.id)
+                    activeFlareEndTime = System.currentTimeMillis() + 180_000 // 3 minutes
+                    activeFlareType = type
+                }
+                return true
             }
         }
+        return false
     }
 
     fun resetFlare() {
