@@ -12,10 +12,17 @@ object Chat {
         mc.connection?.sendCommand(command)
     }
 
+    fun sendPartyMessage(message : String) {
+        if(Party.inParty) {
+            sendCommand("pc $message")
+        }
+    }
+
     fun sendMessage(message : Component) {
         //Ensure it's in the render thread.
         mc.execute {
             mc.player?.displayClientMessage(message, false)
         }
     }
+
 }

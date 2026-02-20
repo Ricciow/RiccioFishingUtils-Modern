@@ -36,6 +36,19 @@ object GeneralFishing : Category("General Fishing") {
         description = Literal("Sends an alert whenever a rare SC is found.")
     }
 
+    var rarePartyMessages by observable(boolean(false) {
+        name = Literal("Party SC messages")
+        description = Literal("Sends a party message whenever you catch a rare sea creature.")
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var rarePartyMessage by string("WOAH! A {name} just surfaced! Catch #{count} after {time}!") {
+        name = Literal("Rare SC message")
+        description = Literal("Variables: {name} {count}, {time}")
+        condition = { rarePartyMessages }
+    }
+
     var bossHealthBars by observable(boolean(true) {
         name = Literal("Boss Health Bars")
         description = Literal("Enable health bars that appear when there's a rare mob in sight")

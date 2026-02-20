@@ -9,6 +9,7 @@
 - Added rare sc alert
 - Added flare expired alert
 - Added new party finder alert
+- Added party messages for rare SCs
 
 ### Fixes:
 - Fixed drops not counting

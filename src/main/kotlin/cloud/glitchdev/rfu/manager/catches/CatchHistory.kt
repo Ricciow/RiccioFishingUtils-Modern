@@ -2,6 +2,8 @@ package cloud.glitchdev.rfu.manager.catches
 
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.constants.SeaCreatures
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 class CatchHistory {
     var catches: MutableList<CatchRecord> = ArrayList()
@@ -39,6 +41,7 @@ class CatchHistory {
         if(GeneralFishing.rareSC.contains(sc)) {
             currentRecord.history.add(currentRecord.count)
         }
+        currentRecord.time = Clock.System.now()
         currentRecord.count = 0
         currentRecord.total += 1
     }
@@ -60,6 +63,7 @@ class CatchHistory {
         var name: String = ""
         var total: Int = 0
         var count: Int = 0
+        var time : Instant = Clock.System.now()
         var history: MutableList<Int> = ArrayList()
     }
 }
