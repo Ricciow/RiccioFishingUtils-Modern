@@ -5,7 +5,8 @@
   "mixins": [
     "ConfigScreenMixin",
     "ListWidgetMixin",
-    "ClientPacketListenerMixin"
+    "ClientPacketListenerMixin",
+    "AbstractContainerScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1
