@@ -112,7 +112,7 @@ object MobManager : RegisteredEvent {
 
     fun clearAll() {
         sbEntities.clear()
-        uniqueSbEntities.forEach { it.renderEvent = null }
+        uniqueSbEntities.forEach { it.dispose() }
         uniqueSbEntities.clear()
     }
 }

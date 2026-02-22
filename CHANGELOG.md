@@ -20,6 +20,7 @@
 - Fixed party finder not correctly tracking player count on new parties
 - Fixed party join msgs not being hidden
 - Fixed Flares still being tracked even if they disappeared
+- Fixed LS range not disappearing when lobby swapping
 
 ### Back-end:
 - Refactor to add an AbstractTextHudElement for simple text hud stuff
