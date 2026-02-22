@@ -22,6 +22,7 @@ object MobManager : RegisteredEvent {
         TickEvents.registerTickEvent(0, 10) { client ->
             val world = client.level ?: return@registerTickEvent
             scanEntities(world)
+            reverifyModels(world)
             validateCurrentEntities()
             MobDetectEvents.runTasks(uniqueSbEntities.toSet())
         }
@@ -81,6 +82,38 @@ object MobManager : RegisteredEvent {
             it.isRemoved()
         }
         toRemove.forEach { removeEntity(it) }
+    }
+
+    private fun reverifyModels(world: ClientLevel) {
+        uniqueSbEntities.forEach { sbEntity ->
+            val nametag = sbEntity.nameTagEntity
+            if (nametag.isRemoved) return@forEach
+
+            val searchBox = AABB(
+                nametag.x - 0.5, nametag.y - 4.0, nametag.z - 0.5,
+                nametag.x + 0.5, nametag.y + 0.5, nametag.z + 0.5
+            )
+
+            val candidates = world.getEntities(nametag, searchBox) { candidate ->
+                if (candidate !is LivingEntity || candidate is ArmorStand) return@getEntities false
+                if (candidate is Player && getPlayerNames().contains(candidate.name.toUnformattedString())) return@getEntities false
+
+                val existingLink = sbEntities[candidate.id]
+                existingLink == null || existingLink.nameTagEntity.isRemoved || existingLink == sbEntity
+            }.toList()
+
+            val bestModel = candidates.minByOrNull { candidate ->
+                val dx = nametag.x - candidate.x
+                val dz = nametag.z - candidate.z
+                dx * dx + dz * dz
+            } as? LivingEntity
+
+            if (bestModel != null && bestModel.id != sbEntity.modelEntity.id) {
+                sbEntities.remove(sbEntity.modelEntity.id)
+                sbEntity.modelEntity = bestModel
+                sbEntities[bestModel.id] = sbEntity
+            }
+        }
     }
 
     private fun findModelForNametag(nametag: ArmorStand, world: ClientLevel): LivingEntity? {

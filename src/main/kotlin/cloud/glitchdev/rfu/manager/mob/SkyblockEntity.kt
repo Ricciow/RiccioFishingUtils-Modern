@@ -14,7 +14,7 @@ import java.awt.Color
 
 data class SkyblockEntity(
     var nameTagEntity: ArmorStand,
-    val modelEntity: LivingEntity,
+    var modelEntity: LivingEntity,
 ) {
     lateinit var sbName: String
     var health: String = "0"

@@ -21,6 +21,7 @@
 - Fixed party join msgs not being hidden
 - Fixed Flares still being tracked even if they disappeared
 - Fixed LS range not disappearing when lobby swapping
+- Fixed skyblock entities having their model tracked incorrectly
 
 ### Back-end:
 - Refactor to add an AbstractTextHudElement for simple text hud stuff
