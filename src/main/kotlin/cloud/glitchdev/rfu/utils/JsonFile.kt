@@ -15,17 +15,19 @@ import kotlin.time.Instant
 class JsonFile<T : Any>(
     private val filename: String,
     private val type: Class<T>,
-    private val defaultFactory: () -> T
+    private val defaultFactory: () -> T,
+    builder : (GsonBuilder) -> Gson = { it.create() }
 ) {
-    private val gson: Gson = GsonBuilder()
-        .setPrettyPrinting()
-        .registerTypeAdapter(Instant::class.java, JsonSerializer<Instant> { src, _, _ ->
-            JsonPrimitive(src.toString())
-        })
-        .registerTypeAdapter(Instant::class.java, JsonDeserializer { json, _, _ ->
-            Instant.parse(json.asString)
-        })
-        .create()
+    private val gson: Gson = builder(
+        GsonBuilder()
+            .setPrettyPrinting()
+            .registerTypeAdapter(Instant::class.java, JsonSerializer<Instant> { src, _, _ ->
+                JsonPrimitive(src.toString())
+            })
+            .registerTypeAdapter(Instant::class.java, JsonDeserializer { json, _, _ ->
+                Instant.parse(json.asString)
+            })
+    )
 
     private val file: File = CONFIG_DIR.resolve(MOD_ID).resolve("data").resolve(filename).toFile()
 
