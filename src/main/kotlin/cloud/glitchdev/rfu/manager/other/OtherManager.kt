@@ -59,7 +59,6 @@ object OtherManager : RegisteredEvent {
 
     fun getField(key : String, defaultFactory : () -> Entry) : Entry {
         var result = data.savedStuff[key]
-        println(data.savedStuff)
         if(result == null) {
             result = defaultFactory()
             setField(key, result)

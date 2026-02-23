@@ -17,6 +17,7 @@ object PetDisplay : AbstractTextHudElement("petDisplay") {
         get() = OtherSettings.petDisplay && (super.enabled || currentPet != null)
 
     override fun onUpdateState() {
+        super.onUpdateState()
         text.setText(currentPet ?: "${TextColor.LIGHT_RED}No pet")
     }
 }

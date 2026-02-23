@@ -255,29 +255,31 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
     private fun currentColor() : ColorConstraint = if (isEditing) if(isDragging) holdColor else selectionColor else transparent
 
     fun updateState() {
-        scaleText.setHidden(!scaleTextEnabled)
+        if(hasParent) {
+            scaleText.setHidden(!scaleTextEnabled)
 
-        val gap = 5f
-        scaleText.constrain {
-            y = when {
-                getBottom() + gap + 11 < window.getBottom() -> 100.percent() + gap.pixels()
-                else -> (-gap - 9).pixels()
+            val gap = 5f
+            scaleText.constrain {
+                y = when {
+                    getBottom() + gap + 11 < window.getBottom() -> 100.percent() + gap.pixels()
+                    else -> (-gap - 9).pixels()
+                }
             }
+
+            scaleText.setText("Scale: %.3fx".format(scale))
+
+            this.constrain {
+                color = currentColor()
+                x = currentX.pixels()
+                y = currentY.pixels()
+                width = ChildBasedSizeConstraint() - if(scaleTextEnabled) scaleText.getWidth().pixels() else 0.pixels()
+                height = ChildBasedSizeConstraint() - if(scaleTextEnabled) scaleText.getHeight().pixels() else 0.pixels()
+            }
+
+            this.setHidden(!enabled || skyblockOnly && !World.isInSkyblock)
+
+            onUpdateState()
         }
-
-        scaleText.setText("Scale: %.3fx".format(scale))
-
-        this.constrain {
-            color = currentColor()
-            x = currentX.pixels()
-            y = currentY.pixels()
-            width = ChildBasedSizeConstraint() - if(scaleTextEnabled) scaleText.getWidth().pixels() else 0.pixels()
-            height = ChildBasedSizeConstraint() - if(scaleTextEnabled) scaleText.getHeight().pixels() else 0.pixels()
-        }
-
-        this.setHidden(!enabled || skyblockOnly && !World.isInSkyblock)
-
-        onUpdateState()
     }
 
     fun openEdit() {

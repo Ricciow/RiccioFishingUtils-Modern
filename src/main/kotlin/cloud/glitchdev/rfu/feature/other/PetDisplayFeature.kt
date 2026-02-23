@@ -23,13 +23,11 @@ object PetDisplayFeature : Feature {
     const val SAVE_FIELD = "pet_display"
 
     override fun onInitialize() {
-        mc.execute {
-            val entry = OtherManager.getField(SAVE_FIELD) {
-                StringEntry(null)
-            } as? StringEntry ?: StringEntry(null)
+        val entry = OtherManager.getField(SAVE_FIELD) {
+            StringEntry(null)
+        } as? StringEntry ?: StringEntry(null)
 
-            updateDisplay(entry.value)
-        }
+        updateDisplay(entry.value)
 
         registerSlotClickedEvent { slot ->
             if(!OtherSettings.petDisplay) return@registerSlotClickedEvent
