@@ -1,5 +1,9 @@
 package cloud.glitchdev.rfu.feature.debug
 
+import cloud.glitchdev.rfu.config.categories.DevSettings
+import cloud.glitchdev.rfu.constants.text.TextColor
+import cloud.glitchdev.rfu.constants.text.TextEffects
+import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.manager.mob.MobManager
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.command.SimpleCommand
@@ -13,6 +17,16 @@ object Entities : SimpleCommand("entities") {
     override val description: String = "Sends a message with the rfu entities"
 
     override fun execute(context: CommandContext<FabricClientCommandSource>): Int {
+        if(!DevSettings.devMode) {
+            context.source.sendFeedback(
+                TextUtils.rfuLiteral(
+                    "Must have developer mode on to use this feature!",
+                    TextStyle(TextColor.RED, TextEffects.BOLD)
+                )
+            )
+            return 1
+        }
+
         val text = MobManager.getEntities().map { entity ->
             Component.literal("\n$entity")
                 .withStyle(

@@ -19,13 +19,14 @@ object Title : AbstractCommand("title") {
             .then(
                 arg("message", StringArgumentType.greedyString())
                     .executes { context ->
-                        if (!DevSettings.devMode) {
+                        if(!DevSettings.devMode) {
                             context.source.sendFeedback(
                                 TextUtils.rfuLiteral(
                                     "Must have developer mode on to use this feature!",
                                     TextStyle(TextColor.RED, TextEffects.BOLD)
                                 )
                             )
+                            return@executes 1
                         }
 
                         val argument = StringArgumentType.getString(context, "message")
