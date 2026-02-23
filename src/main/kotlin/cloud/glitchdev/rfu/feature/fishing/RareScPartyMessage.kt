@@ -26,7 +26,8 @@ object RareScPartyMessage : Feature {
 
                 val messageString = GeneralFishing.rarePartyMessage
                     .replace("{name}", seaCreature.scName)
-                    .replace("{count}", (history.total + 1).toString())
+                    .replace("{total}", (history.total).toString())
+                    .replace("{count}", (history.count + 1).toString())
                     .replace("{time}", timeSinceLast)
 
                 Chat.sendPartyMessage(messageString)

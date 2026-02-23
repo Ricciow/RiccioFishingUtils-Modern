@@ -45,7 +45,7 @@ object GeneralFishing : Category("General Fishing") {
 
     var rarePartyMessage by string("WOAH! A {name} just surfaced! Catch #{count} after {time}!") {
         name = Literal("Rare SC message")
-        description = Literal("Variables: {name} {count}, {time}")
+        description = Literal("Variables: {name} {total} {count}, {time}")
         condition = { rarePartyMessages }
     }
 
