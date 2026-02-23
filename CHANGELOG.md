@@ -7,6 +7,7 @@
 ### Fixes:
 - Fixed double hook messages not being sent in party
 - Fixed Rare SC messages {count} being the total instead of count since
+- Fixed jawbus/thunder not tracking with shuriken
 
 ### Back-end:
 - Nothing
