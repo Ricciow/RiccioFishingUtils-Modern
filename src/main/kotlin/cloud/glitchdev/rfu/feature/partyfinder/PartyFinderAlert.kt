@@ -24,7 +24,6 @@ object PartyFinderAlert : Feature {
         registerTickEvent(interval = 6000) {
             if (!BackendSettings.backendAccepted) return@registerTickEvent
             if (!OtherSettings.partyFinderAlert) return@registerTickEvent
-
             PartyHttp.getParties { parties ->
                 if (parties != null) {
                     processParties(parties)
@@ -45,11 +44,14 @@ object PartyFinderAlert : Feature {
         val newParties = currentPartiesUsers.filter { it !in lastParties }
 
         if (newParties.isNotEmpty()) {
-            val message = TextUtils.rfupfLiteral("There are $WHITE${newParties.size}$GOLD new parties!",GOLD)
-                .setStyle(
-                    Style.EMPTY
-                        .withHoverEvent(HoverEvent.ShowText(Component.literal("Open party finder /rfupf\n§8You can disable this message in the settings!\n§8Other -> Party Finder Alert")))
-                        .withClickEvent(ClickEvent.RunCommand("rfupf"))
+            val message = Component.literal("\n")
+                .append(
+                    TextUtils.rfupfLiteral("There are $WHITE${newParties.size}$GOLD new parties!\n",GOLD)
+                    .setStyle(
+                        Style.EMPTY
+                            .withHoverEvent(HoverEvent.ShowText(Component.literal("Open party finder /rfupf\n§8You can disable this message in the settings!\n§8Other -> Party Finder Alert")))
+                            .withClickEvent(ClickEvent.RunCommand("rfupf"))
+                    )
                 )
             Chat.sendMessage(message)
         }
