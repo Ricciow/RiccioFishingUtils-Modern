@@ -6,6 +6,7 @@ import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.Party
+import cloud.glitchdev.rfu.utils.dsl.removeUserFormatting
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import net.minecraft.network.chat.Component
 
@@ -26,7 +27,7 @@ object DoubleHookMessages : Feature {
                 }
 
                 if(Party.inParty) {
-                    Chat.sendCommand("p $message")
+                    Chat.sendPartyMessage(message.removeUserFormatting())
                 } else {
                     Chat.sendMessage(Component.literal(message))
                 }

@@ -14,6 +14,10 @@ fun String.removeFormatting() : String {
     return this.replace("§.".toRegex(), "")
 }
 
+fun String.removeUserFormatting() : String {
+    return this.replace("&.".toRegex(), "")
+}
+
 fun String.removeRankTag() : String {
     return this.replace("""\[[A-Z]+\+*\]""".toRegex(), "").trim()
 }
