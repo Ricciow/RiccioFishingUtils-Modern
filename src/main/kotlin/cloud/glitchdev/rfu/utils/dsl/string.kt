@@ -18,6 +18,10 @@ fun String.removeUserFormatting() : String {
     return this.replace("&.".toRegex(), "")
 }
 
+fun String.toMcCodes() : String {
+    return this.replace("&", "§")
+}
+
 fun String.removeRankTag() : String {
     return this.replace("""\[[A-Z]+\+*\]""".toRegex(), "").trim()
 }

@@ -8,6 +8,7 @@ import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.dsl.removeUserFormatting
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
+import cloud.glitchdev.rfu.utils.dsl.toMcCodes
 import net.minecraft.network.chat.Component
 
 @RFUFeature
@@ -29,7 +30,7 @@ object DoubleHookMessages : Feature {
                 if(Party.inParty) {
                     Chat.sendPartyMessage(message.removeUserFormatting())
                 } else {
-                    Chat.sendMessage(Component.literal(message))
+                    Chat.sendMessage(Component.literal(message.toMcCodes()))
                 }
             }
         }

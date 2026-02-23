@@ -8,6 +8,7 @@ import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.manager.drops.DropManager
 import cloud.glitchdev.rfu.utils.Chat.sendMessage
 import cloud.glitchdev.rfu.utils.Chat.sendPartyMessage
+import cloud.glitchdev.rfu.utils.dsl.toMcCodes
 import cloud.glitchdev.rfu.utils.dsl.toReadableString
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.network.chat.Component
@@ -39,7 +40,7 @@ object CustomRareDropMessage : Feature {
             .replace("{magic_find}", magicFind?.toString() ?: "0")
             .replace("{count}", currentDrop.sinceCount.toString())
             .replace("{time}", timeSinceLast)
-            .replace("&", "§")
+            .toMcCodes()
 
         val message = Component.literal(messageString)
 

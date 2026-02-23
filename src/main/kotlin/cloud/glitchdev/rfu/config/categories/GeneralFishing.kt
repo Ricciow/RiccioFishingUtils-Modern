@@ -176,15 +176,15 @@ object GeneralFishing : Category("General Fishing") {
     }
 
     var doubleHookMessages by strings(
-        "o/ ~~~~~~~|_|",
-        "o| ~~~~~~~.~",
-        "o| ~~~~~~~*~",
-        "o| ~~~~~~<><",
-        "o| ~~~~<><~~",
-        "o| ~~<><~~~~",
-        "\\o/ <><~~~~~",
-        "( ^_^) [ <>< ]",
-        "( >_<) [ RFU ]"
+        "o/ &9~~~~~~~|&f_&9|",
+        "o| &9~~~~~~~&c.&9~",
+        "o| &9~~~~~~~&c*&9~",
+        "o| &9~~~~~~&3<><",
+        "o| &9~~~~&3<><&9~~",
+        "o| &9~~&3<><&9~~~~",
+        "\\o/ &3<><&9~~~~~",
+        "( ^_^) &b[ &3<>< &b]",
+        "( >_<) &b[ &3RFU &b]"
     ) {
         name = Literal("Double Hook messages")
         description = Literal("Select what words will be sent when you get a double hook. Each line is one phrase.")
