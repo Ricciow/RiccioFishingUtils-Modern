@@ -12,7 +12,7 @@ import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.decoration.ArmorStand
 import java.awt.Color
 
-data class SkyblockEntity(
+class SkyblockEntity(
     var nameTagEntity: ArmorStand,
     var modelEntity: LivingEntity,
 ) {

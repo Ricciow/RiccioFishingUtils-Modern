@@ -4,7 +4,7 @@
 - Nothing
 
 ### Fixes:
-- Nothing
+- Fixed dead entities sometimes not being counted as dead (hopefully)
 
 ### Back-end:
 - Added debug entities command
