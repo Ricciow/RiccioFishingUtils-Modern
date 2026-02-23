@@ -11,7 +11,6 @@ import cloud.glitchdev.rfu.utils.Title
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.DurationUnit
 
 @RFUFeature
 object FlareTimer : Feature {
@@ -26,7 +25,7 @@ object FlareTimer : Feature {
                 if (remainingMillis > 0) {
                     updateTime(remainingMillis.milliseconds, flareType)
                 } else {
-                    updateTime(null)
+                    updateTime(Duration.ZERO, flareType)
                 }
             } else {
                 updateTime(null)
@@ -43,7 +42,7 @@ object FlareTimer : Feature {
 
         if(
             GeneralFishing.flareAlert &&
-            lastRemaining != null && (remaining == null || remaining.toInt(DurationUnit.SECONDS) <= 0)
+            lastRemaining != null && remaining == null
         ) {
             Title.showTitle("§6§lFlare Expired!")
         }

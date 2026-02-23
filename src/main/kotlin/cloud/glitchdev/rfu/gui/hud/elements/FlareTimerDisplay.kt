@@ -26,7 +26,11 @@ object FlareTimerDisplay : AbstractTextHudElement("flareTimerDisplay") {
         val finalText = if (time != null) {
             buildString {
                 append("$GOLD${BOLD}Flare:")
-                append(" $YELLOW${time.toReadableString()}")
+                if (time == Duration.ZERO) {
+                    append(" ${YELLOW}Soon")
+                } else {
+                    append(" $YELLOW${time.toReadableString()}")
+                }
                 if (activeType != DeployableManager.FlareType.NONE) {
                     append(" $AQUAMARINE${activeType.bonus}")
                 }
