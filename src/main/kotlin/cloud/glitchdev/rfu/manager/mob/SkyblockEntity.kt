@@ -22,6 +22,10 @@ data class SkyblockEntity(
 
     var renderEvent: RenderEvents.RenderEvent? = null
 
+    override fun toString(): String {
+        return "$sbName ($health/$maxHealth) (renderEvent: ${renderEvent != null}) - ${nameTagEntity.x}, ${nameTagEntity.y}, ${nameTagEntity.z}"
+    }
+
     fun isRemoved(): Boolean = nameTagEntity.isRemoved && modelEntity.isRemoved
 
     fun outdatedNametag() : Boolean = nameTagEntity.isRemoved

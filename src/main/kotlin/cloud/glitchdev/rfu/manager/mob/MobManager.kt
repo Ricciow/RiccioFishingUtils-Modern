@@ -32,6 +32,10 @@ object MobManager : RegisteredEvent {
         }
     }
 
+    fun getEntities() : Set<SkyblockEntity> {
+        return uniqueSbEntities.toSet()
+    }
+
     private fun scanEntities(world: ClientLevel) {
         var foundAnyFlare = false
         world.entitiesForRendering().forEach { entity ->

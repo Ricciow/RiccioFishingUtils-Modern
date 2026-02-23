@@ -9,5 +9,6 @@ object DebugCommand : AbstractCommand("rfudebug") {
     init {
         append(Chat)
         append(Title)
+        append(Entities)
     }
 }
