@@ -10,6 +10,7 @@
 
 ### Back-end:
 - Added debug entities command
+- Prevent sending titles if they are irrelevant (e.g. SC died)
 
 ### Other:
 - Nothing

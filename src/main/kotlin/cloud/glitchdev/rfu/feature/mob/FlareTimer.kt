@@ -44,7 +44,7 @@ object FlareTimer : Feature {
             GeneralFishing.flareAlert &&
             lastRemaining != null && remaining == null
         ) {
-            Title.showTitle("§6§lFlare Expired!")
+            Title.showTitle("§6§lFlare Expired!") { lastRemaining != null }
         }
 
         lastRemaining = remaining

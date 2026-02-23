@@ -26,7 +26,7 @@ object RareAlert : Feature {
                 seenEntities.add(entity.sbName)
                 result
             }.forEach { entity ->
-                Title.showTitle("§6§l[§fα§6§l] §3§l${entity.sbName} §6§l[§fα§6§l]")
+                Title.showTitle("§6§l[§fα§6§l] §3§l${entity.sbName} §6§l[§fα§6§l]") { !entity.isRemoved() }
             }
         }
     }
