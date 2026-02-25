@@ -3,6 +3,7 @@
 ### Features:
 - Added {dh} option to rare sc catch message
 - Added option to boost polling rate when healthbar is active for more accurate tracking
+- Added message hiding options
 
 ### Fixes:
 - Fixed dead entities sometimes not being counted as dead (hopefully)

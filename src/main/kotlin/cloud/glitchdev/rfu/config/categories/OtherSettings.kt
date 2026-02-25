@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
+import cloud.glitchdev.rfu.constants.MessageTypes
 
 object OtherSettings : Category("Other") {
     var lobbyTracking by boolean(true) {
@@ -16,5 +17,24 @@ object OtherSettings : Category("Other") {
     var partyFinderAlert by boolean(true) {
         name = Literal("Party Finder Alert")
         description = Literal("Sends a message in chat if there are new parties in the party finder.")
+    }
+
+    init {
+        dualSeparator {
+            title = "Message Hiding"
+        }
+    }
+
+    var hideMessages by observable(boolean(false) {
+        name = Literal("Enable message hiding")
+        description = Literal("Just hides some selected messages")
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var hiddenMessageTypes by enums(*MessageTypes.entries.toTypedArray()) {
+        name = Literal("Message types")
+        description = Literal("The types of messages that will be hidden")
+        condition = { hideMessages }
     }
 }
