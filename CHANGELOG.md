@@ -5,6 +5,7 @@
 - Added option to boost polling rate when healthbar is active for more accurate tracking
 - Added message hiding options
 - Rod Timer now also hides the timer entity
+- Added failed cast alert
 
 ### Fixes:
 - Fixed dead entities sometimes not being counted as dead (hopefully)
