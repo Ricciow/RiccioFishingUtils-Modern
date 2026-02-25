@@ -96,6 +96,12 @@ object GeneralFishing : Category("General Fishing") {
         condition = { schDisplay }
     }
 
+    var schOverall by boolean(false) {
+        name = Literal("Add overall text")
+        description = Literal("Shows your sc/h overall alongside current")
+        condition = { schDisplay }
+    }
+
     var schOnlyWhenFishing by boolean(true) {
         name = Literal("Only display when fishing")
         description = Literal("Only show the sch display when you're fishing")
@@ -109,6 +115,7 @@ object GeneralFishing : Category("General Fishing") {
         range = 0..60
         slider = true
     }
+
 
     init {
         dualSeparator {

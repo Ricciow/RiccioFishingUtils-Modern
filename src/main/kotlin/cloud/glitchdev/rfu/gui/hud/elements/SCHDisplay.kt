@@ -12,6 +12,7 @@ import kotlin.time.Duration
 @HudElement
 object SCHDisplay : AbstractTextHudElement("schDisplay") {
     var rate = 0
+    var overallRate = 0
     var total = 0
     var timeElapsed = Duration.ZERO
     val isFishing : Boolean
@@ -28,6 +29,10 @@ object SCHDisplay : AbstractTextHudElement("schDisplay") {
             append(" $YELLOW$rate")              //Number
             append(" $CYAN($YELLOW$total$CYAN)") //Total
             if(GeneralFishing.schTimer) append(" $YELLOW${timeElapsed.toReadableString()}")
+            if(GeneralFishing.schOverall) {
+                append(" $CYAN${BOLD}Overall:")
+                append(" $YELLOW$overallRate")
+            }
         }
 
         text.setText(finalText)
@@ -37,6 +42,8 @@ object SCHDisplay : AbstractTextHudElement("schDisplay") {
         this.rate = rate
         this.total = total
         this.timeElapsed = time
+        val hoursElapsed = timeElapsed.inWholeMilliseconds / 3600000.0
+        overallRate = if (hoursElapsed > 0) (total / hoursElapsed).toInt() else 0
         updateState()
     }
 }

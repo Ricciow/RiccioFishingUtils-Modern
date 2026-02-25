@@ -7,6 +7,7 @@
 - Rod Timer now also hides the timer entity
 - Added failed cast alert
 - Added invite to party message on keywords
+- Added overall rate option to sc/h display
 
 ### Fixes:
 - Fixed dead entities sometimes not being counted as dead (hopefully)
