@@ -3,8 +3,9 @@ package cloud.glitchdev.rfu.manager.mob
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.MobDetectEvents
-import cloud.glitchdev.rfu.events.managers.TickEvents
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
+import cloud.glitchdev.rfu.events.managers.TickEvents
+import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.utils.Tablist.getPlayerNames
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.client.multiplayer.ClientLevel
@@ -17,9 +18,10 @@ import net.minecraft.world.phys.AABB
 object MobManager : RegisteredEvent {
     private val sbEntities = HashMap<Int, SkyblockEntity>()
     private val uniqueSbEntities = HashSet<SkyblockEntity>()
+    private lateinit var detectionEvent : TickEvents.TickEvent
 
     override fun register() {
-        TickEvents.registerTickEvent(0, 10) { client ->
+        detectionEvent = registerTickEvent(0, 10) { client ->
             val world = client.level ?: return@registerTickEvent
             scanEntities(world)
             reverifyModels(world)
@@ -30,6 +32,10 @@ object MobManager : RegisteredEvent {
         registerJoinEvent {
             clearAll()
         }
+    }
+
+    fun boostDetectionRate(state : Boolean) {
+        if(::detectionEvent.isInitialized) detectionEvent.interval = if(state) 2 else 10
     }
 
     fun getEntities() : Set<SkyblockEntity> {

@@ -5,8 +5,8 @@ import cloud.glitchdev.rfu.config.categories.GeneralFishing.HEALTH_BAR_REGEX
 import cloud.glitchdev.rfu.events.managers.MobDetectEvents.registerMobDetectEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
-
 import cloud.glitchdev.rfu.gui.hud.elements.bossbar.BossHealthBarDisplay
+import cloud.glitchdev.rfu.manager.mob.MobManager
 
 @RFUFeature
 object BossHealthBar : Feature {
@@ -18,6 +18,7 @@ object BossHealthBar : Feature {
             }
             val filteredEntities = entities.filter { HEALTH_BAR_REGEX.matches(it.sbName) }
             BossHealthBarDisplay.updateEntities(filteredEntities.toSet())
+            if(GeneralFishing.boostPollingRate) MobManager.boostDetectionRate(filteredEntities.isNotEmpty())
         }
     }
 }
