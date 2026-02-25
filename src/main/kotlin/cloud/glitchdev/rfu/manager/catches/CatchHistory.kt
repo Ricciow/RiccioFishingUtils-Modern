@@ -32,20 +32,26 @@ class CatchHistory {
     /**
      * Helper to easily update stats without manual fetching
      */
-    fun registerCatch(sc: SeaCreatures) {
+    fun registerCatch(sc: SeaCreatures, dh : Boolean) {
+        if(dh) registerCatch(sc, false)
+
         val currentRecord = getOrAdd(sc)
 
-        catches.forEach { record ->
-            if(SeaCreatures.isInIslands(record.name, sc.category)) {
-                record.count += 1
+        if(!dh) {
+            catches.forEach { record ->
+                if(SeaCreatures.isInIslands(record.name, sc.category)) {
+                    record.count += 1
+                }
             }
         }
+
         if(GeneralFishing.rareSC.contains(sc)) {
             currentRecord.history.add(currentRecord.count)
         }
         currentRecord.time = Clock.System.now()
         currentRecord.count = 0
         currentRecord.total += 1
+
     }
 
     /**

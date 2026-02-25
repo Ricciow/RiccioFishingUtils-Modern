@@ -27,10 +27,7 @@ object CatchTracker : RegisteredEvent {
 
     override fun register() {
         registerSeaCreatureCatchEvent(0) { sc, doubleHook ->
-            catchHistory.registerCatch(sc)
-            if(doubleHook) {
-                catchHistory.registerCatch(sc)
-            }
+            catchHistory.registerCatch(sc, doubleHook)
         }
 
         registerJoinEvent {
