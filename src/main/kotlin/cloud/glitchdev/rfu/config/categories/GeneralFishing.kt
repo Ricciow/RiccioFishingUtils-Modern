@@ -99,7 +99,7 @@ object GeneralFishing : Category("General Fishing") {
 
     var fishingTime by int(5) {
         name = Literal("Fishing Downtime Limit")
-        description = Literal("The max ammount of downtime for the sc/h counter to reset in minutes")
+        description = Literal("The max ammount of downtime for the sc/h counter to reset in minutes, also used as the window (e.g. 5 -> sc/h during last 5 minutes)")
         condition = { schDisplay }
         range = 0..60
         slider = true

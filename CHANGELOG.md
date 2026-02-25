@@ -15,4 +15,4 @@
 - Prevent sending titles if they are irrelevant (e.g. SC died)
 
 ### Other:
-- Nothing
+- Improved description for Fishing Downtime Limit
