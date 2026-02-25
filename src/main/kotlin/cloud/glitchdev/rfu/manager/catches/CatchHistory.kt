@@ -36,7 +36,9 @@ class CatchHistory {
         val currentRecord = getOrAdd(sc)
 
         catches.forEach { record ->
-            record.count += 1
+            if(SeaCreatures.isInIslands(record.name, sc.category)) {
+                record.count += 1
+            }
         }
         if(GeneralFishing.rareSC.contains(sc)) {
             currentRecord.history.add(currentRecord.count)

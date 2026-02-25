@@ -199,5 +199,14 @@ enum class SeaCreatures(
                 sc.toDataOption()
             } as ArrayList<DataOption>
         }
+
+        fun isInIslands(sc: SeaCreatures, category: SeaCreatureCategory): Boolean {
+            return category.islands.any { it in sc.category.islands }
+        }
+
+        fun isInIslands(sc : String, category: SeaCreatureCategory) : Boolean {
+            val sc = SeaCreatures.entries.find { it.scName == sc } ?: return false
+            return isInIslands(sc, category)
+        }
     }
 }

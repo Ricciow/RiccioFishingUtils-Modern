@@ -8,6 +8,7 @@
 - Fixed double hook messages not having color (when not in a party)
 - Added a soon state to the flare timer (also prevents useless alerts)
 - Fixed double hook not being tracked correctly in sc/h and catch history
+- Made catch counts only update on their respective islands instead of all at once
 
 ### Back-end:
 - Added debug entities command
