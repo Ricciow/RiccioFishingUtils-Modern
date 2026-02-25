@@ -3,6 +3,8 @@ package cloud.glitchdev.rfu.manager.mob
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
+import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
+import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import net.minecraft.core.component.DataComponents
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.decoration.ArmorStand
@@ -24,6 +26,10 @@ object DeployableManager : RegisteredEvent {
 
     override fun register() {
         registerJoinEvent {
+            resetFlare()
+        }
+
+        registerGameEvent("Your flare disappeared because you were too far away!".toExactRegex()) { _, _, _ ->
             resetFlare()
         }
     }
