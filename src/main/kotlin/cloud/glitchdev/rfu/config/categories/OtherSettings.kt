@@ -19,6 +19,11 @@ object OtherSettings : Category("Other") {
         description = Literal("Sends a message in chat if there are new parties in the party finder.")
     }
 
+    var partyInviteMsgs by boolean(true) {
+        name = Literal("Party invite messages")
+        description = Literal("Sends a prompt to invite player msg when some keywords are said by player")
+    }
+
     init {
         dualSeparator {
             title = "Message Hiding"

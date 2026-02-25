@@ -6,6 +6,7 @@
 - Added message hiding options
 - Rod Timer now also hides the timer entity
 - Added failed cast alert
+- Added invite to party message on keywords
 
 ### Fixes:
 - Fixed dead entities sometimes not being counted as dead (hopefully)
