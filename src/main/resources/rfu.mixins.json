@@ -6,7 +6,8 @@
     "ConfigScreenMixin",
     "ListWidgetMixin",
     "ClientPacketListenerMixin",
-    "AbstractContainerScreenMixin"
+    "AbstractContainerScreenMixin",
+    "EntityRenderDispatcherMixin"
   ],
   "injectors": {
     "defaultRequire": 1
