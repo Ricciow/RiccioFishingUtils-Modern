@@ -17,3 +17,4 @@
 
 ### Other:
 - Improved description for Fishing Downtime Limit
+- Made alerts show up for less time
