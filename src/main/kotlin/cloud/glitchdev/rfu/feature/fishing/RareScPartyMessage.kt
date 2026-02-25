@@ -13,7 +13,7 @@ import kotlin.time.Clock
 @RFUFeature
 object RareScPartyMessage : Feature {
     override fun onInitialize() {
-        registerSeaCreatureCatchEvent(-10) { seaCreature ->
+        registerSeaCreatureCatchEvent(-10) { seaCreature, isDoubleHook ->
             if(!GeneralFishing.rarePartyMessages) return@registerSeaCreatureCatchEvent
 
             if(RARE_SC_REGEX.matches(seaCreature.scName)) {
@@ -29,6 +29,7 @@ object RareScPartyMessage : Feature {
                     .replace("{total}", (history.total).toString())
                     .replace("{count}", (history.count + 1).toString())
                     .replace("{time}", timeSinceLast)
+                    .replace("{dh}", if(isDoubleHook) GeneralFishing.dhText else "")
 
                 Chat.sendPartyMessage(messageString)
             }

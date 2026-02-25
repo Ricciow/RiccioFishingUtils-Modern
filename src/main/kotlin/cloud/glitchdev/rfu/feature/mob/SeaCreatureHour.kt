@@ -30,8 +30,8 @@ object SeaCreatureHour : Feature {
     var total: Int = 0
 
     override fun onInitialize() {
-        registerSeaCreatureCatchEvent {
-            handleCatch()
+        registerSeaCreatureCatchEvent { _, isDoubleHook ->
+            handleCatch(isDoubleHook)
         }
 
         registerTickEvent(interval = 20) {
@@ -57,7 +57,7 @@ object SeaCreatureHour : Feature {
         }
     }
 
-    private fun handleCatch() {
+    private fun handleCatch(doubleHook : Boolean) {
         val now = Clock.System.now()
 
         if (startFishing == Instant.DISTANT_PAST) {
@@ -67,6 +67,11 @@ object SeaCreatureHour : Feature {
         lastSC = now
         total++
         catchHistory.add(now)
+
+        if(doubleHook) {
+            total++
+            catchHistory.add(now)
+        }
 
         updateRate()
     }

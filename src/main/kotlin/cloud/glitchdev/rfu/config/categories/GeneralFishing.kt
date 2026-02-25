@@ -43,9 +43,15 @@ object GeneralFishing : Category("General Fishing") {
         reloadScreen()
     }
 
-    var rarePartyMessage by string("WOAH! A {name} just surfaced! Catch #{count} after {time}!") {
+    var rarePartyMessage by string("WOAH! A {name} just surfaced! {dh}Catch #{count} after {time}!") {
         name = Literal("Rare SC message")
-        description = Literal("Variables: {name} {total} {count}, {time}")
+        description = Literal("Variables: {name} {total} {count}, {time}, {dh}")
+        condition = { rarePartyMessages }
+    }
+
+    var dhText by string("(Double Hook) ") {
+        name = Literal("Double Hook Text")
+        description = Literal("The text used in {dh}")
         condition = { rarePartyMessages }
     }
 
