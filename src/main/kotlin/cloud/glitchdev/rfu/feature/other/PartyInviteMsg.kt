@@ -22,7 +22,7 @@ import net.minecraft.network.chat.Style
 @RFUFeature
 object PartyInviteMsg : Feature {
     val INVITE_REGEX = """^((lf|any(one)?|who('s)?)\s(((cish|fish|ink)(ing)?)|((crimson\s|ci\s)?p(arty|arties)?(\sinv(ite)?)?)|inv(ite)?)|p(arty)?|inv(ite)?|((p(arty)?|inv(ite)?)\sme)|(parties)|me+(\sme+)*)[?.!]?$""".toRegex()
-    private const val PLAYER_REGEX = """(?:\[\d+\](?: .) )?(?:\[[A-Z]+\+*\] )?([0-9a-zA-Z_]{3,16})(?: \[[0-9a-zA-Z_]+\])?"""
+    private const val PLAYER_REGEX = """(?:\[\d+\](?: .) )?(?:\[[A-Z]+\+*\] )?(\w{3,16})(?: \[\w+\])?"""
     val CHAT_REGEX = """(?:(?:Guild|Officer) > )?$PLAYER_REGEX: (.+)""".toRegex()
 
     override fun onInitialize() {
