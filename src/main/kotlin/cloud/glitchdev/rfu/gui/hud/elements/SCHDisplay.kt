@@ -30,7 +30,7 @@ object SCHDisplay : AbstractTextHudElement("schDisplay") {
             append(" $CYAN($YELLOW$total$CYAN)") //Total
             if(GeneralFishing.schTimer) append(" $YELLOW${timeElapsed.toReadableString()}")
             if(GeneralFishing.schOverall) {
-                append(" $CYAN${BOLD}Overall:")
+                append("\n$CYAN${BOLD}Overall:")
                 append(" $YELLOW$overallRate")
             }
         }
