@@ -24,6 +24,7 @@
 - Added Gson deserializer to gracefully skip unknown enum entries on save load
 - Added debug entities command
 - Prevent sending titles if they are irrelevant (e.g. SC died)
+- Added multiline support for hud elements
 
 ### Other:
 - Improved description for Fishing Downtime Limit
