@@ -29,3 +29,4 @@
 - Improved description for Fishing Downtime Limit
 - Made alerts show up for less time
 - Added a queueing system for party messages to avoid sending them too fast
+- /rfudyes now has the dye colors on the names
