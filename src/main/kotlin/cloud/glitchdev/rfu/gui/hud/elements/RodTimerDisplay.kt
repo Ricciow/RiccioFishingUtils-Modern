@@ -38,7 +38,7 @@ object RodTimerDisplay : AbstractTextHudElement("rodTimer") {
 
         container.constrain {
             width = if(rodTime == 0f) {
-                "3.0".width(scale).pixels()
+                "${BOLD}3.0".width(scale).pixels()
             } else {
                 ChildBasedSizeConstraint()
             }

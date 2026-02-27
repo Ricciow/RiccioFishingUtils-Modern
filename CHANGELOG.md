@@ -16,6 +16,7 @@
 - Added a soon state to the flare timer (also prevents useless alerts)
 - Fixed double hook not being tracked correctly in sc/h and catch history
 - Made catch counts only update on their respective islands instead of all at once
+- Fixed RodTimer not correctly centering the !!!
 
 ### Back-end:
 - Extracted `Dyes` enum from `RareDrops` with full metadata (name, hex color, related sea creatures)
