@@ -1,11 +1,11 @@
 package cloud.glitchdev.rfu.feature.drops
 
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
-import cloud.glitchdev.rfu.constants.RareDrops
 import cloud.glitchdev.rfu.events.managers.DropEvents
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.manager.drops.DropManager
+import cloud.glitchdev.rfu.manager.drops.DropRecord
 import cloud.glitchdev.rfu.utils.Chat.sendMessage
 import cloud.glitchdev.rfu.utils.Chat.sendPartyMessage
 import cloud.glitchdev.rfu.utils.dsl.toMcCodes
@@ -17,17 +17,19 @@ import net.minecraft.network.chat.Component
 object CustomRareDropMessage : Feature {
     override fun onInitialize() {
         DropEvents.registerRareDropEvent { rareDrop, magicFind ->
-            sendCustomMessage(rareDrop, magicFind)
+            sendCustomDropMessage(rareDrop.dropName, DropManager.dropHistory.getOrAdd(rareDrop).history, magicFind)
+        }
+
+        DropEvents.registerDyeDropEvent { dyeDrop, magicFind ->
+            sendCustomDropMessage(dyeDrop.dyeName, DropManager.dropHistory.getOrAdd(dyeDrop).history, magicFind)
         }
     }
 
-    private fun sendCustomMessage(rareDrop: RareDrops, magicFind: Int?) {
+    private fun sendCustomDropMessage(dropName: String, history: List<DropRecord>, magicFind: Int?) {
         if (!GeneralFishing.customRareDropMessage) return
 
-        val entry = DropManager.dropHistory.getOrAdd(rareDrop)
-        val currentDrop = entry.history.lastOrNull() ?: return
-        val previousDropIndex = entry.history.lastIndex - 1
-        val previousDrop = if (previousDropIndex >= 0) entry.history[previousDropIndex] else null
+        val currentDrop = history.lastOrNull() ?: return
+        val previousDrop = if (history.lastIndex - 1 >= 0) history[history.lastIndex - 1] else null
 
         val timeSinceLast = if (previousDrop != null) {
             (currentDrop.date - previousDrop.date).toReadableString()
@@ -36,9 +38,9 @@ object CustomRareDropMessage : Feature {
         }
 
         val messageString = GeneralFishing.rareDropMessageFormat
-            .replace("{drop}", rareDrop.dropName)
+            .replace("{drop}", dropName)
             .replace("{magic_find}", magicFind?.toString() ?: "0")
-            .replace("{count}", currentDrop.sinceCount.toString())
+            .replace("{count}", currentDrop.sinceCount?.toString() ?: "N/A")
             .replace("{time}", timeSinceLast)
             .toMcCodes()
 
@@ -46,7 +48,7 @@ object CustomRareDropMessage : Feature {
 
         sendMessage(message)
 
-        if(GeneralFishing.rareDropPartyChat) {
+        if (GeneralFishing.rareDropPartyChat) {
             sendPartyMessage(message.toUnformattedString())
         }
     }

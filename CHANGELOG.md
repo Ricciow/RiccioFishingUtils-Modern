@@ -1,6 +1,7 @@
 # v1.x.x - ???
 
 ### Features:
+- Added dye drops tracking with a separate configurable dye list (all dyes now supported, now also tracks mf for those)
 - Added {dh} option to rare sc catch message
 - Added option to boost polling rate when healthbar is active for more accurate tracking
 - Added message hiding options
@@ -17,6 +18,10 @@
 - Made catch counts only update on their respective islands instead of all at once
 
 ### Back-end:
+- Extracted `Dyes` enum from `RareDrops` with full metadata (name, hex color, related sea creatures)
+- Refactored `DropEvents` into separate `RareDropEventManager` and `DyeDropEventManager`
+- Refactored `DropHistory` to track dye drops separately
+- Added Gson deserializer to gracefully skip unknown enum entries on save load
 - Added debug entities command
 - Prevent sending titles if they are irrelevant (e.g. SC died)
 

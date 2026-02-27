@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.constants.SeaCreatures
 import cloud.glitchdev.rfu.config.Category
+import cloud.glitchdev.rfu.constants.Dyes
 import cloud.glitchdev.rfu.constants.RareDrops
 import cloud.glitchdev.rfu.utils.dsl.escapeForRegex
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
@@ -129,16 +130,21 @@ object GeneralFishing : Category("General Fishing") {
         description = Literal("Select which drops are considered rare for the mod.")
     }
 
+    var dyeDrops by draggable(*Dyes.entries.toTypedArray()) {
+        name = Literal("Dye drops")
+        description = Literal("Select which dyes are considered rare for the mod.")
+    }
+
     val RARE_DROP_REGEX : Regex
         get() = buildString {
             append("RARE DROP! (")
-            append(rareDrops.filter { !it.isDye }.joinToString("|") { it.overrideRegex ?: it.toString().escapeForRegex() })
+            append(rareDrops.joinToString("|") { it.overrideRegex ?: it.toString().escapeForRegex() })
             append(""") \(\+(\d+) ✯ Magic Find\)""")
         }.toExactRegex()
     val DYE_REGEX : Regex
         get() = buildString {
             append("WOW! (.+) found a (")
-            append(rareDrops.filter { it.isDye }.joinToString("|") { Regex.escape(it.toString()) })
+            append(dyeDrops.joinToString("|") { it.toString().escapeForRegex() })
             append(")!")
         }.toExactRegex()
 

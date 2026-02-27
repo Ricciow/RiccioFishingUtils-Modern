@@ -17,7 +17,9 @@ object Chat {
 
         CoroutineScope(Dispatchers.Default).launch {
             while (queue.isNotEmpty()) {
-                sendCommand("pc ${queue.removeFirst()}")
+                if(Party.inParty) {
+                    sendCommand("pc ${queue.removeFirst()}")
+                }
                 delay(500)
             }
             isRunning = false
