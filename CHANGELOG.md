@@ -1,4 +1,4 @@
-# v1.x.x - ???
+# v1.3.0 - Refined Reels
 
 ### Features:
 - Added dye drops tracking with a separate configurable dye list (all dyes now supported, now also tracks mf for those)
