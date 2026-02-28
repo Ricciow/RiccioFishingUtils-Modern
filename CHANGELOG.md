@@ -5,6 +5,7 @@
 - Added option to hide Combo messages (Won't hide the MF ones)
 
 ### Fixes:
+- Made flare alert not proc when a firework is active
 
 ### Back-end:
 
