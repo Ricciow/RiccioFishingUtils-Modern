@@ -62,3 +62,4 @@ Configuration is handled via `ResourcefulConfig`.
 2.  **Code Style:** Follow Kotlin idiomatic practices. Use `object` for singletons/features.
 3.  **Annotations:** Respect the `@RFUFeature` annotation; it's used by the `processor` to generate the loader code. If you add a new feature, ensure it's annotated so it gets loaded.
 4.  **Dependencies:** Do not assume standard Fabric API events are used directly everywhere; check for custom event managers first.
+5.  **Changelogs** Update the changelog after changes, if multiple changes can be compacted into one sentence, prefer using one sentence.
