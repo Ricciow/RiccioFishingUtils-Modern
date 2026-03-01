@@ -4,6 +4,7 @@ import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.manager.mob.SkyblockEntity
 import cloud.glitchdev.rfu.utils.dsl.parseHealthValue
+import cloud.glitchdev.rfu.utils.dsl.toMcCodes
 import cloud.glitchdev.rfu.utils.gui.setHidden
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
@@ -62,7 +63,7 @@ class BossHealthBar(
 
         val displayName = buildString {
             append(entity?.sbName ?: "Example Mob")
-            if(entity?.isShurikened ?: false) append(" ✯")
+            if(entity?.isShurikened ?: false) append(" &b✯".toMcCodes())
         }
 
         name.setText(displayName)
