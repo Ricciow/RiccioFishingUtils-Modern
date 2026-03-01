@@ -2,6 +2,7 @@
 
 ### Features:
 - Added Fishing Xp/h display (works like Sc/h but tracks fishing XP gained per hour from the action bar)
+- Added Lootshare detection messages.
 - Added option to hide "There are blocks in the way!" message
 - Added option to hide Combo messages (Won't hide the MF ones)
 - Added Zoom on etherwarp (I just really missed that)

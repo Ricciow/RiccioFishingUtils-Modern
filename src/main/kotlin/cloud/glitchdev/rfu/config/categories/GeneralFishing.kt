@@ -208,6 +208,11 @@ object GeneralFishing : Category("General Fishing") {
         condition = { customRareDropMessage }
     }
 
+    var lootshareMessage by boolean(true) {
+        name = Literal("Lootshare Message")
+        description = Literal("Sends a message when lootshare gives you an item.")
+    }
+
     init {
         dualSeparator {
             title = "Deployables"

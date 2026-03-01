@@ -2,8 +2,10 @@ package cloud.glitchdev.rfu.mixin;
 
 import cloud.glitchdev.rfu.events.managers.ContainerEvents;
 import cloud.glitchdev.rfu.events.managers.EntityRemovedEvents;
+import cloud.glitchdev.rfu.events.managers.SetSlotEvents;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
+import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,5 +24,10 @@ public class ClientPacketListenerMixin {
         for (int entityId : packet.getEntityIds()) {
             EntityRemovedEvents.INSTANCE.runTasks(entityId);
         }
+    }
+
+    @Inject(method = "handleContainerSetSlot", at = @At("HEAD"))
+    private void handleContainerSetSlot(ClientboundContainerSetSlotPacket packet, CallbackInfo ci) {
+        SetSlotEvents.INSTANCE.runTasks(packet.getContainerId(), packet.getSlot(), packet.getItem());
     }
 }
