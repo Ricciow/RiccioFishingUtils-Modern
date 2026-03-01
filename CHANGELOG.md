@@ -5,6 +5,7 @@
 - Added option to hide Combo messages (Won't hide the MF ones)
 - Added Zoom on etherwarp (I just really missed that)
 - Added option to make the health bar blue when the mob is shurikened (On by default)
+- Added a Dye Display HUD element
 
 ### Fixes:
 - Made flare alert not proc when a firework is active

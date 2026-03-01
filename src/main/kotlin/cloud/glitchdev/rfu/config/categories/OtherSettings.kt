@@ -29,6 +29,11 @@ object OtherSettings : Category("Other") {
         description = Literal("Zooms when etherwarping")
     }
 
+    var dyeDisplay by boolean(false) {
+        name = Literal("Dye Display")
+        description = Literal("Shows the currently boosted dyes")
+    }
+
     init {
         dualSeparator {
             title = "Message Hiding"
