@@ -10,8 +10,10 @@ object SlotClickedEvents : AbstractEventManager<(Slot) -> Unit, SlotClickedEvent
     }
 
     fun runTasks(slot : Slot) {
-        tasks.forEach { task ->
-            task.callback(slot)
+        safeExecution {
+            tasks.forEach { task ->
+                task.callback(slot)
+            }
         }
     }
 

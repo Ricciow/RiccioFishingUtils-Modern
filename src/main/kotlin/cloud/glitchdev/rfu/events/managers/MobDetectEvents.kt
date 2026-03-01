@@ -5,8 +5,10 @@ import cloud.glitchdev.rfu.manager.mob.SkyblockEntity
 
 object MobDetectEvents : AbstractEventManager<(Set<SkyblockEntity>) -> Unit, MobDetectEvents.MobDetectEvent>() {
     fun runTasks(mobs : Set<SkyblockEntity>) {
-        tasks.forEach { task ->
-            task.callback(mobs)
+        safeExecution {
+            tasks.forEach { task ->
+                task.callback(mobs)
+            }
         }
     }
 

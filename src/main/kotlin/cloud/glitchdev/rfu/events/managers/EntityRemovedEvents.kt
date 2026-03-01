@@ -4,7 +4,9 @@ import cloud.glitchdev.rfu.events.AbstractEventManager
 
 object EntityRemovedEvents : AbstractEventManager<(entityId : Int) -> Unit, EntityRemovedEvents.EntityRemovedEvent>() {
     fun runTasks(entityId : Int) {
-        tasks.forEach { task -> task.callback(entityId) }
+        safeExecution {
+            tasks.forEach { task -> task.callback(entityId) }
+        }
     }
 
     fun registerEntityRemovedEvent(

@@ -27,7 +27,9 @@ object ConnectionEvents : RegisteredEvent {
 
     object JoinEventManager : AbstractEventManager<(wasConnected : Boolean) -> Unit, JoinEventManager.JoinEvent>() {
         fun runTasks(wasConnected: Boolean) {
-            tasks.forEach { it.callback(wasConnected) }
+            safeExecution {
+                tasks.forEach { it.callback(wasConnected) }
+            }
         }
 
         fun register(priority: Int = 20, callback: (wasConnected : Boolean) -> Unit) : JoinEvent {
@@ -45,7 +47,9 @@ object ConnectionEvents : RegisteredEvent {
 
     object DisconnectEventManager : AbstractEventManager<() -> Unit, DisconnectEventManager.DisconnectEvent>() {
         fun runTasks() {
-            tasks.forEach { it.callback() }
+            safeExecution {
+                tasks.forEach { it.callback() }
+            }
         }
 
         fun register(priority: Int = 20, callback: () -> Unit) : DisconnectEvent {

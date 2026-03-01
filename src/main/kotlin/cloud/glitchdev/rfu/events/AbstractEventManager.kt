@@ -1,5 +1,7 @@
 package cloud.glitchdev.rfu.events
 
+import cloud.glitchdev.rfu.RiccioFishingUtils.mc
+import cloud.glitchdev.rfu.utils.RFULogger
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
@@ -19,6 +21,24 @@ abstract class AbstractEventManager<CB, T : AbstractEventManager.ManagedTask<CB,
     fun removeTask(task: T): T {
         tasks.remove(task)
         return task
+    }
+
+    fun safeExecution(mainThread: Boolean = true, func: () -> Unit) {
+        if (mainThread) {
+            mc.execute {
+                try {
+                    func()
+                } catch (e: Exception) {
+                    RFULogger.error("Error in safeExecution:", e)
+                }
+            }
+        } else {
+            try {
+                func()
+            } catch (e: Exception) {
+                RFULogger.error("Error in safeExecution:", e)
+            }
+        }
     }
 
     /**

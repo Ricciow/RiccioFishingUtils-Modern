@@ -37,8 +37,10 @@ object HudRenderEvents : AbstractEventManager<(GuiGraphics, Float) -> Unit, HudR
     }
 
     private fun runTasks(context: GuiGraphics, tickDelta: Float) {
-        for (task in tasks) {
-            task.callback(context, tickDelta)
+        safeExecution {
+            for (task in tasks) {
+                task.callback(context, tickDelta)
+            }
         }
     }
 

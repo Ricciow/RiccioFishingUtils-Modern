@@ -5,8 +5,10 @@ import cloud.glitchdev.rfu.events.wrappers.Cancelable
 
 object FovEvents : AbstractEventManager<(Cancelable<Float>) -> Unit, FovEvents.FovEvent>() {
     fun runTasks(cancelable : Cancelable<Float>) {
-        for (task in tasks) {
-            task.callback(cancelable)
+        safeExecution {
+            for (task in tasks) {
+                task.callback(cancelable)
+            }
         }
     }
 

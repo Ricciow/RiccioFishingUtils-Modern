@@ -29,8 +29,10 @@ object SeaCreatureCatchEvents : AbstractEventManager<(SeaCreatures, doubleHook :
     }
 
     fun runTasks(sc : SeaCreatures) {
-        tasks.forEach { task ->
-            task.callback(sc, isDoubleHook)
+        safeExecution {
+            tasks.forEach { task ->
+                task.callback(sc, isDoubleHook)
+            }
         }
     }
 

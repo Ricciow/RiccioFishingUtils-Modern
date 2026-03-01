@@ -4,8 +4,10 @@ import cloud.glitchdev.rfu.events.AbstractEventManager
 
 object CloseConfigEvents : AbstractEventManager<() -> Unit, CloseConfigEvents.CloseConfigEvent>() {
     fun runTasks() {
-        tasks.forEach { task ->
-            task.callback()
+        safeExecution {
+            tasks.forEach { task ->
+                task.callback()
+            }
         }
     }
 

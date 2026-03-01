@@ -10,6 +10,12 @@ import net.minecraft.client.Minecraft
 object TickEvents : AbstractEventManager<(Minecraft) -> Unit, TickEvents.TickEvent>(), RegisteredEvent {
     override fun register() {
         ClientTickEvents.END_CLIENT_TICK.register { client ->
+            runTasks(client)
+        }
+    }
+
+    fun runTasks(client : Minecraft) {
+        safeExecution {
             tasks.forEach { task ->
                 if (client.level?.gameTime?.rem(task.interval) == 0L) {
                     task.callback(client)

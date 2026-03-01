@@ -13,8 +13,10 @@
 ### Fixes:
 - Made flare alert not proc when a firework is active
 - Pet Display now updates the displayed level when your equipped pet levels up
+- Fixed crash and disconnect caused by null entries in the drops save file (Gson null-safety bypass); both `drops` and `dyeDrops` lists are now purged of nulls before use
 
 ### Back-end:
+- Added `safeExecution(mainThread, func)` to `AbstractEventManager` for try-catch wrapped execution with `RFULogger` error reporting
 
 ### Other:
 - Added a star to the health bar whenever the mob is shurikened

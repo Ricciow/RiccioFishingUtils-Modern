@@ -60,7 +60,9 @@ object DropEvents : RegisteredEvent {
 
     object RareDropEventManager : AbstractEventManager<(rareDrop: RareDrops, magicFind: Int?) -> Unit, RareDropEventManager.RareDropEvent>() {
         fun runTasks(rareDrop: RareDrops, magicFind: Int?) {
-            tasks.forEach { event -> event.callback(rareDrop, magicFind) }
+            safeExecution {
+                tasks.forEach { event -> event.callback(rareDrop, magicFind) }
+            }
         }
 
         fun register(
@@ -81,7 +83,9 @@ object DropEvents : RegisteredEvent {
 
     object DyeDropEventManager : AbstractEventManager<(dyeDrop: Dyes, magicFind : Int?) -> Unit, DyeDropEventManager.DyeDropEvent>() {
         fun runTasks(dyeDrop: Dyes, magicFind : Int?) {
-            tasks.forEach { event -> event.callback(dyeDrop, magicFind) }
+            safeExecution {
+                tasks.forEach { event -> event.callback(dyeDrop, magicFind) }
+            }
         }
 
         fun register(

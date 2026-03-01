@@ -6,7 +6,9 @@ import net.minecraft.world.entity.Entity
 
 object EntityRenderEvents : AbstractEventManager<(entity : Entity, event : Cancelable<Boolean>) -> Unit, EntityRenderEvents.EntityRenderEvent>() {
     fun runTasks(entity : Entity, event : Cancelable<Boolean>) {
-        tasks.forEach { task -> task.callback(entity, event) }
+        safeExecution {
+            tasks.forEach { task -> task.callback(entity, event) }
+        }
     }
 
     fun registerEntityRenderEvent(

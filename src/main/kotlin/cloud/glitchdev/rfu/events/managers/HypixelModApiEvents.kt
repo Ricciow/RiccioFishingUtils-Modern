@@ -24,8 +24,10 @@ object HypixelModApiEvents : RegisteredEvent {
 
     object LocationEventManager : AbstractEventManager<(ClientboundLocationPacket) -> Unit, LocationEventManager.LocationEvent>() {
         fun runTasks(packet: ClientboundLocationPacket) {
-            for (task in tasks) {
-                task.callback(packet)
+            safeExecution {
+                for (task in tasks) {
+                    task.callback(packet)
+                }
             }
         }
 

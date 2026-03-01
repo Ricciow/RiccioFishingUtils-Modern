@@ -42,7 +42,7 @@ object LootshareEvents : AbstractEventManager<(contributors: List<String>, items
             if (processingJob?.isActive != true) {
                 processingJob = scope.launch {
                     delay(CORRELATION_WINDOW_MS + 20L)
-                    Minecraft.getInstance().execute { processBatch() }
+                    safeExecution { processBatch() }
                 }
             }
         }
@@ -71,6 +71,12 @@ object LootshareEvents : AbstractEventManager<(contributors: List<String>, items
         }
     }
 
+    private fun runTasks(contributors: List<String>, lootItems : List<LootshareItem>) {
+        safeExecution {
+            tasks.forEach { task -> task.callback(contributors, lootItems) }
+        }
+    }
+
     private fun processBatch() {
         if (recentMessages.isEmpty()) return
 
@@ -86,7 +92,8 @@ object LootshareEvents : AbstractEventManager<(contributors: List<String>, items
         if (matchedItems.isEmpty()) return
 
         val lootItems = matchedItems.map { LootshareItem(it.itemStack, it.diffCount) }
-        tasks.forEach { task -> task.callback(contributors, lootItems) }
+
+        runTasks(contributors, lootItems)
     }
 
     private fun cleanOldEntries(nowMs: Long) {

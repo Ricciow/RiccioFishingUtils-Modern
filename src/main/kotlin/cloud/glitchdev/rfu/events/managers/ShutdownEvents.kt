@@ -15,8 +15,10 @@ object ShutdownEvents : AbstractEventManager<(Minecraft) -> Unit, ShutdownEvents
     }
 
     fun runTasks(client : Minecraft) {
-        tasks.forEach { task ->
-            task.callback(client)
+        safeExecution {
+            tasks.forEach { task ->
+                task.callback(client)
+            }
         }
     }
 

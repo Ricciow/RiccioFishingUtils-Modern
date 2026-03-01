@@ -95,7 +95,9 @@ object ChatEvents : RegisteredEvent {
     object ChatEventManager : AbstractEventManager<(text: Component) -> Boolean, ChatEventManager.ChatEvent>() {
         fun runTasks(text: Component): Boolean {
             var result = true
-            for (event in tasks) if (!event.callback(text)) result = false
+            safeExecution {
+                for (event in tasks) if (!event.callback(text)) result = false
+            }
             return result
         }
 
@@ -115,7 +117,9 @@ object ChatEvents : RegisteredEvent {
     object GameEventManager : AbstractEventManager<(text: Component, overlay: Boolean) -> Boolean, GameEventManager.GameEvent>() {
         fun runTasks(text: Component, overlay: Boolean): Boolean {
             var result = true
-            for (event in tasks) if (!event.callback(text, overlay)) result = false
+            safeExecution {
+                for (event in tasks) if (!event.callback(text, overlay)) result = false
+            }
             return result
         }
 

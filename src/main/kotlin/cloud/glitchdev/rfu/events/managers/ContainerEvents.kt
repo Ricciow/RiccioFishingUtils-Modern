@@ -5,7 +5,9 @@ import net.minecraft.world.item.ItemStack
 
 object ContainerEvents : AbstractEventManager<(containerId : Int, itens : List<ItemStack>) -> Unit, ContainerEvents.ContainerOpenEvent>() {
     fun runTasks(containerId : Int, itens : List<ItemStack>) {
-        tasks.forEach { event -> event.callback(containerId, itens) }
+        safeExecution {
+            tasks.forEach { event -> event.callback(containerId, itens) }
+        }
     }
 
     fun registerContainerOpenEvent(

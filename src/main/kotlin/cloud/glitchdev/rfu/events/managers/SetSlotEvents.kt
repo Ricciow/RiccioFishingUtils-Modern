@@ -6,7 +6,7 @@ import net.minecraft.world.item.ItemStack
 
 object SetSlotEvents : AbstractEventManager<(containerId: Int, slot: Int, item: ItemStack) -> Unit, SetSlotEvents.SetSlotEvent>() {
     fun runTasks(containerId: Int, slot: Int, item: ItemStack) {
-        mc.execute {
+        safeExecution {
             tasks.forEach { event -> event.callback(containerId, slot, item) }
         }
     }

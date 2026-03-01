@@ -20,7 +20,9 @@ object ItemUsedEvents : AbstractEventManager<(item: ItemStack) -> Unit, ItemUsed
     }
 
     fun runTasks(item: ItemStack) {
-        tasks.forEach { task -> task.callback(item) }
+        safeExecution {
+            tasks.forEach { task -> task.callback(item) }
+        }
     }
 
     fun registerItemUsedEvent(
