@@ -44,7 +44,7 @@ object DyeDisplay : AbstractHudElement("dyeDisplay") {
         } else {
             buildList {
                 add("${TextColor.YELLOW}${BOLD}3x$RESET " to currentDyes.get3xDye())
-                currentDyes.get2xDyes().forEach { add("${TextColor.YELLOW}${BOLD}2x$RESET " to it) }
+                currentDyes.get2xDyes().forEach { add("${TextColor.GOLD}${BOLD}2x$RESET " to it) }
             }
         }
 
