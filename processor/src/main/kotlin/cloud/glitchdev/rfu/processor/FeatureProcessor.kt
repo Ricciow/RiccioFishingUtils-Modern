@@ -87,9 +87,20 @@ class FeatureProcessor(
         file.bufferedWriter().use { writer ->
             writer.write("package $packageName\n\n")
 
-            symbolsMap.values.flatten().mapNotNull { it.qualifiedName?.asString() }.distinct().sorted().forEach {
-                writer.write("import $it\n")
-            }
+            val allSymbols = symbolsMap.values.flatten()
+
+            // Detect duplicate simple names so we can use fully-qualified references for them
+            val simpleNameCounts = allSymbols
+                .groupBy { it.simpleName.asString() }
+                .mapValues { it.value.size }
+
+            // Only emit imports for symbols whose simple name is unique
+            allSymbols
+                .mapNotNull { it.qualifiedName?.asString() }
+                .distinct()
+                .filter { fqn -> simpleNameCounts[fqn.substringAfterLast(".")] == 1 }
+                .sorted()
+                .forEach { writer.write("import $it\n") }
 
             writer.write("\nobject $fileName {\n")
 
@@ -100,12 +111,18 @@ class FeatureProcessor(
                 if (symbols.isEmpty()) writer.write("        // No entries found\n")
 
                 symbols.forEach { symbol ->
-                    val name = symbol.simpleName.asString()
+                    val simpleName = symbol.simpleName.asString()
+                    // Use fully-qualified name when simple name collides with another symbol
+                    val ref = if ((simpleNameCounts[simpleName] ?: 0) > 1) {
+                        symbol.qualifiedName?.asString() ?: simpleName
+                    } else {
+                        simpleName
+                    }
                     writer.write("        ")
                     if (symbol.classKind == ClassKind.OBJECT) {
-                        writer.write("$name.${spec.methodToCall}()")
+                        writer.write("$ref.${spec.methodToCall}()")
                     } else {
-                        writer.write("$name().${spec.methodToCall}()")
+                        writer.write("$ref().${spec.methodToCall}()")
                     }
                     writer.write("\n")
                 }
