@@ -15,6 +15,7 @@ object HideMessages : Feature {
     val HYPE_REGEX = """Your Implosion hit \d+ enem(?:y|ies) for [\d.,]+ damage\.""".toRegex()
     val COMBO_REGEX = """\+\d+ Kill Combo (.+)""".toRegex()
     val BLOCKS_REGEX = """There are blocks in the way!""".toRegex()
+    val LOOTSHARE_REGEX = """LOOT SHARE You received loot for assisting (.+?)!""".toRegex()
 
     override fun onInitialize() {
         registerAllowGameEvent(SC_MESSAGE_REGEX) { _, _, _ ->
@@ -46,6 +47,11 @@ object HideMessages : Feature {
         registerAllowGameEvent(BLOCKS_REGEX) { _, _, _ ->
             return@registerAllowGameEvent !(OtherSettings.hideMessages &&
                     OtherSettings.hiddenMessageTypes.contains(MessageTypes.BLOCKS))
+        }
+
+        registerAllowGameEvent(LOOTSHARE_REGEX) { _, _, _ ->
+            return@registerAllowGameEvent !(OtherSettings.hideMessages &&
+                    OtherSettings.hiddenMessageTypes.contains(MessageTypes.LOOTSHARE))
         }
     }
 }
