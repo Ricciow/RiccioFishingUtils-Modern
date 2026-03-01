@@ -19,6 +19,7 @@ class SkyblockEntity(
     lateinit var sbName: String
     var health: String = "0"
     var maxHealth: String = "0"
+    var isShurikened: Boolean = false
 
     var renderEvent: RenderEvents.RenderEvent? = null
 
@@ -46,9 +47,10 @@ class SkyblockEntity(
     fun updateEntityData() {
         val newData = parseNameTag(nameTagEntity)
         if (newData != null) {
-            this.sbName = newData.first
-            this.health = newData.second
-            this.maxHealth = newData.third
+            this.sbName = newData.sbName
+            this.health = newData.health
+            this.maxHealth = newData.maxHealth
+            this.isShurikened = newData.isShurikened
         } else {
             RFULogger.warn("Attempted to update Skyblock Entity Data without a Skyblock Entity")
         }
@@ -75,8 +77,15 @@ class SkyblockEntity(
         renderEvent = null
     }
 
+    data class NameTagData(
+        val sbName: String,
+        val health: String,
+        val maxHealth: String,
+        val isShurikened: Boolean,
+    )
+
     companion object {
-        private val entityRegex = """(?:﴾ )?\[Lv\d+] \S+ (.+) (\d+[\.,]?\d*[kM]?)/(\d+[\.,]?\d*[kM]?)❤(?: ﴿)?(?: ✯)?""".toRegex()
+        private val entityRegex = """(?:﴾ )?\[Lv\d+] \S+ (.+) (\d+[\.,]?\d*[kM]?)/(\d+[\.,]?\d*[kM]?)❤(?: ﴿)?( ✯)?""".toRegex()
         private val corruptedRegex = """^aCorrupted (.+)a$""".toRegex()
 
         fun isNameTagEntity(entity: ArmorStand): Boolean {
@@ -86,20 +95,20 @@ class SkyblockEntity(
             return name.matches(entityRegex)
         }
 
-        fun parseNameTag(entity: ArmorStand): Triple<String, String, String>? {
+        fun parseNameTag(entity: ArmorStand): NameTagData? {
             if (!entity.hasCustomName()) return null
             val name = entity.name.toUnformattedString()
 
-            val matchResult = entityRegex.find(name) ?: return null
-            val groupValues = matchResult.groupValues
+            val match = entityRegex.find(name) ?: return null
 
-            var sbName = groupValues.getOrNull(1) ?: return null
+            var sbName = match.groupValues[1].takeIf { it.isNotEmpty() } ?: return null
             sbName = corruptedRegex.find(sbName)?.groupValues?.getOrNull(1) ?: sbName
 
-            val health = groupValues.getOrNull(2) ?: "0"
-            val maxHealth = groupValues.getOrNull(3) ?: "0"
+            val health = match.groupValues[2].ifEmpty { "0" }
+            val maxHealth = match.groupValues[3].ifEmpty { "0" }
+            val isShurikened = match.groups[4] != null
 
-            return Triple(sbName, health, maxHealth)
+            return NameTagData(sbName, health, maxHealth, isShurikened)
         }
     }
 }

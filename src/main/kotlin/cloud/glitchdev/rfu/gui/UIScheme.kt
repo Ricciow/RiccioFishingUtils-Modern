@@ -24,6 +24,7 @@ object UIScheme {
     val barHighHP = Color(85, 255, 85)
     val barMediumHP = Color(255, 255, 85)
     val barLowHP = Color(255, 85, 85)
+    val barShuriken = Color(85, 255, 255)
 
     val diedColor = Color(120, 7, 7)
 

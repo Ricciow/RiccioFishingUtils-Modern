@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.gui.hud.elements.bossbar
 
+import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.manager.mob.SkyblockEntity
 import cloud.glitchdev.rfu.utils.dsl.parseHealthValue
@@ -41,8 +42,10 @@ class BossHealthBar(
         this.setHidden(entity == null && !forceRendering)
         val health = entity?.health ?: "0"
         val maxHealth = entity?.maxHealth ?: "1"
+        val isShurikened = entity?.isShurikened ?: false
         val healthPercentage = health.parseHealthValue().toFloat() / maxHealth.parseHealthValue().toFloat() * 100
         val themeColor = when {
+            isShurikened && GeneralFishing.coloredShurikenBar -> UIScheme.barShuriken
             healthPercentage > 50 -> UIScheme.barHighHP
             healthPercentage > 25 -> UIScheme.barMediumHP
             healthPercentage > 0 -> UIScheme.barLowHP
@@ -56,7 +59,13 @@ class BossHealthBar(
             height = TextAspectConstraint()
             color = themeColor
         }
-        name.setText(entity?.sbName ?: "Example Mob")
+
+        val displayName = buildString {
+            append(entity?.sbName ?: "Example Mob")
+            if(entity?.isShurikened ?: false) append(" ✯")
+        }
+
+        name.setText(displayName)
         barBg.constrain {
             x = SiblingConstraint(2 * scale)
             y = CenterConstraint()

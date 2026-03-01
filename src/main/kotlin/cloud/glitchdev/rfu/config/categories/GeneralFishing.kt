@@ -69,13 +69,20 @@ object GeneralFishing : Category("General Fishing") {
         condition = { bossHealthBars }
     }
 
+    val HEALTH_BAR_REGEX
+        get() = healthBarMobs.joinToString("|").toExactRegex()
+
     var boostPollingRate by boolean(true) {
         name = Literal("Boost Polling Rate")
         description = Literal("Makes detections more frequent when the health bar is active (Probably wont but may cause lag, hence the option)")
+        condition = { bossHealthBars }
     }
 
-    val HEALTH_BAR_REGEX
-        get() = healthBarMobs.joinToString("|").toExactRegex()
+    var coloredShurikenBar by boolean(true) {
+        name = Literal("Blue bar on shuriken")
+        description = Literal("Makes the health bar blue whenever the mob is shurikened.")
+        condition = { bossHealthBars }
+    }
 
     init {
         dualSeparator {
