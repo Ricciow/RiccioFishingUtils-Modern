@@ -1,7 +1,7 @@
 package cloud.glitchdev.rfu.mixin;
 
 import cloud.glitchdev.rfu.events.managers.EntityRenderEvents;
-import cloud.glitchdev.rfu.events.wrappers.CancelableBoolean;
+import cloud.glitchdev.rfu.events.wrappers.Cancelable;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.world.entity.Entity;
@@ -25,7 +25,7 @@ public class EntityRenderDispatcherMixin {
             double z,
             CallbackInfoReturnable<Boolean> cir
     ) {
-        CancelableBoolean cancelWrapper = new CancelableBoolean(cir, false);
+        Cancelable<Boolean> cancelWrapper = new Cancelable<>(cir, false);
         EntityRenderEvents.INSTANCE.runTasks(entity, cancelWrapper);
     }
 }

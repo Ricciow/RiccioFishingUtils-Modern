@@ -1,12 +1,9 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
-import cloud.glitchdev.rfu.events.RegisteredEvent
 import net.minecraft.world.item.ItemStack
 
-object ContainerEvents : AbstractEventManager<(containerId : Int, itens : List<ItemStack>) -> Unit, ContainerEvents.ContainerOpenEvent>(), RegisteredEvent {
-    override fun register() {}
-
+object ContainerEvents : AbstractEventManager<(containerId : Int, itens : List<ItemStack>) -> Unit, ContainerEvents.ContainerOpenEvent>() {
     fun runTasks(containerId : Int, itens : List<ItemStack>) {
         tasks.forEach { event -> event.callback(containerId, itens) }
     }

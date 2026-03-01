@@ -24,6 +24,11 @@ object OtherSettings : Category("Other") {
         description = Literal("Sends a prompt to invite player msg when some keywords are said by player")
     }
 
+    var zoomEtherwarp by boolean(false) {
+        name = Literal("Zoom on etherwarp")
+        description = Literal("Zooms when etherwarping")
+    }
+
     init {
         dualSeparator {
             title = "Message Hiding"

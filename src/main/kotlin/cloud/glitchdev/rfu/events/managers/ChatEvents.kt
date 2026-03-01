@@ -11,7 +11,6 @@ import net.minecraft.network.chat.Component
 
 @AutoRegister
 object ChatEvents : RegisteredEvent {
-
     override fun register() {
         ClientReceiveMessageEvents.ALLOW_CHAT.register { message, _, _, _, _ ->
             val result = ChatEventManager.runTasks(message)

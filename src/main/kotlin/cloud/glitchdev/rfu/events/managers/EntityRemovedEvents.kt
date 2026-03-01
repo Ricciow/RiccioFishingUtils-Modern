@@ -1,13 +1,8 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
-import cloud.glitchdev.rfu.events.RegisteredEvent
 
-object EntityRemovedEvents : AbstractEventManager<(entityId : Int) -> Unit, EntityRemovedEvents.EntityRemovedEvent>(), RegisteredEvent {
-    override fun register() {
-        //Doesn't need registering because it's called from ClientPacketListenerMixin.java
-    }
-
+object EntityRemovedEvents : AbstractEventManager<(entityId : Int) -> Unit, EntityRemovedEvents.EntityRemovedEvent>() {
     fun runTasks(entityId : Int) {
         tasks.forEach { task -> task.callback(entityId) }
     }
