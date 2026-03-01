@@ -118,10 +118,43 @@ object GeneralFishing : Category("General Fishing") {
 
     var fishingTime by int(5) {
         name = Literal("Fishing Downtime Limit")
-        description = Literal("The max ammount of downtime for the sc/h counter to reset in minutes, also used as the window (e.g. 5 -> sc/h during last 5 minutes)")
-        condition = { schDisplay }
+        description = Literal("The max ammount of downtime for the sc/h and xp/h counters to reset in minutes, also used as the window (e.g. 5 -> sc/h during last 5 minutes)")
+        condition = { schDisplay || xphDisplay }
         range = 0..60
         slider = true
+    }
+
+
+    init {
+        dualSeparator {
+            title = "Fishing Xp/h Display"
+            description = "Shows how much fishing XP you gain per hour"
+        }
+    }
+
+    var xphDisplay by observable(boolean(true) {
+        name = Literal("Toggle")
+        description = Literal("Enables the Xp/h display")
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var xphTimer by boolean(false) {
+        name = Literal("Toggle Timer")
+        description = Literal("Shows for how long you've been fishing alongside the xp/h")
+        condition = { xphDisplay }
+    }
+
+    var xphOverall by boolean(false) {
+        name = Literal("Add overall text")
+        description = Literal("Shows your xp/h overall alongside current")
+        condition = { xphDisplay }
+    }
+
+    var xphOnlyWhenFishing by boolean(true) {
+        name = Literal("Only display when fishing")
+        description = Literal("Only show the xp/h display when you're fishing")
+        condition = { xphDisplay }
     }
 
 
