@@ -20,6 +20,8 @@ object PetDisplayFeature : Feature {
     val AUTOPET_REGEX = """Autopet equipped your $PET_REGEX! VIEW RULE""".toRegex()
     val COLORED_AUTOPET_REGEX = """§r§cAutopet §r§eequipped your (.+)§r§e! §r§a§lVIEW RULE""".toRegex()
     val DESPAWNED_REGEX = """You despawned your .+!""".toRegex()
+    val LEVEL_UP_REGEX = """Your (.+) leveled up to level (\d+)!""".toRegex()
+    val LEVEL_IN_PET_REGEX = """\[Lvl \d+]""".toRegex()
     const val SAVE_FIELD = "pet_display"
 
     override fun onInitialize() {
@@ -46,6 +48,19 @@ object PetDisplayFeature : Feature {
 
         registerGameEvent(DESPAWNED_REGEX) { _, _, _ ->
             updateDisplay(null)
+        }
+
+        registerGameEvent(LEVEL_UP_REGEX) { text, _, _ ->
+            val match = LEVEL_UP_REGEX.find(text.string) ?: return@registerGameEvent
+            val leveledPetName = match.groupValues[1]
+            val newLevel = match.groupValues[2]
+
+            val current = PetDisplay.currentPet ?: return@registerGameEvent
+            val currentPetName = PET_REGEX.toRegex().find(current.removeFormatting())?.groupValues?.getOrNull(3) ?: return@registerGameEvent
+
+            if (currentPetName != leveledPetName) return@registerGameEvent
+
+            updateDisplay(LEVEL_IN_PET_REGEX.replace(current, "[Lvl $newLevel]"))
         }
     }
 

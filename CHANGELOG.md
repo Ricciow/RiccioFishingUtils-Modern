@@ -8,6 +8,7 @@
 
 ### Fixes:
 - Made flare alert not proc when a firework is active
+- Pet Display now updates the displayed level when your equipped pet levels up
 
 ### Back-end:
 
