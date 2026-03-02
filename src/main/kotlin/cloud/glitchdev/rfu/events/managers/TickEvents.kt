@@ -14,7 +14,7 @@ object TickEvents : AbstractEventManager<(Minecraft) -> Unit, TickEvents.TickEve
         }
     }
 
-    fun runTasks(client : Minecraft) {
+    override val runTasks: (Minecraft) -> Unit = { client ->
         safeExecution {
             tasks.forEach { task ->
                 if (client.level?.gameTime?.rem(task.interval) == 0L) {

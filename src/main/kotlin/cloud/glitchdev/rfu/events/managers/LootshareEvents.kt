@@ -32,7 +32,7 @@ object LootshareEvents : AbstractEventManager<(contributors: List<String>, items
     private var processingJob: Job? = null
 
     override fun register() {
-        registerGameEvent(LOOTSHARE_REGEX) { message, _, matches ->
+        registerGameEvent(LOOTSHARE_REGEX) { message, _, _ ->
             val playerName = message.toFormattedString().substringAfter("§r§e§lLOOT SHARE §r§fYou received loot for assisting ")
             val nowMs = System.currentTimeMillis()
 
@@ -71,7 +71,7 @@ object LootshareEvents : AbstractEventManager<(contributors: List<String>, items
         }
     }
 
-    private fun runTasks(contributors: List<String>, lootItems : List<LootshareItem>) {
+    override val runTasks: (List<String>, List<LootshareItem>) -> Unit = { contributors, lootItems ->
         safeExecution {
             tasks.forEach { task -> task.callback(contributors, lootItems) }
         }

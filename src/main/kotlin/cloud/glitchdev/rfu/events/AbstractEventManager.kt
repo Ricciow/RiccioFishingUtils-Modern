@@ -23,6 +23,8 @@ abstract class AbstractEventManager<CB, T : AbstractEventManager.ManagedTask<CB,
         return task
     }
 
+    abstract val runTasks : CB
+
     fun safeExecution(mainThread: Boolean = true, func: () -> Unit) {
         if (mainThread) {
             mc.execute {

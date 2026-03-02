@@ -17,6 +17,7 @@
 
 ### Back-end:
 - Added `safeExecution(mainThread, func)` to `AbstractEventManager` for try-catch wrapped execution with `RFULogger` error reporting
+- Unified the execution of tasks on event managers
 
 ### Other:
 - Added a star to the health bar whenever the mob is shurikened

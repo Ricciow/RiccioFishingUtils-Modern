@@ -59,7 +59,7 @@ object DropEvents : RegisteredEvent {
     }
 
     object RareDropEventManager : AbstractEventManager<(rareDrop: RareDrops, magicFind: Int?) -> Unit, RareDropEventManager.RareDropEvent>() {
-        fun runTasks(rareDrop: RareDrops, magicFind: Int?) {
+        override val runTasks: (RareDrops, Int?) -> Unit = { rareDrop, magicFind ->
             safeExecution {
                 tasks.forEach { event -> event.callback(rareDrop, magicFind) }
             }
@@ -82,7 +82,7 @@ object DropEvents : RegisteredEvent {
     }
 
     object DyeDropEventManager : AbstractEventManager<(dyeDrop: Dyes, magicFind : Int?) -> Unit, DyeDropEventManager.DyeDropEvent>() {
-        fun runTasks(dyeDrop: Dyes, magicFind : Int?) {
+        override val runTasks: (Dyes, Int?) -> Unit = { dyeDrop, magicFind ->
             safeExecution {
                 tasks.forEach { event -> event.callback(dyeDrop, magicFind) }
             }

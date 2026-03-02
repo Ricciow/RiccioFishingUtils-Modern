@@ -3,7 +3,7 @@ package cloud.glitchdev.rfu.events.managers
 import cloud.glitchdev.rfu.events.AbstractEventManager
 
 object CloseConfigEvents : AbstractEventManager<() -> Unit, CloseConfigEvents.CloseConfigEvent>() {
-    fun runTasks() {
+    override val runTasks: () -> Unit = {
         safeExecution {
             tasks.forEach { task ->
                 task.callback()

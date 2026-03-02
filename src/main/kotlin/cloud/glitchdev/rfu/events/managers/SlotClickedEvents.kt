@@ -9,7 +9,7 @@ object SlotClickedEvents : AbstractEventManager<(Slot) -> Unit, SlotClickedEvent
        // Not required as it is called on AbstractContainerScreenMixin
     }
 
-    fun runTasks(slot : Slot) {
+    override val runTasks: (Slot) -> Unit = { slot ->
         safeExecution {
             tasks.forEach { task ->
                 task.callback(slot)

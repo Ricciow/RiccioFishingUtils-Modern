@@ -22,16 +22,16 @@ object SeaCreatureCatchEvents : AbstractEventManager<(SeaCreatures, doubleHook :
             val catchMessage = message.toUnformattedString()
             val sc = SeaCreatures.entries.find { it.catchMessage == catchMessage }
             if(sc != null) {
-                runTasks(sc)
+                runTasks(sc, isDoubleHook)
             }
             isDoubleHook = false
         }
     }
 
-    fun runTasks(sc : SeaCreatures) {
+    override val runTasks: (SeaCreatures, Boolean) -> Unit = { sc, doubleHook ->
         safeExecution {
             tasks.forEach { task ->
-                task.callback(sc, isDoubleHook)
+                task.callback(sc, doubleHook)
             }
         }
     }

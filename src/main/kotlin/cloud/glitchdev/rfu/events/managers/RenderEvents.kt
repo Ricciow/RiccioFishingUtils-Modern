@@ -15,7 +15,7 @@ object RenderEvents : AbstractEventManager<(WorldRenderContext) -> Unit, RenderE
         }
     }
 
-    fun runTasks(context : WorldRenderContext) {
+    override val runTasks: (WorldRenderContext) -> Unit = { context ->
         safeExecution {
             tasks.forEach { task -> task.callback(context) }
         }

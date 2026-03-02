@@ -3,7 +3,7 @@ package cloud.glitchdev.rfu.events.managers
 import cloud.glitchdev.rfu.events.AbstractEventManager
 
 object EntityRemovedEvents : AbstractEventManager<(entityId : Int) -> Unit, EntityRemovedEvents.EntityRemovedEvent>() {
-    fun runTasks(entityId : Int) {
+    override val runTasks: (Int) -> Unit = { entityId ->
         safeExecution {
             tasks.forEach { task -> task.callback(entityId) }
         }

@@ -19,7 +19,7 @@ object ItemUsedEvents : AbstractEventManager<(item: ItemStack) -> Unit, ItemUsed
         }
     }
 
-    fun runTasks(item: ItemStack) {
+    override val runTasks: (ItemStack) -> Unit = { item ->
         safeExecution {
             tasks.forEach { task -> task.callback(item) }
         }

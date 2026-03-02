@@ -26,7 +26,7 @@ object ConnectionEvents : RegisteredEvent {
     }
 
     object JoinEventManager : AbstractEventManager<(wasConnected : Boolean) -> Unit, JoinEventManager.JoinEvent>() {
-        fun runTasks(wasConnected: Boolean) {
+        override val runTasks: (Boolean) -> Unit = { wasConnected ->
             safeExecution {
                 tasks.forEach { it.callback(wasConnected) }
             }
@@ -46,7 +46,7 @@ object ConnectionEvents : RegisteredEvent {
     }
 
     object DisconnectEventManager : AbstractEventManager<() -> Unit, DisconnectEventManager.DisconnectEvent>() {
-        fun runTasks() {
+        override val runTasks: () -> Unit = {
             safeExecution {
                 tasks.forEach { it.callback() }
             }

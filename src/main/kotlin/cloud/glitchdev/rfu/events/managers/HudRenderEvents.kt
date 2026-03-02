@@ -36,7 +36,7 @@ object HudRenderEvents : AbstractEventManager<(GuiGraphics, Float) -> Unit, HudR
         }
     }
 
-    private fun runTasks(context: GuiGraphics, tickDelta: Float) {
+    override val runTasks: (GuiGraphics, Float) -> Unit = { context, tickDelta ->
         safeExecution {
             for (task in tasks) {
                 task.callback(context, tickDelta)

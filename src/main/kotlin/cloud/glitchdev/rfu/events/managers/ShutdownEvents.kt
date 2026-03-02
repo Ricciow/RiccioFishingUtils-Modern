@@ -14,7 +14,7 @@ object ShutdownEvents : AbstractEventManager<(Minecraft) -> Unit, ShutdownEvents
         }
     }
 
-    fun runTasks(client : Minecraft) {
+    override val runTasks: (Minecraft) -> Unit = { client ->
         safeExecution {
             tasks.forEach { task ->
                 task.callback(client)

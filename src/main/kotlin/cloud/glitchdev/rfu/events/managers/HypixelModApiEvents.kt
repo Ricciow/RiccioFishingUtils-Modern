@@ -23,7 +23,7 @@ object HypixelModApiEvents : RegisteredEvent {
     }
 
     object LocationEventManager : AbstractEventManager<(ClientboundLocationPacket) -> Unit, LocationEventManager.LocationEvent>() {
-        fun runTasks(packet: ClientboundLocationPacket) {
+        override val runTasks: (ClientboundLocationPacket) -> Unit = { packet ->
             safeExecution {
                 for (task in tasks) {
                     task.callback(packet)

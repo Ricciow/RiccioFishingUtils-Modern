@@ -93,12 +93,12 @@ object ChatEvents : RegisteredEvent {
     }
 
     object ChatEventManager : AbstractEventManager<(text: Component) -> Boolean, ChatEventManager.ChatEvent>() {
-        fun runTasks(text: Component): Boolean {
+        override val runTasks: (text: Component) -> Boolean = { text ->
             var result = true
             safeExecution {
                 for (event in tasks) if (!event.callback(text)) result = false
             }
-            return result
+            result
         }
 
         fun register(priority: Int = 20, callback: (text: Component) -> Boolean): ChatEvent {
@@ -115,12 +115,12 @@ object ChatEvents : RegisteredEvent {
     }
 
     object GameEventManager : AbstractEventManager<(text: Component, overlay: Boolean) -> Boolean, GameEventManager.GameEvent>() {
-        fun runTasks(text: Component, overlay: Boolean): Boolean {
+        override val runTasks: (text: Component, overlay: Boolean) -> Boolean = { text, overlay ->
             var result = true
             safeExecution {
                 for (event in tasks) if (!event.callback(text, overlay)) result = false
             }
-            return result
+            result
         }
 
         fun register(priority: Int = 20, callback: (text: Component, overlay: Boolean) -> Boolean): GameEvent {
