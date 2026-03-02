@@ -9,6 +9,7 @@
 - Added Zoom on etherwarp (I just really missed that)
 - Added option to make the health bar blue when the mob is shurikened (On by default)
 - Added a Dye Display HUD element
+- Added cake expired chat message alerts
 
 ### Fixes:
 - Made flare alert not proc when a firework is active

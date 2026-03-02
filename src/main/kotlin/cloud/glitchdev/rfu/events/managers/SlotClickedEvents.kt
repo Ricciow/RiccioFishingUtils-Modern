@@ -1,14 +1,9 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
-import cloud.glitchdev.rfu.events.RegisteredEvent
 import net.minecraft.world.inventory.Slot
 
-object SlotClickedEvents : AbstractEventManager<(Slot) -> Unit, SlotClickedEvents.SlotClickedEvent>(), RegisteredEvent {
-    override fun register() {
-       // Not required as it is called on AbstractContainerScreenMixin
-    }
-
+object SlotClickedEvents : AbstractEventManager<(Slot) -> Unit, SlotClickedEvents.SlotClickedEvent>() {
     override val runTasks: (Slot) -> Unit = { slot ->
         safeExecution {
             tasks.forEach { task ->

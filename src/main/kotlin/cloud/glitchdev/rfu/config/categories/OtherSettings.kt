@@ -34,6 +34,11 @@ object OtherSettings : Category("Other") {
         description = Literal("Shows the currently boosted dyes")
     }
 
+    var outdatedCake by boolean(true) {
+        name = Literal("Outdated cake alert")
+        description = Literal("Sends a message when a cake expires")
+    }
+
     init {
         dualSeparator {
             title = "Message Hiding"

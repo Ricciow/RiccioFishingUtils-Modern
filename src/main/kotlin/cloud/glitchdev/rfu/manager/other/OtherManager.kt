@@ -4,6 +4,7 @@ import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
+import cloud.glitchdev.rfu.manager.other.data.CakesEntry
 import cloud.glitchdev.rfu.manager.other.data.Entry
 import cloud.glitchdev.rfu.manager.other.data.StringEntry
 import cloud.glitchdev.rfu.utils.JsonFile
@@ -32,6 +33,7 @@ object OtherManager : RegisteredEvent {
                 override fun deserialize(json: JsonElement, typeOfT: java.lang.reflect.Type, context: JsonDeserializationContext): Entry {
                     return when (val type = json.asJsonObject["type"].asString) {
                         "StringEntry" -> context.deserialize(json, StringEntry::class.java)
+                        "CakesEntry" -> context.deserialize(json, CakesEntry::class.java)
                         else -> throw JsonParseException("Unknown Entry type: $type")
                     }
                 }
