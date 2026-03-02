@@ -16,18 +16,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ClientPacketListenerMixin {
     @Inject(method = "handleContainerContent", at = @At("HEAD"))
     private void onContainerContentPacket(ClientboundContainerSetContentPacket packet, CallbackInfo ci) {
-        ContainerEvents.INSTANCE.runTasks(packet.containerId(), packet.items());
+        ContainerEvents.INSTANCE.getRunTasks().invoke(packet.containerId(), packet.items());
     }
 
     @Inject(method = "handleRemoveEntities", at = @At("HEAD"))
     private void onEntitiesRemoved(ClientboundRemoveEntitiesPacket packet, CallbackInfo ci) {
         for (int entityId : packet.getEntityIds()) {
-            EntityRemovedEvents.INSTANCE.runTasks(entityId);
+            EntityRemovedEvents.INSTANCE.getRunTasks().invoke(entityId);
         }
     }
 
     @Inject(method = "handleContainerSetSlot", at = @At("HEAD"))
     private void handleContainerSetSlot(ClientboundContainerSetSlotPacket packet, CallbackInfo ci) {
-        SetSlotEvents.INSTANCE.runTasks(packet.getContainerId(), packet.getSlot(), packet.getItem());
+        SetSlotEvents.INSTANCE.getRunTasks().invoke(packet.getContainerId(), packet.getSlot(), packet.getItem());
     }
 }

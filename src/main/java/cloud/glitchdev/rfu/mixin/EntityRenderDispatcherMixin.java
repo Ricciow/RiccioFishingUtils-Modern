@@ -26,6 +26,6 @@ public class EntityRenderDispatcherMixin {
             CallbackInfoReturnable<Boolean> cir
     ) {
         Cancelable<Boolean> cancelWrapper = new Cancelable<>(cir, false);
-        EntityRenderEvents.INSTANCE.runTasks(entity, cancelWrapper);
+        EntityRenderEvents.INSTANCE.getRunTasks().invoke(entity, cancelWrapper);
     }
 }

@@ -14,7 +14,7 @@ public class AbstractContainerScreenMixin {
     @Inject(method = "slotClicked", at = @At("HEAD"))
     private void onSlotClicked(Slot slot, int slotId, int mouseButton, ClickType type, CallbackInfo ci) {
         if (slot != null && slotId >= 0) {
-            SlotClickedEvents.INSTANCE.runTasks(slot);
+            SlotClickedEvents.INSTANCE.getRunTasks().invoke(slot);
         }
     }
 }

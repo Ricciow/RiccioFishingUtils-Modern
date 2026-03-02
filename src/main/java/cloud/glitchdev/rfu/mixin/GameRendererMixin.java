@@ -15,6 +15,6 @@ public class GameRendererMixin {
     private void onGetFov(Camera camera, float partialTick, boolean useFOVSetting, CallbackInfoReturnable<Float> cir) {
         Cancelable<Float> cancelable = new Cancelable<>(cir, null);
 
-        FovEvents.INSTANCE.runTasks(cancelable);
+        FovEvents.INSTANCE.getRunTasks().invoke(cancelable);
     }
 }

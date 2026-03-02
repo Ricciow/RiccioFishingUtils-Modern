@@ -24,7 +24,7 @@ public abstract class ConfigScreenMixin implements ConfigScreenInvoker {
 
     @Inject(method = "onClose", at = @At("HEAD"))
     void onClose(CallbackInfo ci) {
-        CloseConfigEvents.INSTANCE.runTasks();
+        CloseConfigEvents.INSTANCE.getRunTasks().invoke();
     }
 
     @Override
