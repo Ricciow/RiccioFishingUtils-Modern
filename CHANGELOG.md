@@ -15,6 +15,7 @@
 - Made flare alert not proc when a firework is active
 - Pet Display now updates the displayed level when your equipped pet levels up
 - Fixed crash and disconnect caused by null entries in the drops save file (Gson null-safety bypass); both `drops` and `dyeDrops` lists are now purged of nulls before use
+- Fixed a typo on Scuttler that would cause it to not be detected as a rare sc
 
 ### Back-end:
 - Added `safeExecution(mainThread, func)` to `AbstractEventManager` for try-catch wrapped execution with `RFULogger` error reporting

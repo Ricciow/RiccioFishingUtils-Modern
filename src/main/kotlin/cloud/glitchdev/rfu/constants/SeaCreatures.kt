@@ -162,8 +162,8 @@ enum class SeaCreatures(
     FRIED_CHICKEN("Fried Chicken", "Smells of burning. Must be a Fried Chicken.", LAVA, HOTSPOT_LAVA),
     @SerializedName("Fireproof Witch")
     FIREPROOF_WITCH("Fireproof Witch", "Trouble's brewing, it's a Fireproof Witch!", LAVA, HOTSPOT_LAVA),
-    @SerializedName("Fiery Scutter")
-    FIERY_SCUTTER("Fiery Scutter", "A Fiery Scuttler inconspicuously waddles up to you, friends in tow.", LAVA, HOTSPOT_LAVA, true),
+    @SerializedName("Fiery Scuttler")
+    FIERY_SCUTTER("Fiery Scuttler", "A Fiery Scuttler inconspicuously waddles up to you, friends in tow.", LAVA, HOTSPOT_LAVA, true),
     @SerializedName("Ragnarok")
     RAGNAROK("Ragnarok", "The sky darkens and the air thickens. The end times are upon us: Ragnarok is here.", LAVA, HOTSPOT_LAVA, true);
 
