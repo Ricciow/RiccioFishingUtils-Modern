@@ -11,7 +11,8 @@ import java.util.concurrent.CompletableFuture
 
 class StringListArgumentType(
     private val stringList: List<String>,
-    private val greedy: Boolean = false
+    private val greedy: Boolean = false,
+    private val exclusive  : Boolean = true
 ) : ArgumentType<String> {
     constructor(vararg strings : String, greedy: Boolean = false) : this(strings.toList(), greedy)
 
@@ -22,12 +23,17 @@ class StringListArgumentType(
             reader.cursor = reader.totalLength
         }
 
-        return stringList.find { it == input }
-            ?: throw SimpleCommandExceptionType(
+        val result = stringList.find { it == input }
+
+        if(result == null && exclusive) {
+            throw SimpleCommandExceptionType(
                 Component.literal(
                     "Invalid argument: '$input'.",
                 )
             ).createWithContext(reader)
+        }
+
+        return result ?: input
     }
 
     override fun <S> listSuggestions(

@@ -10,6 +10,7 @@
 - Added option to make the health bar blue when the mob is shurikened (On by default)
 - Added a Dye Display HUD element
 - Added cake expired chat message alerts
+- Added /wc command to re-send messages on different chats
 
 ### Fixes:
 - Made flare alert not proc when a firework is active
