@@ -2,7 +2,7 @@ package cloud.glitchdev.rfu.manager.mob
 
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.MobDetectEvents
+import cloud.glitchdev.rfu.events.managers.MobEvents
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
@@ -26,7 +26,7 @@ object MobManager : RegisteredEvent {
             scanEntities(world)
             reverifyModels(world)
             validateCurrentEntities()
-            MobDetectEvents.runTasks(uniqueSbEntities.toSet())
+            MobEvents.MobDetectEventManager.runTasks(uniqueSbEntities.toSet())
         }
 
         registerJoinEvent {
@@ -92,6 +92,7 @@ object MobManager : RegisteredEvent {
             it.updateEntityData()
             it.isRemoved()
         }
+        MobEvents.MobDisposeEventManager.runTasks(toRemove.toSet())
         toRemove.forEach { removeEntity(it) }
     }
 
@@ -155,8 +156,11 @@ object MobManager : RegisteredEvent {
     }
 
     fun clearAll() {
+        MobEvents.MobDisposeEventManager.runTasks(uniqueSbEntities)
         sbEntities.clear()
-        uniqueSbEntities.forEach { it.dispose() }
+        uniqueSbEntities.forEach {
+            it.dispose()
+        }
         uniqueSbEntities.clear()
     }
 }

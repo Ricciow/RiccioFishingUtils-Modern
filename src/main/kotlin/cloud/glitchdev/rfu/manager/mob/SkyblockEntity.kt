@@ -11,12 +11,15 @@ import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.decoration.ArmorStand
 import java.awt.Color
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 class SkyblockEntity(
     var nameTagEntity: ArmorStand,
     var modelEntity: LivingEntity,
 ) {
     lateinit var sbName: String
+    val createdAt : Instant = Clock.System.now()
     var health: String = "0"
     var maxHealth: String = "0"
     var isShurikened: Boolean = false
