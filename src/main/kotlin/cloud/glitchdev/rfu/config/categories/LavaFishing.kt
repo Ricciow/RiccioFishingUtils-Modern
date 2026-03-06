@@ -7,4 +7,9 @@ object LavaFishing : Category("Lava Fishing") {
         name = Literal("Jawbus hard mode")
         description = Literal("Pro hint: Don't die")
     }
+
+    var diedJawbusAlert by boolean(true) {
+        name = Literal("Jawbus Death Alert")
+        description = Literal("Sends an alert whenever someone dies to jawbus")
+    }
 }

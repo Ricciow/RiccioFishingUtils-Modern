@@ -12,6 +12,7 @@
 - Added cake expired chat message alerts
 - Added /wc command to re-send messages on different chats
 - Added time to kill rare sea creatures
+- Added an alert whenever someone dies to jawbus
 
 ### Fixes:
 - Made flare alert not proc when a firework is active
