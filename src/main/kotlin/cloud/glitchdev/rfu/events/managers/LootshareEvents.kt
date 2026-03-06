@@ -49,6 +49,8 @@ object LootshareEvents : AbstractEventManager<(contributors: List<String>, items
 
         registerSetSlotEvent { containerId, slot, item ->
             if (containerId != PLAYER_INVENTORY_ID || item.isEmpty) return@registerSetSlotEvent
+            //Hotbar/Inventory
+            if (slot !in 9..44) return@registerSetSlotEvent
 
             val player = Minecraft.getInstance().player ?: return@registerSetSlotEvent
             val previousItem = player.inventoryMenu.getSlot(slot).item
