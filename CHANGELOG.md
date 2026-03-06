@@ -22,6 +22,7 @@
 - Fixed a typo on Scuttler that would cause it to not be detected as a rare sc
 - Made the re-finding of models more strict to hopefully prevent thunder sparks being marked as other entities
 - Made catch tracker initialize every mob so catches should be tracked before the first catch.
+- Fixed a bug which would cause queued party messages outside parties to get sent all at once when joining a party.
 
 ### Back-end:
 - Added `safeExecution(mainThread, func)` to `AbstractEventManager` for try-catch wrapped execution with `RFULogger` error reporting

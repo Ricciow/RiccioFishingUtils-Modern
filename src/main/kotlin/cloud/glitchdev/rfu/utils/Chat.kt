@@ -19,6 +19,9 @@ object Chat {
             while (queue.isNotEmpty()) {
                 if(Party.inParty) {
                     sendCommand("pc ${queue.removeFirst()}")
+                } else {
+                    queue.removeFirst()
+                    continue
                 }
                 delay(500)
             }
