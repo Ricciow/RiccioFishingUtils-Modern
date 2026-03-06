@@ -19,6 +19,7 @@
 - Fixed crash and disconnect caused by null entries in the drops save file (Gson null-safety bypass); both `drops` and `dyeDrops` lists are now purged of nulls before use
 - Fixed a typo on Scuttler that would cause it to not be detected as a rare sc
 - Made the re-finding of models more strict to hopefully prevent thunder sparks being marked as other entities
+- Made catch tracker initialize every mob so catches should be tracked before the first catch.
 
 ### Back-end:
 - Added `safeExecution(mainThread, func)` to `AbstractEventManager` for try-catch wrapped execution with `RFULogger` error reporting

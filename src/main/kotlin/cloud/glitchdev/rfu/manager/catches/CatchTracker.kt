@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.manager.catches
 
+import cloud.glitchdev.rfu.constants.SeaCreatures
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.events.AutoRegister
@@ -36,6 +37,12 @@ object CatchTracker : RegisteredEvent {
 
         registerShutdownEvent {
             catchesFile.save()
+        }
+
+        //Initialize every sc for accurate tracking
+        for(sc in SeaCreatures.entries) {
+            println(sc.scName)
+            catchHistory.getOrAdd(sc)
         }
     }
 
