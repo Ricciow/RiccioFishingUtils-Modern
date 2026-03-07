@@ -10,5 +10,6 @@ object DebugCommand : AbstractCommand("rfudebug") {
         append(Chat)
         append(Title)
         append(Entities)
+        append(Sound)
     }
 }

@@ -17,19 +17,23 @@ class StringListArgumentType(
     constructor(vararg strings : String, greedy: Boolean = false) : this(strings.toList(), greedy)
 
     override fun parse(reader: StringReader): String {
-        val input = if(greedy) reader.remaining else reader.readString()
-
-        if(greedy) {
+        val input = if (greedy) {
+            val remaining = reader.remaining
             reader.cursor = reader.totalLength
+            remaining
+        } else {
+            val start = reader.cursor
+            while (reader.canRead() && reader.peek() != ' ') {
+                reader.skip()
+            }
+            reader.string.substring(start, reader.cursor)
         }
 
         val result = stringList.find { it == input }
 
-        if(result == null && exclusive) {
+        if (result == null && exclusive) {
             throw SimpleCommandExceptionType(
-                Component.literal(
-                    "Invalid argument: '$input'.",
-                )
+                Component.literal("Invalid argument: '$input'.")
             ).createWithContext(reader)
         }
 

@@ -1,0 +1,16 @@
+{
+  "rare_sc": {
+    "category": "player",
+    "subtitle": "subtitles.rfu.rare_sc",
+    "sounds": [
+      "rfu:rare_sc"
+    ]
+  },
+  "death": {
+    "category": "player",
+    "subtitle": "subtitles.rfu.death",
+    "sounds": [
+      "rfu:death"
+    ]
+  }
+}

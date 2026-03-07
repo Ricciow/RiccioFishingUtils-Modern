@@ -44,6 +44,12 @@ class FeatureProcessor(
                 loaderFuncName = "registerCommands",
                 methodToCall = "register",
                 requiredSuperType = "cloud.glitchdev.rfu.utils.command.AbstractCommand"
+            ),
+            GeneratorSpec(
+                annotation = "cloud.glitchdev.rfu.events.InstantRegister",
+                loaderFuncName = "registerInstantEvents",
+                methodToCall = "instantRegister",
+                requiredSuperType = "cloud.glitchdev.rfu.events.InstantRegisteredEvent"
             )
         )
 

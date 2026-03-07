@@ -11,5 +11,6 @@
 ### Back-end:
 - DeployableManager now owns its own scanning behind a generic `DeployableType` interface
 - Added settings migration manager that is able to migrate settings upon updates.
+- Added Sound Playing capabilities
 
 ### Other:
