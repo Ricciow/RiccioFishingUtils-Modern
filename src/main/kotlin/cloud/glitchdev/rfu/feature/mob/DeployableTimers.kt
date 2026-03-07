@@ -7,6 +7,7 @@ import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.gui.hud.elements.DeployablesDisplay
 import cloud.glitchdev.rfu.manager.mob.DeployableManager
 import cloud.glitchdev.rfu.manager.mob.DeployableType
+import cloud.glitchdev.rfu.utils.Sounds
 import cloud.glitchdev.rfu.utils.Title
 
 @RFUFeature
@@ -23,6 +24,10 @@ object DeployableTimers : Feature {
 
                 if (wasActive && !isActive && alertEnabled(type)) {
                     Title.showTitle(type.expiredTitle)
+
+                    if(GeneralFishing.deployableExpiredSound) {
+                        Sounds.playSound("rfu:deployable_expired", 1f, GeneralFishing.deployableExpiredVolume)
+                    }
                 }
 
                 previouslyActive[type] = isActive

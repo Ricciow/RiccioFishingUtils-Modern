@@ -1,8 +1,11 @@
 # v1.5.0 - ???
 
 ### Features:
-- Added the classic rare sc sound from old RFU
-- Added the jawbus death sound from old RFU
+- Added the classic rare sc sound from old RFU (rfu:rare_sc)
+- Added the jawbus death sound from old RFU (rfu:death)
+- Added a sound for deployable expired (rfu:deployable_expired (event))
+
+(All of these sounds can be modified through a resourcepack, [Guide](https://minecraft.wiki/w/Tutorial:Creating_a_resource_pack))
 
 ### Changes:
 - Merged Flare Timer and Umberella Timer into a single unified Deployables HUD with a per-type toggle; 

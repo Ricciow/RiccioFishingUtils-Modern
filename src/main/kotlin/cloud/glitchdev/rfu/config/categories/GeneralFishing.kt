@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
+import cloud.glitchdev.rfu.config.categories.RareScSettings.detectionAlert
 import cloud.glitchdev.rfu.constants.Dyes
 import cloud.glitchdev.rfu.constants.RareDrops
 import cloud.glitchdev.rfu.manager.mob.DeployableType
@@ -172,6 +173,22 @@ object GeneralFishing : Category("General Fishing") {
         name = Literal("Deployable Alerts")
         description = Literal("Select which deployable will cause an alert.")
         condition = { deployableDisplay }
+    }
+
+    var deployableExpiredSound by observable(boolean(false) {
+        name = Literal("Expired Sound")
+        description = Literal("Plays a sound whenever a deployable expires.")
+        condition = { detectionAlert }
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var deployableExpiredVolume by float(0.1f) {
+        name = Literal("Sound Volume")
+        description = Literal("The volume for the expired sound")
+        range = 0f..1f
+        slider = true
+        condition = { deployableExpiredAlert && deployableExpiredSound }
     }
 
     init {

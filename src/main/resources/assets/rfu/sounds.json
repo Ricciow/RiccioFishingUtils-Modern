@@ -20,5 +20,15 @@
         "stream": false
       }
     ]
+  },
+  "deployable_expired": {
+    "category": "player",
+    "subtitle": "Deployable Expired",
+    "sounds": [
+      {
+        "name": "entity.elder_guardian.curse",
+        "type": "event"
+      }
+    ]
   }
 }

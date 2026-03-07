@@ -15,6 +15,7 @@ object Sounds : InstantRegisteredEvent {
     override fun instantRegister() {
         registerSound("rare_sc")
         registerSound("death")
+        registerSound("deployable_expired")
     }
 
     fun playSound(id: String, pitch: Float = 1f, volume: Float = 1f) {
