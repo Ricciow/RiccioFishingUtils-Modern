@@ -4,6 +4,7 @@ import cloud.glitchdev.rfu.constants.SeaCreatures
 import cloud.glitchdev.rfu.config.Category
 import cloud.glitchdev.rfu.constants.Dyes
 import cloud.glitchdev.rfu.constants.RareDrops
+import cloud.glitchdev.rfu.manager.mob.DeployableType
 import cloud.glitchdev.rfu.utils.dsl.escapeForRegex
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
@@ -225,24 +226,30 @@ object GeneralFishing : Category("General Fishing") {
         }
     }
 
-    var flareTimerDisplay by boolean(true) {
-        name = Literal("Flare Timer")
-        description = Literal("Enables the Flare Timer display")
+    var deployableDisplay by observable(boolean(true) {
+        name = Literal("Deployable Display")
+        description = Literal("Toggles the deployable display")
+    }) { _, _ ->
+        reloadScreen()
     }
 
-    var flareAlert by boolean(true) {
-        name = Literal("Expiration Alert")
-        description = Literal("Sends an alert in your screen when the flare expires.")
+    var deployableTimerDisplay by enums(*DeployableType.entries.toTypedArray()) {
+        name = Literal("Deployable Timers")
+        description = Literal("Select which deployable timers to display.")
+        condition = { deployableDisplay }
     }
 
-    var umberellaTimerDisplay by boolean(true) {
-        name = Literal("Umberella Timer")
-        description = Literal("Enables the umberella Timer display")
+    var deployableExpiredAlert by observable(boolean(true) {
+        name = Literal("Deployable Display")
+        description = Literal("Toggles the deployable display")
+    }) { _, _ ->
+        reloadScreen()
     }
 
-    var umberellaAlert by boolean(true) {
-        name = Literal("Expiration Alert")
-        description = Literal("Sends an alert in your screen when the umberella expires.")
+    var deployableAlertTypes by enums(*DeployableType.entries.toTypedArray()) {
+        name = Literal("Deployable Alerts")
+        description = Literal("Select which deployable will cause an alert.")
+        condition = { deployableDisplay }
     }
 
     init {

@@ -43,29 +43,10 @@ object MobManager : RegisteredEvent {
     }
 
     private fun scanEntities(world: ClientLevel) {
-        var foundAnyFlare = false
-        var largestUmberellaTime : Long? = null
         world.entitiesForRendering().forEach { entity ->
             if (entity is ArmorStand) {
                 checkSbEntity(entity, world)
-                val time = DeployableManager.checkUmberella(entity)
-                if(time != null && time > (largestUmberellaTime ?: 0)) {
-                    largestUmberellaTime = time
-                }
             }
-
-            if (DeployableManager.checkFlare(entity)) {
-                foundAnyFlare = true
-            }
-        }
-
-        if (!foundAnyFlare) {
-            DeployableManager.resetFlare()
-        }
-        if (largestUmberellaTime == null) {
-            DeployableManager.resetUmberella()
-        } else {
-            DeployableManager.activeUmberellaTime = largestUmberellaTime
         }
     }
 
