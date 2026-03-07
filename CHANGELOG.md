@@ -4,6 +4,7 @@
 - Added the classic rare sc sound from old RFU (rfu:rare_sc)
 - Added the jawbus death sound from old RFU (rfu:death)
 - Added a sound for deployable expired (rfu:deployable_expired (event))
+- Added a failed cast sound (rfu:failed_cast (event))
 
 (All of these sounds can be modified through a resourcepack, [Guide](https://minecraft.wiki/w/Tutorial:Creating_a_resource_pack))
 

@@ -6,6 +6,7 @@ import cloud.glitchdev.rfu.events.managers.EntityRemovedEvents.registerEntityRem
 import cloud.glitchdev.rfu.events.managers.ItemUsedEvents.registerItemUsedEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
+import cloud.glitchdev.rfu.utils.Sounds
 import cloud.glitchdev.rfu.utils.Title
 import cloud.glitchdev.rfu.utils.dsl.toMcCodes
 
@@ -37,6 +38,9 @@ object FailCastAlert : Feature {
             if(!sentAlert) {
                 sentAlert = true
                 Title.showTitle(FAILED_CAST_MESSAGE, "", 0, 5, 5) { !isFishing }
+                if(GeneralFishing.failCastSound) {
+                    Sounds.playSound("rfu:failed_cast", 1f, GeneralFishing.failCastVolume)
+                }
             }
         }
     }

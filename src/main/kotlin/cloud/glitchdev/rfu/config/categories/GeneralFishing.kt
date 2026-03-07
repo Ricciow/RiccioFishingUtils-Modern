@@ -243,4 +243,20 @@ object GeneralFishing : Category("General Fishing") {
         name = Literal("Failed cast alert")
         description = Literal("Sends an alert whenever a rod cast fails.")
     }
+
+    var failCastSound by observable(boolean(false) {
+        name = Literal("Expired Sound")
+        description = Literal("Plays a sound whenever a deployable expires.")
+        condition = { failCastAlert }
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var failCastVolume by float(1f) {
+        name = Literal("Sound Volume")
+        description = Literal("The volume for the expired sound")
+        range = 0f..1f
+        slider = true
+        condition = { failCastAlert && failCastSound }
+    }
 }

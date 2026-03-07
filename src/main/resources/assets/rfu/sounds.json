@@ -30,5 +30,16 @@
         "type": "event"
       }
     ]
+  },
+  "failed_cast": {
+    "category": "player",
+    "subtitle": "Catch Failed",
+    "sounds": [
+      {
+        "name": "block.note_block.bass",
+        "type": "event",
+        "pitch": 0.5
+      }
+    ]
   }
 }
