@@ -1,6 +1,7 @@
 # v1.5.0 - ???
 
 ### Features:
+- Added the classic rare sc sound from old RFU
 
 ### Changes:
 - Merged Flare Timer and Umberella Timer into a single unified Deployables HUD with a per-type toggle; 

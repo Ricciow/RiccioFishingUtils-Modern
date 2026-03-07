@@ -22,9 +22,27 @@ object RareScSettings : Category("Rare SCs") {
         description = Literal("Shows a sphere around rare sea creatures to display their lootshare range")
     }
 
-    var detectionAlert by boolean(false) {
+    var detectionAlert by observable(boolean(false) {
         name = Literal("Rare Sc Alert")
         description = Literal("Sends an alert whenever a rare SC is found.")
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var rareScSound by observable(boolean(false) {
+        name = Literal("Rare Sc Sound")
+        description = Literal("Plays a sound whenever a rare SC is found.")
+        condition = { detectionAlert }
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var rareScSoundVolume by float(0.5f) {
+        name = Literal("Sound Volume")
+        description = Literal("The volume for the rare SC sound")
+        range = 0f..1f
+        slider = true
+        condition = { detectionAlert && rareScSound }
     }
 
     var timeToKill by boolean(true) {

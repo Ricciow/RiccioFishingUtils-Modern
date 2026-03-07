@@ -6,6 +6,7 @@ import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDetectEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.manager.mob.SkyblockEntity
+import cloud.glitchdev.rfu.utils.Sounds
 import cloud.glitchdev.rfu.utils.Title
 
 @RFUFeature
@@ -27,6 +28,10 @@ object RareAlert : Feature {
                 result
             }.forEach { entity ->
                 Title.showTitle("§6§l[§fα§6§l] §3§l${entity.sbName} §6§l[§fα§6§l]") { !entity.isRemoved() }
+            }
+
+            if(newEntities.isNotEmpty() && RareScSettings.rareScSound) {
+                Sounds.playSound("rfu:rare_sc", 1f, RareScSettings.rareScSoundVolume)
             }
         }
     }
