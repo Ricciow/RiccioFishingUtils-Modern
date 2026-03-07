@@ -1,16 +1,24 @@
 {
   "rare_sc": {
     "category": "player",
-    "subtitle": "subtitles.rfu.rare_sc",
+    "subtitle": "Rare Catch",
     "sounds": [
-      "rfu:rare_sc"
+      {
+        "name": "rfu:rare_sc",
+        "preload": true,
+        "stream": false
+      }
     ]
   },
   "death": {
     "category": "player",
-    "subtitle": "subtitles.rfu.death",
+    "subtitle": "Someone Has Skill Issue",
     "sounds": [
-      "rfu:death"
+      {
+        "name": "rfu:death",
+        "preload": true,
+        "stream": false
+      }
     ]
   }
 }
