@@ -5,8 +5,8 @@ import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.gui.hud.elements.DeployablesDisplay
-import cloud.glitchdev.rfu.manager.mob.DeployableManager
-import cloud.glitchdev.rfu.manager.mob.DeployableType
+import cloud.glitchdev.rfu.data.mob.DeployableManager
+import cloud.glitchdev.rfu.data.mob.DeployableType
 import cloud.glitchdev.rfu.utils.Sounds
 import cloud.glitchdev.rfu.utils.Title
 

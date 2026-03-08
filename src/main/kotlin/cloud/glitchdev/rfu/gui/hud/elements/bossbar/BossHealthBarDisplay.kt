@@ -3,7 +3,7 @@
     import cloud.glitchdev.rfu.config.categories.RareScSettings
     import cloud.glitchdev.rfu.gui.hud.AbstractHudElement
     import cloud.glitchdev.rfu.gui.hud.HudElement
-    import cloud.glitchdev.rfu.manager.mob.SkyblockEntity
+    import cloud.glitchdev.rfu.data.mob.SkyblockEntity
     import gg.essential.elementa.components.UIContainer
     import gg.essential.elementa.constraints.CenterConstraint
     import gg.essential.elementa.constraints.SiblingConstraint

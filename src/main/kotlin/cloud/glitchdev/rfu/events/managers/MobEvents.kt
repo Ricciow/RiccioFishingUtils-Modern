@@ -1,7 +1,7 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
-import cloud.glitchdev.rfu.manager.mob.SkyblockEntity
+import cloud.glitchdev.rfu.data.mob.SkyblockEntity
 
 object MobEvents {
     fun registerMobDetectEvent(

@@ -7,8 +7,8 @@ import cloud.glitchdev.rfu.events.managers.SlotClickedEvents.registerSlotClicked
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.gui.hud.elements.PetDisplay
-import cloud.glitchdev.rfu.manager.other.OtherManager
-import cloud.glitchdev.rfu.manager.other.data.StringEntry
+import cloud.glitchdev.rfu.data.other.OtherManager
+import cloud.glitchdev.rfu.data.other.data.StringEntry
 import cloud.glitchdev.rfu.utils.dsl.removeFormatting
 import gg.essential.universal.utils.toFormattedString
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen

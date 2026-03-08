@@ -1,12 +1,12 @@
-package cloud.glitchdev.rfu.manager.other
+package cloud.glitchdev.rfu.data.other
 
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
-import cloud.glitchdev.rfu.manager.other.data.CakesEntry
-import cloud.glitchdev.rfu.manager.other.data.Entry
-import cloud.glitchdev.rfu.manager.other.data.StringEntry
+import cloud.glitchdev.rfu.data.other.data.CakesEntry
+import cloud.glitchdev.rfu.data.other.data.Entry
+import cloud.glitchdev.rfu.data.other.data.StringEntry
 import cloud.glitchdev.rfu.utils.JsonFile
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer

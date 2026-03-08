@@ -1,4 +1,4 @@
-package cloud.glitchdev.rfu.manager.catches
+package cloud.glitchdev.rfu.data.catches
 
 import cloud.glitchdev.rfu.constants.SeaCreatures
 import cloud.glitchdev.rfu.constants.text.TextColor

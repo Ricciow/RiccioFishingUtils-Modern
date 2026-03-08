@@ -6,8 +6,7 @@
 - Added a sound for deployable expired (rfu:deployable_expired (event))
 - Added a failed cast sound (rfu:failed_cast (event))
 
-(All of these sounds can be modified through a resourcepack, [Guide](https://minecraft.wiki/w/Tutorial:Creating_a_resource_pack))
-
+    (All of these sounds can be modified through a resourcepack, [Guide](https://minecraft.wiki/w/Tutorial:Creating_a_resource_pack))
 - Added /rfuclearcakes commands to stop the alerts from cake expired
 
 ### Changes:
@@ -22,5 +21,6 @@
 - DeployableManager now owns its own scanning behind a generic `DeployableType` interface
 - Added settings migration manager that is able to migrate settings upon updates.
 - Added Sound Playing capabilities
+- Renamed manager package to data
 
 ### Other:

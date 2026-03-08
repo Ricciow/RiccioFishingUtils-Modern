@@ -1,4 +1,4 @@
-package cloud.glitchdev.rfu.manager.other.data
+package cloud.glitchdev.rfu.data.other.data
 
 data class StringEntry(
     var value : String?

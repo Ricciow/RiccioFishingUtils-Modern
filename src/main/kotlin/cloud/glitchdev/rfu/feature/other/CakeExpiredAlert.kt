@@ -6,8 +6,8 @@ import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
-import cloud.glitchdev.rfu.manager.other.OtherManager
-import cloud.glitchdev.rfu.manager.other.data.CakesEntry
+import cloud.glitchdev.rfu.data.other.OtherManager
+import cloud.glitchdev.rfu.data.other.data.CakesEntry
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.World

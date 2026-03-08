@@ -4,8 +4,8 @@ import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.events.managers.DropEvents
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
-import cloud.glitchdev.rfu.manager.drops.DropManager
-import cloud.glitchdev.rfu.manager.drops.DropRecord
+import cloud.glitchdev.rfu.data.drops.DropManager
+import cloud.glitchdev.rfu.data.drops.DropRecord
 import cloud.glitchdev.rfu.utils.Chat.sendMessage
 import cloud.glitchdev.rfu.utils.Chat.sendPartyMessage
 import cloud.glitchdev.rfu.utils.dsl.toMcCodes

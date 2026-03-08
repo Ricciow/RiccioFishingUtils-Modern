@@ -4,7 +4,7 @@ import cloud.glitchdev.rfu.events.managers.HudRenderEvents.registerHudRenderEven
 import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.hud.AbstractHudElement
-import cloud.glitchdev.rfu.manager.hud.HudManager
+import cloud.glitchdev.rfu.data.hud.HudManager
 import cloud.glitchdev.rfu.utils.gui.Gui
 import cloud.glitchdev.rfu.utils.gui.setHidden
 import gg.essential.elementa.components.UIBlock

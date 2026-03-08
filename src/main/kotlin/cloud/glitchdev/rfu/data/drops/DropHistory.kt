@@ -1,8 +1,8 @@
-package cloud.glitchdev.rfu.manager.drops
+package cloud.glitchdev.rfu.data.drops
 
 import cloud.glitchdev.rfu.constants.Dyes
 import cloud.glitchdev.rfu.constants.RareDrops
-import cloud.glitchdev.rfu.manager.catches.CatchTracker.catchHistory
+import cloud.glitchdev.rfu.data.catches.CatchTracker.catchHistory
 
 class DropHistory {
     var drops : MutableList<DropEntry> = mutableListOf()

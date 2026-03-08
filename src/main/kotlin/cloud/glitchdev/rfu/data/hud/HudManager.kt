@@ -1,4 +1,4 @@
-package cloud.glitchdev.rfu.manager.hud
+package cloud.glitchdev.rfu.data.hud
 
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent

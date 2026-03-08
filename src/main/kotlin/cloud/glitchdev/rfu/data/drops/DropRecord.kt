@@ -1,4 +1,4 @@
-package cloud.glitchdev.rfu.manager.drops
+package cloud.glitchdev.rfu.data.drops
 
 import kotlin.time.Clock
 import kotlin.time.Instant

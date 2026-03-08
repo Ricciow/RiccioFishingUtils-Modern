@@ -1,4 +1,4 @@
-package cloud.glitchdev.rfu.manager.hud
+package cloud.glitchdev.rfu.data.hud
 
 class HudConfig {
     var hudElements : MutableList<HudElement> = mutableListOf()

@@ -5,8 +5,8 @@ import cloud.glitchdev.rfu.constants.RareDrops
 import cloud.glitchdev.rfu.constants.text.TextColor.*
 import cloud.glitchdev.rfu.constants.text.TextEffects.*
 import cloud.glitchdev.rfu.constants.text.TextStyle
-import cloud.glitchdev.rfu.manager.drops.DropManager
-import cloud.glitchdev.rfu.manager.drops.DropRecord
+import cloud.glitchdev.rfu.data.drops.DropManager
+import cloud.glitchdev.rfu.data.drops.DropRecord
 import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.command.AbstractCommand

@@ -1,4 +1,4 @@
-package cloud.glitchdev.rfu.manager.mob
+package cloud.glitchdev.rfu.data.mob
 
 import cloud.glitchdev.rfu.constants.text.TextColor
 

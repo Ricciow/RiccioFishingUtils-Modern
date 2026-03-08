@@ -2,7 +2,7 @@ package cloud.glitchdev.rfu.gui.hud.elements.bossbar
 
 import cloud.glitchdev.rfu.config.categories.RareScSettings
 import cloud.glitchdev.rfu.gui.UIScheme
-import cloud.glitchdev.rfu.manager.mob.SkyblockEntity
+import cloud.glitchdev.rfu.data.mob.SkyblockEntity
 import cloud.glitchdev.rfu.utils.dsl.parseHealthValue
 import cloud.glitchdev.rfu.utils.dsl.toMcCodes
 import cloud.glitchdev.rfu.utils.gui.setHidden

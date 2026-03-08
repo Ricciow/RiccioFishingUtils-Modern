@@ -6,8 +6,8 @@ import cloud.glitchdev.rfu.constants.text.TextColor.YELLOW
 import cloud.glitchdev.rfu.constants.text.TextEffects.BOLD
 import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
-import cloud.glitchdev.rfu.manager.mob.DeployableManager
-import cloud.glitchdev.rfu.manager.mob.DeployableType
+import cloud.glitchdev.rfu.data.mob.DeployableManager
+import cloud.glitchdev.rfu.data.mob.DeployableType
 import cloud.glitchdev.rfu.utils.dsl.toReadableString
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
