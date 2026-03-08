@@ -16,6 +16,7 @@
 
 ### Fixes:
 - Fixed jawbus hard mode not saving before the funny
+- Removed a debug println that was left on last release
 
 ### Back-end:
 - DeployableManager now owns its own scanning behind a generic `DeployableType` interface

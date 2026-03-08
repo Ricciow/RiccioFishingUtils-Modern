@@ -41,7 +41,6 @@ object CatchTracker : RegisteredEvent {
 
         //Initialize every sc for accurate tracking
         for(sc in SeaCreatures.entries) {
-            println(sc.scName)
             catchHistory.getOrAdd(sc)
         }
     }
