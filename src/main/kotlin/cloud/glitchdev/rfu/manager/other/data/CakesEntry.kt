@@ -11,6 +11,10 @@ data class CakesEntry(
         return cakes.find { it.name == name }
     }
 
+    fun clearCakeList() {
+        cakes.clear()
+    }
+
     fun getOutdatedCakes() : List<Cake> {
         return cakes.filter { it.isOutdated() }
     }

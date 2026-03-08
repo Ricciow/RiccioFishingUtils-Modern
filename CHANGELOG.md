@@ -8,6 +8,8 @@
 
 (All of these sounds can be modified through a resourcepack, [Guide](https://minecraft.wiki/w/Tutorial:Creating_a_resource_pack))
 
+- Added /rfuclearcakes commands to stop the alerts from cake expired
+
 ### Changes:
 - Merged Flare Timer and Umberella Timer into a single unified Deployables HUD with a per-type toggle; 
 - Moved Rare Sea Creatures settings to its own category  

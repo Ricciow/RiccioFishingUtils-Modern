@@ -11,6 +11,10 @@ import cloud.glitchdev.rfu.manager.other.data.CakesEntry
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.World
+import cloud.glitchdev.rfu.utils.command.Command
+import cloud.glitchdev.rfu.utils.command.SimpleCommand
+import com.mojang.brigadier.context.CommandContext
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 
 @RFUFeature
 object CakeExpiredAlert : Feature {
@@ -51,6 +55,23 @@ object CakeExpiredAlert : Feature {
         registerGameEvent(CAKE_EATEN_REGEX) { _, _, match ->
             val effect = match?.groupValues?.getOrNull(1) ?: return@registerGameEvent
             cakes.eatCake(effect)
+        }
+    }
+
+    @Command
+    object ClearCakes : SimpleCommand("rfuclearcakes") {
+        override val description: String = "Clears the saved cake timers."
+
+        override fun execute(context: CommandContext<FabricClientCommandSource>): Int {
+            val cakes = OtherManager.getField("cakes") {
+                CakesEntry()
+            } as? CakesEntry ?: CakesEntry()
+
+            cakes.clearCakeList()
+
+            context.source.sendFeedback(TextUtils.rfuLiteral("Successfully cleared cake list.", TextColor.LIGHT_GREEN))
+
+            return 1
         }
     }
 }
