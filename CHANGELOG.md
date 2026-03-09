@@ -8,6 +8,7 @@
 
     (All of these sounds can be modified through a resourcepack, [Guide](https://minecraft.wiki/w/Tutorial:Creating_a_resource_pack))
 - Added /rfuclearcakes commands to stop the alerts from cake expired
+- Added achievements support
 
 ### Changes:
 - Merged Flare Timer and Umberella Timer into a single unified Deployables HUD with a per-type toggle; 
