@@ -30,29 +30,77 @@ client-side mod built using Fabric and Kotlin.
 
 The mod features a robust achievement system with automatic registration and persistence.
 
-* **Base Class:** Implement `BaseAchievement`, `NumericAchievement` (for counting), or `StageAchievement` (for multi-step tasks).
-* **Annotation:** Annotate the class/object with `@Achievement`.
-* **Required Fields:** `id`, `name`, `description`, `type` (NORMAL, SECRET, HIDDEN), and `difficulty` (EASY to IMPOSSIBLE).
-* **Logic:** Define triggers in `setupListeners()`. Use `complete()`, `addProgress()`, or `advanceStage()` to update state.
-* **Verification Stop:** The system automatically prevents re-registering listeners for already completed achievements.
+#### Creating an Achievement
+
+To create a new achievement, create a Kotlin `object` and annotate it with `@Achievement`. Choose the appropriate base class:
+
+1.  **`BaseAchievement`**: For simple, one-time tasks or custom logic.
+2.  **`NumericAchievement`**: For counting tasks (e.g., "Catch 100 fish").
+3.  **`StageAchievement`**: For multi-step tasks (e.g., "Catch Fish A, then Fish B, then Fish C").
+
+#### Required Fields
+
+Each achievement MUST define:
+
+*   **`id`**: Unique identifier (String).
+*   **`name`**: Display name.
+*   **`description`**: Display description.
+*   **`type`**: `AchievementType` (NORMAL, SECRET, HIDDEN).
+*   **`difficulty`**: `AchievementDifficulty` (EASY to IMPOSSIBLE).
+*   **`category`**: `AchievementCategory` (GENERAL, FISHING, COMBAT, etc.).
+
+#### Progress Tracking
+
+For progression to display correctly in the `AchievementWindow`:
+
+*   **`NumericAchievement`**: Automatically uses `currentCount` and `targetCount`. Call `addProgress(amount)` to update.
+*   **`StageAchievement`**: Automatically uses `currentStage` (starts at 1) and `targetStage`. Call `advanceStage()` to update.
+*   **`BaseAchievement`**: If you want to show numerical progress (e.g., "2/5"), override:
+    ```kotlin
+    override val currentProgress: Int get() = myValue
+    override val targetProgress: Int get() = myGoal
+    ```
+    Also update `_progress = currentProgress.toFloat() / targetProgress.toFloat()` to drive the progress bar.
+
+#### Implementation Workflow
+
+1.  **Listeners**: Register event listeners in `setupListeners()`. The system automatically unregisters these when the achievement is completed.
+2.  **Completion**: Call `complete()` to finish the achievement immediately.
+3.  **Persistence**: For complex state (like a list of caught IDs), override `saveState()` and `loadState()`.
 
 **Example:**
 
 ```kotlin
 @Achievement
-object MyAchievement : NumericAchievement() {
-    override val id = "my_achievement"
-    override val name = "Example"
-    override val description = "Collect 10 items."
+object SeaCreatureExpert : BaseAchievement() {
+    override val id = "sc_expert"
+    override val name = "Marine Biologist"
+    override val description = "Catch 5 unique sea creatures."
     override val type = AchievementType.NORMAL
-    override val difficulty = AchievementDifficulty.EASY
-    override val targetCount = 10
+    override val difficulty = AchievementDifficulty.MEDIUM
+    override val category = AchievementCategory.COLLECTION
+
+    private val caughtIds = mutableSetOf<String>()
+    private val goal = 5
+
+    override val currentProgress: Int get() = caughtIds.size
+    override val targetProgress: Int get() = goal
 
     override fun setupListeners() {
-        activeListeners.add(registerSomeEvent { 
-            addProgress(1)
+        activeListeners.add(registerSeaCreatureCatchEvent { sc, _ ->
+            if (caughtIds.add(sc.id)) {
+                _progress = currentProgress.toFloat() / targetProgress.toFloat()
+                if (caughtIds.size >= goal) complete()
+            }
         })
     }
+
+    override fun loadState(progressData: Map<String, Any>) {
+        (progressData["ids"] as? List<*>)?.forEach { if (it is String) caughtIds.add(it) }
+        _progress = currentProgress.toFloat() / targetProgress.toFloat()
+    }
+
+    override fun saveState() = mapOf("ids" to caughtIds.toList())
 }
 ```
 
