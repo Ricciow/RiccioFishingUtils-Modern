@@ -31,15 +31,18 @@ object AchievementAlert : Feature {
         Sounds.playSound("rfu:achievement")
 
         val pair = achievement.difficulty.makePair()
+        val completedStage = achievement.currentStage - 1
+        val stageName = achievement.getStageName(completedStage) ?: achievement.name
+        val stageDesc = achievement.getStageDescription(completedStage) ?: achievement.description
 
-        val achievementText = Component.literal("${pair.second}[${achievement.name}]")
+        val achievementText = Component.literal("${pair.second}[$stageName]")
             .withStyle(
                 Style.EMPTY
-                    .withHoverEvent(HoverEvent.ShowText(Component.literal(achievement.description)))
+                    .withHoverEvent(HoverEvent.ShowText(Component.literal(stageDesc)))
             )
 
         Chat.sendMessage(
-            TextUtils.rfuLiteral("${pair.first}! You just completed stage ${achievement.currentStage-1} of ")
+            TextUtils.rfuLiteral("${pair.first}! You just completed stage $completedStage of ")
                 .append(achievementText)
         )
     }

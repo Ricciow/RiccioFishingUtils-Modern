@@ -40,6 +40,12 @@ object StageTestAchievement : StageAchievement() {
     override val category = AchievementCategory.GENERAL
     override val targetStage = 3
 
+    init {
+        addStageInfo(1, "Stage Master: The Beginning", "Start your journey by completing the first stage.")
+        addStageInfo(2, "Stage Master: Halfway There", "You've reached the second stage, keep going!")
+        addStageInfo(3, "Stage Master: Final Challenge", "One last stage to become the Master.")
+    }
+
     override fun setupListeners() {
         // Listeners for stage progression
     }

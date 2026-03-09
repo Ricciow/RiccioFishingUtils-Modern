@@ -56,6 +56,7 @@ For progression to display correctly in the `AchievementWindow`:
 
 *   **`NumericAchievement`**: Automatically uses `currentCount` and `targetCount`. Call `addProgress(amount)` to update.
 *   **`StageAchievement`**: Automatically uses `currentStage` (starts at 1) and `targetStage`. Call `advanceStage()` to update.
+Use addStageInfo() to add multiple names/descriptions. Achievement is completed when `currentStage > targetStage`
 *   **`BaseAchievement`**: If you want to show numerical progress (e.g., "2/5"), override:
     ```kotlin
     override val currentProgress: Int get() = myValue

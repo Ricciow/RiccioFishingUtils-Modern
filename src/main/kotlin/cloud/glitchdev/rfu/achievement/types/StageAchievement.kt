@@ -8,12 +8,23 @@ abstract class StageAchievement : BaseAchievement(), IStageAchievement {
     abstract override val targetStage: Int
     override val targetProgress: Int get() = targetStage
     
+    protected val stageNames = mutableMapOf<Int, String>()
+    protected val stageDescriptions = mutableMapOf<Int, String>()
+
+    override fun getStageName(stage: Int): String? = stageNames[stage]
+    override fun getStageDescription(stage: Int): String? = stageDescriptions[stage]
+
+    protected fun addStageInfo(stage: Int, name: String, description: String) {
+        stageNames[stage] = name
+        stageDescriptions[stage] = description
+    }
+
     override var currentStage: Int = 1
         protected set(value) {
             field = value
             _progress = if (targetStage > 1) (value - 1).toFloat() / (targetStage - 1).toFloat() else 1.0f
             
-            if (field >= targetStage) {
+            if (field > targetStage) {
                 complete()
             }
         }
