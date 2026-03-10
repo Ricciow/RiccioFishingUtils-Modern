@@ -45,6 +45,19 @@ abstract class StageAchievement : BaseAchievement(), IStageAchievement {
         AchievementProvider.fireAchievementStageUnlocked(this)
     }
 
+    override fun debugComplete() {
+        currentStage = targetStage
+    }
+
+    override fun debugReset() {
+        currentStage = 1
+        super.debugReset()
+    }
+
+    fun debugSetStage(stage: Int) {
+        currentStage = stage
+    }
+
     override fun loadState(progressData: Map<String, Any>) {
         super.loadState(progressData)
         val savedStage = (progressData["currentStage"] as? Number)?.toInt() ?: 1

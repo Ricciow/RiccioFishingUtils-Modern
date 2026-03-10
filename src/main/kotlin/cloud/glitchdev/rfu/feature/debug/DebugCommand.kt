@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.feature.debug
 
+import cloud.glitchdev.rfu.feature.debug.achievement.AchievementDebug
 import cloud.glitchdev.rfu.utils.command.AbstractCommand
 import cloud.glitchdev.rfu.utils.command.Command
 
@@ -11,5 +12,6 @@ object DebugCommand : AbstractCommand("rfudebug") {
         append(Title)
         append(Entities)
         append(Sound)
+        append(AchievementDebug)
     }
 }

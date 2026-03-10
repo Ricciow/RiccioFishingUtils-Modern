@@ -21,6 +21,15 @@ abstract class NumericAchievement : BaseAchievement() {
         currentCount += amount
     }
 
+    override fun debugComplete() {
+        currentCount = targetCount
+    }
+
+    override fun debugReset() {
+        currentCount = 0
+        super.debugReset()
+    }
+
     override fun loadState(progressData: Map<String, Any>) {
         super.loadState(progressData)
         val savedCount = (progressData["currentCount"] as? Number)?.toInt() ?: 0

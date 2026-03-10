@@ -40,6 +40,18 @@ abstract class BaseAchievement : IAchievement {
         AchievementProvider.fireAchievementUnlocked(this)
     }
 
+    open fun debugComplete() {
+        complete()
+    }
+
+    open fun debugReset() {
+        _isCompleted = false
+        _progress = 0.0f
+        unregisterAllListeners()
+        loadState(emptyMap())
+        setupListeners()
+    }
+
     protected fun unregisterAllListeners() {
         for (listener in activeListeners) {
             listener.unregister()

@@ -25,6 +25,8 @@ object AchievementManager : RegisteredEvent {
         registry[achievement.id] = achievement
     }
     
+    fun getAchievement(id: String): BaseAchievement? = registry[id]
+
     fun getRegistry(): Map<String, BaseAchievement> = registry
 
     fun isCompleted(id: String): Boolean {

@@ -31,6 +31,16 @@ abstract class NumericStageAchievement : StageAchievement() {
         currentCount += amount
     }
 
+    override fun debugComplete() {
+        currentStage = targetStage + 1
+    }
+
+    override fun debugReset() {
+        currentCount = 0
+        currentStage = 1
+        super.debugReset()
+    }
+
     override fun loadState(progressData: Map<String, Any>) {
         super.loadState(progressData)
         currentCount = (progressData["currentCount"] as? Number)?.toInt() ?: 0
