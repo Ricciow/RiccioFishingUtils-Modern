@@ -33,7 +33,7 @@ The mod features a robust achievement system with automatic registration and per
 #### Creating an Achievement
 
 To create a new achievement, create a Kotlin `object` and annotate it with `@Achievement`. This class should be located
-inside the `cloud.glitchdev.rfu.feature.achievement.achievements` package. Choose the appropriate base class:
+inside the `cloud.glitchdev.rfu.achievement.achievements` package. Choose the appropriate base class:
 
 1.  **`BaseAchievement`**: For simple, one-time tasks or custom logic.
 2.  **`NumericAchievement`**: For counting tasks (e.g., "Catch 100 fish").
