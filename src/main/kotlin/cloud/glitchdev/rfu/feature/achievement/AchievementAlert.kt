@@ -77,11 +77,11 @@ object AchievementAlert : Feature {
 
     private fun AchievementDifficulty.makePair() : Pair<String, TextColor> {
         return when(this) {
-            AchievementDifficulty.EASY -> "Nice" to TextColor.LIGHT_GREEN
-            AchievementDifficulty.MEDIUM -> "Solid" to TextColor.LIGHT_GREEN
-            AchievementDifficulty.HARD -> "Incredible" to TextColor.LIGHT_GREEN
-            AchievementDifficulty.VERY_HARD -> "Unreal" to TextColor.PURPLE
-            AchievementDifficulty.IMPOSSIBLE -> "Legendary" to TextColor.PURPLE
+            AchievementDifficulty.EASY -> listOf("Nice", "Easy", "Simple", "Clean", "Quick", "Smooth").random() to TextColor.LIGHT_GREEN
+            AchievementDifficulty.MEDIUM -> listOf("Solid", "Decent", "Great", "Good", "Respectable", "Well Done", "Impressive", "Nice Job").random() to TextColor.LIGHT_GREEN
+            AchievementDifficulty.HARD -> listOf("Incredible", "Amazing", "Awesome", "Superb", "Skilled", "Outstanding", "Fantastic", "Brilliant").random() to TextColor.LIGHT_GREEN
+            AchievementDifficulty.VERY_HARD -> listOf("Unreal", "Insane", "Mind-blowing", "Heroic", "Cracked", "Epic", "Unstoppable", "Absolute").random() to TextColor.PURPLE
+            AchievementDifficulty.IMPOSSIBLE -> listOf("Legendary", "Mythical", "Godly", "Beyond", "Ultimate", "Impossible", "Eternal", "Divine").random() to TextColor.PURPLE
         }
     }
 }
