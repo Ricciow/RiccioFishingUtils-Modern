@@ -40,7 +40,7 @@ object LuckyHookAchievement : StageAchievement() {
     override val targetProgress: Int = 2
 
     override fun setupListeners() {
-        registerSeaCreatureCatchEvent { sc, _ ->
+        activeListeners.add(registerSeaCreatureCatchEvent { sc, _ ->
             val lookingFor = getCurrentSc() ?: return@registerSeaCreatureCatchEvent
 
             if(lookingFor == sc.scName) {
@@ -55,7 +55,7 @@ object LuckyHookAchievement : StageAchievement() {
             }
 
             lastSC = sc.scName
-        }
+        })
     }
 
     private fun getCurrentSc() : String? {

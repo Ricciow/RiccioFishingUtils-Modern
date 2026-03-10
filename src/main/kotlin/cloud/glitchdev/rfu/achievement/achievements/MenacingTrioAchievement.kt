@@ -17,7 +17,7 @@ object MenacingTrioAchievement : BaseAchievement() {
     override val category: AchievementCategory = AchievementCategory.ISLE
 
     override fun setupListeners() {
-        registerMobDetectEvent { entities ->
+        activeListeners.add(registerMobDetectEvent { entities ->
             var foundThunder = false
             var foundJawbus = false
             var foundPlhleg = false
@@ -30,7 +30,7 @@ object MenacingTrioAchievement : BaseAchievement() {
             if(foundThunder && foundJawbus && foundPlhleg) {
                 complete()
             }
-        }
+        })
     }
 
 }
