@@ -2,7 +2,10 @@ package cloud.glitchdev.rfu.gui.window
 
 import cloud.glitchdev.rfu.RiccioFishingUtils
 import cloud.glitchdev.rfu.achievement.AchievementCategory
+import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementProvider
+import cloud.glitchdev.rfu.achievement.interfaces.IAchievement
+import cloud.glitchdev.rfu.achievement.interfaces.IStageAchievement
 import cloud.glitchdev.rfu.events.managers.AchievementStageUnlockedEvents.registerAchievementStageUnlockedEvent
 import cloud.glitchdev.rfu.events.managers.AchievementUnlockedEvents.registerAchievementUnlockedEvent
 import cloud.glitchdev.rfu.events.managers.AchievementUpdatedEvents.registerAchievementUpdatedEvent
@@ -121,6 +124,14 @@ object AchievementWindow : BaseWindow() {
         refreshAchievements()
     }
 
+    private fun getDisplayDifficulty(achievement: IAchievement): AchievementDifficulty {
+        return if (achievement is IStageAchievement && !achievement.isCompleted) {
+            achievement.getStageDifficulty(achievement.currentStage) ?: achievement.difficulty
+        } else {
+            achievement.difficulty
+        }
+    }
+
     private fun refreshAchievements() {
         achievementComponents.forEach {
             scrollArea.removeChild(it)
@@ -129,6 +140,7 @@ object AchievementWindow : BaseWindow() {
 
         AchievementProvider.getVisibleAchievements()
             .filter { it.category == selectedCategory }
+            .sortedWith(compareBy({ it.isCompleted }, { getDisplayDifficulty(it) }))
             .forEach { achievement ->
                 val component = Achievement(achievement).constrain {
                     x = CenterConstraint()
