@@ -12,7 +12,7 @@ import cloud.glitchdev.rfu.events.managers.DropEvents.registerDyeDropEvent
 object CrazyCarmineConosseurAchievement : BaseAchievement() {
     override val id: String = "crazy_carmine_conosseur"
     override val name: String = "Crazy Carmine Conosseur"
-    override val description: String = "Drop a carmine dye"
+    override val description: String = "Drop a carmine dye."
     override val type: AchievementType = AchievementType.NORMAL
     override val difficulty: AchievementDifficulty = AchievementDifficulty.IMPOSSIBLE
     override val category: AchievementCategory = AchievementCategory.ISLE
