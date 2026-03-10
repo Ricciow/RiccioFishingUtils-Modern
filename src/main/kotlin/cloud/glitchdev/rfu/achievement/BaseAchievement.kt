@@ -9,7 +9,7 @@ abstract class BaseAchievement : IAchievement {
     
     private var _isCompleted: Boolean = false
     override val isCompleted: Boolean
-        get() = _isCompleted || AchievementManager.isCompleted(id)
+        get() = _isCompleted
         
     protected open var _progress: Float = 0.0f
     override val progress: Float

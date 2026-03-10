@@ -29,10 +29,6 @@ object AchievementManager : RegisteredEvent {
 
     fun getRegistry(): Map<String, BaseAchievement> = registry
 
-    fun isCompleted(id: String): Boolean {
-        return AchievementHandler.getAchievementData(id)?.isCompleted == true
-    }
-
     fun saveAll() {
         val allData = registry.mapValues { (_, achievement) ->
             AchievementsData.AchievementSaveData(
