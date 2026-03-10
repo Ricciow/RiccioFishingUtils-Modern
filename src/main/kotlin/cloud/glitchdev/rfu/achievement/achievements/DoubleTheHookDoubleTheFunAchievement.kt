@@ -11,7 +11,7 @@ import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCre
 object DoubleTheHookDoubleTheFunAchievement : NumericStageAchievement() {
     override val id: String = "double_the_hook"
     override val name: String = "Double the Hook, Double the fun!"
-    override val description: String = "Proc a Double Hook on all 10 ISLE sea creatures."
+    override val description: String = "Proc a Double Hook on each non-hotspot isle sea creature."
     override val type: AchievementType = AchievementType.NORMAL
     override val difficulty: AchievementDifficulty = AchievementDifficulty.VERY_HARD
     override val category: AchievementCategory = AchievementCategory.ISLE

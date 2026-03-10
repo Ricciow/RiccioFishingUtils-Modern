@@ -11,7 +11,7 @@ import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCre
 object LuckyHookAchievement : NumericStageAchievement() {
     override val id: String = "lucky_hook"
     override val name: String = "Lucky Hook"
-    override val description: String = "Catch one of each non-hotspot lava sea creature back to back"
+    override val description: String = "Catch one of each non-hotspot isle sea creature back to back"
     override val type: AchievementType = AchievementType.NORMAL
     override val difficulty: AchievementDifficulty = AchievementDifficulty.IMPOSSIBLE
     override val category: AchievementCategory = AchievementCategory.ISLE
