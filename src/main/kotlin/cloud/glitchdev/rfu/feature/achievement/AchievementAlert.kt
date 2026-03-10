@@ -30,8 +30,10 @@ object AchievementAlert : Feature {
     private fun sendStageCompletedMessage(achievement: IStageAchievement) {
         Sounds.playSound("rfu:achievement")
 
-        val pair = achievement.difficulty.makePair()
         val completedStage = achievement.currentStage - 1
+        val stageDifficulty = achievement.getStageDifficulty(completedStage) ?: achievement.difficulty
+        val pair = stageDifficulty.makePair()
+
         val stageName = achievement.getStageName(completedStage) ?: achievement.name
         val stageDesc = achievement.getStageDescription(completedStage) ?: achievement.description
 

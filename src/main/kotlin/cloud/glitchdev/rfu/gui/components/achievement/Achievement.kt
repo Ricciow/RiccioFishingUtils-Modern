@@ -3,7 +3,6 @@ package cloud.glitchdev.rfu.gui.components.achievement
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.interfaces.IAchievement
 import cloud.glitchdev.rfu.achievement.interfaces.IStageAchievement
-import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.elementa.TextWrappingConstraint
 import gg.essential.elementa.components.UIContainer
@@ -63,14 +62,20 @@ class Achievement(
             height = TextAspectConstraint()
         } childOf container
 
-        DifficultyDisplay(achievement.difficulty).constrain {
+        val displayDifficulty = if (achievement is IStageAchievement && !achievement.isCompleted) {
+            achievement.getStageDifficulty(achievement.currentStage) ?: achievement.difficulty
+        } else {
+            achievement.difficulty
+        }
+
+        DifficultyDisplay(displayDifficulty).constrain {
             x = 0.pixels()
             y = SiblingConstraint()
             width = ScaledTextConstraint(1f)
             height = TextAspectConstraint()
         } childOf container
 
-        val rawDescription = if(achievement.isCompleted || achievement.type != AchievementType.SECRET) achievement.description else "${TextColor.GRAY}???"
+        val rawDescription = if(achievement.isCompleted || achievement.type != AchievementType.SECRET) achievement.description else "???"
         val displayDescription = if (achievement is IStageAchievement && !achievement.isCompleted && achievement.type != AchievementType.SECRET) {
             achievement.getStageDescription(achievement.currentStage) ?: rawDescription
         } else {
@@ -79,7 +84,7 @@ class Achievement(
 
         UIWrappedText(displayDescription).constrain {
             x = 0.pixels()
-            y = SiblingConstraint(2f)
+            y = SiblingConstraint()
             width = 100.percent()
             height = TextWrappingConstraint()
         } childOf container

@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.achievement.types
 
+import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.BaseAchievement
 import cloud.glitchdev.rfu.achievement.AchievementProvider
 import cloud.glitchdev.rfu.achievement.interfaces.IStageAchievement
@@ -10,21 +11,29 @@ abstract class StageAchievement : BaseAchievement(), IStageAchievement {
     
     protected val stageNames = mutableMapOf<Int, String>()
     protected val stageDescriptions = mutableMapOf<Int, String>()
+    protected val stageDifficulties = mutableMapOf<Int, AchievementDifficulty>()
 
     override fun getStageName(stage: Int): String? = stageNames[stage]
     override fun getStageDescription(stage: Int): String? = stageDescriptions[stage]
+    override fun getStageDifficulty(stage: Int): AchievementDifficulty? = stageDifficulties[stage]
 
     protected fun addStageInfo(stage: Int, name: String, description: String) {
         stageNames[stage] = name
         stageDescriptions[stage] = description
     }
 
+    protected fun addStageInfo(stage: Int, name: String, description: String, difficulty: AchievementDifficulty) {
+        stageNames[stage] = name
+        stageDescriptions[stage] = description
+        stageDifficulties[stage] = difficulty
+    }
+
     override var currentStage: Int = 1
         protected set(value) {
             field = value
-            _progress = if (targetStage > 1) (value-1).toFloat() / (targetStage).toFloat() else 1.0f
+            _progress = if (targetStage > 1) (value - 1).toFloat() / (targetStage - 1).toFloat() else 1.0f
             
-            if (field > targetStage) {
+            if (field >= targetStage) {
                 complete()
             }
         }

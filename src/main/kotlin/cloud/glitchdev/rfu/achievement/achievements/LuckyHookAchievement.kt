@@ -12,16 +12,16 @@ object LuckyHookAchievement : StageAchievement() {
     override val targetStage: Int = 10
 
     init {
-        addStageInfo(1, "Lucky Hook: Magma Slug", "Catch a Magma Slug b2b")
-        addStageInfo(2, "Lucky Hook: Moogma", "Catch a Moogma b2b")
-        addStageInfo(3, "Lucky Hook: Lava Leech", "Catch a Lava Leech b2b")
-        addStageInfo(4, "Lucky Hook: Pyroclastic Worm", "Catch a Pyroclastic Worm b2b")
-        addStageInfo(5, "Lucky Hook: Lava Flame", "Catch a Lava Flame b2b")
-        addStageInfo(6, "Lucky Hook: Fire Eel", "Catch a Fire Eel b2b")
-        addStageInfo(7, "Lucky Hook: Taurus", "Catch a Taurus b2b")
-        addStageInfo(8, "Lucky Hook: Thunder", "Catch a Thunder b2b")
-        addStageInfo(9, "Lucky Hook: Lord Jawbus", "Catch a Lord Jawbus b2b")
-        addStageInfo(10, "Lucky Hook: Plhlegblast", "Catch a Plhlegblast b2b")
+        addStageInfo(1, "Lucky Hook: Magma Slug", "Catch a Magma Slug b2b", AchievementDifficulty.EASY)
+        addStageInfo(2, "Lucky Hook: Moogma", "Catch a Moogma b2b", AchievementDifficulty.EASY)
+        addStageInfo(3, "Lucky Hook: Lava Leech", "Catch a Lava Leech b2b", AchievementDifficulty.EASY)
+        addStageInfo(4, "Lucky Hook: Pyroclastic Worm", "Catch a Pyroclastic Worm b2b", AchievementDifficulty.MEDIUM)
+        addStageInfo(5, "Lucky Hook: Lava Flame", "Catch a Lava Flame b2b", AchievementDifficulty.MEDIUM)
+        addStageInfo(6, "Lucky Hook: Fire Eel", "Catch a Fire Eel b2b", AchievementDifficulty.MEDIUM)
+        addStageInfo(7, "Lucky Hook: Taurus", "Catch a Taurus b2b", AchievementDifficulty.HARD)
+        addStageInfo(8, "Lucky Hook: Thunder", "Catch a Thunder b2b", AchievementDifficulty.HARD)
+        addStageInfo(9, "Lucky Hook: Lord Jawbus", "Catch a Lord Jawbus b2b", AchievementDifficulty.VERY_HARD)
+        addStageInfo(10, "Lucky Hook: Plhlegblast", "Catch a Plhlegblast b2b", AchievementDifficulty.IMPOSSIBLE)
     }
 
     var lastSC : String = ""
