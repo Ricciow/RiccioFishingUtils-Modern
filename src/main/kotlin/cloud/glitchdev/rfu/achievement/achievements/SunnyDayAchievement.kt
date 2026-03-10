@@ -4,13 +4,13 @@ import cloud.glitchdev.rfu.achievement.Achievement
 import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
-import cloud.glitchdev.rfu.achievement.types.StageAchievement
+import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
 import cloud.glitchdev.rfu.constants.SeaCreatures
 import cloud.glitchdev.rfu.data.catches.CatchTracker.catchHistory
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 
 @Achievement
-object SunnyDayAchievement : StageAchievement() {
+object SunnyDayAchievement : NumericStageAchievement() {
     override val id: String = "sunny_day"
     override val name: String = "Sunny Day"
     override val description: String = "Don't catch a thunder for 100/150/200/250/300 catches."
@@ -28,33 +28,15 @@ object SunnyDayAchievement : StageAchievement() {
         addStageInfo(5, "Sunny Day", "Don't catch a thunder for 300 catches.", AchievementDifficulty.MEDIUM)
     }
 
-    override var currentStage: Int = 1
-        set(value) {
-            field = value
-
-            if (field > targetStage) {
-                complete()
-            }
-        }
-
-    override val currentProgress: Int
-        get() = count
-    override val targetProgress: Int = getCurrentGoal(currentStage)
-    override var _progress: Float = 0.0f
-        get() = currentProgress.toFloat() / targetProgress.toFloat()
-    private var count = catchHistory.getOrAdd(SeaCreatures.THUNDER).count
-
     override fun setupListeners() {
-        activeListeners.add(registerSeaCreatureCatchEvent { _, _ ->
-            count = catchHistory.getOrAdd(SeaCreatures.THUNDER).count
+        currentCount = catchHistory.getOrAdd(SeaCreatures.THUNDER).count
 
-            if(count > getCurrentGoal(currentStage)) {
-                advanceStage()
-            }
+        activeListeners.add(registerSeaCreatureCatchEvent { _, _ ->
+            currentCount = catchHistory.getOrAdd(SeaCreatures.THUNDER).count
         })
     }
 
-    fun getCurrentGoal(stage : Int) : Int {
+    override fun getTargetCountForStage(stage: Int): Int {
         return when(stage) {
             1 -> 100
             2 -> 150

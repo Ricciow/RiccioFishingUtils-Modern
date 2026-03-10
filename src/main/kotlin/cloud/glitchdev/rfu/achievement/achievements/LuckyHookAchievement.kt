@@ -4,11 +4,11 @@ import cloud.glitchdev.rfu.achievement.Achievement
 import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
-import cloud.glitchdev.rfu.achievement.types.StageAchievement
+import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 
 @Achievement
-object LuckyHookAchievement : StageAchievement() {
+object LuckyHookAchievement : NumericStageAchievement() {
     override val id: String = "lucky_hook"
     override val name: String = "Lucky Hook"
     override val description: String = "Catch one of each non-hotspot lava sea creature back to back"
@@ -31,39 +31,28 @@ object LuckyHookAchievement : StageAchievement() {
         addStageInfo(10, "Lucky Hook: Plhlegblast", "Catch a Plhlegblast b2b", AchievementDifficulty.IMPOSSIBLE)
     }
 
-    var lastSC : String = ""
+    override fun setupListeners() {
+        activeListeners.add(registerSeaCreatureCatchEvent { sc, _ ->
+            val lookingFor = getCurrentSc() ?: return@registerSeaCreatureCatchEvent
+
+            if (lookingFor == sc.scName) {
+                addProgress(1)
+            } else {
+                currentCount = 0
+            }
+        })
+    }
 
     override var currentStage: Int = 1
         set(value) {
             field = value
-
+            currentCount = 0
             if (field > targetStage) {
                 complete()
             }
         }
 
-    override val currentProgress: Int
-        get() = if(getCurrentSc() == lastSC) 1 else 0
-    override val targetProgress: Int = 2
-
-    override fun setupListeners() {
-        activeListeners.add(registerSeaCreatureCatchEvent { sc, _ ->
-            val lookingFor = getCurrentSc() ?: return@registerSeaCreatureCatchEvent
-
-            if(lookingFor == sc.scName) {
-                _progress = 0.5f
-
-                if(lookingFor == lastSC) {
-                    advanceStage()
-                    _progress = 0f
-                }
-            } else {
-                _progress = 0f
-            }
-
-            lastSC = sc.scName
-        })
-    }
+    override fun getTargetCountForStage(stage: Int): Int = 2
 
     private fun getCurrentSc() : String? {
         return getStageName(currentStage)?.substringAfter("Lucky Hook: ")
