@@ -4,6 +4,7 @@ import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.interfaces.IAchievement
 import cloud.glitchdev.rfu.achievement.interfaces.IStageAchievement
 import cloud.glitchdev.rfu.constants.text.TextColor
+import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.events.managers.AchievementStageUnlockedEvents.registerAchievementStageUnlockedEvent
 import cloud.glitchdev.rfu.events.managers.AchievementUnlockedEvents.registerAchievementUnlockedEvent
 import cloud.glitchdev.rfu.feature.Feature
@@ -43,8 +44,14 @@ object AchievementAlert : Feature {
                     .withHoverEvent(HoverEvent.ShowText(Component.literal(stageDesc)))
             )
 
+        val message = if(achievement.getStageName(completedStage) == null) {
+            "${TextColor.YELLOW}${TextEffects.BOLD}${pair.first}! ${TextColor.GOLD}You just completed stage $completedStage of "
+        } else {
+            "${TextColor.YELLOW}${TextEffects.BOLD}${pair.first}! ${TextColor.GOLD}You just completed: "
+        }
+
         Chat.sendMessage(
-            TextUtils.rfuLiteral("${pair.first}! You just completed stage $completedStage of ")
+            TextUtils.rfuLiteral(message)
                 .append(achievementText)
         )
     }
@@ -61,7 +68,7 @@ object AchievementAlert : Feature {
             )
 
         Chat.sendMessage(
-            TextUtils.rfuLiteral("${pair.first}! You just completed ")
+            TextUtils.rfuLiteral("${TextColor.YELLOW}${TextEffects.BOLD}${pair.first}! ${TextColor.GOLD}You just completed: ")
                 .append(achievementText)
         )
     }
