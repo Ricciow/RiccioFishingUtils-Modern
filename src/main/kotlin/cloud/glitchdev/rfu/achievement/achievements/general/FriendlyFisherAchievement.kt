@@ -14,7 +14,7 @@ import net.minecraft.world.entity.EquipmentSlot
 object FriendlyFisherAchievement : NumericStageAchievement() {
     override val id: String = "friendly_fisher"
     override val name: String = "Friendly Fisher"
-    override val description: String = "Equip a Bobbin' Time 3+/4+/5 full armor set."
+    override val description: String = "Equip a Bobbin' Time 3/4/5 full armor set."
     override val type: AchievementType = AchievementType.NORMAL
     override val difficulty: AchievementDifficulty = AchievementDifficulty.MEDIUM
     override val category: AchievementCategory = AchievementCategory.GENERAL
@@ -31,45 +31,44 @@ object FriendlyFisherAchievement : NumericStageAchievement() {
 
     override fun setupListeners() {
         activeListeners.add(registerTickEvent(interval = 100) {
-            println(targetStage)
-
-            val player = mc.player ?: return@registerTickEvent
-            val requiredBobbinLevel = getTargetBobbinLevelForStage(currentStage)
-
-            currentCount = armorSlots.count { slot ->
-                val armorPiece = player.getItemBySlot(slot)
-                if (armorPiece.isEmpty) return@count false
-
-                val lore = armorPiece[DataComponents.LORE] ?: return@count false
-
-                lore.lines.any { lineComponent ->
-                    val text = lineComponent.string
-                    getBobbinLevelFromString(text) >= requiredBobbinLevel
-                }
-            }
+            checkAll()
         })
+    }
+
+    private fun checkAll() {
+        while (!isCompleted) {
+            val count = getValidBobbinCount()
+            currentCount = count
+            if (count < targetCount) break
+        }
+    }
+
+    private fun getValidBobbinCount(): Int {
+        val player = mc.player ?: return 0
+
+        return armorSlots.count { slot ->
+            val armorPiece = player.getItemBySlot(slot)
+            if (armorPiece.isEmpty) return@count false
+
+            val lore = armorPiece[DataComponents.LORE] ?: return@count false
+
+            lore.lines.any { lineComponent ->
+                getBobbinLevelFromString(lineComponent.string) >= getTargetBobbinLevelForStage(currentStage)
+            }
+        }
     }
 
     private fun getBobbinLevelFromString(text: String): Int {
         val match = bobbinRegex.find(text) ?: return 0
         return when (val numeral = match.groupValues[1].uppercase()) {
             "III" -> 3
-            "IV" -> 4
-            "V" -> 5
-            else -> numeral.toIntOrNull() ?: 0
+            "IV"  -> 4
+            "V"   -> 5
+            else  -> numeral.toIntOrNull() ?: 0
         }
     }
 
-    override fun getTargetCountForStage(stage: Int): Int {
-        return 4
-    }
+    override fun getTargetCountForStage(stage: Int): Int = 4
 
-    private fun getTargetBobbinLevelForStage(stage : Int) : Int {
-        return when(stage) {
-            1 -> 3
-            2 -> 4
-            3 -> 5
-            else -> 5
-        }
-    }
+    private fun getTargetBobbinLevelForStage(stage: Int): Int = (stage + 2).coerceAtMost(5)
 }
