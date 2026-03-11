@@ -18,6 +18,7 @@
 - Fixed jawbus hard mode not saving before the funny
 - Removed a debug println that was left on last release
 - Fixed a bug where eating a cake would trigger a cake expired message
+- Fixed dyes regex to work with treasure dye/aquamarine/Iceberg
 
 ### Back-end:
 - DeployableManager now owns its own scanning behind a generic `DeployableType` interface

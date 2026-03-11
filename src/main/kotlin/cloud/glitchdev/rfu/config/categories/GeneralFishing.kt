@@ -108,11 +108,11 @@ object GeneralFishing : Category("General Fishing") {
         get() = buildString {
             append("RARE DROP! (")
             append(rareDrops.joinToString("|") { it.overrideRegex ?: it.toString().escapeForRegex() })
-            append(""") \(\+(\d+) ✯ Magic Find\)""")
+            append(""")(?: \(\+(\d+) ✯ Magic Find\))?""")
         }.toExactRegex()
     val DYE_REGEX : Regex
         get() = buildString {
-            append("WOW! (.+) found a (")
+            append("WOW! (.+) found (?:an? )?(")
             append(dyeDrops.joinToString("|") { it.toString().escapeForRegex() })
             append(")!")
         }.toExactRegex()
