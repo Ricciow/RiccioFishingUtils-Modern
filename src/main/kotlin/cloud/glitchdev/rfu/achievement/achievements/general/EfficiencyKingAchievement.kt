@@ -12,7 +12,7 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
 
 @Achievement
-object EfficiencyKing : NumericStageAchievement() {
+object EfficiencyKingAchievement : NumericStageAchievement() {
     override val id: String = "efficiency_king"
     override val name: String = "Efficiency King"
     override val description: String = "Reach 800/900/1000/1100/1200 sc/h and maintain it for 5/10/15/20/30 minutes"
