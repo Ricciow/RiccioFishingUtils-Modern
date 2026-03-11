@@ -9,7 +9,7 @@ import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 
 @Achievement
-object FailureIsExpected : BaseAchievement() {
+object FailureIsExpectedAchievement : BaseAchievement() {
     override val id: String = "flask_thief"
     override val name: String = "Failure is expected..."
     override val description: String = "Die to jawbus"

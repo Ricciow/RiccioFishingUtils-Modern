@@ -9,17 +9,17 @@ import cloud.glitchdev.rfu.constants.Dyes
 import cloud.glitchdev.rfu.events.managers.DropEvents.registerDyeDropEvent
 
 @Achievement
-object MajesticMidnightManiac : BaseAchievement() {
-    override val id: String = "majestic_midnight_maniac"
-    override val name: String = "Majestic Midnight Maniac"
-    override val description: String = "Drop a Midnight Dye."
+object IridescentIcebergIntellectualAchievement : BaseAchievement() {
+    override val id: String = "iridescent_iceberg_intellectual"
+    override val name: String = "Iridescent Iceberg Intellectual"
+    override val description: String = "Drop an Iceberg Dye."
     override val type: AchievementType = AchievementType.NORMAL
     override val difficulty: AchievementDifficulty = AchievementDifficulty.IMPOSSIBLE
     override val category: AchievementCategory = AchievementCategory.SPECIAL
 
     override fun setupListeners() {
         activeListeners.add(registerDyeDropEvent { dyeDrop, _ ->
-            if (dyeDrop == Dyes.MIDNIGHT) {
+            if (dyeDrop == Dyes.ICEBERG) {
                 complete()
             }
         })

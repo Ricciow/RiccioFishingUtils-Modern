@@ -9,17 +9,17 @@ import cloud.glitchdev.rfu.constants.Dyes
 import cloud.glitchdev.rfu.events.managers.DropEvents.registerDyeDropEvent
 
 @Achievement
-object TenaciousTreasureTrawler : BaseAchievement() {
-    override val id: String = "tenacious_treasure_trawler"
-    override val name: String = "Tenacious Treasure Trawler"
-    override val description: String = "Drop a Treasure Dye."
+object AuspiciousAquamarineAffinityAchievement : BaseAchievement() {
+    override val id: String = "auspicious_aquamarine_affinity"
+    override val name: String = "Auspicious Aquamarine Affinity"
+    override val description: String = "Drop an Aquamarine Dye."
     override val type: AchievementType = AchievementType.NORMAL
     override val difficulty: AchievementDifficulty = AchievementDifficulty.IMPOSSIBLE
     override val category: AchievementCategory = AchievementCategory.SPECIAL
 
     override fun setupListeners() {
         activeListeners.add(registerDyeDropEvent { dyeDrop, _ ->
-            if (dyeDrop == Dyes.TREASURE) {
+            if(dyeDrop == Dyes.AQUAMARINE) {
                 complete()
             }
         })
