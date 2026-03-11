@@ -44,6 +44,15 @@ object DoubleTheHookDoubleTheFunAchievement : NumericStageAchievement() {
 
     override fun getTargetCountForStage(stage: Int): Int = 1
 
+    override var currentStage: Int = 1
+        set(value) {
+            currentCount = 0
+            field = value
+            if (field > targetStage) {
+                complete()
+            }
+        }
+
     private fun getCurrentSc() : String? {
         return getStageName(currentStage)?.substringAfter("Double Hook: ")
     }
