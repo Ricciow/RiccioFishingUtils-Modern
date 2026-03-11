@@ -47,7 +47,14 @@ abstract class StageAchievement : BaseAchievement(), IStageAchievement {
         AchievementProvider.fireAchievementStageUnlocked(this)
     }
 
+    fun debugAdvanceStage() {
+        if (isCompleted) return
+        markAsCheated()
+        advanceStage()
+    }
+
     override fun debugComplete() {
+        markAsCheated()
         currentStage = targetStage
     }
 
@@ -57,6 +64,7 @@ abstract class StageAchievement : BaseAchievement(), IStageAchievement {
     }
 
     fun debugSetStage(stage: Int) {
+        markAsCheated()
         currentStage = stage
     }
 

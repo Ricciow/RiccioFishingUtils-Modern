@@ -34,10 +34,10 @@ object AchievementProgress : AbstractCommand("addprogress") {
                             }
 
                             if (achievement is NumericAchievement) {
-                                achievement.addProgress(amount)
+                                achievement.debugAddProgress(amount)
                                 context.source.sendFeedback(TextUtils.rfuLiteral("Added $amount progress to: $id", TextStyle(TextColor.LIGHT_GREEN)))
                             } else if (achievement is NumericStageAchievement) {
-                                achievement.addProgress(amount) //Different Signature
+                                achievement.debugAddProgress(amount) 
                                 context.source.sendFeedback(TextUtils.rfuLiteral("Added $amount progress to: $id", TextStyle(TextColor.LIGHT_GREEN)))
                             } else {
                                 context.source.sendFeedback(TextUtils.rfuLiteral("Achievement is not numeric: $id", TextStyle(TextColor.LIGHT_RED)))

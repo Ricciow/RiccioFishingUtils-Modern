@@ -34,6 +34,7 @@ object AchievementManager : RegisteredEvent {
             AchievementsData.AchievementSaveData(
                 id = achievement.id,
                 isCompleted = achievement.isCompleted,
+                isCheated = achievement.isCheated,
                 progressData = achievement.saveState()
             )
         }

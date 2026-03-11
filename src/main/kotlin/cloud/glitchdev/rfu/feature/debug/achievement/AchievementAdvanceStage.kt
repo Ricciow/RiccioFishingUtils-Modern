@@ -29,7 +29,7 @@ object AchievementAdvanceStage : AbstractCommand("advancestage") {
                     }
 
                     if (achievement is StageAchievement) {
-                        achievement.advanceStage()
+                        achievement.debugAdvanceStage()
                         context.source.sendFeedback(TextUtils.rfuLiteral("Advanced stage for: $id", TextStyle(TextColor.LIGHT_GREEN)))
                     } else {
                         context.source.sendFeedback(TextUtils.rfuLiteral("Achievement is not a stage achievement: $id", TextStyle(TextColor.LIGHT_RED)))

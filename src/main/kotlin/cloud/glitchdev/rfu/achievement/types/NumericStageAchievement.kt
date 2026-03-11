@@ -35,7 +35,14 @@ abstract class NumericStageAchievement : StageAchievement() {
         currentCount += amount
     }
 
+    fun debugAddProgress(amount: Int = 1) {
+        if (isCompleted) return
+        markAsCheated()
+        addProgress(amount)
+    }
+
     override fun debugComplete() {
+        markAsCheated()
         currentStage = targetStage + 1
     }
 

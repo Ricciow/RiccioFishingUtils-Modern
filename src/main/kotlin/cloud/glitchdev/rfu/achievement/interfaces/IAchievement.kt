@@ -12,6 +12,7 @@ interface IAchievement {
     val difficulty: AchievementDifficulty
     val category: AchievementCategory
     val isCompleted: Boolean
+    val isCheated: Boolean
     val progress: Float // 0.0 to 1.0
     val currentProgress: Int get() = if (isCompleted) 1 else 0
     val targetProgress: Int get() = 1

@@ -10,6 +10,10 @@ abstract class BaseAchievement : IAchievement {
     private var _isCompleted: Boolean = false
     override val isCompleted: Boolean
         get() = _isCompleted
+
+    private var _isCheated: Boolean = false
+    override val isCheated: Boolean
+        get() = _isCheated
         
     protected open var _progress: Float = 0.0f
     override val progress: Float
@@ -21,6 +25,7 @@ abstract class BaseAchievement : IAchievement {
         val data = AchievementHandler.getAchievementData(id)
         if (data != null) {
             _isCompleted = data.isCompleted
+            _isCheated = data.isCheated
             if (data.progressData.isNotEmpty()) {
                 loadState(data.progressData)
             }
@@ -41,16 +46,22 @@ abstract class BaseAchievement : IAchievement {
     }
 
     open fun debugComplete() {
+        _isCheated = true
         complete()
     }
 
     open fun debugReset() {
         _isCompleted = false
+        _isCheated = false
         _progress = 0.0f
         unregisterAllListeners()
         loadState(emptyMap())
         setupListeners()
         AchievementProvider.fireAchievementUpdated(this)
+    }
+
+    fun markAsCheated() {
+        _isCheated = true
     }
 
     protected fun unregisterAllListeners() {

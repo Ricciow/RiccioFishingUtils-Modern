@@ -24,7 +24,14 @@ abstract class NumericAchievement : BaseAchievement() {
         currentCount += amount
     }
 
+    fun debugAddProgress(amount: Int = 1) {
+        if (isCompleted) return
+        markAsCheated()
+        addProgress(amount)
+    }
+
     override fun debugComplete() {
+        markAsCheated()
         currentCount = targetCount
     }
 
