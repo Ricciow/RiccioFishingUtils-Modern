@@ -40,6 +40,7 @@ object DropManager : RegisteredEvent {
     override fun register() {
         DropEvents.registerRareDropEvent(0) { rareDrop, magicFind ->
             dropHistory.registerDrop(rareDrop, magicFind)
+            true
         }
 
         DropEvents.registerDyeDropEvent(0) { dyeDrop, magicFind ->

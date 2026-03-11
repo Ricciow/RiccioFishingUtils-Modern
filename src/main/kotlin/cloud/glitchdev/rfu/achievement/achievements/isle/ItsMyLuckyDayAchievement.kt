@@ -20,6 +20,7 @@ object ItsMyLuckyDayAchievement : BaseAchievement() {
             if(drop == RareDrops.RADIOACTIVE_VIAL) {
                 complete()
             }
+            true
         })
     }
 }

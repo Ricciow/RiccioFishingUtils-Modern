@@ -17,10 +17,13 @@ import net.minecraft.network.chat.Component
 object CustomRareDropMessage : Feature {
     override fun onInitialize() {
         DropEvents.registerRareDropEvent { rareDrop, magicFind ->
+            if (rareDrop !in GeneralFishing.rareDrops || !GeneralFishing.customRareDropMessage) return@registerRareDropEvent true
             sendCustomDropMessage(rareDrop.dropName, DropManager.dropHistory.getOrAdd(rareDrop).history, magicFind)
+            return@registerRareDropEvent false
         }
 
         DropEvents.registerDyeDropEvent { dyeDrop, magicFind ->
+            if (dyeDrop !in GeneralFishing.dyeDrops || !GeneralFishing.customRareDropMessage) return@registerDyeDropEvent
             sendCustomDropMessage(dyeDrop.dyeName, DropManager.dropHistory.getOrAdd(dyeDrop).history, magicFind)
         }
     }

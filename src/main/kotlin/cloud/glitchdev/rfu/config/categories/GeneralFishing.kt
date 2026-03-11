@@ -104,20 +104,6 @@ object GeneralFishing : Category("General Fishing") {
         description = Literal("Select which dyes are considered rare for the mod.")
     }
 
-    val RARE_DROP_REGEX : Regex
-        get() = buildString {
-            append("RARE DROP! (")
-            append(rareDrops.joinToString("|") { it.overrideRegex ?: it.toString().escapeForRegex() })
-            append(""")(?: \(\+(\d+) ✯ Magic Find\))?""")
-        }.toExactRegex()
-    val DYE_REGEX : Regex
-        get() = buildString {
-            append("WOW! (.+) found (?:an? )?(")
-            append(dyeDrops.joinToString("|") { it.toString().escapeForRegex() })
-            append(")!")
-        }.toExactRegex()
-
-
     var customRareDropMessage by observable(boolean(false) {
         name = Literal("Enable Custom Rare Drop Message")
         description = Literal("Shows a custom message when you get a rare drop")

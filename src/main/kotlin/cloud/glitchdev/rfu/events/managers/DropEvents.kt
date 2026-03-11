@@ -7,12 +7,25 @@ import cloud.glitchdev.rfu.utils.dsl.isUser
 import cloud.glitchdev.rfu.constants.Dyes
 import cloud.glitchdev.rfu.constants.RareDrops
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
+import cloud.glitchdev.rfu.utils.dsl.escapeForRegex
 import cloud.glitchdev.rfu.utils.dsl.removeFormatting
 import cloud.glitchdev.rfu.utils.dsl.removeRankTag
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 
 @AutoRegister
 object DropEvents : RegisteredEvent {
+    val RARE_DROP_REGEX = buildString {
+        append("RARE DROP! (")
+        append(RareDrops.entries.joinToString("|") { it.overrideRegex ?: it.toString().escapeForRegex() })
+        append(""")(?: \(\+(\d+) ✯ Magic Find\))?""")
+    }.toExactRegex()
+
+    val DYE_REGEX = buildString {
+        append("WOW! (.+) found a (")
+        append(Dyes.entries.joinToString("|") { it.toString().escapeForRegex() })
+        append(")!")
+    }.toExactRegex()
+
     val DYE_ODD_REGEX = """.+ [\d,]+\/[\d,]+(?:\.\d+)?\w? \(\d+(?:\.\d+)?%\) chance!(?: \(\+(\d+)% ✯ Magic Find\))?""".toExactRegex()
     var currentDye : Dyes? = null
 
@@ -21,16 +34,14 @@ object DropEvents : RegisteredEvent {
             if (overlay) return@registerAllowGameEvent true
             val string = text.string.removeFormatting()
 
-            GeneralFishing.RARE_DROP_REGEX.find(string)?.groupValues?.let { (_, dropName, mfString) ->
+            RARE_DROP_REGEX.find(string)?.groupValues?.let { (_, dropName, mfString) ->
                 val rareDrop = RareDrops.getRelatedDrop(dropName) ?: return@let
                 val magicFind = mfString.toIntOrNull()
 
-                RareDropEventManager.runTasks(rareDrop, magicFind)
-
-                if (GeneralFishing.customRareDropMessage) return@registerAllowGameEvent false
+                if (!RareDropEventManager.runTasks(rareDrop, magicFind)) return@registerAllowGameEvent false
             }
 
-            GeneralFishing.DYE_REGEX.find(string)?.groupValues?.let { (_, username, dropName) ->
+            DYE_REGEX.find(string)?.groupValues?.let { (_, username, dropName) ->
                 if (!username.removeRankTag().isUser()) return@let
                 currentDye = Dyes.getRelatedDye(dropName) ?: return@let
             }
@@ -46,7 +57,7 @@ object DropEvents : RegisteredEvent {
 
     fun registerRareDropEvent(
         priority: Int = 20,
-        callback: (rareDrop: RareDrops, magicFind: Int?) -> Unit
+        callback: (rareDrop: RareDrops, magicFind: Int?) -> Boolean
     ): RareDropEventManager.RareDropEvent {
         return RareDropEventManager.register(priority, callback)
     }
@@ -58,24 +69,26 @@ object DropEvents : RegisteredEvent {
         return DyeDropEventManager.register(priority, callback)
     }
 
-    object RareDropEventManager : AbstractEventManager<(rareDrop: RareDrops, magicFind: Int?) -> Unit, RareDropEventManager.RareDropEvent>() {
-        override val runTasks: (RareDrops, Int?) -> Unit = { rareDrop, magicFind ->
-            safeExecution {
-                tasks.forEach { event -> event.callback(rareDrop, magicFind) }
+    object RareDropEventManager : AbstractEventManager<(rareDrop: RareDrops, magicFind: Int?) -> Boolean, RareDropEventManager.RareDropEvent>() {
+        override val runTasks: (RareDrops, Int?) -> Boolean = { rareDrop, magicFind ->
+            var result = true
+            safeExecution(mainThread = false) {
+                tasks.forEach { event -> if (!event.callback(rareDrop, magicFind)) result = false }
             }
+            result
         }
 
         fun register(
             priority: Int = 20,
-            callback: (rareDrop: RareDrops, magicFind: Int?) -> Unit
+            callback: (rareDrop: RareDrops, magicFind: Int?) -> Boolean
         ): RareDropEvent {
             return RareDropEvent(priority, callback).register()
         }
 
         class RareDropEvent(
             priority: Int = 20,
-            callback: (rareDrop: RareDrops, magicFind: Int?) -> Unit
-        ) : ManagedTask<(rareDrop: RareDrops, magicFind: Int?) -> Unit, RareDropEvent>(priority, callback) {
+            callback: (rareDrop: RareDrops, magicFind: Int?) -> Boolean
+        ) : ManagedTask<(rareDrop: RareDrops, magicFind: Int?) -> Boolean, RareDropEvent>(priority, callback) {
             override fun register() = submitTask(this)
             override fun unregister() = removeTask(this)
         }
@@ -83,7 +96,7 @@ object DropEvents : RegisteredEvent {
 
     object DyeDropEventManager : AbstractEventManager<(dyeDrop: Dyes, magicFind : Int?) -> Unit, DyeDropEventManager.DyeDropEvent>() {
         override val runTasks: (Dyes, Int?) -> Unit = { dyeDrop, magicFind ->
-            safeExecution {
+            safeExecution(mainThread = false) {
                 tasks.forEach { event -> event.callback(dyeDrop, magicFind) }
             }
         }
