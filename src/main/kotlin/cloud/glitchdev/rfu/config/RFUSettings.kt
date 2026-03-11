@@ -67,17 +67,16 @@ object RFUSettings : ConfigKt("rfu/settings") {
             }
         }
 
-
         button {
-            title = "See Commands"
-            description = "See what commands RFU has to offer!"
+            title = "Achievements"
+            description = "See your rfu achievements!"
             text = "See"
 
             onClick {
                 mc.schedule {
                     mc.setScreen(null)
 
-                    Chat.sendCommand("rfuhelp")
+                    Chat.sendCommand("rfuachievements")
                 }
             }
         }
@@ -106,6 +105,20 @@ object RFUSettings : ConfigKt("rfu/settings") {
                     mc.setScreen(null)
 
                     Chat.sendCommand("rfumove")
+                }
+            }
+        }
+
+        button {
+            title = "See Commands"
+            description = "See what commands RFU has to offer!"
+            text = "See"
+
+            onClick {
+                mc.schedule {
+                    mc.setScreen(null)
+
+                    Chat.sendCommand("rfuhelp")
                 }
             }
         }
