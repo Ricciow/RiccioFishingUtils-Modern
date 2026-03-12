@@ -10,7 +10,7 @@ import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 
 @Achievement
 object FailureIsExpectedAchievement : BaseAchievement() {
-    override val id: String = "flask_thief"
+    override val id: String = "failure_is_expected"
     override val name: String = "Failure is expected..."
     override val description: String = "Die to jawbus"
     override val type: AchievementType = AchievementType.SECRET
