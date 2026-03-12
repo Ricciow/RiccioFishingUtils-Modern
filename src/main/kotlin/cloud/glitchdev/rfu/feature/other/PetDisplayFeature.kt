@@ -15,7 +15,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 
 @RFUFeature
 object PetDisplayFeature : Feature {
-    val PETS_SCREEN_REGEX = """Pets \(\d+\/\d+\)""".toRegex()
+    val PETS_SCREEN_REGEX = """Pets:?( ".+")?( \(\d+\/\d+\))?""".toRegex()
     const val PET_REGEX = """(?:⭐ )?\[Lvl (\d+)] (?:(\[\d+✦\]) )?(.+)(?: ✦)?"""
     val AUTOPET_REGEX = """Autopet equipped your $PET_REGEX! VIEW RULE""".toRegex()
     val COLORED_AUTOPET_REGEX = """§r§cAutopet §r§eequipped your (.+)§r§e! §r§a§lVIEW RULE""".toRegex()
@@ -35,7 +35,7 @@ object PetDisplayFeature : Feature {
             if(!OtherSettings.petDisplay) return@registerSlotClickedEvent
             val screen = mc.screen as? AbstractContainerScreen<*> ?: return@registerSlotClickedEvent
             if(!PETS_SCREEN_REGEX.matches(screen.title.string.trim())) return@registerSlotClickedEvent
-            val pet = slot.item.customName?.toFormattedString() ?: return@registerSlotClickedEvent
+            val pet = slot.item.hoverName.toFormattedString()
             if(!PET_REGEX.toRegex().matches(pet.removeFormatting())) return@registerSlotClickedEvent
             updateDisplay(pet)
         }

@@ -27,11 +27,19 @@ abstract class AbstractEventManager<CB, T : AbstractEventManager.ManagedTask<CB,
 
     fun safeExecution(mainThread: Boolean = true, func: () -> Unit) {
         if (mainThread) {
-            mc.execute {
+            if (mc.isSameThread) {
                 try {
                     func()
                 } catch (e: Exception) {
                     RFULogger.error("Error in safeExecution:", e)
+                }
+            } else {
+                mc.execute {
+                    try {
+                        func()
+                    } catch (e: Exception) {
+                        RFULogger.error("Error in safeExecution:", e)
+                    }
                 }
             }
         } else {

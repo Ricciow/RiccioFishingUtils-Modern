@@ -15,6 +15,8 @@
 - Moved Rare Sea Creatures settings to its own category  
 
 ### Fixes:
+- Fixed a bug where SlotClickedEvent would always return the air item;
+- Fixed a PetDisplay regex that would not identify the display if doing a search
 - Fixed jawbus hard mode not saving before the funny
 - Removed a debug println that was left on last release
 - Fixed a bug where eating a cake would trigger a cake expired message
