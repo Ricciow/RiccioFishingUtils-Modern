@@ -21,6 +21,7 @@
 - Removed a debug println that was left on last release
 - Fixed a bug where eating a cake would trigger a cake expired message
 - Fixed dyes regex to work with treasure dye/aquamarine/Iceberg
+- Improved the party regex to work with cishers/fishers/inkers/inker/etc...
 
 ### Back-end:
 - DeployableManager now owns its own scanning behind a generic `DeployableType` interface
@@ -29,3 +30,4 @@
 - Renamed manager package to data
 
 ### Other:
+- Made the invite to party not trigger on 'me' messages in public chat

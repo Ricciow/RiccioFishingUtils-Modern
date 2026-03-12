@@ -21,23 +21,36 @@ import net.minecraft.network.chat.Style
 
 @RFUFeature
 object PartyInviteMsg : Feature {
-    val INVITE_REGEX = """^((lf|any(one)?|who('s)?)\s(((cish|fish|ink)(ing)?)|((crimson\s|ci\s)?p(arty|arties)?(\sinv(ite)?)?)|inv(ite)?)|p(arty)?|inv(ite)?|((p(arty)?|inv(ite)?)\sme)|(parties)|me+(\sme+)*)[?.!]?$""".toRegex()
+    val INVITE_REGEX = """^((lf|any(one)?|who('s)?)\s(((cish|fish|ink)(ing|ers?)?)|((crimson\s|ci\s)?p(arty|arties)?(\sinv(ite)?)?)|inv(ite)?)|p(arty)?|inv(ite)?|((p(arty)?|inv(ite)?)\sme)|(parties)|me+(\sme+)*)[?.!]?$""".toRegex(RegexOption.IGNORE_CASE)
     private const val PLAYER_REGEX = """(?:\[\d+\](?: .) )?(?:\[[A-Z]+\+*\] )?(\w{3,16})(?: \[\w+\])?"""
-    val CHAT_REGEX = """(?:(?:Guild|Officer) > )?$PLAYER_REGEX: (.+)""".toRegex()
+    val CHAT_REGEX = """(?:(Guild|Officer|Co-op) > )?$PLAYER_REGEX: (.+)""".toRegex()
+
+    private val ME_ONLY_REGEX = """^(me+(\sme+)*)[?.!]?$""".toRegex(RegexOption.IGNORE_CASE)
 
     override fun onInitialize() {
         registerGameEvent(CHAT_REGEX) { _, _, matches ->
-            if(!OtherSettings.partyInviteMsgs) return@registerGameEvent
-            val groups = matches?.groupValues ?: return@registerGameEvent
-            if(!INVITE_REGEX.matches(groups.getOrNull(2) ?: "")) return@registerGameEvent
-            val name = groups.getOrNull(1) ?: return@registerGameEvent
-            if(name.isUser()) return@registerGameEvent
+            if (!OtherSettings.partyInviteMsgs) return@registerGameEvent
 
-            val message = TextUtils.rfuLiteral("[Party $name]", TextColor.LIGHT_GREEN, TextEffects.BOLD)
+            val groups = matches?.groupValues ?: return@registerGameEvent
+            if (groups.size < 2) return@registerGameEvent
+
+            val messageText = groups.last()
+            val playerName = groups[groups.size - 2]
+            val chatType = if (groups.size >= 3) groups[groups.size - 3] else ""
+
+            if (!INVITE_REGEX.matches(messageText)) return@registerGameEvent
+            if (playerName.isUser()) return@registerGameEvent
+
+            val isMeMessage = ME_ONLY_REGEX.matches(messageText)
+            val isPrivateChat = chatType.isNotEmpty()
+
+            if (isMeMessage && !isPrivateChat) return@registerGameEvent
+
+            val message = TextUtils.rfuLiteral("[Party $playerName]", TextColor.LIGHT_GREEN, TextEffects.BOLD)
                 .withStyle(
                     Style.EMPTY
-                        .withHoverEvent(HoverEvent.ShowText(Component.literal("/p $name")))
-                        .withClickEvent(ClickEvent.RunCommand("/p $name"))
+                        .withHoverEvent(HoverEvent.ShowText(Component.literal("/p $playerName")))
+                        .withClickEvent(ClickEvent.RunCommand("/p $playerName"))
                 )
 
             CoroutineScope(Dispatchers.Default).launch {
