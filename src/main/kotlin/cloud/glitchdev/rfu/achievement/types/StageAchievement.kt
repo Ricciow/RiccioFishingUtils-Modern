@@ -32,7 +32,7 @@ abstract class StageAchievement : BaseAchievement(), IStageAchievement {
         protected set(value) {
             val oldStage = field
             field = value
-            _progress = if (targetStage > 1) (value - 1).toFloat() / (targetStage - 1).toFloat() else 1.0f
+            _progress = if (targetStage > 1) (value - 1).toFloat() / (targetStage).toFloat() else 1.0f
             
             if (field > targetStage) {
                 complete()
@@ -43,7 +43,7 @@ abstract class StageAchievement : BaseAchievement(), IStageAchievement {
         }
 
     protected open fun onStageChanged(oldStage: Int, newStage: Int) {}
-    override val currentProgress: Int get() = currentStage
+    override val currentProgress: Int get() = currentStage-1
         
     fun advanceStage() {
         if (isCompleted) return
