@@ -14,7 +14,7 @@ object SoThisIsWhatHardModeDoesAchievement : BaseAchievement() {
     override val id: String = "so_this_is_what_hardmode_does"
     override val name: String = "So this is what hard mode does..."
     override val description: String = "Find out what hard mode does!"
-    override val type: AchievementType = AchievementType.SECRET
+    override val type: AchievementType = AchievementType.HIDDEN
     override val difficulty: AchievementDifficulty = AchievementDifficulty.EASY
     override val category: AchievementCategory = AchievementCategory.ISLE
 

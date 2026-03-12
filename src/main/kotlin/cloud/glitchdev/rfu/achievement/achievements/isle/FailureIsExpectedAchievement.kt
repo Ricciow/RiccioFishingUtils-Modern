@@ -13,7 +13,7 @@ object FailureIsExpectedAchievement : BaseAchievement() {
     override val id: String = "failure_is_expected"
     override val name: String = "Failure is expected..."
     override val description: String = "Die to jawbus"
-    override val type: AchievementType = AchievementType.SECRET
+    override val type: AchievementType = AchievementType.HIDDEN
     override val difficulty: AchievementDifficulty = AchievementDifficulty.EASY
     override val category: AchievementCategory = AchievementCategory.ISLE
 
