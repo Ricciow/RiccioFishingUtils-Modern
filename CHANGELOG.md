@@ -4,6 +4,8 @@
 - Added 3 more achievements
 
 ### Changes:
+- Improved order of achievements in /rfuachievements
+  - normal -> secret -> completed (all sorted by difficulty)
 
 ### Fixes:
 - Fixed MinMaxing achievement not working with skinned helmets
