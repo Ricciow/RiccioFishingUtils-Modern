@@ -19,7 +19,7 @@ object SurvivalistAchievement : StageAchievement() {
     override val name: String = "Survivalist"
     override val description: String = "Prove your mastery over Jawbus through increasingly deadly challenges."
     override val type: AchievementType = AchievementType.NORMAL
-    override val difficulty: AchievementDifficulty = AchievementDifficulty.HARD
+    override val difficulty: AchievementDifficulty = AchievementDifficulty.VERY_HARD
     override val category: AchievementCategory = AchievementCategory.ISLE
     override val targetStage: Int = 4
 
