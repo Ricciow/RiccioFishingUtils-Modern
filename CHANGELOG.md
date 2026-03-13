@@ -4,6 +4,7 @@
 - Added 6 more achievements
 
 ### Changes:
+- Added a 1-second cooldown to the achievement sound to prevent loudness.
 - Improved order of achievements in /rfuachievements
   - normal -> secret -> completed (all sorted by difficulty)
 - Made Sunny Day/Still Lava achievements require having caught atleast one

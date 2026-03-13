@@ -15,9 +15,14 @@ import cloud.glitchdev.rfu.utils.TextUtils
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
 import net.minecraft.network.chat.Style
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 
 @RFUFeature
 object AchievementAlert : Feature {
+    private var lastSoundPlayTime: Instant = Instant.DISTANT_PAST
+
     override fun onInitialize() {
         registerAchievementUnlockedEvent { achievement ->
             sendCompletedMessage(achievement)
@@ -28,10 +33,18 @@ object AchievementAlert : Feature {
         }
     }
 
+    private fun playSound() {
+        val now = Clock.System.now()
+        if (now - lastSoundPlayTime >= 1.seconds) {
+            Sounds.playSound("rfu:achievement")
+            lastSoundPlayTime = now
+        }
+    }
+
     private fun sendStageCompletedMessage(achievement: IStageAchievement) {
         if(achievement.currentStage > achievement.targetStage) return
 
-        Sounds.playSound("rfu:achievement")
+        playSound()
 
         val completedStage = achievement.currentStage - 1
         val stageDifficulty = achievement.getStageDifficulty(completedStage) ?: achievement.difficulty
@@ -59,7 +72,7 @@ object AchievementAlert : Feature {
     }
 
     private fun sendCompletedMessage(achievement: IAchievement) {
-        Sounds.playSound("rfu:achievement")
+        playSound()
 
         var name = achievement.name
         var desc = achievement.description
