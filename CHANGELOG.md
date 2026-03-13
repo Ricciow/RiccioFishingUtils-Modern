@@ -6,6 +6,8 @@
 ### Changes:
 - Improved order of achievements in /rfuachievements
   - normal -> secret -> completed (all sorted by difficulty)
+- Made Sunny Day/Still Lava achievements require having caught atleast one
+of their respective Sea Creatures beforehand.
 
 ### Fixes:
 - Fixed MinMaxing achievement not working with skinned helmets

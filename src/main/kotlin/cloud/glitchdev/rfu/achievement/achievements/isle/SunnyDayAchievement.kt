@@ -22,18 +22,31 @@ object SunnyDayAchievement : NumericStageAchievement() {
     override val resetCountOnStageAdvance: Boolean = false
 
     init {
-        addStageInfo(1, "Rainy Day", "Don't catch a Thunder for 100 catches.", AchievementDifficulty.EASY)
-        addStageInfo(2, "Overcast Day", "Don't catch a Thunder for 150 catches.", AchievementDifficulty.EASY)
-        addStageInfo(3, "Cloudy Day", "Don't catch a Thunder for 200 catches.", AchievementDifficulty.MEDIUM)
-        addStageInfo(4, "Clear Sky Day", "Don't catch a Thunder for 250 catches.", AchievementDifficulty.MEDIUM)
-        addStageInfo(5, "Sunny Day", "Don't catch a Thunder for 300 catches.", AchievementDifficulty.MEDIUM)
+        addStageInfo(1, "Rainy Day", "Don't catch a Thunder for 100 catches.\nMust've caught atleast one Thunder before.", AchievementDifficulty.EASY)
+        addStageInfo(2, "Overcast Day", "Don't catch a Thunder for 150 catches.\nMust've caught atleast one Thunder before.", AchievementDifficulty.EASY)
+        addStageInfo(3, "Cloudy Day", "Don't catch a Thunder for 200 catches.\nMust've caught atleast one Thunder before.", AchievementDifficulty.MEDIUM)
+        addStageInfo(4, "Clear Sky Day", "Don't catch a Thunder for 250 catches.\nMust've caught atleast one Thunder before.", AchievementDifficulty.MEDIUM)
+        addStageInfo(5, "Sunny Day", "Don't catch a Thunder for 300 catches.\nMust've caught atleast one Thunder before.", AchievementDifficulty.MEDIUM)
     }
 
+    val creature = SeaCreatures.THUNDER
+
     override fun setupListeners() {
-        currentCount = catchHistory.getOrAdd(SeaCreatures.THUNDER).count
+        val history = catchHistory.getOrAdd(creature)
+        currentCount = if(history.total > 0) {
+            history.count
+        } else {
+            0
+        }
 
         activeListeners.add(registerSeaCreatureCatchEvent { _, _ ->
-            currentCount = catchHistory.getOrAdd(SeaCreatures.THUNDER).count
+            val history = catchHistory.getOrAdd(creature)
+
+            currentCount = if(history.total > 0) {
+                history.count
+            } else {
+                0
+            }
         })
     }
 

@@ -10,7 +10,7 @@ import cloud.glitchdev.rfu.data.catches.CatchTracker.catchHistory
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 
 @Achievement
-object StillLavaAchievement : NumericStageAchievement() {
+object      StillLavaAchievement : NumericStageAchievement() {
     override val id: String = "still_lava"
     override val name: String = "Still Lava"
     override val description: String = "Don't catch a Jawbus for 500/750/1000/1250/1500 catches."
@@ -22,18 +22,31 @@ object StillLavaAchievement : NumericStageAchievement() {
     override val resetCountOnStageAdvance: Boolean = false
 
     init {
-        addStageInfo(1, "Smoldering Lava", "Don't catch a Jawbus for 500 catches.", AchievementDifficulty.EASY)
-        addStageInfo(2, "Flowing Lava", "Don't catch a Jawbus for 750 catches.", AchievementDifficulty.EASY)
-        addStageInfo(3, "Bubbly Lava", "Don't catch a Jawbus for 1000 catches.", AchievementDifficulty.MEDIUM)
-        addStageInfo(4, "Calm Lava", "Don't catch a Jawbus for 1250 catches.", AchievementDifficulty.MEDIUM)
-        addStageInfo(5, "Still Lava", "Don't catch a Jawbus for 1500 catches.", AchievementDifficulty.HARD)
+        addStageInfo(1, "Smoldering Lava", "Don't catch a Jawbus for 500 catches.\nMust've caught atleast one Jawbus before.", AchievementDifficulty.EASY)
+        addStageInfo(2, "Flowing Lava", "Don't catch a Jawbus for 750 catches.\nMust've caught atleast one Jawbus before.", AchievementDifficulty.EASY)
+        addStageInfo(3, "Bubbly Lava", "Don't catch a Jawbus for 1000 catches.\nMust've caught atleast one Jawbus before.", AchievementDifficulty.MEDIUM)
+        addStageInfo(4, "Calm Lava", "Don't catch a Jawbus for 1250 catches.\nMust've caught atleast one Jawbus before.", AchievementDifficulty.MEDIUM)
+        addStageInfo(5, "Still Lava", "Don't catch a Jawbus for 1500 catches.\nMust've caught atleast one Jawbus before.", AchievementDifficulty.HARD)
     }
 
+    val creature = SeaCreatures.JAWBUS
+
     override fun setupListeners() {
-        currentCount = catchHistory.getOrAdd(SeaCreatures.JAWBUS).count
+        val history = catchHistory.getOrAdd(creature)
+        currentCount = if(history.total > 0) {
+            history.count
+        } else {
+            0
+        }
 
         activeListeners.add(registerSeaCreatureCatchEvent { _, _ ->
-            currentCount = catchHistory.getOrAdd(SeaCreatures.JAWBUS).count
+            val history = catchHistory.getOrAdd(creature)
+
+            currentCount = if(history.total > 0) {
+                history.count
+            } else {
+                0
+            }
         })
     }
 
