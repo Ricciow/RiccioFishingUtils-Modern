@@ -1,7 +1,7 @@
 # v1.5.1 - ???
 
 ### Features:
-- Added 6 more achievements
+- Added 7 more achievements
 
 ### Changes:
 - Added a 1-second cooldown to the achievement sound to prevent loudness.
