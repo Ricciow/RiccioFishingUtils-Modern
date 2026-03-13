@@ -36,14 +36,14 @@ object LuckyHookAchievement : NumericStageAchievement() {
             val lookingFor = getCurrentSc() ?: return@registerSeaCreatureCatchEvent
 
             if (lookingFor == sc.scName) {
-                addProgress(1)
+                addProgress(1L)
             } else {
-                currentCount = 0
+                currentCount = 0L
             }
         })
     }
 
-    override fun getTargetCountForStage(stage: Int): Int = 2
+    override fun getTargetCountForStage(stage: Int): Long = 2L
 
     private fun getCurrentSc() : String? {
         return getStageName(currentStage)?.substringAfter("Lucky Hook: ")

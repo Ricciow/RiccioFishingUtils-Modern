@@ -54,19 +54,19 @@ object EfficiencyKingAchievement : NumericStageAchievement() {
                 if(currentDuration >= getTargetCountForStage(currentStage).minutes) {
                     advanceStage()
                     if (minSch >= getTargetSchForStage(currentStage)) {
-                        currentCount = currentDuration.inWholeMinutes.toInt()
+                        currentCount = currentDuration.inWholeMinutes
                     } else {
                         startTime = Instant.DISTANT_PAST
-                        currentCount = 0
+                        currentCount = 0L
                         minSch = Int.MAX_VALUE
                     }
                 } else {
-                    currentCount = currentDuration.inWholeMinutes.toInt()
+                    currentCount = currentDuration.inWholeMinutes
                 }
 
             } else {
                 startTime = Instant.DISTANT_PAST
-                currentCount = 0
+                currentCount = 0L
                 minSch = Int.MAX_VALUE
             }
         })
@@ -83,14 +83,14 @@ object EfficiencyKingAchievement : NumericStageAchievement() {
         }
     }
 
-    override fun getTargetCountForStage(stage: Int): Int {
+    override fun getTargetCountForStage(stage: Int): Long {
         return when(stage) {
-            1 -> 5
-            2 -> 10
-            3 -> 15
-            4 -> 20
-            5 -> 30
-            else -> 30
+            1 -> 5L
+            2 -> 10L
+            3 -> 15L
+            4 -> 20L
+            5 -> 30L
+            else -> 30L
         }
     }
 }

@@ -36,13 +36,13 @@ object DoubleTheHookDoubleTheFunAchievement : NumericStageAchievement() {
             if (doubleHook) {
                 val lookingFor = getCurrentSc() ?: return@registerSeaCreatureCatchEvent
                 if (sc.scName == lookingFor) {
-                    addProgress(1)
+                    addProgress(1L)
                 }
             }
         })
     }
 
-    override fun getTargetCountForStage(stage: Int): Int = 1
+    override fun getTargetCountForStage(stage: Int): Long = 1L
 
     private fun getCurrentSc() : String? {
         return getStageName(currentStage)?.substringAfter("Double Hook: ")

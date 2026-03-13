@@ -37,7 +37,7 @@ object FriendlyFisherAchievement : NumericStageAchievement() {
 
     private fun checkAll() {
         while (!isCompleted) {
-            val count = getValidBobbinCount()
+            val count = getValidBobbinCount().toLong()
             currentCount = count
             if (count < targetCount) break
         }
@@ -68,7 +68,7 @@ object FriendlyFisherAchievement : NumericStageAchievement() {
         }
     }
 
-    override fun getTargetCountForStage(stage: Int): Int = 4
+    override fun getTargetCountForStage(stage: Int): Long = 4L
 
     private fun getTargetBobbinLevelForStage(stage: Int): Int = (stage + 2).coerceAtMost(5)
 }

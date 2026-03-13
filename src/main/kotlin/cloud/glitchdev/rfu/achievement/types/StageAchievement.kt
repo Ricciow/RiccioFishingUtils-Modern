@@ -7,7 +7,7 @@ import cloud.glitchdev.rfu.achievement.interfaces.IStageAchievement
 
 abstract class StageAchievement : BaseAchievement(), IStageAchievement {
     abstract override val targetStage: Int
-    override val targetProgress: Int get() = targetStage
+    override val targetProgress: Long get() = targetStage.toLong()
     
     protected val stageNames = mutableMapOf<Int, String>()
     protected val stageDescriptions = mutableMapOf<Int, String>()
@@ -43,7 +43,7 @@ abstract class StageAchievement : BaseAchievement(), IStageAchievement {
         }
 
     protected open fun onStageChanged(oldStage: Int, newStage: Int) {}
-    override val currentProgress: Int get() = currentStage-1
+    override val currentProgress: Long get() = (currentStage - 1).toLong()
         
     fun advanceStage() {
         if (isCompleted) return

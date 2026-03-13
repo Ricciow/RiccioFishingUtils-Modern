@@ -34,30 +34,30 @@ object SunnyDayAchievement : NumericStageAchievement() {
     override fun setupListeners() {
         val history = catchHistory.getOrAdd(creature)
         currentCount = if(history.total > 0) {
-            history.count
+            history.count.toLong()
         } else {
-            0
+            0L
         }
 
         activeListeners.add(registerSeaCreatureCatchEvent { _, _ ->
             val history = catchHistory.getOrAdd(creature)
 
             currentCount = if(history.total > 0) {
-                history.count
+                history.count.toLong()
             } else {
-                0
+                0L
             }
         })
     }
 
-    override fun getTargetCountForStage(stage: Int): Int {
+    override fun getTargetCountForStage(stage: Int): Long {
         return when(stage) {
-            1 -> 100
-            2 -> 150
-            3 -> 200
-            4 -> 250
-            5 -> 300
-            else -> 300
+            1 -> 100L
+            2 -> 150L
+            3 -> 200L
+            4 -> 250L
+            5 -> 300L
+            else -> 300L
         }
     }
 }

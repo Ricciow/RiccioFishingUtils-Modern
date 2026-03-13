@@ -23,7 +23,7 @@ object NuclearResonanceAchievement : NumericAchievement() {
     override val type: AchievementType = AchievementType.NORMAL
     override val difficulty: AchievementDifficulty = AchievementDifficulty.IMPOSSIBLE
     override val category: AchievementCategory = AchievementCategory.ISLE
-    override val targetCount: Int = 2
+    override val targetCount: Long = 2L
 
     private val SEA_CREATURE = SeaCreatures.JAWBUS
     private val DROP = RareDrops.RADIOACTIVE_VIAL
@@ -72,14 +72,14 @@ object NuclearResonanceAchievement : NumericAchievement() {
                 if (matchingDropIndex != -1) {
                     disposalIterator.remove()
                     unmatchedDrops.removeAt(matchingDropIndex)
-                    addProgress(1)
+                    addProgress(1L)
                 }
             }
 
             if (unmatchedDisposals.any { now - it > 4000 }) {
                 unmatchedDisposals.clear()
                 unmatchedDrops.clear()
-                currentCount = 0
+                currentCount = 0L
             }
 
             unmatchedDrops.removeAll { now - it > 4000 }

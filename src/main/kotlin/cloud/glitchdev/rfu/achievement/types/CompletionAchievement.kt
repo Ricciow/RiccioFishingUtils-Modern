@@ -11,11 +11,11 @@ abstract class CompletionAchievement : BaseAchievement() {
     private val BaseAchievement.isReallyCompleted: Boolean
         get() = this.isCompleted || AchievementHandler.getAchievementData(this.id)?.isCompleted == true
 
-    override val currentProgress: Int
-        get() = achievements.count { it.isReallyCompleted }
+    override val currentProgress: Long
+        get() = achievements.count { it.isReallyCompleted }.toLong()
 
-    override val targetProgress: Int
-        get() = achievements.size
+    override val targetProgress: Long
+        get() = achievements.size.toLong()
 
     override fun setupListeners() {
         updateProgress()
@@ -29,7 +29,7 @@ abstract class CompletionAchievement : BaseAchievement() {
 
     private fun updateProgress() {
         val total = targetProgress
-        if (total == 0) {
+        if (total == 0L) {
             _progress = 1.0f
             complete()
             return

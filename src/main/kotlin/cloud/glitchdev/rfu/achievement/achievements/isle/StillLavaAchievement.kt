@@ -34,30 +34,30 @@ object      StillLavaAchievement : NumericStageAchievement() {
     override fun setupListeners() {
         val history = catchHistory.getOrAdd(creature)
         currentCount = if(history.total > 0) {
-            history.count
+            history.count.toLong()
         } else {
-            0
+            0L
         }
 
         activeListeners.add(registerSeaCreatureCatchEvent { _, _ ->
             val history = catchHistory.getOrAdd(creature)
 
             currentCount = if(history.total > 0) {
-                history.count
+                history.count.toLong()
             } else {
-                0
+                0L
             }
         })
     }
 
-    override fun getTargetCountForStage(stage: Int): Int {
+    override fun getTargetCountForStage(stage: Int): Long {
         return when(stage) {
-            1 -> 500
-            2 -> 750
-            3 -> 1000
-            4 -> 1250
-            5 -> 1500
-            else -> 1500
+            1 -> 500L
+            2 -> 750L
+            3 -> 1000L
+            4 -> 1250L
+            5 -> 1500L
+            else -> 1500L
         }
     }
 }

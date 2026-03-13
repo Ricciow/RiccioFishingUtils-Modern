@@ -25,7 +25,7 @@ object AchievementProgress : AbstractCommand("addprogress") {
                             if (!AchievementDebugUtils.checkDevMode(context.source)) return@executes 1
 
                             val id = StringArgumentType.getString(context, "id")
-                            val amount = IntegerArgumentType.getInteger(context, "amount")
+                            val amount = IntegerArgumentType.getInteger(context, "amount").toLong()
                             val achievement = AchievementManager.getAchievement(id)
 
                             if (achievement == null) {

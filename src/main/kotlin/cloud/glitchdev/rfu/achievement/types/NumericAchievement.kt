@@ -4,27 +4,27 @@ import cloud.glitchdev.rfu.achievement.BaseAchievement
 import cloud.glitchdev.rfu.achievement.AchievementProvider
 
 abstract class NumericAchievement : BaseAchievement() {
-    abstract val targetCount: Int
-    override val targetProgress: Int get() = targetCount
+    abstract val targetCount: Long
+    override val targetProgress: Long get() = targetCount
     
-    var currentCount: Int = 0
+    var currentCount: Long = 0L
         protected set(value) {
             field = value
-            _progress = if (targetCount > 0) value.toFloat() / targetCount.toFloat() else 1.0f
+            _progress = if (targetCount > 0L) value.toFloat() / targetCount.toFloat() else 1.0f
             if (field >= targetCount) {
                 complete()
             } else {
                 AchievementProvider.fireAchievementUpdated(this)
             }
         }
-    override val currentProgress: Int get() = currentCount
+    override val currentProgress: Long get() = currentCount
 
-    fun addProgress(amount: Int = 1) {
+    fun addProgress(amount: Long = 1L) {
         if (isCompleted) return
         currentCount += amount
     }
 
-    fun debugAddProgress(amount: Int = 1) {
+    fun debugAddProgress(amount: Long = 1L) {
         if (isCompleted) return
         markAsCheated()
         addProgress(amount)
@@ -36,13 +36,13 @@ abstract class NumericAchievement : BaseAchievement() {
     }
 
     override fun debugReset() {
-        currentCount = 0
+        currentCount = 0L
         super.debugReset()
     }
 
     override fun loadState(progressData: Map<String, Any>) {
         super.loadState(progressData)
-        val savedCount = (progressData["currentCount"] as? Number)?.toInt() ?: 0
+        val savedCount = (progressData["currentCount"] as? Number)?.toLong() ?: 0L
         currentCount = savedCount
     }
 
