@@ -12,7 +12,7 @@ import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.core.component.DataComponents
 
 @Achievement
-object TotalFishingXpAchievement : NumericStageAchievement() {
+object FishingGodAchievement : NumericStageAchievement() {
     override val id = "fishing_god"
     override val name = "Fishing God"
     override val description = "Accumulate massive amounts of fishing experience."
@@ -30,9 +30,9 @@ object TotalFishingXpAchievement : NumericStageAchievement() {
     )
 
     private val MILESTONE_NAMES = listOf(
-        "Novice Angler", "Skilled Fisherman", "Master Caster", "Elite Reel Master", "Oceanic Explorer",
-        "Abyssal Champion", "Legendary Harpooner", "Tidal Sovereign", "Poseidon's Peer", "World Class Fisher",
-        "Mythical Mariner", "Cosmic Angler", "Eternal Catch", "Omnipotent Angler", "Fishing God"
+        "Novice Angler", "Skilled Fisherman", "Master Caster", "Elite Reeler", "Oceanic Explorer",
+        "Abyssal Champion", "Legendary Harpooner", "Tidal King", "Poseidon's Enemy", "World Class Fisher",
+        "Mythical Mariner", "Cosmic Angler", "Eternal Fisher", "Omnipotent Angler", "Fishing God"
     )
 
     init {
