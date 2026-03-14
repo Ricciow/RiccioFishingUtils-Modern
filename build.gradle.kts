@@ -14,6 +14,8 @@ val requiredJava = when {
     else -> JavaVersion.VERSION_1_8
 }
 
+val awFileName = "rfu-${stonecutter.current.version}.accesswidener"
+
 repositories {
     /**
      * Restricts dependency search of the given [groups] to the [maven URL][url],
@@ -65,7 +67,7 @@ dependencies {
 
 loom {
     fabricModJsonPath = rootProject.file("src/main/resources/fabric.mod.json")
-    accessWidenerPath = rootProject.file("src/main/resources/rfu.accesswidener")
+    accessWidenerPath = rootProject.file("src/main/resources/$awFileName")
 
     decompilerOptions.named("vineflower") {
         options.put("mark-corresponding-synthetics", "1")
@@ -102,6 +104,7 @@ tasks {
         inputs.property("minecraft", project.property("mod.mc_dep"))
         inputs.property("fabric_language_kotlin", project.property("fabric_language_kotlin"))
         inputs.property("hypixel_mod_api", project.property("hypixel_mod_api_version"))
+        inputs.property("aw_file", awFileName)
 
         val props = mapOf(
             "id" to project.property("mod.id"),
@@ -109,7 +112,8 @@ tasks {
             "version" to project.version,
             "minecraft" to project.property("mod.mc_dep"),
             "fabric_language_kotlin" to project.property("fabric_language_kotlin"),
-            "hypixel_mod_api" to project.property("hypixel_mod_api_version")
+            "hypixel_mod_api" to project.property("hypixel_mod_api_version"),
+            "aw_file" to awFileName
         )
 
         filesMatching("fabric.mod.json") { expand(props) }

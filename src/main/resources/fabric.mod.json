@@ -24,7 +24,7 @@
     ]
   },
   "mixins": ["rfu.mixins.json"],
-  "accessWidener": "rfu.accesswidener",
+  "accessWidener": "${aw_file}",
   "depends": {
     "fabricloader": ">=0.18.4",
     "minecraft": "${minecraft}",
