@@ -7,14 +7,13 @@ import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
-import cloud.glitchdev.rfu.gui.hud.elements.XPHDisplay
+import cloud.glitchdev.rfu.gui.hud.elements.FishTrackingDisplay
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.command.Command
 import cloud.glitchdev.rfu.utils.command.SimpleCommand
 import com.mojang.brigadier.context.CommandContext
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import kotlin.time.Clock
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
 
@@ -25,7 +24,8 @@ object FishingXpTracker : Feature {
     private val xpHistory = ArrayDeque<Pair<Instant, Double>>()
     private var lastSeenXp: String = ""
     private var lastXpEvent: Instant = Instant.DISTANT_PAST
-    private var startFishing: Instant = Instant.DISTANT_PAST
+    var startFishing: Instant = Instant.DISTANT_PAST
+        private set
 
     var totalXp: Double = 0.0
         private set
@@ -86,7 +86,7 @@ object FishingXpTracker : Feature {
 
         if (startFishing == Instant.DISTANT_PAST) {
             currentXpPerHour = 0.0
-            XPHDisplay.updateData(0L, 0.0, Duration.ZERO)
+            FishTrackingDisplay.updateState()
             return
         }
 
@@ -99,13 +99,13 @@ object FishingXpTracker : Feature {
 
         if (calculationWindow.inWholeSeconds == 0L) {
             currentXpPerHour = 0.0
-            XPHDisplay.updateData(0L, totalXp, timeElapsed)
+            FishTrackingDisplay.updateState()
             return
         }
 
         val windowXp = xpHistory.sumOf { it.second }
         currentXpPerHour = (windowXp / calculationWindow.inWholeSeconds) * 3600
-        XPHDisplay.updateData(currentXpPerHour.toLong(), totalXp, timeElapsed)
+        FishTrackingDisplay.updateState()
     }
 
     private fun resetSession() {

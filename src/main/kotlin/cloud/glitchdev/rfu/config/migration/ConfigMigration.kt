@@ -12,7 +12,7 @@ import kotlin.io.path.readText
 import kotlin.io.path.writeText
 
 object ConfigMigration {
-    const val CURRENT_VERSION = 1
+    const val CURRENT_VERSION = 2
     const val VERSION_KEY = "rfuConfigVersion"
 
     private val logger = LoggerFactory.getLogger(ConfigMigration::class.java)
@@ -44,6 +44,7 @@ object ConfigMigration {
         for (version in from until CURRENT_VERSION) {
             when (version) {
                 0 -> migrateV0toV1(json)
+                1 -> migrateV1toV2(json)
             }
         }
     }
@@ -79,6 +80,37 @@ object ConfigMigration {
         rareScKeys.forEach { key ->
             val value = deleteKey(json, "General Fishing", key)
             if (value != null && !newCat.has(key)) newCat.add(key, value)
+        }
+    }
+
+    private fun migrateV1toV2(json: JsonObject) {
+        val schDisplay = deleteKey(json, "General Fishing", "schDisplay")?.asBoolean ?: true
+        val schTimer = deleteKey(json, "General Fishing", "schTimer")?.asBoolean ?: true
+        val schOverall = deleteKey(json, "General Fishing", "schOverall")?.asBoolean ?: false
+        val schOnlyWhenFishing = deleteKey(json, "General Fishing", "schOnlyWhenFishing")?.asBoolean ?: true
+
+        val xphDisplay = deleteKey(json, "General Fishing", "xphDisplay")?.asBoolean ?: true
+        val xphTimer = deleteKey(json, "General Fishing", "xphTimer")?.asBoolean ?: false
+        val xphOverall = deleteKey(json, "General Fishing", "xphOverall")?.asBoolean ?: false
+        val xphOnlyWhenFishing = deleteKey(json, "General Fishing", "xphOnlyWhenFishing")?.asBoolean ?: true
+
+        val cat = getCategory(json, "General Fishing") ?: return
+
+        if (!cat.has("fishTrackingDisplay")) {
+            cat.addProperty("fishTrackingDisplay", schDisplay || xphDisplay)
+        }
+
+        if (!cat.has("fishTrackingItems")) {
+            val arr = JsonArray()
+            if (schDisplay) arr.add("SC_H")
+            if (xphDisplay) arr.add("XP_H")
+            if (schTimer || xphTimer) arr.add("TIMER")
+            if (schOverall || xphOverall) arr.add("OVERALL")
+            cat.add("fishTrackingItems", arr)
+        }
+
+        if (!cat.has("fishTrackingOnlyWhenFishing")) {
+            cat.addProperty("fishTrackingOnlyWhenFishing", schOnlyWhenFishing && xphOnlyWhenFishing)
         }
     }
 

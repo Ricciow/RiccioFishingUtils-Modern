@@ -4,6 +4,7 @@ import cloud.glitchdev.rfu.config.Category
 import cloud.glitchdev.rfu.config.categories.RareScSettings.detectionAlert
 import cloud.glitchdev.rfu.constants.Dyes
 import cloud.glitchdev.rfu.constants.RareDrops
+import cloud.glitchdev.rfu.data.fishing.FishTrackingType
 import cloud.glitchdev.rfu.data.mob.DeployableType
 import cloud.glitchdev.rfu.utils.dsl.escapeForRegex
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
@@ -15,75 +16,36 @@ object GeneralFishing : Category("General Fishing") {
 
     init {
         dualSeparator {
-            title = "SC/h Display"
-            description = "Shows how many sea creatures you've caught on average since you start fishing"
+            title = "Fish Tracking"
+            description = "Track your fishing stats!"
         }
     }
 
-    var schDisplay by observable(boolean(true) {
+    var fishTrackingDisplay by observable(boolean(true) {
         name = Literal("Toggle")
-        description = Literal("Enables the Sc/h display")
+        description = Literal("Enables the Fish Tracking display")
     }) { _, _ ->
         reloadScreen()
     }
 
-    var schTimer by boolean(true) {
-        name = Literal("Toggle Timer")
-        description = Literal("Shows for how long you've been fishing alongside the sc/h")
-        condition = { schDisplay }
+    var fishTrackingItems by enums(*FishTrackingType.entries.toTypedArray()) {
+        name = Literal("Tracking Items")
+        description = Literal("Select which items to track in the display.")
+        condition = { fishTrackingDisplay }
     }
 
-    var schOverall by boolean(false) {
-        name = Literal("Add overall text")
-        description = Literal("Shows your sc/h overall alongside current")
-        condition = { schDisplay }
-    }
-
-    var schOnlyWhenFishing by boolean(true) {
+    var fishTrackingOnlyWhenFishing by boolean(true) {
         name = Literal("Only display when fishing")
-        description = Literal("Only show the sch display when you're fishing")
-        condition = { schDisplay }
+        description = Literal("Only show the display when you're fishing")
+        condition = { fishTrackingDisplay }
     }
 
     var fishingTime by int(5) {
         name = Literal("Fishing Downtime Limit")
-        description = Literal("The max ammount of downtime for the sc/h and xp/h counters to reset in minutes, also used as the window (e.g. 5 -> sc/h during last 5 minutes)")
-        condition = { schDisplay || xphDisplay }
+        description = Literal("The max ammount of downtime for the trackers to reset in minutes, also used as the window (e.g. 5 -> sc/h during last 5 minutes)")
+        condition = { fishTrackingDisplay }
         range = 0..60
         slider = true
-    }
-
-
-    init {
-        dualSeparator {
-            title = "Fishing Xp/h Display"
-            description = "Shows how much fishing XP you gain per hour"
-        }
-    }
-
-    var xphDisplay by observable(boolean(true) {
-        name = Literal("Toggle")
-        description = Literal("Enables the Xp/h display")
-    }) { _, _ ->
-        reloadScreen()
-    }
-
-    var xphTimer by boolean(false) {
-        name = Literal("Toggle Timer")
-        description = Literal("Shows for how long you've been fishing alongside the xp/h")
-        condition = { xphDisplay }
-    }
-
-    var xphOverall by boolean(false) {
-        name = Literal("Add overall text")
-        description = Literal("Shows your xp/h overall alongside current")
-        condition = { xphDisplay }
-    }
-
-    var xphOnlyWhenFishing by boolean(true) {
-        name = Literal("Only display when fishing")
-        description = Literal("Only show the xp/h display when you're fishing")
-        condition = { xphDisplay }
     }
 
 
