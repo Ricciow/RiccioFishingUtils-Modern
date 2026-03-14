@@ -22,6 +22,11 @@ object RareScSettings : Category("Rare SCs") {
         description = Literal("Shows a sphere around rare sea creatures to display their lootshare range")
     }
 
+    var filledLsRange by boolean(true) {
+        name = Literal("Filled lootshare range")
+        description = Literal("Renders the lootshare range as a filled sphere")
+    }
+
     var detectionAlert by observable(boolean(false) {
         name = Literal("Rare Sc Alert")
         description = Literal("Sends an alert whenever a rare SC is found.")

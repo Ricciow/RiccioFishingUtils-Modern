@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.data.mob
 
+import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.RareScSettings
 import cloud.glitchdev.rfu.config.categories.RareScSettings.RARE_SC_REGEX
 import cloud.glitchdev.rfu.events.managers.RenderEvents
@@ -71,13 +72,25 @@ class SkyblockEntity(
     fun registerLsRange() {
         registerRenderer { context, entity ->
             if (RareScSettings.lootshareRange && RARE_SC_REGEX.matches(sbName)) {
-                Render3D.builder(Shape.SPHERE)
+                val borderColor = if ((mc.player?.distanceTo(modelEntity) ?: 0f) < 30f) {
+                    Color(85, 255, 85)
+                } else {
+                    Color.WHITE
+                }
+
+                val builder = Render3D.builder(Shape.SPHERE)
                     .pos(entity)
                     .radius(30f)
-                    .color(Color.WHITE)
+                    .borderColor(borderColor)
                     .stacks(32)
                     .slices(32)
-                    .render(context)
+                    .filled(RareScSettings.filledLsRange)
+
+                if(RareScSettings.filledLsRange) {
+                    builder.color(Color(255, 255, 255, 50))
+                }
+
+                builder.render(context)
             }
         }
     }

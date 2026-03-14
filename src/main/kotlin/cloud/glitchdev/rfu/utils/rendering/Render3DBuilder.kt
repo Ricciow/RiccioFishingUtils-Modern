@@ -32,17 +32,17 @@ class Render3DBuilder(val shape: Shape) {
     fun radius(radius: Float) = apply { this.radius = radius }
     fun color(color: Color) = apply { this.color = color }
     fun borderColor(borderColor: Color?) = apply { this.borderColor = borderColor }
+    fun sliceColor(borderColor: Color?) = apply { this.borderColor = borderColor }
     fun height(height: Float) = apply { this.height = height }
     fun stacks(stacks: Int) = apply { this.stacks = stacks }
     fun slices(slices: Int) = apply { this.slices = slices }
     fun lineWidth(lineWidth: Float) = apply { this.lineWidth = lineWidth }
     fun filled(filled: Boolean) = apply { this.filled = filled }
-    fun drawSlices(drawSlices: Boolean) = apply { this.drawSlices = drawSlices }
 
     fun render(context: WorldRenderContext) {
         when (shape) {
             Shape.SPHERE -> Render3D.renderSphere(
-                location, radius, color, context, stacks, slices, lineWidth, filled, drawSlices
+                location, radius, color, borderColor, context, stacks, slices, lineWidth, filled
             )
             Shape.CYLINDER -> Render3D.renderCylinder(
                 location, radius, height, color, context, slices, borderColor, lineWidth
