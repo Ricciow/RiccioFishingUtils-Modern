@@ -3,7 +3,6 @@ package cloud.glitchdev.rfu.data.fishing
 import net.minecraft.world.phys.Vec3
 import java.awt.Color
 import java.util.UUID
-import kotlin.math.abs
 
 data class Hotspot(
     val uuid: UUID,
@@ -20,22 +19,14 @@ data class Hotspot(
         if (particleDistances.size < 200) {
             particleDistances.add(distance)
 
-            if (particleDistances.size >= 10) {
+            if (particleDistances.size >= 50) {
                 val sorted = particleDistances.sorted()
-                val percentile95 = sorted[(sorted.size * 0.95).toInt()]
-                
-                var calculatedRadius = percentile95.toFloat()
+                val percentile = sorted[(sorted.size * 0.50).toInt()]
 
-                if (abs(calculatedRadius - 4.0f) < 0.5f) {
-                    calculatedRadius = 4.0f
-                }
-                
-                radius = calculatedRadius
-            } else {
-                radius = particleDistances.maxOrNull()?.toFloat() ?: 0f
+                radius = percentile.toFloat()
             }
         }
     }
 
-    fun isRadiusCalculated() : Boolean = particleDistances.size >= 10
+    fun isRadiusCalculated() : Boolean = particleDistances.size == 200
 }

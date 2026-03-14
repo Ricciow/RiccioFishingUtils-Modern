@@ -72,6 +72,13 @@ object HighlightHotSpots : Feature {
 
             val horizontalDistance = Vec3(pos.x, 0.0, pos.z).distanceTo(Vec3(closestHotspot.center.x, 0.0, closestHotspot.center.z))
 
+            if(closestHotspot.isRadiusCalculated()) {
+                if(abs(horizontalDistance - closestHotspot.radius) <= 0.05) {
+                    cancelable.cancel()
+                }
+                return@registerParticleEvent
+            }
+
             if (horizontalDistance < 6.0) {
                 closestHotspot.addParticleDistance(horizontalDistance)
                 cancelable.cancel()
@@ -84,14 +91,14 @@ object HighlightHotSpots : Feature {
             val world = mc.level ?: return@registerRenderEvent
 
             for (hotspot in hotspots.values) {
-                val radius = if (hotspot.radius > 0) hotspot.radius else 4.0f
+                val radius = if (hotspot.radius > 0) hotspot.radius else continue
                 val surfaceY = findSurfaceY(hotspot.center, world, hotspot.lava)
-                val renderPos = Vec3(hotspot.center.x, surfaceY + 0.05, hotspot.center.z)
+                val renderPos = Vec3(hotspot.center.x, surfaceY + 0.01, hotspot.center.z)
 
                 Render3D.renderDisk(
                     renderPos,
                     radius,
-                    -1.0f,
+                    -3.0f,
                     hotspot.color,
                     context,
                     borderColor = hotspot.color.darker(),
@@ -138,11 +145,12 @@ object HighlightHotSpots : Feature {
 
     private fun getColorForBuff(buff: String): Color {
         return when {
-            buff.contains("Treasure", ignoreCase = true) -> Color(255, 170, 0, 100) // Orange
-            buff.contains("Speed", ignoreCase = true) -> Color(85, 255, 85, 100) // Green
-            buff.contains("Sea Creature", ignoreCase = true) -> Color(255, 85, 255, 100) // Pink
-            buff.contains("Double Hook", ignoreCase = true) -> Color(85, 255, 255, 100) // Cyan
-            else -> Color(255, 255, 255, 100) // White default
+            buff.contains("Treasure Chance", ignoreCase = true) -> Color(255, 255, 85, 100) // &f
+            buff.contains("Fishing Speed", ignoreCase = true) -> Color(85, 255, 255, 100) // &b
+            buff.contains("Sea Creature Chance", ignoreCase = true) -> Color(0, 170, 170, 100) // &3
+            buff.contains("Double Hook Chance", ignoreCase = true) -> Color(85, 85, 255, 100) // &9
+            buff.contains("Trophy Fish Chance", ignoreCase = true) -> Color(255, 170, 0, 100) // &6
+            else -> Color(255, 255, 255, 100) // &f
         }
     }
 

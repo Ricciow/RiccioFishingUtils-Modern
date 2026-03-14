@@ -10,6 +10,7 @@
 
 ### Fixes:
 - Fixed description of failed cast sound
+- Improved Highlight Hotspot radius calculation stability to prevent overshooting at first.
 
 ### Back-end:
 
