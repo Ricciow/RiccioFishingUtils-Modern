@@ -33,12 +33,13 @@
   },
   "failed_cast": {
     "category": "player",
-    "subtitle": "Catch Failed",
+    "subtitle": "Cast Failed",
     "sounds": [
       {
         "name": "block.note_block.bass",
         "type": "event",
-        "pitch": 0.5
+        "pitch": 0.5,
+        "volume": 2.0
       }
     ]
   },
