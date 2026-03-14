@@ -7,6 +7,7 @@
 - Unified fishing tracking settings and added a migration step.
 - Made the "overall" part of the fishing tracker more compact.
 - Implemented Highlight Hotspot feature with radius detection and buff-based coloring.
+- Switched 3D sphere and disk overlays from a simple projection check to frustum-based culling.
 
 ### Fixes:
 - Fixed description of failed cast sound

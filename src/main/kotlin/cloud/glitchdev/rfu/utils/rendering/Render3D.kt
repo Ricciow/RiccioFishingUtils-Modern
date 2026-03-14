@@ -1,11 +1,9 @@
 package cloud.glitchdev.rfu.utils.rendering
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
-import cloud.glitchdev.rfu.events.AutoRegister
-import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.RenderEvents.registerRenderEvent
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext
 import net.minecraft.client.Camera
+import net.minecraft.client.renderer.culling.Frustum
 //? if >=1.21.11 {
 import net.minecraft.client.renderer.rendertype.RenderTypes
 //?} else {
@@ -15,6 +13,7 @@ import net.minecraft.client.renderer.rendertype.RenderTypes
 import net.minecraft.client.DeltaTracker
 import com.mojang.blaze3d.vertex.VertexConsumer
 import net.minecraft.world.entity.Entity
+import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 import org.joml.Matrix4f
 import java.awt.Color
@@ -51,19 +50,13 @@ object Render3D {
         slices : Int = 16,
         lineWidth : Float = 2.0f
     ) {
+        if (!isVisible(buildSphereBounds(location, radius))) {
+            return
+        }
+
         val consumers = context.consumers()
         val camPos = camera.position()
         val vecToSphere = location.subtract(camPos)
-        //? if >=1.21.11 {
-        val lookVec = Vec3.directionFromRotation(camera.xRot(), camera.yRot())
-        //?} else {
-        /*val lookVec = Vec3.directionFromRotation(camera.xRot, camera.yRot)
-        *///?}
-        val projection = vecToSphere.dot(lookVec)
-
-        if (projection < -radius) {
-            return
-        }
 
         val matrixStack = context.matrices()
 
@@ -121,20 +114,13 @@ object Render3D {
         borderColor: Color? = null,
         lineWidth: Float = 2.0f
     ) {
+        if (!isVisible(buildDiskBounds(location, radius, height))) {
+            return
+        }
+
         val consumers = context.consumers()
         val camPos = camera.position()
         val vecToCylinder = location.subtract(camPos)
-
-        //? if >=1.21.11 {
-        val lookVec = Vec3.directionFromRotation(camera.xRot(), camera.yRot())
-        //?} else {
-        /*val lookVec = Vec3.directionFromRotation(camera.xRot, camera.yRot)
-        *///?}
-        val projection = vecToCylinder.dot(lookVec)
-
-        if (projection < -(radius + height)) {
-            return
-        }
 
         val matrixStack = context.matrices()
         matrixStack.pushPose()
@@ -194,11 +180,9 @@ object Render3D {
                     val x1 = (cos(angle1) * radius).toFloat()
                     val z1 = (sin(angle1) * radius).toFloat()
 
-                    // Top circle border segment
                     drawVertex(lineBuffer, matrix, x0, height, z0, borderColor, lineWidth)
                     drawVertex(lineBuffer, matrix, x1, height, z1, borderColor, lineWidth)
 
-                    // Bottom circle border segment
                     drawVertex(lineBuffer, matrix, x0, 0f, z0, borderColor, lineWidth)
                     drawVertex(lineBuffer, matrix, x1, 0f, z1, borderColor, lineWidth)
                 }
@@ -223,6 +207,46 @@ object Render3D {
         //? if >=1.21.11 {
             .setLineWidth(lineWidth)
         //?}
+    }
+
+    private fun isVisible(bounds: AABB): Boolean {
+        val fov = mc.options.fov().get().toFloat()
+        val projectionMatrix = mc.gameRenderer.getProjectionMatrix(fov)
+        val quaternion = camera.rotation().conjugate(org.joml.Quaternionf())
+        val viewMatrix = Matrix4f().rotation(quaternion)
+        val frustum = Frustum(viewMatrix, projectionMatrix)
+        val camPos = camera.position()
+        frustum.prepare(camPos.x, camPos.y, camPos.z)
+        return frustum.isVisible(bounds)
+    }
+
+    private fun buildSphereBounds(location: Vec3, radius: Float): AABB {
+        val radiusDouble = radius.toDouble()
+        return AABB(
+            location.x - radiusDouble,
+            location.y - radiusDouble,
+            location.z - radiusDouble,
+            location.x + radiusDouble,
+            location.y + radiusDouble,
+            location.z + radiusDouble
+        )
+    }
+
+    private fun buildDiskBounds(location: Vec3, radius: Float, height: Float): AABB {
+        val radiusDouble = radius.toDouble()
+        val heightDouble = height.toDouble()
+
+        val minY = minOf(location.y, location.y + heightDouble)
+        val maxY = maxOf(location.y, location.y + heightDouble)
+
+        return AABB(
+            location.x - radiusDouble,
+            minY,
+            location.z - radiusDouble,
+            location.x + radiusDouble,
+            maxY,
+            location.z + radiusDouble
+        )
     }
 
     private fun drawVertexSolid(
