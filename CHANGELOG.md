@@ -1,18 +1,18 @@
 # v1.6.0 - ???
 
 ### Features:
+- Added Highlight Hotspot feature with radius detection and buff-based coloring.
 
 ### Changes:
 - Merged XP/h and SC/h displays into a single Fish Tracking display.
 - Unified fishing tracking settings and added a migration step.
 - Made the "overall" part of the fishing tracker more compact.
-- Implemented Highlight Hotspot feature with radius detection and buff-based coloring.
-- Switched 3D sphere and disk overlays from a simple projection check to frustum-based culling.
 
 ### Fixes:
 - Fixed description of failed cast sound
 - Improved Highlight Hotspot radius calculation stability to prevent overshooting at first.
 
 ### Back-end:
+- Switched 3D sphere and disk overlays from a simple projection check to frustum-based culling.
 
 ### Other:
