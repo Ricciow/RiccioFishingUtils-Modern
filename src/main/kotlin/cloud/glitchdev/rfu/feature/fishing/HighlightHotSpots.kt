@@ -53,26 +53,14 @@ object HighlightHotSpots : Feature {
 
     private fun findSurfaceY(pos: Vec3, world: ClientLevel, isLava: Boolean): Double {
         val blockType = if (isLava) Blocks.LAVA else Blocks.WATER
-        var highestY = -64.0
-        
-        for (dx in -1..1) {
-            for (dz in -1..1) {
-                for (dy in 5 downTo -10) {
-                    val blockPos = net.minecraft.core.BlockPos.containing(pos.x + dx, pos.y + dy, pos.z + dz)
-                    val state = world.getBlockState(blockPos)
-                    if (state.`is`(blockType)) {
-                        val above = world.getBlockState(blockPos.above())
-                        if (!above.`is`(blockType)) {
-                            val currentSurfaceY = blockPos.y + 1.0
-                            if (currentSurfaceY > highestY) {
-                                highestY = currentSurfaceY
-                            }
-                            break
-                        }
-                    }
-                }
+        val centerPos = net.minecraft.core.BlockPos.containing(pos)
+
+        for (dy in 5 downTo -10) {
+            val current = centerPos.offset(0, dy, 0)
+            if (world.getBlockState(current).`is`(blockType) && !world.getBlockState(current.above()).`is`(blockType)) {
+                return current.y + 1.0
             }
         }
-        return if (highestY > -64.0) highestY else pos.y
+        return pos.y
     }
 }
