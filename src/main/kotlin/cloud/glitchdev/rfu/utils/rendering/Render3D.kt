@@ -22,18 +22,22 @@ object Render3D {
     val camera : Camera
         get() = mc.gameRenderer.mainCamera
 
-    fun builder(shape: Shape) = Render3DBuilder(shape)
+    fun builder(shape: Shape, context: WorldRenderContext) = Render3DBuilder(shape, context)
+
+    inline fun draw(context: WorldRenderContext, block: WorldRenderContext.() -> Unit) {
+        context.apply(block)
+    }
 
     internal fun renderSphere(
         location: Vec3,
         radius: Float,
         color: Color,
-        sliceColor: Color? = null,
         context: WorldRenderContext,
         stacks: Int = 16,
         slices: Int = 16,
         lineWidth: Float = 2.0f,
-        filled: Boolean = false
+        filled: Boolean = false,
+        borderColor: Color? = null
     ) {
         if (!isVisible(buildSphereBounds(location, radius))) {
             return
@@ -93,7 +97,7 @@ object Render3D {
             }
         }
 
-        if (sliceColor != null) {
+        if (borderColor != null) {
             //? if >=1.21.11 {
             val buffer = consumers.getBuffer(RenderTypes.LINES)
             //?} else {
@@ -118,11 +122,11 @@ object Render3D {
                     val x1 = cos(lng1)
                     val y1 = sin(lng1)
 
-                    drawVertex(buffer, matrix, (x0 * zr0).toFloat(), z0.toFloat(), (y0 * zr0).toFloat(), sliceColor, lineWidth)
-                    drawVertex(buffer, matrix, (x0 * zr1).toFloat(), z1.toFloat(), (y0 * zr1).toFloat(), sliceColor, lineWidth)
+                    drawVertex(buffer, matrix, (x0 * zr0).toFloat(), z0.toFloat(), (y0 * zr0).toFloat(), borderColor, lineWidth)
+                    drawVertex(buffer, matrix, (x0 * zr1).toFloat(), z1.toFloat(), (y0 * zr1).toFloat(), borderColor, lineWidth)
 
-                    drawVertex(buffer, matrix, (x0 * zr1).toFloat(), z1.toFloat(), (y0 * zr1).toFloat(), sliceColor, lineWidth)
-                    drawVertex(buffer, matrix, (x1 * zr1).toFloat(), z1.toFloat(), (y1 * zr1).toFloat(), sliceColor, lineWidth)
+                    drawVertex(buffer, matrix, (x0 * zr1).toFloat(), z1.toFloat(), (y0 * zr1).toFloat(), borderColor, lineWidth)
+                    drawVertex(buffer, matrix, (x1 * zr1).toFloat(), z1.toFloat(), (y1 * zr1).toFloat(), borderColor, lineWidth)
                 }
             }
         }

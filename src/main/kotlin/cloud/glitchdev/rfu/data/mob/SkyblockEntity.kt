@@ -7,7 +7,7 @@ import cloud.glitchdev.rfu.events.managers.RenderEvents
 import cloud.glitchdev.rfu.events.managers.RenderEvents.registerRenderEvent
 import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.utils.rendering.Render3D
-import cloud.glitchdev.rfu.utils.rendering.Shape
+import cloud.glitchdev.rfu.utils.rendering.Render3DBuilder.Companion.sphere
 import gg.essential.universal.utils.toUnformattedString
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext
 import net.minecraft.world.entity.LivingEntity
@@ -72,25 +72,25 @@ class SkyblockEntity(
     fun registerLsRange() {
         registerRenderer { context, entity ->
             if (RareScSettings.lootshareRange && RARE_SC_REGEX.matches(sbName)) {
-                val borderColor = if ((mc.player?.distanceTo(modelEntity) ?: 0f) < 30f) {
+                val bColor = if ((mc.player?.distanceTo(modelEntity) ?: 0f) < 30f) {
                     Color(85, 255, 85)
                 } else {
                     Color.WHITE
                 }
 
-                val builder = Render3D.builder(Shape.SPHERE)
-                    .pos(entity)
-                    .radius(30f)
-                    .borderColor(borderColor)
-                    .stacks(32)
-                    .slices(32)
-                    .filled(RareScSettings.filledLsRange)
-
-                if(RareScSettings.filledLsRange) {
-                    builder.color(Color(255, 255, 255, 50))
+                Render3D.draw(context) {
+                    sphere {
+                        pos(entity)
+                        radius = 30f
+                        borderColor = bColor
+                        stacks = 32
+                        slices = 32
+                        filled = RareScSettings.filledLsRange
+                        if (RareScSettings.filledLsRange) {
+                            color = Color(255, 255, 255, 50)
+                        }
+                    }
                 }
-
-                builder.render(context)
             }
         }
     }

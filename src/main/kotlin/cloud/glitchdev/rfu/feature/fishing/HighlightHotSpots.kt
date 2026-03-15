@@ -9,7 +9,7 @@ import cloud.glitchdev.rfu.events.managers.RenderEvents.registerRenderEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.rendering.Render3D
-import cloud.glitchdev.rfu.utils.rendering.Shape
+import cloud.glitchdev.rfu.utils.rendering.Render3DBuilder.Companion.cylinder
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.phys.Vec3
@@ -34,20 +34,22 @@ object HighlightHotSpots : Feature {
 
             val world = mc.level ?: return@registerRenderEvent
 
-            for (hotspot in hotspots.values) {
-                val radius = if (hotspot.radius > 0) hotspot.radius else continue
-                val surfaceY = findSurfaceY(hotspot.center, world, hotspot.lava)
-                val renderPos = Vec3(hotspot.center.x, surfaceY + 0.01, hotspot.center.z)
+            Render3D.draw(context) {
+                for (hotspot in hotspots.values) {
+                    val rad = if (hotspot.radius > 0) hotspot.radius else continue
+                    val surfaceY = findSurfaceY(hotspot.center, world, hotspot.lava)
+                    val renderPos = Vec3(hotspot.center.x, surfaceY + 0.01, hotspot.center.z)
 
-                Render3D.builder(Shape.CYLINDER)
-                    .pos(renderPos)
-                    .radius(radius)
-                    .height(-3.0f)
-                    .color(hotspot.color)
-                    .slices(32)
-                    .borderColor(hotspot.color.darker())
-                    .lineWidth(3.0f)
-                    .render(context)
+                    cylinder {
+                        location = renderPos
+                        radius = rad
+                        height = -3.0f
+                        slices = 32
+                        color = hotspot.color
+                        borderColor = hotspot.color.darker()
+                        lineWidth = 3.0f
+                    }
+                }
             }
         }
     }

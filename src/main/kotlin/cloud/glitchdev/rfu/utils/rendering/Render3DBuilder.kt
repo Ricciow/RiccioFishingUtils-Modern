@@ -6,19 +6,16 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.phys.Vec3
 import java.awt.Color
 
-class Render3DBuilder(val shape: Shape) {
-    private var location: Vec3 = Vec3.ZERO
-    private var radius: Float = 1.0f
-    private var color: Color = Color.WHITE
-    private var borderColor: Color? = null
-    private var height: Float = 0.0f
-    private var stacks: Int = 16
-    private var slices: Int = 16
-    private var lineWidth: Float = 2.0f
-    private var filled: Boolean = false
-    private var drawSlices: Boolean = true
-
-    fun pos(location: Vec3) = apply { this.location = location }
+class Render3DBuilder(val shape: Shape, val context: WorldRenderContext) {
+    var location: Vec3 = Vec3.ZERO
+    var radius: Float = 1.0f
+    var color: Color = Color.WHITE
+    var borderColor: Color? = null
+    var height: Float = 0.0f
+    var stacks: Int = 16
+    var slices: Int = 16
+    var lineWidth: Float = 2.0f
+    var filled: Boolean = false
 
     fun pos(entity: Entity, centered: Boolean = false) = apply {
         val tickDelta = mc.deltaTracker.getGameTimeDeltaPartialTick(true)
@@ -29,24 +26,28 @@ class Render3DBuilder(val shape: Shape) {
         this.location = entityPos
     }
 
-    fun radius(radius: Float) = apply { this.radius = radius }
-    fun color(color: Color) = apply { this.color = color }
-    fun borderColor(borderColor: Color?) = apply { this.borderColor = borderColor }
-    fun sliceColor(borderColor: Color?) = apply { this.borderColor = borderColor }
-    fun height(height: Float) = apply { this.height = height }
-    fun stacks(stacks: Int) = apply { this.stacks = stacks }
-    fun slices(slices: Int) = apply { this.slices = slices }
-    fun lineWidth(lineWidth: Float) = apply { this.lineWidth = lineWidth }
-    fun filled(filled: Boolean) = apply { this.filled = filled }
-
-    fun render(context: WorldRenderContext) {
+    fun render() {
         when (shape) {
             Shape.SPHERE -> Render3D.renderSphere(
-                location, radius, color, borderColor, context, stacks, slices, lineWidth, filled
+                location, radius, color, context, stacks, slices, lineWidth, filled, borderColor
             )
             Shape.CYLINDER -> Render3D.renderCylinder(
                 location, radius, height, color, context, slices, borderColor, lineWidth
             )
+        }
+    }
+
+    companion object {
+        inline fun WorldRenderContext.sphere(block: Render3DBuilder.() -> Unit) {
+            Render3DBuilder(Shape.SPHERE, this).apply(block).render()
+        }
+
+        inline fun WorldRenderContext.cylinder(block: Render3DBuilder.() -> Unit) {
+            Render3DBuilder(Shape.CYLINDER, this).apply(block).render()
+        }
+
+        inline fun build(shape: Shape, context: WorldRenderContext, block: Render3DBuilder.() -> Unit): Render3DBuilder {
+            return Render3DBuilder(shape, context).apply(block)
         }
     }
 }
