@@ -27,8 +27,6 @@ object RFURenderTypes {
     val TRANSLUCENT_SHAPE: RenderType = RenderType.create(
         "rfu_translucent_shape",
         RenderSetup.builder(NO_DEPTH_QUAD_PIPELINE)
-            // 1.21.11 natively supports disabling depth write!
-            // .writeMask(RenderSetup.WriteMaskState.COLOR)
             .sortOnUpload()
             .createRenderSetup()
     )
