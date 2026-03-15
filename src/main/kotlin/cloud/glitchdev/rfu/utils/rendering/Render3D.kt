@@ -59,11 +59,7 @@ object Render3D {
         val matrix = matrixStack.last().pose()
 
         if (filled) {
-            //? if >=1.21.11 {
-            val buffer = consumers.getBuffer(RenderTypes.DEBUG_QUADS)
-            //?} else {
-            /*val buffer = consumers.getBuffer(RenderType.debugQuads())
-            *///?}
+            val buffer = consumers.getBuffer(RFURenderTypes.TRANSLUCENT_SHAPE)
 
             for (i in 0 until stacks) {
                 val lat0 = Math.PI * (-0.5 + i.toDouble() / stacks)
@@ -163,11 +159,7 @@ object Render3D {
             )
             val matrix = matrixStack.last().pose()
 
-            //? if >=1.21.11 {
-            val solidBuffer = consumers.getBuffer(RenderTypes.DEBUG_QUADS)
-            //?} else {
-            /*val solidBuffer = consumers.getBuffer(RenderType.debugQuads())
-            *///?}
+            val solidBuffer = consumers.getBuffer(RFURenderTypes.TRANSLUCENT_SHAPE)
 
             for (i in 0 until slices) {
                 val angle0 = 2 * Math.PI * i.toDouble() / slices
