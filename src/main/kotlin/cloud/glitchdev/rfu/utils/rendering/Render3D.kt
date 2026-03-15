@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.utils.rendering
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
+import com.mojang.blaze3d.systems.RenderSystem
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext
 import net.minecraft.client.Camera
 import net.minecraft.client.renderer.culling.Frustum
@@ -227,8 +228,10 @@ object Render3D {
             .setColor(color.red, color.green, color.blue, color.alpha)
             .setNormal(1f, 0f, 0f)
         //? if >=1.21.11 {
-            .setLineWidth(lineWidth)
-        //?}
+        .setLineWidth(lineWidth)
+        //?} else {
+        /*RenderSystem.lineWidth(lineWidth)
+        *///?}
     }
 
     private fun isVisible(bounds: AABB): Boolean {
