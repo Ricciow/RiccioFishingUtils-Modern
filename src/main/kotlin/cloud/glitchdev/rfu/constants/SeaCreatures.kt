@@ -56,7 +56,7 @@ enum class SeaCreatures(
     STRIDERSURFER("Stridersurfer", "You caught a Stridersurfer.", LAVA, GALATEA),
     //Water Hotspot
     @SerializedName("Frog Man")
-    FROG_MAN("Frog Man", "Is it a frog? Is it a man? Well, yes, sorta, IT'S FROG MAN!!!!!!", WATER, HOTSPOT_WATER),
+    FROG_MAN("Frog Man", "Is it a frog? Is it a man? Well, yes, sorta, IT'S FROG MAN!!!!!! ", WATER, HOTSPOT_WATER),
     @SerializedName("Snapping Turtle")
     SNAPPING_TURTLE("Snapping Turtle", "A Snapping Turtle is coming your way, and it's ANGRY!", WATER, HOTSPOT_WATER),
     @SerializedName("Blue Ringed Octopus")
