@@ -230,4 +230,4 @@ Preferred method is the `JsonFile` utility (`cloud.glitchdev.rfu.utils.JsonFile`
 2.  **Code Style:** Follow idiomatic Kotlin. Use `object` for singletons/features/managers.
 3.  **Annotations:** Respect `@RFUFeature`, `@Achievement`, etc.; they are required for the `processor` to load the code.
 4.  **Dependencies:** Use custom event managers (`cloud.glitchdev.rfu.events.managers`) instead of standard Fabric events where possible.
-5.  **Changelogs:** Update the changelog after changes. Compact multiple changes into one sentence when possible.
+5.  **Changelogs:** Update the changelog after changes. The changelog is intended for final users; keep descriptions clear and user-focused. Use the **Back-end** category for technical or internal changes that users likely won't understand. Compact multiple changes into one sentence when possible.
