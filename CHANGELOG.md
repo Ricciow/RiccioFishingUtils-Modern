@@ -3,6 +3,7 @@
 ### Features:
 - Added Highlight Hotspot feature with radius detection and buff-based coloring.
 - Added option to make the ls range filled (on by default)
+- Added Hotspot Hopper achievement.
 
 ### Changes:
 - Merged XP/h and SC/h displays into a single Fish Tracking display.
@@ -20,5 +21,7 @@
 
 ### Back-end:
 - Switched 3D sphere and disk overlays from a simple projection check to frustum-based culling.
+- Added hotspot catch detection for sea creatures.
+- Added HOT_SPOT achievement category.
 
 ### Other:
