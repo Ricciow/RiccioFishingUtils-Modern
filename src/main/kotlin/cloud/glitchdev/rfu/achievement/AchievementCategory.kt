@@ -1,8 +1,8 @@
 package cloud.glitchdev.rfu.achievement
 
-enum class AchievementCategory {
-    GENERAL,
-    ISLE,
-    HOT_SPOT,
-    SPECIAL
+enum class AchievementCategory(val displayName: String) {
+    GENERAL("General"),
+    ISLE("Isle"),
+    HOT_SPOT("Hot Spot"),
+    SPECIAL("Special")
 }

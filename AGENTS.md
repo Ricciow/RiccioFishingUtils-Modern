@@ -74,7 +74,7 @@ Each achievement MUST define:
 *   **`description`**: Display description.
 *   **`type`**: `AchievementType` (NORMAL, SECRET, HIDDEN).
 *   **`difficulty`**: `AchievementDifficulty` (EASY, MEDIUM, HARD, VERY_HARD, IMPOSSIBLE).
-*   **`category`**: `AchievementCategory` (GENERAL, ISLE, SPECIAL).
+*   **`category`**: `AchievementCategory` (GENERAL, ISLE, HOT_SPOT, SPECIAL). Each category has a `displayName` property.
 
 ### Progress Tracking
 

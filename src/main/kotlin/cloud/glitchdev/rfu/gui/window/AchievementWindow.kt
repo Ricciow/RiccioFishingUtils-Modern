@@ -87,7 +87,7 @@ object AchievementWindow : BaseWindow() {
         } childOf header
 
         AchievementCategory.entries.forEach { category ->
-            UIButton(category.name.lowercase().replaceFirstChar { it.uppercase() }, 5f) {
+            UIButton(category.displayName, 5f) {
                 selectedCategory = category
                 refreshAchievements()
             }.constrain {
