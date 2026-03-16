@@ -2,7 +2,6 @@ package cloud.glitchdev.rfu.achievement.achievements.hotspot
 
 import cloud.glitchdev.rfu.achievement.*
 import cloud.glitchdev.rfu.constants.LiquidTypes
-import cloud.glitchdev.rfu.data.fishing.Hotspot
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import kotlin.time.Duration.Companion.minutes
 
@@ -41,7 +40,7 @@ object HotspotHopperAchievement : BaseAchievement() {
         lastHotspotType = (progressData["lastType"] as? String)?.let { 
             try { LiquidTypes.valueOf(it) } catch (e: Exception) { null }
         }
-        lastHotspotTime = (progressData["lastTime"] as? Double)?.toLong() ?: 0L
+        lastHotspotTime = (progressData["lastTime"] as? Number)?.toLong() ?: 0L
     }
 
     override fun saveState(): Map<String, Any> {

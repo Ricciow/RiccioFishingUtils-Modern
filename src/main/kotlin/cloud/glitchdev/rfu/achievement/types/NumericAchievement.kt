@@ -41,9 +41,7 @@ abstract class NumericAchievement : BaseAchievement() {
     }
 
     override fun loadState(progressData: Map<String, Any>) {
-        super.loadState(progressData)
-        val savedCount = (progressData["currentCount"] as? Number)?.toLong() ?: 0L
-        currentCount = savedCount
+        currentCount = (progressData["currentCount"] as? Number)?.toLong() ?: 0L
     }
 
     override fun saveState(): Map<String, Any> {
