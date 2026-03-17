@@ -20,11 +20,10 @@ object JawbusDeathAlert : Feature {
     override fun onInitialize() {
         registerGameEvent(JAWBUS_DEATH_REGEX) { _, _, matches ->
             if(!LavaFishing.diedJawbusAlert) return@registerGameEvent
-            val username = matches?.groupValues?.getOrNull(1) ?: return@registerGameEvent
-            Title.showTitle("${TextColor.DARK_GRAY}☠ ${TextColor.GRAY}$username ${TextColor.DARK_GRAY}☠", "${TextColor.LIGHT_RED}was killed by Lord Jawbus")
-            
             val now = Clock.System.now()
-            if(LavaFishing.diedJawbusSound && now - lastAlert > 30.seconds) {
+            if(now - lastAlert > 30.seconds) {
+                val username = matches?.groupValues?.getOrNull(1) ?: return@registerGameEvent
+                Title.showTitle("${TextColor.DARK_GRAY}☠ ${TextColor.GRAY}$username ${TextColor.DARK_GRAY}☠", "${TextColor.LIGHT_RED}was killed by Lord Jawbus")
                 lastAlert = now
                 Sounds.playSound("rfu:death", 1f, LavaFishing.diedJawbusVolume)
             }

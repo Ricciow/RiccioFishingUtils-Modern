@@ -15,6 +15,7 @@
 - Made the lootshare range turn green when inside it.
 - Made Rare SC party messages turn the preceding "a" into "an" if the sc name starts with a vowel
 - Updated Sea Creature catch tracking to only increment/reset if the creature's conditions are met.
+- Made the jawbus death alert after 30s on the display too and not just the sound
 
 ### Fixes:
 - Fixed description/name of failed cast sound
