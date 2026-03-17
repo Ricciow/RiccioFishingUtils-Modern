@@ -6,6 +6,7 @@
 - Added Hotspot Hopper achievement.
 - Added Solid Magma achievement.
 - Added Buff Collector achievement.
+- Added /rfusc command to check your data on specific Sea Creatures
 
 ### Changes:
 - Merged XP/h and SC/h displays into a single Fish Tracking display.
