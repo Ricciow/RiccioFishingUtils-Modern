@@ -18,7 +18,7 @@ object HotspotHopperAchievement : BaseAchievement() {
     private var lastHotspotTime: Long = 0L
 
     override fun setupListeners() {
-        activeListeners.add(registerSeaCreatureCatchEvent { sc, _, hotspot ->
+        activeListeners.add(registerSeaCreatureCatchEvent { sc, _, hotspot, _ ->
             if (hotspot != null) {
                 val now = System.currentTimeMillis()
                 val currentType = sc.liquidType

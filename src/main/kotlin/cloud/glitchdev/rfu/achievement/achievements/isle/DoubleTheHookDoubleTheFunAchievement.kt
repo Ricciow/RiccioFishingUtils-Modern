@@ -32,7 +32,7 @@ object DoubleTheHookDoubleTheFunAchievement : NumericStageAchievement() {
     }
 
     override fun setupListeners() {
-        activeListeners.add(registerSeaCreatureCatchEvent { sc, doubleHook, _ ->
+        activeListeners.add(registerSeaCreatureCatchEvent { sc, doubleHook, _, _ ->
             if (doubleHook) {
                 val lookingFor = getCurrentSc() ?: return@registerSeaCreatureCatchEvent
                 if (sc.scName == lookingFor) {

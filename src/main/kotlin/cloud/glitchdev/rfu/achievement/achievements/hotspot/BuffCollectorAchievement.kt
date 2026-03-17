@@ -24,7 +24,7 @@ object BuffCollectorAchievement : NumericAchievement() {
     )
 
     override fun setupListeners() {
-        activeListeners.add(registerSeaCreatureCatchEvent { _, _, hotspot ->
+        activeListeners.add(registerSeaCreatureCatchEvent { _, _, hotspot, _ ->
             if (hotspot != null) {
                 val buff = hotspot.buff
                 

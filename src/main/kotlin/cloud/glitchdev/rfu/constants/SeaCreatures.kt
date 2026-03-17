@@ -5,12 +5,16 @@ import cloud.glitchdev.rfu.constants.SeaCreatureCategory.*
 import cloud.glitchdev.rfu.model.data.DataOption
 import com.google.gson.annotations.SerializedName
 
+import cloud.glitchdev.rfu.data.fishing.Hotspot
+import net.minecraft.world.phys.Vec3
+
 enum class SeaCreatures(
     val scName: String,
     val catchMessage : String,
     val liquidType: LiquidTypes,
     val category: SeaCreatureCategory,
-    val special: Boolean = false
+    val special: Boolean = false,
+    val condition: (Hotspot?, Vec3) -> Boolean = { _, _ -> true }
 ) {
     //Any water source
     @SerializedName("Sea Walker")
@@ -56,13 +60,13 @@ enum class SeaCreatures(
     STRIDERSURFER("Stridersurfer", "You caught a Stridersurfer.", LAVA, GALATEA),
     //Water Hotspot
     @SerializedName("Frog Man")
-    FROG_MAN("Frog Man", "Is it a frog? Is it a man? Well, yes, sorta, IT'S FROG MAN!!!!!!", WATER, HOTSPOT_WATER),
+    FROG_MAN("Frog Man", "Is it a frog? Is it a man? Well, yes, sorta, IT'S FROG MAN!!!!!!", WATER, HOTSPOT_WATER, false, { h, _ -> h != null }),
     @SerializedName("Snapping Turtle")
-    SNAPPING_TURTLE("Snapping Turtle", "A Snapping Turtle is coming your way, and it's ANGRY!", WATER, HOTSPOT_WATER),
+    SNAPPING_TURTLE("Snapping Turtle", "A Snapping Turtle is coming your way, and it's ANGRY!", WATER, HOTSPOT_WATER, false, { h, _ -> h != null }),
     @SerializedName("Blue Ringed Octopus")
-    BLUE_RINGED_OCTOPUS("Blue Ringed Octopus", "A garish set of tentacles arise. It's a Blue Ringed Octopus!", WATER, HOTSPOT_WATER, true),
+    BLUE_RINGED_OCTOPUS("Blue Ringed Octopus", "A garish set of tentacles arise. It's a Blue Ringed Octopus!", WATER, HOTSPOT_WATER, true, { h, _ -> h != null }),
     @SerializedName("Wiki Tiki")
-    WIKI_TIKI("Wiki Tiki", "The water bubbles and froths. A massive form emerges- you have disturbed the Wiki Tiki! You shall pay the price.", WATER, HOTSPOT_WATER, true),
+    WIKI_TIKI("Wiki Tiki", "The water bubbles and froths. A massive form emerges- you have disturbed the Wiki Tiki! You shall pay the price.", WATER, HOTSPOT_WATER, true, { h, _ -> h != null }),
     //Oasis
     @SerializedName("Oasis Rabbit")
     OASIS_RABBIT("Oasis Rabbit","An Oasis Rabbit appears from the water.", WATER, OASIS),
@@ -152,20 +156,24 @@ enum class SeaCreatures(
     @SerializedName("Taurus")
     TAURUS("Taurus", "Taurus and his steed emerge.", LAVA, ISLE),
     @SerializedName("Plhlegblast")
-    PLHLEGBLAST("Plhlegblast", "WOAH! A Plhlegblast appeared.", LAVA, ISLE, true),
+    PLHLEGBLAST("Plhlegblast", "WOAH! A Plhlegblast appeared.", LAVA, ISLE, true, { _, p ->
+        p.x < -357.0 && p.x > -398.0 &&
+        p.y > 72.0 && p.y < 100.0 &&
+        p.z < -683.0 && p.z > -722.0
+    }),
     @SerializedName("Thunder")
     THUNDER("Thunder", "You hear a massive rumble as Thunder emerges.", LAVA, ISLE, true),
     @SerializedName("Lord Jawbus")
     JAWBUS("Lord Jawbus", "You have angered a legendary creature... Lord Jawbus has arrived.", LAVA, ISLE, true),
     //Lava Hotspot
     @SerializedName("Fried Chicken")
-    FRIED_CHICKEN("Fried Chicken", "Smells of burning. Must be a Fried Chicken.", LAVA, HOTSPOT_LAVA),
+    FRIED_CHICKEN("Fried Chicken", "Smells of burning. Must be a Fried Chicken.", LAVA, HOTSPOT_LAVA, false, { h, _ -> h != null }),
     @SerializedName("Fireproof Witch")
-    FIREPROOF_WITCH("Fireproof Witch", "Trouble's brewing, it's a Fireproof Witch!", LAVA, HOTSPOT_LAVA),
+    FIREPROOF_WITCH("Fireproof Witch", "Trouble's brewing, it's a Fireproof Witch!", LAVA, HOTSPOT_LAVA, false, { h, _ -> h != null }),
     @SerializedName("Fiery Scuttler")
-    FIERY_SCUTTER("Fiery Scuttler", "A Fiery Scuttler inconspicuously waddles up to you, friends in tow.", LAVA, HOTSPOT_LAVA, true),
+    FIERY_SCUTTER("Fiery Scuttler", "A Fiery Scuttler inconspicuously waddles up to you, friends in tow.", LAVA, HOTSPOT_LAVA, true, { h, _ -> h != null }),
     @SerializedName("Ragnarok")
-    RAGNAROK("Ragnarok", "The sky darkens and the air thickens. The end times are upon us: Ragnarok is here.", LAVA, HOTSPOT_LAVA, true);
+    RAGNAROK("Ragnarok", "The sky darkens and the air thickens. The end times are upon us: Ragnarok is here.", LAVA, HOTSPOT_LAVA, true, { h, _ -> h != null });
 
     fun toDataOption() : DataOption {
         return DataOption(this, this.scName)

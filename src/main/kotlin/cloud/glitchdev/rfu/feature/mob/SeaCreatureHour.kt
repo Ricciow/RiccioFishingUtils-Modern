@@ -29,7 +29,7 @@ object SeaCreatureHour : Feature {
     var total: Int = 0
 
     override fun onInitialize() {
-        registerSeaCreatureCatchEvent { _, isDoubleHook, _ ->
+        registerSeaCreatureCatchEvent { _, isDoubleHook, _, _ ->
             handleCatch(isDoubleHook)
         }
 

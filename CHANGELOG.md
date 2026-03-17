@@ -4,6 +4,8 @@
 - Added Highlight Hotspot feature with radius detection and buff-based coloring.
 - Added option to make the ls range filled (on by default)
 - Added Hotspot Hopper achievement.
+- Added Solid Magma achievement.
+- Added Buff Collector achievement.
 
 ### Changes:
 - Merged XP/h and SC/h displays into a single Fish Tracking display.
@@ -11,6 +13,7 @@
 - Made the "overall" part of the fishing tracker more compact.
 - Made the lootshare range turn green when inside it.
 - Made Rare SC party messages turn the preceding "a" into "an" if the sc name starts with a vowel
+- Updated Sea Creature catch tracking to only increment/reset if the creature's conditions are met.
 
 ### Fixes:
 - Fixed description/name of failed cast sound
@@ -23,5 +26,7 @@
 - Switched 3D sphere and disk overlays from a simple projection check to frustum-based culling.
 - Added hotspot catch detection for sea creatures.
 - Added HOT_SPOT achievement category.
+- Expanded `SeaCreatures` enum with condition support.
+- Updated `CatchHistory` and `CatchTracker` to support conditional catch recording.
 
 ### Other:
