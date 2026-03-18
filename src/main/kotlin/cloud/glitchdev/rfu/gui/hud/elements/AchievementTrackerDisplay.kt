@@ -16,6 +16,8 @@ import cloud.glitchdev.rfu.events.managers.AchievementUpdatedEvents.registerAchi
 import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 
+import cloud.glitchdev.rfu.utils.dsl.compact
+
 @HudElement
 object AchievementTrackerDisplay : AbstractTextHudElement("achievementTrackerDisplay") {
 
@@ -79,7 +81,7 @@ object AchievementTrackerDisplay : AbstractTextHudElement("achievementTrackerDis
                 val progressText = if (achievement.isCompleted) {
                     "Completed!"
                 } else {
-                    "${compactNumber(current)}/${compactNumber(target)} $GRAY($percentage%)"
+                    "${current.compact()}/${target.compact()} $GRAY($percentage%)"
                 }
 
                 lines.add("$color$name: $YELLOW$progressText")
@@ -87,14 +89,5 @@ object AchievementTrackerDisplay : AbstractTextHudElement("achievementTrackerDis
         }
 
         text.setText(if (lines.isEmpty()) (if (isEditing) "Achievement Tracker" else "") else lines.joinToString("\n"))
-    }
-
-    private fun compactNumber(number: Long): String {
-        return when {
-            number >= 1_000_000_000L -> "${String.format("%.1f", number / 1_000_000_000.0)}B"
-            number >= 1_000_000L -> "${String.format("%.1f", number / 1_000_000.0)}M"
-            number >= 10_000L -> "${String.format("%.1f", number / 1_000.0)}k"
-            else -> number.toString()
-        }.replace(".0", "")
     }
 }

@@ -17,6 +17,7 @@ import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.toConstraint
+import cloud.glitchdev.rfu.utils.dsl.compact
 import java.awt.Color
 
 class AchievementProgress(
@@ -47,8 +48,8 @@ class AchievementProgress(
             } childOf textContainer
         }
 
-        val currentStr = compactNumber(achievement.currentProgress)
-        val targetStr = compactNumber(achievement.targetProgress)
+        val currentStr = achievement.currentProgress.compact()
+        val targetStr = achievement.targetProgress.compact()
         val progressText = if(achievement.isCompleted) "${TextColor.LIGHT_GREEN}✔" else "$currentStr/$targetStr"
         UIText(progressText).constrain {
             x = 0.pixels(true)
@@ -72,14 +73,5 @@ class AchievementProgress(
             height = 100.percent()
             color = (if(achievement.progress != 1f) UIScheme.achievementIncompleteColor else UIScheme.achievementCompleteColor).toConstraint()
         } childOf progressBackground
-    }
-
-    private fun compactNumber(number: Long): String {
-        return when {
-            number >= 1_000_000_000L -> "${String.format("%.1f", number / 1_000_000_000.0)}B"
-            number >= 1_000_000L -> "${String.format("%.1f", number / 1_000_000.0)}M"
-            number >= 10_000L -> "${String.format("%.1f", number / 1_000.0)}k"
-            else -> number.toString()
-        }.replace(".0", "")
     }
 }
