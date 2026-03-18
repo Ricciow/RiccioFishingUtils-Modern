@@ -58,7 +58,7 @@ public class SquidRendererMixin {
     /*@Inject(method = "getTextureLocation(Lnet/minecraft/client/renderer/entity/state/SquidRenderState;)Lnet/minecraft/resources/ResourceLocation;", at = @At("HEAD"), cancellable = true)
     private void rfu$getTextureLocation(SquidRenderState renderState, CallbackInfoReturnable<ResourceLocation> cir) {
         if (((PlhlegblastStateAccess) renderState).rfu$isPlhlegblast()) {
-            cir.setReturnValue(GLOW_SQUID_TEXTURE);
+            cir.setReturnValue(rfu$GLOW_SQUID_TEXTURE);
         }
     }
     *///?}
