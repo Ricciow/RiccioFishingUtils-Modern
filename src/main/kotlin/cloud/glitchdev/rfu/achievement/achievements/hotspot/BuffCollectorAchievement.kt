@@ -2,7 +2,6 @@ package cloud.glitchdev.rfu.achievement.achievements.hotspot
 
 import cloud.glitchdev.rfu.achievement.*
 import cloud.glitchdev.rfu.achievement.types.NumericAchievement
-import cloud.glitchdev.rfu.data.fishing.Bait
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 
 @Achievement

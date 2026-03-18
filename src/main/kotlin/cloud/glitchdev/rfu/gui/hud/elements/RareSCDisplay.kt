@@ -16,7 +16,6 @@ import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationE
 import net.minecraft.world.phys.Vec3
 import kotlin.math.ceil
 import kotlin.time.Clock
-import kotlin.time.Instant
 
 import cloud.glitchdev.rfu.feature.fishing.FishingSession
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
