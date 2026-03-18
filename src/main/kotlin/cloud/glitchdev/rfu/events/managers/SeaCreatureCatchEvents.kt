@@ -11,10 +11,12 @@ import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.world.phys.Vec3
 
+import cloud.glitchdev.rfu.data.fishing.Bait
+import cloud.glitchdev.rfu.feature.fishing.BaitManager
 import cloud.glitchdev.rfu.data.fishing.Hotspot
 
 @AutoRegister
-object SeaCreatureCatchEvents : AbstractEventManager<(SeaCreatures, doubleHook : Boolean, hotspot : Hotspot?, pos : Vec3) -> Unit, SeaCreatureCatchEvents.SeaCreatureCatchEvent>(), RegisteredEvent {
+object SeaCreatureCatchEvents : AbstractEventManager<(SeaCreatures, doubleHook : Boolean, hotspot : Hotspot?, pos : Vec3, bait : Bait?) -> Unit, SeaCreatureCatchEvents.SeaCreatureCatchEvent>(), RegisteredEvent {
     val SC_MESSAGE_REGEX = SeaCreatures.entries.joinToString("|") { it.catchMessage.escapeForRegex() }.toExactRegex()
     val DOUBLE_HOOK_REGEX = """Double Hook!|It's a Double Hook! Woot woot!|It's a Double Hook!""".toExactRegex()
     var isDoubleHook = false
@@ -31,28 +33,29 @@ object SeaCreatureCatchEvents : AbstractEventManager<(SeaCreatures, doubleHook :
                 val bobber = mc.player?.fishing
                 val checkPos = bobber?.position() ?: mc.player?.position() ?: Vec3.ZERO
                 val hotspot = HotSpotEvents.getHotspotAt(checkPos)
-                runTasks(sc, isDoubleHook, hotspot, checkPos)
+                val bait = BaitManager.lastBait
+                runTasks(sc, isDoubleHook, hotspot, checkPos, bait)
             }
             isDoubleHook = false
         }
     }
 
-    override val runTasks: (SeaCreatures, Boolean, Hotspot?, Vec3) -> Unit = { sc, doubleHook, hotspot, pos ->
+    override val runTasks: (SeaCreatures, Boolean, Hotspot?, Vec3, Bait?) -> Unit = { sc, doubleHook, hotspot, pos, bait ->
         safeExecution {
             tasks.forEach { task ->
-                task.callback(sc, doubleHook, hotspot, pos)
+                task.callback(sc, doubleHook, hotspot, pos, bait)
             }
         }
     }
 
-    fun registerSeaCreatureCatchEvent(priority: Int = 20, callback: (SeaCreatures, doubleHook : Boolean, hotspot : Hotspot?, pos : Vec3) -> Unit): SeaCreatureCatchEvent {
+    fun registerSeaCreatureCatchEvent(priority: Int = 20, callback: (SeaCreatures, doubleHook : Boolean, hotspot : Hotspot?, pos : Vec3, bait : Bait?) -> Unit): SeaCreatureCatchEvent {
         return SeaCreatureCatchEvent(priority, callback).register()
     }
 
     class SeaCreatureCatchEvent(
         priority: Int = 20,
-        callback: (SeaCreatures, doubleHook : Boolean, hotspot : Hotspot?, pos : Vec3) -> Unit
-    ) : ManagedTask<(SeaCreatures, doubleHook : Boolean, hotspot : Hotspot?, pos : Vec3) -> Unit, SeaCreatureCatchEvent>(priority, callback) {
+        callback: (SeaCreatures, doubleHook : Boolean, hotspot : Hotspot?, pos : Vec3, bait : Bait?) -> Unit
+    ) : ManagedTask<(SeaCreatures, doubleHook : Boolean, hotspot : Hotspot?, pos : Vec3, bait : Bait?) -> Unit, SeaCreatureCatchEvent>(priority, callback) {
         override fun register() = submitTask(this)
         override fun unregister() = removeTask(this)
     }

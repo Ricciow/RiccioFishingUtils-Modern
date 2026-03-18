@@ -39,5 +39,6 @@
 - Added HOT_SPOT achievement category.
 - Expanded `SeaCreatures` enum with condition support.
 - Updated `CatchHistory` and `CatchTracker` to support conditional catch recording.
+- Added bait tracking to `SeaCreatureCatchEvent`.
 
 ### Other:

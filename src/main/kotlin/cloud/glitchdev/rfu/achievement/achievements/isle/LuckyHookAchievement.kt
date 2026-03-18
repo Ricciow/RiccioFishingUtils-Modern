@@ -32,7 +32,7 @@ object LuckyHookAchievement : NumericStageAchievement() {
     }
 
     override fun setupListeners() {
-        activeListeners.add(registerSeaCreatureCatchEvent { sc, _, _, _ ->
+        activeListeners.add(registerSeaCreatureCatchEvent { sc, _, _, _, _ ->
             val lookingFor = getCurrentSc() ?: return@registerSeaCreatureCatchEvent
 
             if (lookingFor == sc.scName) {

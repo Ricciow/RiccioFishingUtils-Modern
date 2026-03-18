@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.data.catches
 
 import cloud.glitchdev.rfu.config.categories.RareScSettings
 import cloud.glitchdev.rfu.constants.SeaCreatures
+import cloud.glitchdev.rfu.data.fishing.Bait
 import cloud.glitchdev.rfu.data.fishing.Hotspot
 import net.minecraft.world.phys.Vec3
 import kotlin.time.Clock
@@ -39,8 +40,8 @@ class CatchHistory {
     /**
      * Helper to easily update stats without manual fetching
      */
-    fun registerCatch(sc: SeaCreatures, dh : Boolean, hotspot: Hotspot?, pos: Vec3) {
-        if(dh) registerCatch(sc, false, hotspot, pos)
+    fun registerCatch(sc: SeaCreatures, dh : Boolean, hotspot: Hotspot?, pos: Vec3, bait: Bait?) {
+        if(dh) registerCatch(sc, false, hotspot, pos, bait)
 
         lastHotspot = hotspot
         lastPos = pos

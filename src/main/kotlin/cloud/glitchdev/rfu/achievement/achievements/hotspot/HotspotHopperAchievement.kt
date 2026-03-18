@@ -29,7 +29,7 @@ object HotspotHopperAchievement : NumericAchievement() {
             }
         })
 
-        activeListeners.add(registerSeaCreatureCatchEvent { sc, _, hotspot, _ ->
+        activeListeners.add(registerSeaCreatureCatchEvent { sc, _, hotspot, _, _ ->
             if (hotspot != null) {
                 val now = System.currentTimeMillis()
                 val currentType = sc.liquidType

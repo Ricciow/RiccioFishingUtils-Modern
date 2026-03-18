@@ -15,7 +15,7 @@ object DoubleHookMessages : Feature {
     var currentIndex = 0
 
     override fun onInitialize() {
-        registerSeaCreatureCatchEvent { _, isDoubleHook, _, _ ->
+        registerSeaCreatureCatchEvent { _, isDoubleHook, _, _, _ ->
             if(GeneralFishing.toggleDoubleHookMessages && isDoubleHook) {
                 var message = GeneralFishing.doubleHookMessages[currentIndex]
 

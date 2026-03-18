@@ -27,8 +27,8 @@ object CatchTracker : RegisteredEvent {
     val catchHistory = catchesFile.data
 
     override fun register() {
-        registerSeaCreatureCatchEvent(0) { sc, doubleHook, hotspot, pos ->
-            catchHistory.registerCatch(sc, doubleHook, hotspot, pos)
+        registerSeaCreatureCatchEvent(0) { sc, doubleHook, hotspot, pos, bait ->
+            catchHistory.registerCatch(sc, doubleHook, hotspot, pos, bait)
         }
 
         registerJoinEvent {

@@ -39,7 +39,7 @@ object WikiTikiDryStreakAchievement : NumericStageAchievement() {
             0L
         }
 
-        activeListeners.add(registerSeaCreatureCatchEvent { _, _, _, _ ->
+        activeListeners.add(registerSeaCreatureCatchEvent { _, _, _, _, _ ->
             val history = catchHistory.getOrAdd(creature)
 
             currentCount = if(history.total > 0) {
