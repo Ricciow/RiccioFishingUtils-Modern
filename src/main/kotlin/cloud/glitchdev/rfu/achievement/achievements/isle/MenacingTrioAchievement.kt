@@ -1,14 +1,11 @@
 package cloud.glitchdev.rfu.achievement.achievements.isle
 
-import cloud.glitchdev.rfu.achievement.Achievement
-import cloud.glitchdev.rfu.achievement.AchievementCategory
-import cloud.glitchdev.rfu.achievement.AchievementDifficulty
-import cloud.glitchdev.rfu.achievement.AchievementType
-import cloud.glitchdev.rfu.achievement.BaseAchievement
+import cloud.glitchdev.rfu.achievement.*
+import cloud.glitchdev.rfu.achievement.types.NumericAchievement
 import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDetectEvent
 
 @Achievement
-object MenacingTrioAchievement : BaseAchievement() {
+object MenacingTrioAchievement : NumericAchievement() {
     override val id: String = "menacing_trio"
     override val name: String = "Menacing Trio"
     override val description: String = "Have a Thunder, a Jawbus and a Plhlegblast nearby at the same time."
@@ -16,20 +13,16 @@ object MenacingTrioAchievement : BaseAchievement() {
     override val difficulty: AchievementDifficulty = AchievementDifficulty.VERY_HARD
     override val category: AchievementCategory = AchievementCategory.ISLE
 
+    override val targetCount: Long = 3L
+
     override fun setupListeners() {
         activeListeners.add(registerMobDetectEvent { entities ->
-            var foundThunder = false
-            var foundJawbus = false
-            var foundPlhleg = false
-            entities.forEach { entity ->
-                if(entity.sbName == "Thunder") foundThunder = true
-                if(entity.sbName == "Lord Jawbus") foundJawbus = true
-                if(entity.sbName == "Plhlegblast") foundPlhleg = true
-            }
+            var found = 0L
+            if(entities.any { it.sbName == "Thunder" }) found++
+            if(entities.any { it.sbName == "Lord Jawbus" }) found++
+            if(entities.any { it.sbName == "Plhlegblast" }) found++
 
-            if(foundThunder && foundJawbus && foundPlhleg) {
-                complete()
-            }
+            currentCount = found
         })
     }
 

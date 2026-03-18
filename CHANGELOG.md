@@ -12,6 +12,7 @@
 - Added an option to hide the "Thunder Spark" message.
 
 ### Changes:
+- Added progress tracking to Menacing Trio achievements for better feedback.
 - Merged XP/h and SC/h displays into a single Fish Tracking display.
 - Unified fishing tracking settings and added a migration step.
 - Made the "overall" part of the fishing tracker more compact.
