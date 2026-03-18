@@ -8,8 +8,6 @@ import cloud.glitchdev.rfu.constants.text.TextColor.WHITE
 import cloud.glitchdev.rfu.constants.text.TextColor.GRAY
 import cloud.glitchdev.rfu.constants.text.TextEffects.BOLD
 import cloud.glitchdev.rfu.data.catches.CatchTracker
-import cloud.glitchdev.rfu.feature.fishing.FishingXpTracker
-import cloud.glitchdev.rfu.feature.mob.SeaCreatureHour
 import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 import cloud.glitchdev.rfu.utils.World
@@ -20,11 +18,15 @@ import kotlin.math.ceil
 import kotlin.time.Clock
 import kotlin.time.Instant
 
+import cloud.glitchdev.rfu.feature.fishing.FishingSession
+import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+
 @HudElement
 object RareSCDisplay : AbstractTextHudElement("rareSCDisplay") {
 
     private val isFishing: Boolean
-        get() = SeaCreatureHour.startFishing != Instant.DISTANT_PAST || FishingXpTracker.startFishing != Instant.DISTANT_PAST
+        get() = FishingSession.isFishing
 
     override val enabled: Boolean
         get() = RareScSettings.rareScDisplay && (super.enabled || !RareScSettings.rareScOnlyWhenFishing || isFishing)
@@ -35,6 +37,15 @@ object RareSCDisplay : AbstractTextHudElement("rareSCDisplay") {
             CatchTracker.catchHistory.lastHotspot = null
             CatchTracker.catchHistory.lastPos = Vec3.ZERO
             CatchTracker.catchHistory.lastBait = null
+            updateState()
+        }
+
+        registerSeaCreatureCatchEvent { _, _, _, _, _ ->
+            updateState()
+        }
+
+        registerTickEvent(interval = 20) {
+            updateState()
         }
     }
 

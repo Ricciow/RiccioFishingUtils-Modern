@@ -5,6 +5,7 @@ import cloud.glitchdev.rfu.constants.text.TextColor.CYAN
 import cloud.glitchdev.rfu.constants.text.TextColor.YELLOW
 import cloud.glitchdev.rfu.constants.text.TextEffects.BOLD
 import cloud.glitchdev.rfu.data.fishing.FishTrackingType
+import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.feature.fishing.FishingXpTracker
 import cloud.glitchdev.rfu.feature.mob.SeaCreatureHour
 import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
@@ -14,14 +15,23 @@ import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.Instant
 
+import cloud.glitchdev.rfu.feature.fishing.FishingSession
+
 @HudElement
 object FishTrackingDisplay : AbstractTextHudElement("fishTrackingDisplay") {
 
     private val isFishing: Boolean
-        get() = SeaCreatureHour.startFishing != Instant.DISTANT_PAST || FishingXpTracker.startFishing != Instant.DISTANT_PAST
+        get() = FishingSession.isFishing
 
     override val enabled: Boolean
         get() = GeneralFishing.fishTrackingDisplay && (super.enabled || !GeneralFishing.fishTrackingOnlyWhenFishing || isFishing)
+
+    override fun onInitialize() {
+        super.onInitialize()
+        registerTickEvent(interval = 20) {
+            updateState()
+        }
+    }
 
     override fun onUpdateState() {
         super.onUpdateState()
@@ -65,19 +75,15 @@ object FishTrackingDisplay : AbstractTextHudElement("fishTrackingDisplay") {
             lines.add("$CYAN${BOLD}Timer: $YELLOW${time.toReadableString()}")
         }
 
-        text.setText(if (lines.isEmpty()) "fishTrackingDisplay" else lines.joinToString("\n"))
+        text.setText(if (lines.isEmpty()) {
+            if (isEditing) "fishTrackingDisplay" else ""
+        } else lines.joinToString("\n"))
     }
 
     private fun getTimeElapsed(): Duration {
         val now = Clock.System.now()
-        val scTime = if (SeaCreatureHour.startFishing != Instant.DISTANT_PAST)
-            now - SeaCreatureHour.startFishing
-        else Duration.ZERO
-        val xpTime = if (FishingXpTracker.startFishing != Instant.DISTANT_PAST)
-            now - FishingXpTracker.startFishing
-        else Duration.ZERO
-
-        return if (scTime > xpTime) scTime else xpTime
+        val start = FishingSession.startFishing
+        return if (start != Instant.DISTANT_PAST) now - start else Duration.ZERO
     }
 
     private fun getOverallScRate(time: Duration): Int {

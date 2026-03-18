@@ -7,8 +7,6 @@ import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCre
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
-import cloud.glitchdev.rfu.gui.hud.elements.FishTrackingDisplay
-import cloud.glitchdev.rfu.gui.hud.elements.RareSCDisplay
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.command.Command
 import cloud.glitchdev.rfu.utils.command.SimpleCommand
@@ -18,6 +16,8 @@ import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
 
+import cloud.glitchdev.rfu.feature.fishing.FishingSession
+
 @RFUFeature
 object SeaCreatureHour : Feature {
     private val catchHistory = ArrayDeque<Instant>()
@@ -26,13 +26,12 @@ object SeaCreatureHour : Feature {
         private set
 
     var lastSC: Instant = Instant.DISTANT_PAST
-    var startFishing: Instant = Instant.DISTANT_PAST
+    val startFishing: Instant get() = FishingSession.startFishing
     var total: Int = 0
 
     override fun onInitialize() {
         registerSeaCreatureCatchEvent { _, isDoubleHook, _, _, _ ->
             handleCatch(isDoubleHook)
-            RareSCDisplay.updateState()
         }
 
         registerTickEvent(interval = 20) {
@@ -47,7 +46,6 @@ object SeaCreatureHour : Feature {
         override fun execute(context: CommandContext<FabricClientCommandSource>): Int {
             currentScPerHour = 0.0
             lastSC = Instant.DISTANT_PAST
-            startFishing = Instant.DISTANT_PAST
             total = 0
             catchHistory.clear()
             updateRate()
@@ -60,10 +58,6 @@ object SeaCreatureHour : Feature {
 
     private fun handleCatch(doubleHook : Boolean) {
         val now = Clock.System.now()
-
-        if (startFishing == Instant.DISTANT_PAST) {
-            startFishing = now
-        }
 
         lastSC = now
         total++
@@ -87,8 +81,6 @@ object SeaCreatureHour : Feature {
 
         if (startFishing == Instant.DISTANT_PAST) {
             currentScPerHour = 0.0
-            FishTrackingDisplay.updateState()
-            RareSCDisplay.updateState()
             return
         }
 
@@ -101,18 +93,13 @@ object SeaCreatureHour : Feature {
 
         if (calculationWindow.inWholeSeconds == 0L) {
             currentScPerHour = 0.0
-            FishTrackingDisplay.updateState()
-            RareSCDisplay.updateState()
             return
         }
 
         currentScPerHour = (catchHistory.size.toDouble() / calculationWindow.inWholeSeconds) * 3600
-        FishTrackingDisplay.updateState()
-        RareSCDisplay.updateState()
     }
 
     private fun resetSession() {
-        startFishing = Instant.DISTANT_PAST
         lastSC = Instant.DISTANT_PAST
         total = 0
         catchHistory.clear()
