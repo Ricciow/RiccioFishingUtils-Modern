@@ -6,7 +6,6 @@ import cloud.glitchdev.rfu.model.data.DataOption
 import com.google.gson.annotations.SerializedName
 
 import cloud.glitchdev.rfu.data.fishing.Hotspot
-import cloud.glitchdev.rfu.utils.MayorTracker
 import cloud.glitchdev.rfu.utils.World
 import net.minecraft.world.phys.Vec3
 
