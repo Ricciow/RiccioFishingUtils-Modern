@@ -13,8 +13,8 @@ enum class FishingIslands(val island: String, val availableLiquids : List<Liquid
     @SerializedName("Backwater Bayou")
     BAYOU("Backwater Bayou", listOf(LiquidTypes.WATER)),
 
-    @SerializedName("Park")
-    PARK("Park", listOf(LiquidTypes.WATER)),
+    @SerializedName("The Park")
+    PARK("The Park", listOf(LiquidTypes.WATER)),
 
     @SerializedName("Galatea")
     GALATEA("Galatea", listOf(LiquidTypes.WATER, LiquidTypes.LAVA)),
