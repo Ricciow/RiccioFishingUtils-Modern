@@ -10,6 +10,9 @@ import net.hypixel.data.type.GameType
 import java.time.Clock
 import kotlin.jvm.optionals.getOrElse
 import kotlin.jvm.optionals.getOrNull
+import net.minecraft.network.chat.Component
+import kotlin.jvm.optionals.getOrDefault
+
 
 @AutoRegister
 object World : RegisteredEvent {
@@ -19,6 +22,8 @@ object World : RegisteredEvent {
         }
     var lobby : String? = null
     var island : FishingIslands? = null
+    var map: String? = null
+
     private const val SKYBLOCK_EPOCH = 1560275700000L
     private const val DAY_DURATION_MS = 20L * 60 * 1000L
     private const val MONTH_DURATION_MS = 31 * DAY_DURATION_MS
@@ -70,6 +75,7 @@ object World : RegisteredEvent {
         registerLocationEvent(-1) { event ->
             isInSkyblock = event.serverType.getOrNull() == GameType.SKYBLOCK
             lobby = event.serverName
+            map = event.map.getOrNull()
 
             val islandName = event.map.getOrElse {
                 island = null

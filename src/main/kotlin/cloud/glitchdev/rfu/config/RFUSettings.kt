@@ -5,6 +5,7 @@ import cloud.glitchdev.rfu.config.categories.BackendSettings
 import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.config.categories.HotSpotSettings
+import cloud.glitchdev.rfu.config.categories.InkFishing
 import cloud.glitchdev.rfu.config.categories.LavaFishing
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.config.categories.RareScSettings
@@ -128,6 +129,7 @@ object RFUSettings : ConfigKt("rfu/settings") {
         category(RareScSettings)
         category(LavaFishing)
         category(HotSpotSettings)
+        category(InkFishing)
         category(OtherSettings)
         category(BackendSettings)
         category(DevSettings)

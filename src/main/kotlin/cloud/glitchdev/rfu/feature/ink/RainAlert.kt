@@ -24,7 +24,7 @@ import kotlin.time.Duration
 
 
 @RFUFeature
-object CollectionHour : Feature {
+object RainAlert : Feature {
     var INK_COLL_REGEX = """Sacks""".toRegex()
 
     private var lastInkEvent: Instant = Instant.DISTANT_PAST
