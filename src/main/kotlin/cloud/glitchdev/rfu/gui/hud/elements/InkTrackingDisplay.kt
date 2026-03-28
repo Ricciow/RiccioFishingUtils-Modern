@@ -18,6 +18,7 @@ import cloud.glitchdev.rfu.feature.ink.CollectionHour
 import cloud.glitchdev.rfu.data.catches.CatchTracker.catchHistory
 import cloud.glitchdev.rfu.constants.SeaCreatures.NIGHT_SQUID
 import cloud.glitchdev.rfu.constants.SeaCreatures.SQUID
+import cloud.glitchdev.rfu.data.collections.CollectionsHandler
 import cloud.glitchdev.rfu.utils.World
 import cloud.glitchdev.rfu.data.fishing.InkTrackingType
 import kotlin.time.Duration
@@ -51,7 +52,7 @@ object InkTrackingDisplay : AbstractTextHudElement("inktrackingdisplay") {
 
         val time = CollectionHour.effectiveElapsed
 
-        val totalInk = InkFishing.totalInk
+        val totalInk = CollectionsHandler.totalInkSac
         val inkRate = CollectionHour.currentInkPerHour.toInt()
 
 

@@ -6,6 +6,7 @@ enum class RareDrops(val dropName : String, val relatedScs : List<SeaCreatures> 
     RADIOACTIVE_VIAL("Radioactive Vial", listOf(SeaCreatures.JAWBUS)),
     TIKI_MASK("Tiki Mask", listOf(SeaCreatures.WIKI_TIKI)),
     TITANOBOA_SHED("Titanoboa Shed", listOf(SeaCreatures.TITANOBOA)),
+    LUCKY_CLOVER_CORE("Lucky Clover Core", listOf(SeaCreatures.CARROT_KING)),
     FLASH_BOOK("Enchanted Book (Flash I)", listOf(SeaCreatures.THUNDER), """Enchanted Book \(Flash (?:1|I)\)""");
 
     override fun toString(): String {

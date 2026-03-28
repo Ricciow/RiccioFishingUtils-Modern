@@ -3,11 +3,13 @@ package cloud.glitchdev.rfu.feature.ink
 import cloud.glitchdev.rfu.config.categories.InkFishing
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextStyle
+import cloud.glitchdev.rfu.data.collections.CollectionsHandler
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.feature.fishing.FishingSession
+import cloud.glitchdev.rfu.utils.Chat
 
 
 import cloud.glitchdev.rfu.utils.TextUtils
@@ -46,6 +48,9 @@ object CollectionHour : Feature {
     var effectiveElapsed: Duration = Duration.ZERO
 
     var first = true
+        private set
+
+    var sentWarning = false
         private set
 
     override fun onInitialize() {
@@ -105,10 +110,15 @@ object CollectionHour : Feature {
             first = false
         }
 
+        if(CollectionsHandler.totalInkSac < 1000 && !sentWarning) {
+            Chat.sendMessage(TextUtils.rfuLiteral("Set total ink collection by checking your ink ranking in collections menu!"))
+            sentWarning = true
+        }
+
         pausedAt = null
         lastInkEvent = now
         totalInk += ink
-        InkFishing.totalInk += ink.toInt()
+        CollectionsHandler.totalInkSac += ink.toInt()
         updateRate()
 
     }
@@ -144,9 +154,5 @@ object CollectionHour : Feature {
         totalInk = 0.0
         currentInkPerHour = 0.0
     }
-
-
-
-
 
 }

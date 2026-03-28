@@ -4,5 +4,6 @@ enum class AchievementCategory(val displayName: String) {
     GENERAL("General"),
     ISLE("Isle"),
     HOT_SPOT("Hot Spot"),
-    SPECIAL("Special")
+    SPECIAL("Special"),
+    INK("Ink")
 }

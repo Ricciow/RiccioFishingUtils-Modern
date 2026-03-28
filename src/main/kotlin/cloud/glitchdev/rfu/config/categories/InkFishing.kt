@@ -30,13 +30,6 @@ object InkFishing : Category("Ink Fishing") {
     }
 
 
-    var totalInk by int(50000) {
-        name = Literal("Total Ink Collection")
-        description = Literal("Set your total ink collection here! (set once and leave)")
-        condition = {inkTrackingDisplay}
-
-    }
-
     var goalInk by int(50000) {
         name = Literal("Goal Ink Collection")
         description = Literal("Set an ink collection goal here!")
