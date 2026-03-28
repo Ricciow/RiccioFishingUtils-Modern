@@ -58,7 +58,6 @@ object VanessaFanAchievement: NumericStageAchievement() {
 
     override fun setupListeners() {
         activeListeners.add(registerGameEvent(filter=RAIN_REGEX, isOverlay=false) {text, _, matches ->
-            Chat.sendMessage(Component.literal("test dummy"))
             currentCount += 1
 
         })
