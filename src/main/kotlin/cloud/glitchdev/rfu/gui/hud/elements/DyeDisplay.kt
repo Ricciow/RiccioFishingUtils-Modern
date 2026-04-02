@@ -8,7 +8,7 @@ import cloud.glitchdev.rfu.constants.text.TextEffects.RESET
 import cloud.glitchdev.rfu.gui.hud.AbstractHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 import cloud.glitchdev.rfu.model.dye.Dyes
-import cloud.glitchdev.rfu.utils.network.DyeHttp
+import cloud.glitchdev.rfu.utils.network.DyeWebSocket
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIText
 import gg.essential.elementa.constraints.ChildBasedMaxSizeConstraint
@@ -27,7 +27,7 @@ object DyeDisplay : AbstractHudElement("dyeDisplay") {
         get() = OtherSettings.dyeDisplay && !currentDyes.isOutdated()
 
     private val currentDyes : Dyes
-        get() = DyeHttp.currentDyes ?: Dyes()
+        get() = DyeWebSocket.currentDyes ?: Dyes()
 
     private val container = UIContainer().constrain {
         width = ChildBasedMaxSizeConstraint()

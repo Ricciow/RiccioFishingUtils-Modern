@@ -218,6 +218,7 @@ object Network : RegisteredEvent {
                 postRequest("${API_URL}/auth/login?user=${User.getUsername()}&server=$serverId") { response ->
                     if(response.isSuccessful()) {
                         token = response.body
+                        WebSocketClient.connect(token!!)
                         RFULogger.dev("Token Renewed")
                     }
                     else {

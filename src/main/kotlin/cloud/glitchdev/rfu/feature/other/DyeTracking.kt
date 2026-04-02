@@ -7,7 +7,7 @@ import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.command.Command
 import cloud.glitchdev.rfu.utils.command.SimpleCommand
-import cloud.glitchdev.rfu.utils.network.DyeHttp
+import cloud.glitchdev.rfu.utils.network.DyeWebSocket
 import com.mojang.brigadier.context.CommandContext
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.minecraft.network.chat.Component
@@ -22,7 +22,7 @@ object DyeTracking {
         override fun execute(context: CommandContext<FabricClientCommandSource>): Int {
             val text = Component.literal("")
 
-            val currentDyes = DyeHttp.currentDyes
+            val currentDyes = DyeWebSocket.currentDyes
 
             if(currentDyes != null && !currentDyes.isOutdated()) {
                 text.append(TextUtils.rfuLiteral("Dyes (Year ${currentDyes.sbYear}): ", TextStyle(YELLOW)))
