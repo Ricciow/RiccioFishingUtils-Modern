@@ -4,7 +4,6 @@ import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.FishingIslands
 import cloud.glitchdev.rfu.constants.Mayors
 import cloud.glitchdev.rfu.constants.SeaCreatureCategory
-import cloud.glitchdev.rfu.data.catches.CatchTracker.catchHistory
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
@@ -58,8 +57,7 @@ object World : RegisteredEvent {
         val day = getCurrentSkyBlockDay()
 
         return when (month) {
-            7 -> day >= 26
-            8 -> true
+            8 -> day >= 26
             9 -> day <= 3
             else -> false
         }

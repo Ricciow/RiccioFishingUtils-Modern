@@ -22,7 +22,7 @@
 - Fixed an issue where the Park was not correctly identified as a fishing location.
 - Corrected Water Hydra being a Galatea SC.
 - Flare Expired messages no longer trigger on normal fireworks.
-- Corrected fishing festival creatures not counting correctly
+- Corrected spooky festival having incorrect dates
 
 ### Back-end:
 - Removed unnecessary debug messages and cleaned up unused imports.
