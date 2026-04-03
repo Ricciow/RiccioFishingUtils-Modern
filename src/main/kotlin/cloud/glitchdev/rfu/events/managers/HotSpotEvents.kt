@@ -146,13 +146,13 @@ object HotSpotEvents : RegisteredEvent {
     }
 
     private fun isAllowedParticle(particle : ParticleOptions) : Boolean {
-        return when(particle) {
-            ParticleTypes.FISHING -> false
-            ParticleTypes.SPLASH -> false
-            ParticleTypes.BUBBLE -> false
-            ParticleTypes.WITCH -> false
-            else -> true
+        val result = when(particle.type) {
+            ParticleTypes.DUST -> true
+            ParticleTypes.SMOKE -> true
+            else -> false
         }
+
+        return result
     }
 
     private fun findBuffNearby(pos: Vec3, world: ClientLevel): String {

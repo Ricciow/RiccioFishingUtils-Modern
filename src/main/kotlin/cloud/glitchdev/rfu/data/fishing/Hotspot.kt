@@ -17,7 +17,7 @@ data class Hotspot(
     private val particleDistances = mutableListOf<Double>()
 
     fun addParticleDistance(distance: Double) {
-        if (particleDistances.size < 200) {
+        if (particleDistances.size < 50) {
             particleDistances.add(distance)
 
             if (particleDistances.size >= 50) {
@@ -29,5 +29,5 @@ data class Hotspot(
         }
     }
 
-    fun isRadiusCalculated() : Boolean = particleDistances.size == 200
+    fun isRadiusCalculated() : Boolean = particleDistances.size == 50
 }
