@@ -21,7 +21,7 @@ object RareScPartyMessage : Feature {
                 val timeSinceLast = if (history.total > 0) {
                     (Clock.System.now() - history.time).toReadableString()
                 } else {
-                    "First Catch!"
+                    "First Catch"
                 }
 
                 val scName = seaCreature.scName

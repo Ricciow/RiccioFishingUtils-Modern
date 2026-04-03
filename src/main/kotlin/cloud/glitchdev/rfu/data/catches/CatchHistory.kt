@@ -67,10 +67,8 @@ class CatchHistory {
         }
         currentRecord.time = Clock.System.now()
 
-        if (sc.condition(hotspot, pos, bait)) {
-            currentRecord.count = 0
-            currentRecord.total += 1
-        }
+        currentRecord.count = 0
+        currentRecord.total += 1
     }
 
     /**

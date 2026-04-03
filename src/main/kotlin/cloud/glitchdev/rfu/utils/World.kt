@@ -3,9 +3,12 @@ package cloud.glitchdev.rfu.utils
 import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.FishingIslands
 import cloud.glitchdev.rfu.constants.Mayors
+import cloud.glitchdev.rfu.constants.SeaCreatureCategory
+import cloud.glitchdev.rfu.data.catches.CatchTracker.catchHistory
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import net.hypixel.data.type.GameType
 import java.time.Clock
 import kotlin.jvm.optionals.getOrElse
@@ -19,11 +22,14 @@ object World : RegisteredEvent {
         }
     var lobby : String? = null
     var island : FishingIslands? = null
+    var jerryFishingFestival = false
 
     private const val SKYBLOCK_EPOCH = 1560275700000L
     private const val DAY_DURATION_MS = 20L * 60 * 1000L
     private const val MONTH_DURATION_MS = 31 * DAY_DURATION_MS
     private const val YEAR_DURATION_MS = 12 * MONTH_DURATION_MS
+    private val mayor
+        get() = MayorTracker.currentMayor
     private val clock: Clock = Clock.systemUTC()
 
     fun getTimeSinceEpoch(): Long {
@@ -64,7 +70,13 @@ object World : RegisteredEvent {
      * The festival lasts for the first 3 days of every month, but only if Marina is Mayor.
      */
     fun isFishingFestival(): Boolean {
-        return getCurrentSkyBlockDay() <= 3 && MayorTracker.currentMayor == Mayors.MARINA
+        val day = getCurrentSkyBlockDay()
+        if (day <= 3 && jerryFishingFestival) {
+            return true
+        } else {
+            jerryFishingFestival = false
+        }
+        return day <= 3 && (mayor == Mayors.MARINA)
     }
 
     override fun register() {
@@ -77,6 +89,12 @@ object World : RegisteredEvent {
             }
 
             island = FishingIslands.findIslandObject(islandName)
+        }
+
+        registerSeaCreatureCatchEvent { sc, _, _, _, _ ->
+            if (sc.category == SeaCreatureCategory.SHARK && mayor == Mayors.JERRY) {
+                jerryFishingFestival = true
+            }
         }
     }
 }
