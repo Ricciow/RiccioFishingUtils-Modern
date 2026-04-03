@@ -3,11 +3,10 @@ package cloud.glitchdev.rfu.gui.components.partyfinder
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.elementa.TextWrappingConstraint
 import cloud.glitchdev.rfu.model.party.FishingParty
-import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.gui.addHoverColoring
 import cloud.glitchdev.rfu.utils.dsl.isUser
-import cloud.glitchdev.rfu.utils.network.PartyHttp
+import cloud.glitchdev.rfu.utils.network.PartyWebSocket
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
@@ -28,7 +27,7 @@ import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.toConstraint
 
-class UIPartyCard(val party: FishingParty, radius : Float, var onDelete : () -> Unit = {}) : UIRoundedRectangle(radius) {
+class UIPartyCard(val party: FishingParty, radius : Float) : UIRoundedRectangle(radius) {
     val primaryColor = UIScheme.decreaseOpacity(UIScheme.primaryColorOpaque, 80).toConstraint()
     val hoverColor = UIScheme.secondaryColorOpaque.toConstraint()
     val textColor = UIScheme.primaryTextColor.toConstraint()
@@ -46,7 +45,9 @@ class UIPartyCard(val party: FishingParty, radius : Float, var onDelete : () -> 
         }
 
         this.onMouseClick {
-            if(party.user != User.getUsername()) Party.requestEntry(party.user)
+            if(party.user != User.getUsername()) {
+                PartyWebSocket.joinParty(party.user)
+            }
         }
 
         this.addHoverColoring(Animations.IN_EXP, hoverDuration, primaryColor, hoverColor)
@@ -137,17 +138,8 @@ class UIPartyCard(val party: FishingParty, radius : Float, var onDelete : () -> 
 
             text.addHoverColoring(Animations.IN_EXP, hoverDuration, textColor, hoverText)
 
-            var requesting = false
             text.onMouseClick {
-                if(requesting) return@onMouseClick
-                requesting = true
-
-                PartyHttp.deleteParty { success ->
-                    requesting = false
-                    if(success) {
-                        onDelete()
-                    }
-                }
+                PartyWebSocket.deleteParty(User.getUsername())
             }
         }
     }

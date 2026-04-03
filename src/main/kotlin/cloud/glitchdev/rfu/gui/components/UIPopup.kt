@@ -18,6 +18,7 @@ import java.awt.Color
 
 class UIPopup(val radiusPopup : Float, val text: String) : UIBlock() {
     val backgroundColor = UIScheme.increaseOpacity(Color.BLACK, 128).toConstraint()
+    val errorColor = UIScheme.increaseOpacity(UIScheme.errorPopupColor, 128).toConstraint()
     val primaryColor = UIScheme.secondaryColorOpaque.toConstraint()
 
     lateinit var uiText : UIWrappedText
@@ -25,6 +26,10 @@ class UIPopup(val radiusPopup : Float, val text: String) : UIBlock() {
     init {
         create()
         this.hide()
+    }
+
+    fun setText(text : String) {
+        uiText.setText(text)
     }
 
     fun create() {
@@ -57,6 +62,7 @@ class UIPopup(val radiusPopup : Float, val text: String) : UIBlock() {
             y = SiblingConstraint()
             width = 100.percent()
             height = FillConstraint()
+            color = errorColor
         } childOf container
 
         UIButton("Ok", 5f) {

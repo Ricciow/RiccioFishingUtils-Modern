@@ -11,12 +11,18 @@ import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.hypixelModAPI
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents
+import cloud.glitchdev.rfu.events.managers.PartyEvents.registerJoinRequestEvent
 import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
 import cloud.glitchdev.rfu.model.party.FishingParty
+import cloud.glitchdev.rfu.utils.command.AbstractCommand
+import cloud.glitchdev.rfu.utils.command.Command
 import cloud.glitchdev.rfu.utils.dsl.isUser
 import cloud.glitchdev.rfu.utils.dsl.removeRankTag
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
-import cloud.glitchdev.rfu.utils.network.PartyHttp
+import cloud.glitchdev.rfu.utils.network.PartyWebSocket
+import com.mojang.brigadier.arguments.StringArgumentType
+import com.mojang.brigadier.builder.LiteralArgumentBuilder
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.hypixel.modapi.packet.impl.clientbound.ClientboundPartyInfoPacket
 import net.hypixel.modapi.packet.impl.serverbound.ServerboundPartyInfoPacket
 import net.minecraft.network.chat.ClickEvent
@@ -45,6 +51,10 @@ object Party : RegisteredEvent {
             if(mc.isLocalServer) return@registerJoinEvent
             if(mc.currentServer?.ip?.endsWith("hypixel.net") == true) return@registerJoinEvent
             if(!wasConnected) hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
+        }
+
+        registerJoinRequestEvent { applicant ->
+            promptInvite(applicant)
         }
 
         registerGameEvent("""Party > .+: .+""".toExactRegex()) { _, _, _ ->
@@ -183,7 +193,6 @@ object Party : RegisteredEvent {
         registerAllowGameEvent("From ($PLAYER_REGEX): \\[RFUPF\\] I would like to join your party!".toExactRegex()) { _, _, matches ->
             val matchGroups = matches?.groupValues ?: return@registerAllowGameEvent true
             val player = matchGroups[1].removeRankTag()
-            pendingPFInvites.add(player)
             promptInvite(player)
             return@registerAllowGameEvent false
         }
@@ -196,22 +205,20 @@ object Party : RegisteredEvent {
         }
 
         onPartyChange { inParty, _, members ->
-            val currentParty: FishingParty? = PartyHttp.currentParty
+            val currentParty: FishingParty? = PartyWebSocket.myParty
             if (currentParty != null) {
                 if (inParty) {
-                    if (members.size + 1 <= currentParty.players.max) {
-                        currentParty.players.current = members.size + 1
-                        PartyHttp.updateParty(currentParty) {}
-                    }
+                    currentParty.players.current = members.size + 1
+                    PartyWebSocket.editParty(currentParty)
                 } else {
-                    PartyHttp.deleteParty {}
+                    PartyWebSocket.deleteParty(User.getUsername())
                 }
             }
         }
 
         registerShutdownEvent {
-            if (PartyHttp.currentParty != null) {
-                PartyHttp.deleteParty {}
+            if (PartyWebSocket.myParty != null) {
+                PartyWebSocket.deleteParty(User.getUsername())
             }
         }
     }
@@ -230,7 +237,7 @@ object Party : RegisteredEvent {
             Component.literal("\n${TextColor.LIGHT_GREEN}${TextEffects.BOLD}          [Accept]")
                 .setStyle(
                     Style.EMPTY
-                        .withClickEvent(ClickEvent.RunCommand("party $username"))
+                        .withClickEvent(ClickEvent.RunCommand("rfusendinvite $username"))
                         .withHoverEvent(HoverEvent.ShowText(Component.literal("/party $username")))
                 )
         )
@@ -272,5 +279,24 @@ object Party : RegisteredEvent {
     fun requestEntry(username: String) {
         requestedUser = username
         Chat.sendCommand("w $username [RFUPF] I would like to join your party!")
+    }
+
+    @Command
+    object acceptPlayerPartyCommand : AbstractCommand("rfusendinvite") {
+        override val description: String = "Sends an invite + some other party finder back-end stuff"
+
+        override fun build(builder: LiteralArgumentBuilder<FabricClientCommandSource>) {
+            builder.then(
+                arg("username", StringArgumentType.string())
+                    .executes { context ->
+                        val username = StringArgumentType.getString(context, "username")
+
+                        Chat.sendCommand("party $username")
+                        pendingPFInvites.add(username)
+
+                        1
+                    }
+            )
+        }
     }
 }

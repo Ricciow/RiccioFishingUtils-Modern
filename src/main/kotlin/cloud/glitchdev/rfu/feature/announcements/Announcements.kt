@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.feature.announcements
 
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
+import cloud.glitchdev.rfu.events.managers.AnnouncementEvents.registerAnnouncementUpdateEvent
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.announcements.command.Open
@@ -18,6 +19,20 @@ object Announcements : Feature {
     var announcement: Announcement? = null
 
     override fun onInitialize() {
+        registerAnnouncementUpdateEvent { newAnnouncement ->
+            val isNew = newAnnouncement != null && (announcement == null || announcement?.id != newAnnouncement.id)
+            
+            if (isNew) {
+                Chat.sendMessage(
+                    newAnnouncement.message.toInteractiveText(
+                        "/rfuannouncement open",
+                        Component.literal("Open announcement")
+                    )
+                )
+            }
+            announcement = newAnnouncement
+        }
+
         registerJoinEvent { wasConnected ->
             if (!wasConnected) {
                 announcement?.let {

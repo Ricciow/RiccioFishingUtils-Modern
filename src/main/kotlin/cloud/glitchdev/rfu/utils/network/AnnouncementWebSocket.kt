@@ -2,12 +2,11 @@ package cloud.glitchdev.rfu.utils.network
 
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.feature.announcements.Announcements
+import cloud.glitchdev.rfu.events.managers.AnnouncementEvents
 import cloud.glitchdev.rfu.model.announcement.Announcement
 import cloud.glitchdev.rfu.model.network.WebSocketEvent
 import cloud.glitchdev.rfu.model.network.WebSocketEventType
 import cloud.glitchdev.rfu.utils.RFULogger
-import cloud.glitchdev.rfu.utils.dsl.toInteractiveText
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
@@ -24,28 +23,17 @@ object AnnouncementWebSocket : RegisteredEvent {
         RFULogger.dev("Registering AnnouncementWebSocket")
         val callback : (String) -> Unit = { msg ->
             try {
-                RFULogger.dev("Received message on AnnouncementWebSocket: ${msg.take(100)}...")
                 val type = object : TypeToken<WebSocketEvent<Announcement>>() {}.type
                 val event = gson.fromJson<WebSocketEvent<Announcement>>(msg, type)
 
                 when (event.type) {
                     WebSocketEventType.SYNC, WebSocketEventType.CREATED, WebSocketEventType.UPDATED -> {
-                        val isNew = event.type == WebSocketEventType.CREATED || (event.type == WebSocketEventType.UPDATED && Announcements.announcement?.id != event.data?.id)
-                        Announcements.announcement = event.data
-                        RFULogger.dev("Announcement updated via WebSocket: ${Announcements.announcement?.title}")
-
-                        if (isNew && event.data != null) {
-                            cloud.glitchdev.rfu.utils.Chat.sendMessage(
-                                event.data.message.toInteractiveText(
-                                    "/rfuannouncement open",
-                                    net.minecraft.network.chat.Component.literal("Open announcement")
-                                )
-                            )
-                        }
+                        RFULogger.dev("Announcement update received via WebSocket: ${event.data?.title}")
+                        AnnouncementEvents.trigger(event.data)
                     }
                     WebSocketEventType.DELETED -> {
-                        Announcements.announcement = null
-                        RFULogger.dev("Announcement deleted via WebSocket")
+                        RFULogger.dev("Announcement deletion received via WebSocket")
+                        AnnouncementEvents.trigger(null)
                     }
                 }
             } catch (e: Exception) {

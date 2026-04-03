@@ -10,6 +10,7 @@ import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.World
 import cloud.glitchdev.rfu.utils.command.Command
 import cloud.glitchdev.rfu.utils.command.SimpleCommand
+import cloud.glitchdev.rfu.utils.network.WebSocketClient
 import com.mojang.brigadier.context.CommandContext
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.minecraft.network.chat.Component
@@ -41,8 +42,17 @@ object PartyFinder : SimpleCommand("rfupf") {
             return 1
         }
 
+        if(!WebSocketClient.isConnected) {
+            context.source.sendFeedback(
+                TextUtils.rfuLiteral(
+                    "RFU websocket isn't connected! (Sorry :/)",
+                    TextStyle(TextColor.LIGHT_RED, TextEffects.UNDERLINE)
+                )
+            )
+            return 1
+        }
+
         Gui.openGui(PartyFinderWindow)
-        PartyFinderWindow.getParties()
 
         return 1
     }

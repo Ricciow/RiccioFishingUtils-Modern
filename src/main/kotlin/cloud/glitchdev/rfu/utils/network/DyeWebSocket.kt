@@ -5,6 +5,7 @@ import cloud.glitchdev.rfu.config.categories.BackendSettings
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ContainerEvents.registerContainerOpenEvent
+import cloud.glitchdev.rfu.events.managers.DyeEvents
 import cloud.glitchdev.rfu.model.dye.Dyes
 import cloud.glitchdev.rfu.model.network.WebSocketEvent
 import cloud.glitchdev.rfu.model.network.WebSocketEventType
@@ -24,7 +25,6 @@ object DyeWebSocket : RegisteredEvent {
         RFULogger.dev("Registering DyeWebSocket")
         val callback : (String) -> Unit = { msg ->
             try {
-                RFULogger.dev("Received message on DyeWebSocket: ${msg.take(100)}...")
                 val type = object : TypeToken<WebSocketEvent<Dyes>>() {}.type
                 val event = gson.fromJson<WebSocketEvent<Dyes>>(msg, type)
 
@@ -32,10 +32,12 @@ object DyeWebSocket : RegisteredEvent {
                     WebSocketEventType.SYNC, WebSocketEventType.CREATED, WebSocketEventType.UPDATED -> {
                         currentDyes = event.data
                         RFULogger.dev("Dyes updated via WebSocket: ${currentDyes?.dye1}, ${currentDyes?.dye2}, ${currentDyes?.dye3}")
+                        DyeEvents.trigger(currentDyes)
                     }
                     WebSocketEventType.DELETED -> {
                         currentDyes = null
                         RFULogger.dev("Dyes deleted via WebSocket")
+                        DyeEvents.trigger(null)
                     }
                 }
             } catch (e: Exception) {

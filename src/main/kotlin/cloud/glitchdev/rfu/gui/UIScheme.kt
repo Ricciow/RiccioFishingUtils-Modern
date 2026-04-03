@@ -28,6 +28,8 @@ object UIScheme {
 
     val diedColor = Color(120, 7, 7)
 
+    val errorPopupColor = Color(255, 85, 85)
+
     val trackedStarColor = Color(255, 215, 0)
     val untrackedStarColor = Color(160, 160, 160)
 

@@ -7,14 +7,17 @@ import cloud.glitchdev.rfu.gui.components.partyfinder.UIFilterArea
 import cloud.glitchdev.rfu.gui.components.partyfinder.UIPartyCard
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.utils.gui.setHidden
-import cloud.glitchdev.rfu.utils.network.PartyHttp
+import cloud.glitchdev.rfu.events.managers.PartyEvents
+import cloud.glitchdev.rfu.events.managers.PartyEvents.registerPartyListChangedEvent
+import cloud.glitchdev.rfu.events.managers.PartyEvents.registerMyPartyChangedEvent
+import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyCreatedEvent
+import cloud.glitchdev.rfu.utils.User
+import cloud.glitchdev.rfu.utils.network.PartyWebSocket
 import gg.essential.elementa.components.ScrollComponent
 import gg.essential.elementa.components.UIContainer
-import gg.essential.elementa.components.UIImage
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
 import gg.essential.elementa.components.Window
-import gg.essential.elementa.constraints.AspectConstraint
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
 import gg.essential.elementa.constraints.FillConstraint
@@ -46,33 +49,33 @@ object PartyFinderWindow : BaseWindow(false) {
     lateinit var partyArea : UIContainer
     lateinit var scrollArea : ScrollComponent
     lateinit var filterButton : UIButton
-    lateinit var reloadButton : UIButton
     lateinit var partyCreationButton : UIButton
     lateinit var errorText : UIText
 
     init {
         create()
         updatePartyCreation()
-        getParties()
-    }
+        updateFiltering(PartyEvents.parties)
 
-    fun getParties() {
-        reloadButton.disabled = true
-        updateFiltering()
-        if (::errorText.isInitialized) errorText.setHidden(true)
-        PartyHttp.getParties { parties ->
-            if (parties != null) {
-                updateFiltering()
-            } else {
-                errorText.setHidden(false)
+        registerPartyListChangedEvent { parties ->
+            updateFiltering(parties)
+        }
+
+        registerPartyCreatedEvent { party ->
+            if (party.user == User.getUsername()) {
+                partyCreationOpen = false
+                updatePartyCreation()
             }
-            if(!partyCreationOpen) reloadButton.disabled = false
+        }
+
+        registerMyPartyChangedEvent {
+            updatePartyCreation()
         }
     }
 
-    fun updateFiltering() {
+    fun updateFiltering(parties: List<FishingParty>) {
         if(::scrollArea.isInitialized) {
-            displayParties = if (filterOpen) filterArea.applyFilter(PartyHttp.parties) else PartyHttp.parties.toMutableList()
+            displayParties = if (filterOpen) filterArea.applyFilter(parties) else parties.toMutableList()
             for (partyCard in partyCards) {
                 scrollArea.removeChild(partyCard)
             }
@@ -80,9 +83,7 @@ object PartyFinderWindow : BaseWindow(false) {
             partyCards.clear()
 
             for(party in displayParties) {
-                val partyCard = UIPartyCard(party, 5f) {
-                    getParties()
-                }.constrain {
+                val partyCard = UIPartyCard(party, 5f).constrain {
                     x = 0.pixels()
                     y = SiblingConstraint(2f)
                     width = 100.percent()
@@ -105,13 +106,7 @@ object PartyFinderWindow : BaseWindow(false) {
 
         createHeader()
 
-        partyCreationArea = UICreateParty(5f) { success ->
-            if(success) {
-                partyCreationOpen = false
-                updatePartyCreation()
-                getParties()
-            }
-        }.constrain {
+        partyCreationArea = UICreateParty(5f).constrain {
             x = CenterConstraint()
             y = SiblingConstraint(2f)
             width = 100.percent()
@@ -128,7 +123,7 @@ object PartyFinderWindow : BaseWindow(false) {
         } childOf background
 
         filterArea.onFilterChange = {
-            updateFiltering()
+            updateFiltering(PartyEvents.parties)
         }
 
         createPartyArea()
@@ -202,20 +197,11 @@ object PartyFinderWindow : BaseWindow(false) {
         filterButton = UIButton("Filters", 3f) {
             filterOpen = !filterOpen
             updatePartyCreation()
-            updateFiltering()
+            updateFiltering(PartyEvents.parties)
         }.constrain {
             x = SiblingConstraint(2f, true)
             y = CenterConstraint()
             width = 50.pixels()
-            height = 100.percent()
-        } childOf rightContainer
-
-        reloadButton = UIButton.withImage(UIImage.ofResourceCached("/assets/rfu/ui/refresh.png"), 3f) {
-            getParties()
-        }.constrain {
-            x = SiblingConstraint(2f, true)
-            y = CenterConstraint()
-            width = AspectConstraint(1f)
             height = 100.percent()
         } childOf rightContainer
 
@@ -230,9 +216,8 @@ object PartyFinderWindow : BaseWindow(false) {
             partyCreationArea.onOpen()
             partyArea.setHidden(partyCreationOpen)
             filterArea.setHidden(partyCreationOpen || !filterOpen)
-            partyCreationButton.setText(if (partyCreationOpen) "Close" else "New Party")
+            partyCreationButton.updateText(if (partyCreationOpen) "Close" else if (PartyWebSocket.myParty == null) "New Party" else "Update Party")
             filterButton.disabled = partyCreationOpen
-            reloadButton.disabled = partyCreationOpen
         }
     }
 }

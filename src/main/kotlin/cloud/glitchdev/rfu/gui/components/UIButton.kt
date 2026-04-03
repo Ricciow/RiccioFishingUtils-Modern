@@ -21,7 +21,7 @@ import gg.essential.universal.UMatrixStack
 /**
  * Simple Button Component
  */
-class UIButton(val text: String, radius: Float = 0f, val image : UIImage? = null, val baseTextScale: Float = 1.0f, var onClick : () -> Unit = {}) : UIRoundedRectangle(radius) {
+class UIButton(var text: String, radius: Float = 0f, val image : UIImage? = null, val baseTextScale: Float = 1.0f, var onClick : () -> Unit = {}) : UIRoundedRectangle(radius) {
     val primaryColor = UIScheme.secondaryColorOpaque.toConstraint()
     val hoverColor = UIScheme.secondaryColor.toConstraint()
     val textColor = UIScheme.primaryTextColor.toConstraint()
@@ -54,9 +54,12 @@ class UIButton(val text: String, radius: Float = 0f, val image : UIImage? = null
         create()
     }
 
-    fun setText(text : String) {
-        textArea.setText(text)
-        updateFontSize()
+    fun updateText(text : String) {
+        this.text = text
+        if (::textArea.isInitialized) {
+            textArea.setText(text)
+            updateFontSize()
+        }
     }
 
     fun create() {

@@ -18,6 +18,10 @@ fun <T : UIComponent> T.setHidden(state: Boolean) : UIComponent {
     return this
 }
 
+fun <T : UIComponent> T.isHidden() : Boolean {
+    return !this.hasParent || !this.parent.children.contains(this)
+}
+
 fun <T : UIComponent> T.toggleHidden() : UIComponent {
     if(this.parent.children.contains(this)) {
         this.hide()

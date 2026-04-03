@@ -14,13 +14,15 @@ import cloud.glitchdev.rfu.gui.components.dropdown.UISelectionDropdown
 import cloud.glitchdev.rfu.gui.components.textinput.UIWrappedDecoratedTextInput
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.utils.Party
-import cloud.glitchdev.rfu.utils.network.PartyHttp
+import cloud.glitchdev.rfu.utils.network.PartyWebSocket
+import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
+import cloud.glitchdev.rfu.events.managers.PartyEvents.registerMyPartyChangedEvent
+import cloud.glitchdev.rfu.utils.gui.isHidden
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIWrappedText
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
-import gg.essential.elementa.constraints.FillConstraint
 import gg.essential.elementa.constraints.SiblingConstraint
 import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
@@ -29,7 +31,7 @@ import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 import gg.essential.universal.UMatrixStack
 
-class UICreateParty(radius: Float, val onCreateParty : (Boolean) -> Unit) : UIRoundedRectangle(radius) {
+class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
     lateinit var titleField : UIDecoratedTextInput
     lateinit var typeField : UIDropdown
     lateinit var islandField : UIDropdown
@@ -42,8 +44,9 @@ class UICreateParty(radius: Float, val onCreateParty : (Boolean) -> Unit) : UIRo
     lateinit var brainFoodField : UICheckbox
     lateinit var mobsField : UISelectionDropdown
     lateinit var descriptionField : UIWrappedDecoratedTextInput
+    lateinit var popup: UIPopup
+    lateinit var createButton: UIButton
 
-    private var needUpdating = true
     private val TIMEOUT = 300000
 
     init {
@@ -55,6 +58,20 @@ class UICreateParty(radius: Float, val onCreateParty : (Boolean) -> Unit) : UIRo
 
         create()
         createInteractions()
+
+        registerErrorMessageEvent { message ->
+            if (!this.isHidden()) {
+                popup.setText(message)
+                popup.showPopup()
+            }
+        }
+
+        registerMyPartyChangedEvent { value ->
+            if (value != null) {
+                party = value
+            }
+            needUpdating = true
+        }
     }
 
     fun create() {
@@ -65,7 +82,7 @@ class UICreateParty(radius: Float, val onCreateParty : (Boolean) -> Unit) : UIRo
             height = 100.percent()
         } childOf this
 
-        val popup = UIPopup(5f, "Failed to create party!") childOf this
+        popup = UIPopup(5f, "Failed to create party!") childOf this
 
         UIWrappedText("Create your party here, parties queued will last for at most 30 minutes.").constrain {
             x = 0.pixels()
@@ -230,7 +247,7 @@ class UICreateParty(radius: Float, val onCreateParty : (Boolean) -> Unit) : UIRo
             height = 100.percent()
         } childOf endArea
 
-        val createButton = UIButton("Create", 5f).constrain {
+        createButton = UIButton("Create", 5f).constrain {
             x = 0.pixels(true)
             y = CenterConstraint()
             width = 10.percent()
@@ -238,19 +255,11 @@ class UICreateParty(radius: Float, val onCreateParty : (Boolean) -> Unit) : UIRo
         } childOf endArea
 
         createButton.onClick = {
-            createButton.disabled = true
-            PartyHttp.createParty(party) { success ->
-                if(!success) {
-                    popup.showPopup()
-                }
-                onCreateParty(success)
-                createButton.disabled = false
-            }
+            PartyWebSocket.submitParty(party)
         }
 
         descriptionArea.constrain {
-            //Remove space from siblingConstraint paddings
-            height = FillConstraint() - (descriptionArea.parent.children.size * 4).pixels()
+            height = 60.pixels()
         }
     }
 
@@ -325,6 +334,13 @@ class UICreateParty(radius: Float, val onCreateParty : (Boolean) -> Unit) : UIRo
         mobsField.setValues(SeaCreatures.toDataOptions(party.liquid, party.island, party.fishingType))
         mobsField.setOptionsStates(party.seaCreatures.map {it.toDataOption()}, true)
         descriptionField.setText(party.description)
+        
+        if (::createButton.isInitialized) {
+            val newText = if (PartyWebSocket.myParty == null) "Create" else "Update"
+            if (createButton.text != newText) {
+                createButton.updateText(newText)
+            }
+        }
     }
 
     fun onOpen() {
@@ -342,5 +358,6 @@ class UICreateParty(radius: Float, val onCreateParty : (Boolean) -> Unit) : UIRo
     companion object {
         var party : FishingParty = FishingParty.blankParty()
         var createdAt : Long = 0
+        var needUpdating = true
     }
 }

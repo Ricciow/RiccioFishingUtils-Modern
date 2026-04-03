@@ -2,11 +2,14 @@ package cloud.glitchdev.rfu.utils.network
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.API_URL
 import cloud.glitchdev.rfu.utils.RFULogger
+import cloud.glitchdev.rfu.events.managers.ErrorEvents
+import cloud.glitchdev.rfu.events.managers.WebSocketEvents
 import com.google.gson.Gson
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.WebSocket
-import java.nio.ByteBuffer
+import kotlin.time.Clock
+import kotlin.time.Instant
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionStage
 import java.util.concurrent.ConcurrentHashMap
@@ -21,6 +24,14 @@ object WebSocketClient {
     private var isReconnecting = false
     
     var isConnected = false
+        private set(value) {
+            if (field != value) {
+                field = value
+                WebSocketEvents.trigger(value)
+            }
+        }
+
+    var lastIncomingTime: Instant? = null
         private set
 
     fun connect(authToken: String) {
@@ -45,12 +56,12 @@ object WebSocketClient {
                 }
 
                 override fun onText(webSocket: WebSocket, data: CharSequence, last: Boolean): CompletionStage<*>? {
+                    lastIncomingTime = Clock.System.now()
                     val frame = data.toString()
-                    if (frame.isBlank()) {
+                    if (frame.trim() == "") {
                         // Respond to server heartbeat
                         webSocket.sendText("\n", true)
                     } else {
-                        RFULogger.dev("Received WebSocket frame: ${frame.take(100)}...")
                         handleFrame(frame)
                     }
                     webSocket.request(1)
@@ -101,43 +112,60 @@ object WebSocketClient {
         if (lines.isEmpty() || lines[0].isBlank()) return
         
         val command = lines[0].trim()
-        RFULogger.dev("Handling STOMP command: $command")
+        val headers = mutableMapOf<String, String>()
+        var bodyIndex = -1
+        
+        for (i in 1 until lines.size) {
+            val line = lines[i].trim()
+            if (line.isEmpty()) {
+                bodyIndex = i + 1
+                break
+            }
+            val parts = line.split(":", limit = 2)
+            if (parts.size == 2) {
+                headers[parts[0]] = parts[1]
+            }
+        }
+        
+        val body = if (bodyIndex != -1 && bodyIndex < lines.size) {
+            lines.subList(bodyIndex, lines.size).joinToString("\n").trimEnd { it == '\u0000' }
+        } else ""
+
+        RFULogger.dev("STOMP:\n--- Incoming STOMP Frame ---\n" +
+                "Command: $command\n" +
+                "Headers: $headers\n" +
+                "Body: ${if (body.isEmpty()) "(empty)" else body}\n" +
+                "---------------------------")
+
         if (command == "CONNECTED") {
             isConnected = true
             RFULogger.info("STOMP Connected")
+
+            subscribe("/user/queue/errors") { msg ->
+                try {
+                    val map = gson.fromJson(msg, Map::class.java)
+                    val errorMsg = map["message"]?.toString() ?: "Unknown error"
+                    ErrorEvents.trigger(errorMsg)
+                } catch (e: Exception) {
+                    RFULogger.error("Error parsing backend error message: ", e)
+                }
+            }
+
             subscriptions.forEach { (topic, _) ->
                 RFULogger.dev("Re-subscribing to $topic after reconnection")
                 subscribe(topic)
             }
         } else if (command == "MESSAGE") {
-            val headers = mutableMapOf<String, String>()
-            var bodyIndex = -1
-            for (i in 1 until lines.size) {
-                val line = lines[i].trim()
-                if (line.isEmpty()) {
-                    bodyIndex = i + 1
-                    break
-                }
-                val parts = line.split(":", limit = 2)
-                if (parts.size == 2) {
-                    headers[parts[0]] = parts[1]
-                }
-            }
-            
-            if (bodyIndex != -1 && bodyIndex < lines.size) {
-                val body = lines.subList(bodyIndex, lines.size).joinToString("\n").trimEnd { it == '\u0000' }
-                val destination = headers["destination"]
-                RFULogger.dev("STOMP Message for destination: $destination")
-                if (destination != null) {
-                    if (subscriptions.containsKey(destination)) {
-                        subscriptions[destination]?.invoke(body)
-                    } else {
-                        RFULogger.dev("No subscription found for destination: $destination")
-                    }
+            val destination = headers["destination"]
+            if (destination != null) {
+                if (subscriptions.containsKey(destination)) {
+                    subscriptions[destination]?.invoke(body)
+                } else {
+                    RFULogger.dev("No subscription found for destination: $destination")
                 }
             }
         } else if (command == "ERROR") {
-            RFULogger.error("Received STOMP ERROR frame: $frameData")
+            RFULogger.error("Received STOMP ERROR frame:\nHeaders: $headers\nBody: $body")
         } else {
             RFULogger.dev("Unhandled STOMP command: $command")
         }
@@ -149,7 +177,6 @@ object WebSocketClient {
         }
         
         if (isConnected) {
-            RFULogger.dev("Sending SUBSCRIBE frame for $topic")
             sendFrame(webSocket!!, "SUBSCRIBE", mapOf(
                 "id" to "sub-${topic.hashCode()}",
                 "destination" to topic
@@ -178,6 +205,12 @@ object WebSocketClient {
         frame.append("\n")
         frame.append(body)
         frame.append("\u0000")
+        
+        RFULogger.dev("STOMP:\n---- Outgoing STOMP Frame ---\n" +
+                "Command: $command\n" +
+                "Headers: $headers\n" +
+                "Body: ${if (body.isEmpty()) "(empty)" else body}\n" +
+                "---------------------------")
         
         ws.sendText(frame.toString(), true)
     }
