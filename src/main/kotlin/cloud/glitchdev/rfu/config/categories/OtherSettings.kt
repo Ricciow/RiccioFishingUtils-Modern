@@ -102,4 +102,10 @@ object OtherSettings : Category("Other") {
         description = Literal("The types of messages that will be hidden")
         condition = { hideMessages }
     }
+
+    var walkthroughAcknowledged by boolean(false) {
+        name = Literal("Walkthrough Acknowledged")
+        description = Literal("Whether the user has acknowledged the mod's walkthrough.")
+        condition = { false }
+    }
 }

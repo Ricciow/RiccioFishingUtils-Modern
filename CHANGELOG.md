@@ -10,6 +10,7 @@
 - Added Nessie SC
 - Added a pet level up alert
 - Added a reindrake alert
+- Added a walkthrough upon joining the game with an acknowledgement
 
 ### Changes:
 - Enhanced `/rfureset` command to reset all session data, including fishing XP, ink tracking, and sea creature stats.
