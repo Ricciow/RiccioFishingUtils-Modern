@@ -163,4 +163,8 @@ object PartyWebSocket : RegisteredEvent {
         lastJoinTarget = targetUser
         WebSocketClient.send("/app/party/join", mapOf("targetUser" to targetUser))
     }
+
+    fun reportParty(user: String) {
+        WebSocketClient.send("/app/party/report", gson.toJson(user))
+    }
 }

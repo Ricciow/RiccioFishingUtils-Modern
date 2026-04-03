@@ -88,7 +88,8 @@ class UIButton(var text: String, radius: Float = 0f, val image : UIImage? = null
             } childOf this
         }
 
-        this.onMouseClick {
+        this.onMouseClick { event ->
+            event.stopPropagation()
             if(!disabled) {
                 onClick()
                 textArea.animate {

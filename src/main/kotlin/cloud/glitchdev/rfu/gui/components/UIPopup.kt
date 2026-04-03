@@ -16,7 +16,7 @@ import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.toConstraint
 import java.awt.Color
 
-class UIPopup(val radiusPopup : Float, val text: String) : UIBlock() {
+class UIPopup(val radiusPopup : Float, val text: String, val onConfirm: (() -> Unit)? = null) : UIBlock() {
     val backgroundColor = UIScheme.increaseOpacity(Color.BLACK, 128).toConstraint()
     val errorColor = UIScheme.errorPopupColor.toConstraint()
     val primaryColor = UIScheme.secondaryColorOpaque.toConstraint()
@@ -42,6 +42,10 @@ class UIPopup(val radiusPopup : Float, val text: String) : UIBlock() {
             isFloating = true
         }
 
+        this.onMouseClick {
+            it.stopPropagation()
+        }
+
         val popupContainer = UIRoundedRectangle(radiusPopup).constrain {
             x = CenterConstraint()
             y = CenterConstraint()
@@ -65,14 +69,42 @@ class UIPopup(val radiusPopup : Float, val text: String) : UIBlock() {
             color = errorColor
         } childOf container
 
-        UIButton("Ok", 5f) {
-            this.hide()
-        }.constrain {
-            x = CenterConstraint()
-            y = SiblingConstraint()
-            width = 100.percent()
-            height = 20.pixels()
-        } childOf container
+        if (onConfirm == null) {
+            UIButton("Ok", 5f) {
+                this.hide()
+            }.constrain {
+                x = CenterConstraint()
+                y = SiblingConstraint()
+                width = 100.percent()
+                height = 20.pixels()
+            } childOf container
+        } else {
+            val buttonContainer = UIContainer().constrain {
+                x = CenterConstraint()
+                y = SiblingConstraint()
+                width = 100.percent()
+                height = 20.pixels()
+            } childOf container
+
+            UIButton("Confirm", 5f) {
+                onConfirm.invoke()
+                this.hide()
+            }.constrain {
+                x = 0.pixels()
+                y = CenterConstraint()
+                width = 45.percent()
+                height = 100.percent()
+            } childOf buttonContainer
+
+            UIButton("Cancel", 5f) {
+                this.hide()
+            }.constrain {
+                x = 0.pixels(true)
+                y = CenterConstraint()
+                width = 45.percent()
+                height = 100.percent()
+            } childOf buttonContainer
+        }
     }
 
     fun showPopup() {

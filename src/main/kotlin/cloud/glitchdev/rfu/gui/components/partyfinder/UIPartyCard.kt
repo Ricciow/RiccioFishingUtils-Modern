@@ -1,10 +1,15 @@
 package cloud.glitchdev.rfu.gui.components.partyfinder
 
 import cloud.glitchdev.rfu.gui.UIScheme
+import cloud.glitchdev.rfu.gui.components.UIPopup
 import cloud.glitchdev.rfu.gui.components.elementa.TextWrappingConstraint
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.utils.User
+import cloud.glitchdev.rfu.utils.Chat
+import cloud.glitchdev.rfu.utils.TextUtils
+import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.utils.gui.addHoverColoring
+import cloud.glitchdev.rfu.utils.gui.setHidden
 import cloud.glitchdev.rfu.utils.dsl.isUser
 import cloud.glitchdev.rfu.utils.network.PartyWebSocket
 import gg.essential.elementa.components.UIContainer
@@ -128,19 +133,58 @@ class UIPartyCard(val party: FishingParty, radius : Float) : UIRoundedRectangle(
             height = FillConstraint()
         } childOf rightArea
 
-        if(party.user.isUser()) {
-            val text = UIText("❌").constrain {
-                x = 0.pixels(true)
-                y = 0.pixels()
+        val reportPopup = UIPopup(5f, "Are you sure you want to report ${party.user}'s party?", onConfirm = {
+            PartyWebSocket.reportParty(party.user)
+            Chat.sendMessage(TextUtils.rfupfLiteral("Party reported", TextColor.YELLOW))
+        }) childOf this
+
+        val buttonsContainer = UIContainer().constrain {
+            x = 2.pixels(true)
+            y = 2.pixels()
+            width = 10.pixels()
+            height = ChildBasedSizeConstraint()
+        } childOf mainContainer
+
+        val reportButton = if (!party.user.isUser()) {
+            UIText("⚠").constrain {
+                x = SiblingConstraint(5f)
+                y = CenterConstraint()
                 width = ScaledTextConstraint(1f)
                 height = TextAspectConstraint()
-            } childOf mainContainer
+            } childOf buttonsContainer
+        } else null
 
-            text.addHoverColoring(Animations.IN_EXP, hoverDuration, textColor, hoverText)
+        reportButton?.addHoverColoring(Animations.IN_EXP, hoverDuration, textColor, hoverText)
+        reportButton?.setHidden(true)
+        reportButton?.onMouseClick { event ->
+            event.stopPropagation()
+            reportPopup.showPopup()
+        }
 
-            text.onMouseClick {
-                PartyWebSocket.deleteParty(User.getUsername())
-            }
+        val deleteButton = if (party.user.isUser()) {
+            UIText("❌").constrain {
+                x = SiblingConstraint(5f)
+                y = CenterConstraint()
+                width = ScaledTextConstraint(1f)
+                height = TextAspectConstraint()
+                isFloating = true
+            } childOf buttonsContainer
+        } else null
+
+        deleteButton?.addHoverColoring(Animations.IN_EXP, hoverDuration, textColor, hoverText)
+        deleteButton?.setHidden(true)
+        deleteButton?.onMouseClick { event ->
+            event.stopPropagation()
+            PartyWebSocket.deleteParty(User.getUsername())
+        }
+
+        this.onMouseEnter {
+            deleteButton?.setHidden(false)
+            reportButton?.setHidden(false)
+        }
+        this.onMouseLeave {
+            deleteButton?.setHidden(true)
+            reportButton?.setHidden(true)
         }
     }
 }
