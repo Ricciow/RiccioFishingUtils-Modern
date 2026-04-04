@@ -22,9 +22,9 @@ if (project.name != rootProject.name && project.name != "processor") {
         changelog.set(System.getenv("CHANGELOG_BODY"))
 
         dependencies {
-            required.project("P7dR8mSH") // Fabric API
-            required.project("HaI86CUz") // Fabric Language Kotlin
-            required.project("1A2mKfBx") // Hypixel Mod API
+            required.project("fabric-api")
+            required.project("fabric-language-kotlin")
+            required.project("hypixel-mod-api")
         }
 
         syncBodyFrom.set(rootProject.file("README.md").readText())
