@@ -29,7 +29,7 @@ object WalkthroughFeature : RegisteredEvent {
     private val walkthroughSentMessages = mutableSetOf<String>()
 
     override fun register() {
-        registerJoinEvent(1500) { wasConnected ->
+        registerJoinEvent(5000) { wasConnected ->
             if (!wasConnected && !OtherSettings.walkthroughAcknowledged) {
                 sendWalkthrough()
             }
