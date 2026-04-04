@@ -8,8 +8,6 @@ object InkFishing : Category("Ink Fishing") {
     override val description: TranslatableValue
         get() = Literal("Settings for everything with ink fishing!")
 
-
-
     var inkTrackingDisplay by observable(boolean(true) {
         name = Literal("Toggle")
         description = Literal("Enables the Ink Tracking display")
