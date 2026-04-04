@@ -4,6 +4,7 @@ import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.RareScSettings
 import cloud.glitchdev.rfu.constants.RareScDisplayDataType
 import cloud.glitchdev.rfu.constants.SeaCreatures
+import cloud.glitchdev.rfu.constants.LiquidTypes
 import cloud.glitchdev.rfu.constants.text.TextColor.CYAN
 import cloud.glitchdev.rfu.constants.text.TextColor.YELLOW
 import cloud.glitchdev.rfu.constants.text.TextColor.WHITE
@@ -40,6 +41,7 @@ object RareSCDisplay : AbstractTextHudElement("rareSCDisplay") {
             CatchTracker.catchHistory.lastHotspot = null
             CatchTracker.catchHistory.lastPos = Vec3.ZERO
             CatchTracker.catchHistory.lastBait = null
+            CatchTracker.catchHistory.lastLiquid = null
             updateState()
         }
 
@@ -63,12 +65,27 @@ object RareSCDisplay : AbstractTextHudElement("rareSCDisplay") {
         var lastHotspot = catchHistory.lastHotspot
         var lastPos = catchHistory.lastPos
         var lastBait = catchHistory.lastBait
+        var lastLiquid = catchHistory.lastLiquid
 
         val player = mc.player
         if (lastPos == Vec3.ZERO && player != null) {
             lastPos = player.position()
             lastHotspot = HotSpotEvents.getHotspotAt(lastPos)
             lastBait = BaitManager.lastBait
+            lastLiquid = lastHotspot?.liquid
+        }
+
+        val bobber = player?.fishing
+        if (bobber != null) {
+            lastLiquid = when {
+                bobber.isInWater -> LiquidTypes.WATER
+                bobber.isInLava -> LiquidTypes.LAVA
+                else -> lastLiquid
+            }
+        }
+
+        if (lastLiquid == null && currentIsland != null && currentIsland.availableLiquids.size == 1) {
+            lastLiquid = currentIsland.availableLiquids.first()
         }
 
         if (lastPos == Vec3.ZERO && !isFishing && !isEditing) {
@@ -84,6 +101,10 @@ object RareSCDisplay : AbstractTextHudElement("rareSCDisplay") {
             }
 
             if (lastPos != Vec3.ZERO && !sc.condition(lastHotspot, lastPos, lastBait)) {
+                return@forEach
+            }
+
+            if (lastLiquid != null && sc.liquidType != lastLiquid) {
                 return@forEach
             }
 

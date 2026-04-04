@@ -13,6 +13,7 @@
 - Added a walkthrough upon joining the game with an acknowledgement
 
 ### Changes:
+- Modified Rare SC display to filter sea creatures based on the current liquid being fished in.
 - Enhanced `/rfureset` command to reset all session data, including fishing XP, ink tracking, and sea creature stats.
 - Delayed the alerts sent upon joining the server by around 3s to not get burried.
 - Made the zoom etherwarp have a cubic ease-in
