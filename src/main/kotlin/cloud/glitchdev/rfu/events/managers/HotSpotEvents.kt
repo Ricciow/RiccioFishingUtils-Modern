@@ -65,10 +65,18 @@ object HotSpotEvents : RegisteredEvent {
         }
 
         registerParticleEvent { packet, cancelable ->
-            if (!isAllowedParticle(packet.particle)) return@registerParticleEvent
+            val particleType = packet.particle.type
+            val isDust = particleType == ParticleTypes.DUST
+            val isSmoke = particleType == ParticleTypes.SMOKE
+            if (!isDust && !isSmoke) return@registerParticleEvent
 
             val pos = Vec3(packet.x, packet.y, packet.z)
-            val closestHotspot = hotspots.values.minByOrNull { it.center.distanceTo(pos) } ?: return@registerParticleEvent
+            val closestHotspot = hotspots.values
+                .filter { hotspot ->
+                    if (isSmoke) hotspot.liquid == LiquidTypes.LAVA
+                    else hotspot.liquid == LiquidTypes.WATER
+                }
+                .minByOrNull { it.center.distanceTo(pos) } ?: return@registerParticleEvent
 
             if (abs(pos.y - closestHotspot.center.y) > 6.0) return@registerParticleEvent
 
@@ -143,16 +151,6 @@ object HotSpotEvents : RegisteredEvent {
             override fun register() = submitTask(this)
             override fun unregister() = removeTask(this)
         }
-    }
-
-    private fun isAllowedParticle(particle : ParticleOptions) : Boolean {
-        val result = when(particle.type) {
-            ParticleTypes.DUST -> true
-            ParticleTypes.SMOKE -> true
-            else -> false
-        }
-
-        return result
     }
 
     private fun findBuffNearby(pos: Vec3, world: ClientLevel): String {
