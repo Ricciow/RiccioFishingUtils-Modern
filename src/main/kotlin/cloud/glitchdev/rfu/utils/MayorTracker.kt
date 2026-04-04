@@ -18,6 +18,7 @@ import com.google.gson.JsonParser
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
+import net.minecraft.network.chat.Component
 
 @AutoRegister
 object MayorTracker : RegisteredEvent {
@@ -54,7 +55,7 @@ object MayorTracker : RegisteredEvent {
                 .executes { context ->
                     val mayor = currentMayor.mayorName
                     context.source.sendFeedback(TextUtils.rfuLiteral("Current Mayor: ", TextStyle(TextColor.GOLD))
-                        .append(TextUtils.rfuLiteral(mayor, TextStyle(TextColor.YELLOW))))
+                        .append(Component.literal("${TextColor.YELLOW}$mayor")))
                     1
                 }
                 .then(literal("refresh").executes { context ->
