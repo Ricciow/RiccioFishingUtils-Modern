@@ -9,8 +9,6 @@ import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.events.managers.PartyEvents.registerPartyListChangedEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.model.party.FishingParty
-import cloud.glitchdev.rfu.utils.Coroutines
-import kotlinx.coroutines.delay
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
