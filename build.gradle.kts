@@ -2,10 +2,38 @@ plugins {
     id("fabric-loom")
     kotlin("jvm")
     id("com.google.devtools.ksp")
+    id("com.modrinth.minotaur") version "2.8.7"
 }
 
 version = "${property("mod.version")}+${stonecutter.current.version}"
 base.archivesName = property("mod.id") as String
+
+if (project.name != rootProject.name && project.name != "processor") {
+    modrinth {
+        token.set(System.getenv("MODRINTH_TOKEN"))
+        projectId.set(System.getenv("MODRINTH_PROJECT_ID"))
+        versionNumber.set(project.version.toString())
+        versionType.set("release")
+        uploadFile.set(tasks.remapJar)
+        gameVersions.add(stonecutter.current.version)
+        loaders.add("fabric")
+
+        // The changelog is handled in the workflow to avoid complex parsing in Gradle
+        changelog.set(System.getenv("CHANGELOG_BODY"))
+
+        dependencies {
+            required.project("P7dR8mSH") // Fabric API
+            required.project("HaI86CUz") // Fabric Language Kotlin
+            required.project("1A2mKfBx") // Hypixel Mod API
+        }
+
+        syncBodyFrom.set(rootProject.file("README.md").readText())
+    }
+} else {
+    tasks.named("modrinth") {
+        enabled = false
+    }
+}
 
 val requiredJava = when {
     stonecutter.eval(stonecutter.current.version, ">=1.20.6") -> JavaVersion.VERSION_21
