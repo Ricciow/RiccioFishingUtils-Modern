@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
 import cloud.glitchdev.rfu.constants.MessageTypes
+import cloud.glitchdev.rfu.constants.text.TextColor.LIGHT_RED
 
 object OtherSettings : Category("Other") {
 
@@ -58,9 +59,19 @@ object OtherSettings : Category("Other") {
         }
     }
 
+    init {
+        separator {
+            title = "Party Finder Alert"
+            description = "${LIGHT_RED}This feature requires backend acceptance!"
+            condition = { !BackendSettings.backendAccepted }
+        }
+    }
+
+
     var partyFinderAlert by boolean(true) {
         name = Literal("Party Finder Alert")
         description = Literal("Sends a message in chat if there are new parties in the party finder.")
+        condition = { BackendSettings.backendAccepted }
     }
 
     var partyInviteMsgs by boolean(true) {
@@ -68,20 +79,28 @@ object OtherSettings : Category("Other") {
         description = Literal("Sends a prompt to invite player msg when some keywords are said by player")
     }
 
-    var outdatedCake by boolean(true) {
-        name = Literal("Outdated cake alert")
-        description = Literal("Sends a message when a cake expires")
-    }
 
     init {
         dualSeparator {
             title = "Tracking"
+        }
+
+        separator {
+            title = "Dye Display"
+            description = "${LIGHT_RED}This feature requires backend acceptance!"
+            condition = { !BackendSettings.backendAccepted }
         }
     }
 
     var dyeDisplay by boolean(false) {
         name = Literal("Dye Display")
         description = Literal("Shows the currently boosted dyes")
+        condition = { BackendSettings.backendAccepted }
+    }
+
+    var outdatedCake by boolean(true) {
+        name = Literal("Outdated cake alert")
+        description = Literal("Sends a message when a cake expires")
     }
 
     init {

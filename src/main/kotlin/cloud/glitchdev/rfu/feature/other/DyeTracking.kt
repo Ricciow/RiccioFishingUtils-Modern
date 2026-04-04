@@ -20,6 +20,11 @@ object DyeTracking {
         override val description: String = "Sends the current dyes in rotation in chat:"
 
         override fun execute(context: CommandContext<FabricClientCommandSource>): Int {
+            if (!BackendSettings.backendAccepted) {
+                context.source.sendFeedback(TextUtils.backendAcceptMessage())
+                return 1
+            }
+
             val text = Component.literal("")
 
             val currentDyes = DyeWebSocket.currentDyes
@@ -31,7 +36,7 @@ object DyeTracking {
                     text.append(Component.literal("\n$YELLOW - ").append(dyeComponent(dye)).append(Component.literal(" $YELLOW(2x)")))
                 }
             } else {
-                if(BackendSettings.backendAccepted && BackendSettings.shareDyeData) {
+                if(BackendSettings.shareDyeData) {
                     text.append(TextUtils.rfuLiteral("No one has checked the dyes yet! ${GOLD}Go be the first!", TextStyle(LIGHT_RED)))
                 } else {
                     text.append(TextUtils.rfuLiteral("Current dyes are not available :(", TextStyle(LIGHT_RED)))

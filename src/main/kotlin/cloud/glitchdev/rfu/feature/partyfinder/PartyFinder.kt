@@ -21,14 +21,7 @@ object PartyFinder : SimpleCommand("rfupf") {
 
     override fun execute(context: CommandContext<FabricClientCommandSource>): Int {
         if (!BackendSettings.backendAccepted) {
-            context.source.sendFeedback(
-                TextUtils.rfuLiteral(
-                    "Must accept the backend features to use this feature!",
-                    TextStyle(TextColor.LIGHT_RED, TextEffects.UNDERLINE)
-                ).append(
-                    Component.literal("\n\n${TextColor.LIGHT_RED}/rfu -> Backend Settings -> Connect to Backend")
-                )
-            )
+            context.source.sendFeedback(TextUtils.backendAcceptMessage())
             return 1
         }
 

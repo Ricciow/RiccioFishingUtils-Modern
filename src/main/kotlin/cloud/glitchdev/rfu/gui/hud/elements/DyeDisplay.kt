@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.gui.hud.elements
 
+import cloud.glitchdev.rfu.config.categories.BackendSettings
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.Dyes as ConstDyes
 import cloud.glitchdev.rfu.constants.text.TextColor
@@ -25,7 +26,7 @@ import java.awt.Color
 @HudElement
 object DyeDisplay : AbstractHudElement("dyeDisplay") {
     override val enabled: Boolean
-        get() = OtherSettings.dyeDisplay && !currentDyes.isOutdated()
+        get() = BackendSettings.backendAccepted && OtherSettings.dyeDisplay && !currentDyes.isOutdated()
 
     override fun onInitialize() {
         super.onInitialize()
