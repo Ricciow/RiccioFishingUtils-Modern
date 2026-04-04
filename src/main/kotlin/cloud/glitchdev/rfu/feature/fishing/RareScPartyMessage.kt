@@ -26,9 +26,11 @@ object RareScPartyMessage : Feature {
 
                 val scName = seaCreature.scName
                 val article = if (scName.take(1).lowercase() in "aeiou") "n" else ""
+                val startsWithThe = scName.startsWith("The ", ignoreCase = true)
 
                 val messageString = RareScSettings.rarePartyMessage
                     .replace("""(?i)\b(a)\s\{name\}""".toRegex()) { match  ->
+                        if (startsWithThe) return@replace scName
                         val originalA = match.groupValues[1]
                         "$originalA$article $scName"
                     }
