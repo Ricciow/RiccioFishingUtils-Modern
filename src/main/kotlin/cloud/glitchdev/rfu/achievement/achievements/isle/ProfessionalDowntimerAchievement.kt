@@ -11,7 +11,7 @@ import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 @Achievement
 object ProfessionalDowntimerAchievement : BaseAchievement() {
     override val id: String = "professional_downtimer"
-    override val name: String = "Professional Downtimer"1
+    override val name: String = "Professional Downtimer"
     override val description: String = "Die to a vanquisher or lava."
     override val type: AchievementType = AchievementType.SECRET
     override val difficulty: AchievementDifficulty = AchievementDifficulty.EASY
