@@ -2,7 +2,9 @@ name: Build
 
 on:
   push:
-    branches: [ "**" ]
+    branches:
+      - "**"
+      - "!prod"
     paths-ignore:
       - '**.md'
       - '.gitignore'
