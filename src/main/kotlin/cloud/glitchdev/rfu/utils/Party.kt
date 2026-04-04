@@ -157,7 +157,7 @@ object Party : RegisteredEvent {
             executePartyChange()
         }
 
-        registerGameEvent("""The party was transfered to ($PLAYER_REGEX) by ($PLAYER_REGEX)""".toExactRegex()) { _, _, matches ->
+        registerGameEvent("""The party was transferred to ($PLAYER_REGEX) by ($PLAYER_REGEX)""".toExactRegex()) { _, _, matches ->
             val matchGroups = matches?.groupValues ?: return@registerGameEvent
             inParty = true
             val player1 = matchGroups[1].removeRankTag()
@@ -166,7 +166,7 @@ object Party : RegisteredEvent {
             executePartyChange()
         }
 
-        registerGameEvent("""The party was transfered to ($PLAYER_REGEX) because ($PLAYER_REGEX) left""".toExactRegex()) { _, _, matches ->
+        registerGameEvent("""The party was transferred to ($PLAYER_REGEX) because ($PLAYER_REGEX) left""".toExactRegex()) { _, _, matches ->
             val matchGroups = matches?.groupValues ?: return@registerGameEvent
             val player1 = matchGroups[1].removeRankTag()
             val player2 = matchGroups[2].removeRankTag()
@@ -197,7 +197,7 @@ object Party : RegisteredEvent {
             return@registerAllowGameEvent false
         }
 
-        registerAllowGameEvent("To ($PLAYER_REGEX): \\[RFUPF\\] I would like to join your party!".toExactRegex()) { _, _, matches ->
+        registerAllowGameEvent("To ($PLAYER_REGEX): \\[RFUPF\\] I would like to join your party!".toExactRegex()) { _, _, _ ->
             return@registerAllowGameEvent false
         }
 
