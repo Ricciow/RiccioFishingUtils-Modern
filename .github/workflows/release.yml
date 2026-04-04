@@ -8,6 +8,8 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -61,3 +63,26 @@ jobs:
           files: build/libs/rfu-${{ steps.version.outputs.version }}+*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Post Announcement
+        env:
+          RFU_API_TOKEN: ${{ secrets.RFU_API_TOKEN }}
+          VERSION: ${{ steps.version.outputs.version }}
+          TITLE: ${{ steps.changelog.outputs.title }}
+          BODY: ${{ steps.changelog.outputs.body }}
+        run: |
+          # Calculate expiresAt (2 days from now) in milliseconds
+          EXPIRES_AT=$(date -d "+2 days" +%s%3N)
+          
+          # Prepare the payload using jq for safe JSON construction
+          JSON_PAYLOAD=$(jq -n \
+            --arg content "$BODY" \
+            --arg expiresAt "$EXPIRES_AT" \
+            --arg message "§f§lV$VERSION Patch Notes: {§a§l[Open]}" \
+            --arg title "$TITLE" \
+            '{content: $content, expiresAt: ($expiresAt | tonumber), message: $message, title: $title}')
+
+          curl -X POST https://rfu.glitchdev.cloud/api/announcement \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $RFU_API_TOKEN" \
+            -d "$JSON_PAYLOAD"

@@ -69,15 +69,15 @@ class JsonFile<T : Any>(
             } catch (e: Exception) {
                 RFULogger.warn("[$filename] Failed to load json file. Using defaults.", e)
                 data = defaultFactory()
-                save()
+                save(false)
             }
         } else {
-            save()
+            save(false)
         }
     }
 
-    fun save() {
-        onSave()
+    fun save(triggerOnSave: Boolean = true) {
+        if (triggerOnSave) onSave()
         try {
             RFULogger.dev("Saved to ${file.absolutePath}")
             file.parentFile.mkdirs()

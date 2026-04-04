@@ -15,9 +15,14 @@ data class Hotspot(
     val startTime: Long = System.currentTimeMillis()
 ) {
     private val particleDistances = mutableListOf<Double>()
+    private val particleCount
+        get() = when(liquid) {
+            LiquidTypes.LAVA -> 100
+            else -> 50
+        }
 
     fun addParticleDistance(distance: Double) {
-        if (particleDistances.size < 50) {
+        if (particleDistances.size < particleCount) {
             particleDistances.add(distance)
 
             if (particleDistances.size >= 50) {
@@ -29,5 +34,5 @@ data class Hotspot(
         }
     }
 
-    fun isRadiusCalculated() : Boolean = particleDistances.size == 50
+    fun isRadiusCalculated() : Boolean = particleDistances.size == particleCount
 }
