@@ -5,17 +5,9 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
-import cloud.glitchdev.rfu.config.categories.InkFishing
-import cloud.glitchdev.rfu.constants.RareDrops
-import cloud.glitchdev.rfu.data.collections.CollectionsHandler
-import cloud.glitchdev.rfu.data.drops.DropManager
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.feature.ink.InkSessionTracker
-import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.dsl.compact
-import net.minecraft.network.chat.Component
-
 
 @Achievement
 object InkObsessedAchievement: NumericStageAchievement() {
@@ -28,7 +20,6 @@ object InkObsessedAchievement: NumericStageAchievement() {
 
     override val targetStage: Int = 4
     override val resetCountOnStageAdvance: Boolean = false
-
 
     private val MILESTONES = listOf(
         25_000L, 50_000L, 100_000L, 250_000L

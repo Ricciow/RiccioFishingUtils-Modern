@@ -5,12 +5,9 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
-import cloud.glitchdev.rfu.config.categories.InkFishing
 import cloud.glitchdev.rfu.constants.RareDrops
-import cloud.glitchdev.rfu.data.collections.CollectionsHandler
 import cloud.glitchdev.rfu.data.drops.DropManager
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
-
 
 @Achievement
 object LotteryTicketAchievement: NumericStageAchievement() {
@@ -31,8 +28,6 @@ object LotteryTicketAchievement: NumericStageAchievement() {
     private val MILESTONE_NAMES = listOf(
         "First Taste of Luck", "Lucky Person", "Four-Leaf Finder", "Buy a Lottery Ticket"
     )
-
-
 
     init {
         MILESTONES.forEachIndexed { index, milestone ->
@@ -59,11 +54,7 @@ object LotteryTicketAchievement: NumericStageAchievement() {
         })
     }
 
-
-
     override fun getTargetCountForStage(stage: Int): Long {
         return MILESTONES.getOrNull(stage - 1) ?: MILESTONES.last()
     }
-
-
 }
