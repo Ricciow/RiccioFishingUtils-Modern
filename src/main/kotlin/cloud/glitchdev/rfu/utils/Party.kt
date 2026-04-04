@@ -198,9 +198,6 @@ object Party : RegisteredEvent {
         }
 
         registerAllowGameEvent("To ($PLAYER_REGEX): \\[RFUPF\\] I would like to join your party!".toExactRegex()) { _, _, matches ->
-            val matchGroups = matches?.groupValues ?: return@registerAllowGameEvent true
-            val player = matchGroups[1].removeRankTag()
-            Chat.sendMessage(TextUtils.rfupfLiteral("Sent a join request to $player", TextColor.YELLOW))
             return@registerAllowGameEvent false
         }
 
