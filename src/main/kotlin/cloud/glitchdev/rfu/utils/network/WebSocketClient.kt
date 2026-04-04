@@ -145,7 +145,8 @@ object WebSocketClient {
                 try {
                     val map = gson.fromJson(msg, Map::class.java)
                     val errorMsg = map["message"]?.toString() ?: "Unknown error"
-                    ErrorEvents.trigger(errorMsg)
+                    val origin = map["origin"]?.toString() ?: "UNKNOWN"
+                    ErrorEvents.trigger(errorMsg, origin)
                 } catch (e: Exception) {
                     RFULogger.error("Error parsing backend error message: ", e)
                 }

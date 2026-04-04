@@ -59,8 +59,8 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
         create()
         createInteractions()
 
-        registerErrorMessageEvent { message ->
-            if (!this.isHidden()) {
+        registerErrorMessageEvent { message, origin ->
+            if (!this.isHidden() && (origin == "/app/party/publish" || origin == "/app/party/edit")) {
                 popup.setText(message)
                 popup.showPopup()
             }

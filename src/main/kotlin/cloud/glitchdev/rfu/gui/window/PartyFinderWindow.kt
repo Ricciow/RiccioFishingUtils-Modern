@@ -1,7 +1,9 @@
 package cloud.glitchdev.rfu.gui.window
 
+import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.UIButton
+import cloud.glitchdev.rfu.gui.components.UIPopup
 import cloud.glitchdev.rfu.gui.components.partyfinder.UICreateParty
 import cloud.glitchdev.rfu.gui.components.partyfinder.UIFilterArea
 import cloud.glitchdev.rfu.gui.components.partyfinder.UIPartyCard
@@ -11,6 +13,7 @@ import cloud.glitchdev.rfu.events.managers.PartyEvents
 import cloud.glitchdev.rfu.events.managers.PartyEvents.registerPartyListChangedEvent
 import cloud.glitchdev.rfu.events.managers.PartyEvents.registerMyPartyChangedEvent
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyCreatedEvent
+import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
 import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.network.PartyWebSocket
 import gg.essential.elementa.components.ScrollComponent
@@ -51,6 +54,7 @@ object PartyFinderWindow : BaseWindow(false) {
     lateinit var filterButton : UIButton
     lateinit var partyCreationButton : UIButton
     lateinit var errorText : UIText
+    lateinit var popup: UIPopup
 
     init {
         create()
@@ -70,6 +74,13 @@ object PartyFinderWindow : BaseWindow(false) {
 
         registerMyPartyChangedEvent {
             updatePartyCreation()
+        }
+
+        registerErrorMessageEvent { message, origin ->
+            if (mc.screen == this && !partyCreationOpen && (origin == "/app/party/join" || origin == "/app/party/report" || origin == "/app/party/delete")) {
+                popup.setText(message)
+                popup.showPopup()
+            }
         }
     }
 
@@ -127,6 +138,8 @@ object PartyFinderWindow : BaseWindow(false) {
         }
 
         createPartyArea()
+
+        popup = UIPopup(5f, "") childOf window
     }
 
     fun createPartyArea() {

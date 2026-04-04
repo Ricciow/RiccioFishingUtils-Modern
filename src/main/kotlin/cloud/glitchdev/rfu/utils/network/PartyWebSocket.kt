@@ -61,7 +61,7 @@ object PartyWebSocket : RegisteredEvent {
             }
         }
 
-        registerErrorMessageEvent { message ->
+        registerErrorMessageEvent { message, origin ->
             if (message == "Target user is not currently connected to the WebSocket.") {
                 lastJoinTarget?.let { target ->
                     Party.requestEntry(target)
