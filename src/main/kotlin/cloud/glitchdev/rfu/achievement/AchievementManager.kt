@@ -4,21 +4,12 @@ import cloud.glitchdev.rfu.data.achievements.AchievementHandler
 import cloud.glitchdev.rfu.data.achievements.AchievementsData
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
-import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
 
 @AutoRegister
 object AchievementManager : RegisteredEvent {
     private val registry = HashMap<String, BaseAchievement>()
 
     override fun register() {
-        registerJoinEvent {
-            saveAll()
-        }
-
-        registerShutdownEvent {
-            saveAll()
-        }
     }
 
     fun register(achievement: BaseAchievement) {
@@ -38,6 +29,6 @@ object AchievementManager : RegisteredEvent {
                 progressData = achievement.saveState()
             )
         }
-        AchievementHandler.saveAll(allData)
+        AchievementHandler.updateData(allData)
     }
 }

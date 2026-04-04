@@ -19,6 +19,7 @@
 - Reorganized the Öther tab in the settings
 - RFUPF requires leader to queue the party.
 - RFUPF now validates if you're already inside that party when trying to join.
+- Added an auto-save to the data every 30 minutes and upon disconnecting
 
 ### Fixes:
 - Fixed an issue where the Park was not correctly identified as a fishing location.

@@ -2,8 +2,6 @@ package cloud.glitchdev.rfu.data.other
 
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
-import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
 import cloud.glitchdev.rfu.data.other.data.CakesEntry
 import cloud.glitchdev.rfu.data.other.data.Entry
 import cloud.glitchdev.rfu.data.other.data.StringEntry
@@ -46,13 +44,6 @@ object OtherManager : RegisteredEvent {
         get() = file.data
 
     override fun register() {
-        registerJoinEvent {
-            file.save()
-        }
-
-        registerShutdownEvent(1000) {
-            file.save()
-        }
     }
 
     fun getField(key : String) : Entry? {

@@ -1,29 +1,14 @@
 package cloud.glitchdev.rfu.data.collections
 
-import cloud.glitchdev.rfu.events.AutoRegister
-import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.CollectionEvents
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
-import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
 import cloud.glitchdev.rfu.utils.JsonFile
 
-@AutoRegister
-object CollectionsHandler : RegisteredEvent {
+object CollectionsHandler {
     private val jsonFile = JsonFile(
         filename = "collections.json",
         type = CollectionsData::class.java,
         defaultFactory = { CollectionsData() }
     )
-
-    override fun register() {
-        registerJoinEvent {
-            jsonFile.save()
-        }
-
-        registerShutdownEvent {
-            jsonFile.save()
-        }
-    }
 
     fun get(item: CollectionItem): Long {
         return jsonFile.data.collectionMap[item.name] ?: 0L

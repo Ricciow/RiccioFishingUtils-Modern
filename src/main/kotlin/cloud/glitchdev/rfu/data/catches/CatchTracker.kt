@@ -6,8 +6,6 @@ import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
-import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.utils.command.Command
 import cloud.glitchdev.rfu.utils.JsonFile
 import cloud.glitchdev.rfu.utils.TextUtils
@@ -29,14 +27,6 @@ object CatchTracker : RegisteredEvent {
     override fun register() {
         registerSeaCreatureCatchEvent(0) { sc, doubleHook, hotspot, pos, bait ->
             catchHistory.registerCatch(sc, doubleHook, hotspot, pos, bait)
-        }
-
-        registerJoinEvent {
-            catchesFile.save()
-        }
-
-        registerShutdownEvent {
-            catchesFile.save()
         }
 
         //Initialize every sc for accurate tracking

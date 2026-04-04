@@ -2,6 +2,10 @@ package cloud.glitchdev.rfu.utils
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.CONFIG_DIR
 import cloud.glitchdev.rfu.RiccioFishingUtils.MOD_ID
+import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
+import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
+import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import com.google.gson.*
 import java.io.File
 import java.io.FileReader
@@ -16,6 +20,7 @@ class JsonFile<T : Any>(
     private val filename: String,
     private val type: Class<T>,
     private val defaultFactory: () -> T,
+    private val onSave: () -> Unit = {},
     builder : (GsonBuilder) -> Gson = { it.create() }
 ) {
     private val gson: Gson = builder(
@@ -36,6 +41,22 @@ class JsonFile<T : Any>(
 
     init {
         load()
+
+        registerJoinEvent {
+            save()
+        }
+
+        registerDisconnectEvent {
+            save()
+        }
+
+        registerShutdownEvent {
+            save()
+        }
+
+        registerTickEvent(interval = 30 * 60 * 20L) {
+            save()
+        }
     }
 
     fun load() {
@@ -56,6 +77,7 @@ class JsonFile<T : Any>(
     }
 
     fun save() {
+        onSave()
         try {
             RFULogger.dev("Saved to ${file.absolutePath}")
             file.parentFile.mkdirs()

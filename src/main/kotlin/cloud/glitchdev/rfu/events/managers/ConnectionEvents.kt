@@ -31,6 +31,13 @@ object ConnectionEvents : RegisteredEvent {
         return JoinEventManager.register(priority, delayMillis, callback)
     }
 
+    fun registerDisconnectEvent(
+        priority: Int = 20,
+        callback: () -> Unit
+    ): DisconnectEventManager.DisconnectEvent {
+        return DisconnectEventManager.register(priority, callback)
+    }
+
     object JoinEventManager : AbstractEventManager<(wasConnected : Boolean) -> Unit, JoinEventManager.JoinEvent>() {
         override val runTasks: (Boolean) -> Unit = { wasConnected ->
             tasks.forEach { task ->
