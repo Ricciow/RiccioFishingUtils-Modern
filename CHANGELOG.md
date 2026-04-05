@@ -2,6 +2,7 @@
 
 ### Features:
 - Added a blizzard in a bottle timer/alert
+- Added a hotspot expired alert
 
 ### Changes:
 - Removed the 30 minute to expire message in the party finder creation area.

@@ -7,4 +7,9 @@ object HotSpotSettings : Category("Hot Spots") {
         name = Literal("Highlight Hot Spots")
         description = Literal("Makes hotspots highlighted and hides the particles")
     }
+
+    var hotspotExpiredAlert by boolean(true) {
+        name = Literal("Hotspot Expired Alert")
+        description = Literal("Sends an alert when the hotspot you're fishing in expires!")
+    }
 }
