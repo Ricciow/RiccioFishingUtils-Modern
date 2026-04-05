@@ -84,7 +84,7 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
 
         popup = UIPopup(5f, "Failed to create party!") childOf this
 
-        UIWrappedText("Create your party here, parties queued will last for at most 30 minutes.").constrain {
+        UIWrappedText("Create your party here:").constrain {
             x = 0.pixels()
             y = SiblingConstraint()
             width = 100.percent()
