@@ -14,3 +14,4 @@
 
 ### Back-end:
 - Changed some of the sound names for rfu.
+- Automated sound registration

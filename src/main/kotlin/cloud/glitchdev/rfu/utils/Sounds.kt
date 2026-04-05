@@ -1,27 +1,39 @@
 package cloud.glitchdev.rfu.utils
 
+import cloud.glitchdev.rfu.RiccioFishingUtils.MOD_ID
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.events.InstantRegister
 import cloud.glitchdev.rfu.events.InstantRegisteredEvent
 import cloud.glitchdev.rfu.utils.dsl.getResource
 import cloud.glitchdev.rfu.utils.dsl.parseResource
+import com.google.gson.JsonParser
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.core.Registry
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.sounds.SoundEvent
+import java.io.InputStreamReader
 
 @InstantRegister
 object Sounds : InstantRegisteredEvent {
     override fun instantRegister() {
-        registerSound("rare_sc")
-        registerSound("rain_expired")
-        registerSound("death")
-        registerSound("jawbus_death")
-        registerSound("deployable_expired")
-        registerSound("blizzard_expired")
-        registerSound("hotspot_expired")
-        registerSound("failed_cast")
-        registerSound("achievement")
+        val stream = Sounds::class.java.getResourceAsStream("/assets/$MOD_ID/sounds.json")
+        if (stream == null) {
+            RFULogger.warn("Could not find sounds.json to register sounds!")
+            return
+        }
+
+        try {
+            val json = JsonParser.parseReader(InputStreamReader(stream))
+            if (json.isJsonObject) {
+                json.asJsonObject.keySet().forEach { soundName ->
+                    registerSound(soundName)
+                }
+            }
+        } catch (e: Exception) {
+            RFULogger.error("Failed to automatically register sounds from sounds.json", e)
+        } finally {
+            stream.close()
+        }
     }
 
     fun playSound(id: String, pitch: Float = 1f, volume: Float = 1f) {
