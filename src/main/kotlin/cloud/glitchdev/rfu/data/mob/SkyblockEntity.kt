@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.data.mob
 
+import cloud.glitchdev.rfu.access.EntityAccess
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.RareScSettings
 import cloud.glitchdev.rfu.config.categories.RareScSettings.RARE_SC_REGEX
@@ -41,6 +42,15 @@ class SkyblockEntity(
     }
 
     fun isRemoved(): Boolean = nameTagEntity.isRemoved && modelEntity.isRemoved
+
+    fun setGlowing(state: Boolean, color: Color = Color.WHITE) {
+        (modelEntity as EntityAccess).`rfu$setGlowing`(state)
+        (modelEntity as EntityAccess).`rfu$setGlowColor`(color)
+    }
+
+    fun isGlowing(): Boolean {
+        return (modelEntity as EntityAccess).`rfu$isGlowing`()
+    }
 
     fun outdatedNametag() : Boolean = nameTagEntity.isRemoved
 

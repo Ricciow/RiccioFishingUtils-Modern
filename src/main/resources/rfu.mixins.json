@@ -8,6 +8,7 @@
     "ClientPacketListenerMixin",
     "AbstractContainerScreenMixin",
     "EntityRenderDispatcherMixin",
+    "EntityMixin",
     "GameRendererMixin",
     "SquidRendererMixin",
     "SquidMixin",

@@ -28,6 +28,11 @@ object RareScSettings : Category("Rare SCs") {
         description = Literal("Renders the lootshare range as a filled sphere")
     }
 
+    var rareScGlow by boolean(false) {
+        name = Literal("Rare SC Glow")
+        description = Literal("Makes rare sea creatures glow.")
+    }
+
     var detectionAlert by observable(boolean(false) {
         name = Literal("Rare Sc Alert")
         description = Literal("Sends an alert whenever a rare SC is found.")
