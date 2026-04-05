@@ -8,5 +8,6 @@
 ### Fixes:
 - Made water hotspot particles even more strict for detections (When will this end?)
 - Added Hotspot scs to jerry island.
+- Fixed reindrake alert not working
 
 ### Back-end:
