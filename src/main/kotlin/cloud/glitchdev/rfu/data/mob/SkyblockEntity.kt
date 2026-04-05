@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.data.mob
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.RareScSettings
 import cloud.glitchdev.rfu.config.categories.RareScSettings.RARE_SC_REGEX
+import cloud.glitchdev.rfu.constants.SeaCreatures
 import cloud.glitchdev.rfu.events.managers.RenderEvents
 import cloud.glitchdev.rfu.events.managers.RenderEvents.registerRenderEvent
 import cloud.glitchdev.rfu.utils.RFULogger
@@ -78,7 +79,8 @@ class SkyblockEntity(
 
     fun registerLsRange() {
         registerRenderer { context, entity ->
-            if (RareScSettings.lootshareRange && RARE_SC_REGEX.matches(sbName)) {
+            val sc = SeaCreatures.entries.find { it.scName == sbName }
+            if (RareScSettings.lootshareRange && RARE_SC_REGEX.matches(sbName) && sc?.lsRangeExcluded != true) {
                 val bColor = if ((mc.player?.distanceTo(modelEntity) ?: 0f) < 30f) {
                     Color(85, 255, 85)
                 } else {

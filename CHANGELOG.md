@@ -7,6 +7,7 @@
 
 ### Changes:
 - Removed the 30 minute to expire message in the party finder creation area.
+- Made Reindrake not display the lootshare range
 
 ### Fixes:
 - Made water hotspot particles even more strict for detections (When will this end?)

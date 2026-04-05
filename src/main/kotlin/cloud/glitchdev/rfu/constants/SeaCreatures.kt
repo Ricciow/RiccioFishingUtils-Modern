@@ -15,7 +15,8 @@ enum class SeaCreatures(
     val liquidType: LiquidTypes,
     val category: SeaCreatureCategory,
     val special: Boolean = false,
-    val condition: (Hotspot?, Vec3, Bait?) -> Boolean = { _, _, _ -> true }
+    val condition: (Hotspot?, Vec3, Bait?) -> Boolean = { _, _, _ -> true },
+    val lsRangeExcluded: Boolean = false
 ) {
     //Any water source
     @SerializedName("Sea Walker")
@@ -137,7 +138,7 @@ enum class SeaCreatures(
     @SerializedName("Nutcracker")
     NUTCRACKER("Nutcracker", "You found a forgotten Nutcracker laying beneath the ice.", WATER, WINTER),
     @SerializedName("Reindrake")
-    REINDRAKE("Reindrake", "A Reindrake forms from the depths.", WATER, WINTER, true),
+    REINDRAKE("Reindrake", "A Reindrake forms from the depths.", WATER, WINTER, true, { _, _, _ -> true }, true),
     //Festival
     @SerializedName("Nurse Shark")
     NURSE_SHARK("Nurse Shark", "A tiny fin emerges from the water, you've caught a Nurse Shark.", WATER, SHARK, false, { _, _, _ -> World.isFishingFestival() }),
