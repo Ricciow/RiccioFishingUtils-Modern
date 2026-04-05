@@ -11,7 +11,8 @@
     "GameRendererMixin",
     "SquidRendererMixin",
     "SquidMixin",
-    "SquidRenderStateMixin"
+    "SquidRenderStateMixin",
+    "screen.PackSelectionScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

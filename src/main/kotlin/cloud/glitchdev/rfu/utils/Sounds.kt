@@ -15,6 +15,8 @@ import java.io.InputStreamReader
 
 @InstantRegister
 object Sounds : InstantRegisteredEvent {
+    val registeredSounds = mutableSetOf<String>()
+
     override fun instantRegister() {
         val stream = Sounds::class.java.getResourceAsStream("/assets/$MOD_ID/sounds.json")
         if (stream == null) {
@@ -25,7 +27,8 @@ object Sounds : InstantRegisteredEvent {
         try {
             val json = JsonParser.parseReader(InputStreamReader(stream))
             if (json.isJsonObject) {
-                json.asJsonObject.keySet().forEach { soundName ->
+                val names = json.asJsonObject.keySet()
+                names.forEach { soundName ->
                     registerSound(soundName)
                 }
             }
@@ -56,6 +59,7 @@ object Sounds : InstantRegisteredEvent {
     }
 
     private fun registerSound(id: String) {
+        registeredSounds.add(id)
         val resourceLocation = getResource(id)
         val sound = SoundEvent.createVariableRangeEvent(resourceLocation)
         Registry.register(BuiltInRegistries.SOUND_EVENT, resourceLocation, sound)

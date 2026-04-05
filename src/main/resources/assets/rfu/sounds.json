@@ -21,23 +21,12 @@
       }
     ]
   },
-  "death": {
+  "jawbus_death": {
     "category": "player",
     "subtitle": "Someone Has Skill Issue",
     "sounds": [
       {
-        "name": "rfu:death",
-        "preload": true,
-        "stream": false
-      }
-    ]
-  },
-  "jawbus_death": {
-    "category": "player",
-    "subtitle": "Killed by Jawbus",
-    "sounds": [
-      {
-        "name": "rfu:death",
+        "name": "rfu:jawbus_death",
         "preload": true,
         "stream": false
       }

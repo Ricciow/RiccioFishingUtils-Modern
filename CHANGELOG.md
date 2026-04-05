@@ -3,6 +3,7 @@
 ### Features:
 - Added a blizzard in a bottle timer/alert
 - Added a hotspot expired alert
+- Added a custom resourcepack that allows changing sounds. (READ "note.txt" if you're planning on using this!)
 
 ### Changes:
 - Removed the 30 minute to expire message in the party finder creation area.
