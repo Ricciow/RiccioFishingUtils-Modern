@@ -26,7 +26,7 @@ jobs:
       - name: Read version
         id: version
         run: |
-          VERSION=$(grep 'mod.version' gradle.properties | cut -d'=' -f2)
+          VERSION=$(grep 'mod.version' stonecutter.properties.toml | head -n 1 | cut -d'=' -f2 | tr -d '" ' )
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Parse Changelog
