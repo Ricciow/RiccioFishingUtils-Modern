@@ -13,6 +13,7 @@ pluginManagement {
 
     plugins {
         id("fabric-loom") version loom_version
+        id("net.fabricmc.fabric-loom") version loom_version
         kotlin("jvm") version kotlin_version
         id("com.google.devtools.ksp") version ksp_version
     }
@@ -25,7 +26,7 @@ plugins {
 
 stonecutter {
     create(rootProject) {
-        versions("1.21.10", "1.21.11")
+        versions("1.21.10", "1.21.11", "26.1")
         vcsVersion = "1.21.10"
     }
 }

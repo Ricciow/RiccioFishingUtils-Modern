@@ -1,8 +1,15 @@
 plugins {
-    id("fabric-loom")
+    id("fabric-loom") apply false
+    id("net.fabricmc.fabric-loom") apply false
     kotlin("jvm")
     id("com.google.devtools.ksp")
     id("com.modrinth.minotaur") version "2.8.7"
+}
+
+if (stonecutter.eval(stonecutter.current.version, ">=26.1")) {
+    apply(plugin = "net.fabricmc.fabric-loom")
+} else {
+    apply(plugin = "fabric-loom")
 }
 
 version = "${property("mod.version")}+${stonecutter.current.version}"
@@ -14,11 +21,14 @@ if (project.name != rootProject.name && project.name != "processor") {
         projectId.set(System.getenv("MODRINTH_PROJECT_ID"))
         versionNumber.set(project.version.toString())
         versionType.set("release")
-        uploadFile.set(tasks.remapJar)
+
+        // Conditionally set the upload task based on the version
+        val uploadTaskName = if (stonecutter.eval(stonecutter.current.version, ">=26.1")) "jar" else "remapJar"
+        uploadFile.set(tasks.named(uploadTaskName))
+
         gameVersions.add(stonecutter.current.version)
         loaders.add("fabric")
 
-        // The changelog is handled in the workflow to avoid complex parsing in Gradle
         changelog.set(System.getenv("CHANGELOG_BODY"))
 
         dependencies {
@@ -36,6 +46,7 @@ if (project.name != rootProject.name && project.name != "processor") {
 }
 
 val requiredJava = when {
+    stonecutter.eval(stonecutter.current.version, ">=26.1") -> JavaVersion.VERSION_25
     stonecutter.eval(stonecutter.current.version, ">=1.20.6") -> JavaVersion.VERSION_21
     stonecutter.eval(stonecutter.current.version, ">=1.18") -> JavaVersion.VERSION_17
     stonecutter.eval(stonecutter.current.version, ">=1.17") -> JavaVersion.VERSION_16
@@ -74,26 +85,46 @@ repositories {
 }
 
 dependencies {
-    minecraft("com.mojang:minecraft:${stonecutter.current.version}")
+    "minecraft"("com.mojang:minecraft:${stonecutter.current.version}")
 
-    mappings(loom.officialMojangMappings())
+    if (stonecutter.eval(stonecutter.current.version, "<26.1")) {
+        val loomExt = project.extensions.getByType<net.fabricmc.loom.api.LoomGradleExtensionAPI>()
+        "mappings"(loomExt.officialMojangMappings())
+    }
 
-    modImplementation("net.fabricmc:fabric-loader:${property("deps.fabric_loader")}")
-    modImplementation("net.fabricmc:fabric-language-kotlin:${property("fabric_language_kotlin")}")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric_api")}")
-    modImplementation(include("com.teamresourceful.resourcefulconfig:resourcefulconfig-fabric-${property("resourceful_mc_version")}:${property("resourceful_version")}")!!)
-    modImplementation(include("com.teamresourceful.resourcefulconfigkt:resourcefulconfigkt-fabric-${property("resourcefulkt_mc_version")}:${property("resourcefulkt_version")}")!!)
-    modImplementation(include("gg.essential:universalcraft-${property("universalcraft_mc_version")}-fabric:${property("universalcraft_version")}")!!)
+    // Modern dependency naming wrappers
+    val isModern = stonecutter.eval(stonecutter.current.version, ">=26.1")
+    val modImpl = if (isModern) "implementation" else "modImplementation"
+    val modRuntime = if (isModern) "runtimeOnly" else "modRuntimeOnly"
 
-    implementation(include("gg.essential:elementa:${property("elementa_version")}")!!)
-    implementation("net.hypixel:mod-api:${property("hypixel_mod_api_version")}")
+    modImpl("net.fabricmc:fabric-loader:${property("deps.fabric_loader")}")
+    modImpl("net.fabricmc:fabric-language-kotlin:${property("fabric_language_kotlin")}")
+    modImpl("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric_api")}")
 
-    modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:${property("devauth_version")}")
+    val resConfig = "com.teamresourceful.resourcefulconfig:resourcefulconfig-fabric-${property("resourceful_mc_version")}:${property("resourceful_version")}"
+    modImpl(resConfig)
+    "include"(resConfig)
+
+    val resConfigKt = "com.teamresourceful.resourcefulconfigkt:resourcefulconfigkt-fabric-${property("resourcefulkt_mc_version")}:${property("resourcefulkt_version")}"
+    modImpl(resConfigKt)
+    "include"(resConfigKt)
+
+    val univCraft = "gg.essential:universalcraft-${property("universalcraft_mc_version")}-fabric:${property("universalcraft_version")}"
+    modImpl(univCraft)
+    "include"(univCraft)
+
+    val elementa = "gg.essential:elementa:${property("elementa_version")}"
+    "implementation"(elementa)
+    "include"(elementa)
+
+    "implementation"("net.hypixel:mod-api:${property("hypixel_mod_api_version")}")
+
+    modRuntime("me.djtheredstoner:DevAuth-fabric:${property("devauth_version")}")
 
     ksp(project(":processor"))
 }
 
-loom {
+configure<net.fabricmc.loom.api.LoomGradleExtensionAPI> {
     fabricModJsonPath = rootProject.file("src/main/resources/fabric.mod.json")
     accessWidenerPath = rootProject.file("src/main/resources/$awFileName")
 
@@ -154,7 +185,13 @@ tasks {
         delete(rootProject.layout.buildDirectory.file("libs/${base.archivesName.get()}-${version}.jar"))
     }
 
-    remapJar {
-        destinationDirectory.set(rootProject.layout.buildDirectory.dir("libs"))
+    if (stonecutter.eval(stonecutter.current.version, "<26.1")) {
+        named("remapJar", net.fabricmc.loom.task.RemapJarTask::class) {
+            destinationDirectory.set(rootProject.layout.buildDirectory.dir("libs"))
+        }
+    } else {
+        named("jar", Jar::class) {
+            destinationDirectory.set(rootProject.layout.buildDirectory.dir("libs"))
+        }
     }
 }
