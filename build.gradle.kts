@@ -36,9 +36,9 @@ if (project.name != rootProject.name && project.name != "processor") {
         changelog.set(System.getenv("CHANGELOG_BODY"))
 
         dependencies {
-            required.project("fabric-api")
-            required.project("fabric-language-kotlin")
-            required.project("hypixel-mod-api")
+            required.version("fabric-api", property("modrinth.fapi_version") as String)
+            required.version("fabric-language-kotlin", property("modrinth.kotlin_version") as String)
+            required.version("hypixel-mod-api", property("modrinth.hypixel_version") as String)
         }
 
         syncBodyFrom.set(rootProject.file("README.md").readText())
