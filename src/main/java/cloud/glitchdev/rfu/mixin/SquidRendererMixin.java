@@ -7,8 +7,6 @@ import net.minecraft.client.renderer.entity.state.SquidRenderState;
 
 //~ if <1.21.11 'squid.Squid' -> 'Squid' {
 import net.minecraft.world.entity.animal.squid.Squid;
-//~}
-//~ if <1.21.11 'Identifier' -> 'ResourceLocation' {
 import net.minecraft.resources.Identifier;
 //~}
 
@@ -27,8 +25,7 @@ public class SquidRendererMixin {
     private static final Identifier rfu$GLOW_SQUID_TEXTURE = Identifier.withDefaultNamespace("textures/entity/squid/glow_squid.png");
     //~}
 
-    // 1. Store the entity state during extraction
-    //~ if <1.21.11 'squid.Squid' -> 'Squid' {
+    //~ if <1.21.11 'squid/Squid' -> 'Squid' {
     @Inject(
             method = "extractRenderState(Lnet/minecraft/world/entity/animal/squid/Squid;Lnet/minecraft/client/renderer/entity/state/SquidRenderState;F)V",
             at = @At("TAIL")
@@ -38,7 +35,6 @@ public class SquidRendererMixin {
         ((PlhlegblastStateAccess) renderState).rfu$setPlhlegblast(MobUtils.INSTANCE.isPlhlegblast(squid));
     }
 
-    // 2. Read the state during texture fetching
     //~ if <1.21.11 'Identifier' -> 'ResourceLocation' {
     @Inject(method = "getTextureLocation(Lnet/minecraft/client/renderer/entity/state/SquidRenderState;)Lnet/minecraft/resources/Identifier;", at = @At("HEAD"), cancellable = true)
     private void rfu$getTextureLocation(SquidRenderState renderState, CallbackInfoReturnable<Identifier> cir) {
