@@ -16,7 +16,6 @@ import cloud.glitchdev.rfu.utils.World.SBMonth
 import cloud.glitchdev.rfu.utils.World.SBYear
 import com.google.gson.JsonParser
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.minecraft.network.chat.Component
 
@@ -58,7 +57,7 @@ object MayorTracker : RegisteredEvent {
                         .append(Component.literal("${TextColor.YELLOW}$mayor")))
                     1
                 }
-                .then(literal("refresh").executes { context ->
+                .then(lit("refresh").executes { context ->
                     fetchMayor()
                     context.source.sendFeedback(TextUtils.rfuLiteral("Refreshing mayor data...", TextStyle(TextColor.GRAY)))
                     1

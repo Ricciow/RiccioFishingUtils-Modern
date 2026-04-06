@@ -23,7 +23,6 @@ import cloud.glitchdev.rfu.utils.command.SimpleCommand
 import com.google.gson.JsonParser
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import java.net.URI
 import java.net.http.HttpClient
@@ -258,7 +257,7 @@ object Network : RegisteredEvent {
 
         override fun build(builder: LiteralArgumentBuilder<FabricClientCommandSource>) {
             builder
-                .then(literal("accept").executes {
+                .then(lit("accept").executes {
                     BackendSettings.backendAccepted = true
                     BackendSettings.decisionMade = true
                     authenticateUser()
@@ -266,7 +265,7 @@ object Network : RegisteredEvent {
                     it.source.sendFeedback(TextUtils.rfuLiteral("Backend connection accepted. If you wish to disable it head to Backend Settings on /rfu", TextStyle(LIGHT_GREEN)))
                     return@executes 1
                 })
-                .then(literal("deny").executes {
+                .then(lit("deny").executes {
                     BackendSettings.backendAccepted = false
                     BackendSettings.decisionMade = true
                     RiccioFishingUtils.saveConfig()

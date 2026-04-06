@@ -11,7 +11,9 @@ import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.utils.rendering.Render3D
 import cloud.glitchdev.rfu.utils.rendering.Render3DBuilder.Companion.sphere
 import gg.essential.universal.utils.toUnformattedString
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext
+//~if >=26.1 'world.World' -> 'level.Level' {
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext
+//~}
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.decoration.ArmorStand
 import java.awt.Color
@@ -79,7 +81,9 @@ class SkyblockEntity(
         }
     }
 
-    fun registerRenderer(renderer: (WorldRenderContext, LivingEntity) -> Unit) {
+    //~if >=26.1 'World' -> 'Level' {
+    fun registerRenderer(renderer: (LevelRenderContext, LivingEntity) -> Unit) {
+    //~}
         if (renderEvent != null) return
 
         renderEvent = registerRenderEvent { context ->

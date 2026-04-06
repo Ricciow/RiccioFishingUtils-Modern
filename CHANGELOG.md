@@ -1,6 +1,7 @@
 # v1.8.0 - ???
 
 ### Features:
+- Added 26.1 Support
 - Added a blizzard in a bottle timer/alert
 - Added a hotspot expired alert
 - Added a custom resourcepack that allows changing sounds. (READ "note.txt" if you're planning on using this!)

@@ -1,12 +1,14 @@
 package cloud.glitchdev.rfu.utils.rendering
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.phys.Vec3
 import java.awt.Color
+//~if >=26.1 'world.World' -> 'level.Level' {
+//~if >=26.1 'World' -> 'Level' {
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext
 
-class Render3DBuilder(val shape: Shape, val context: WorldRenderContext) {
+class Render3DBuilder(val shape: Shape, val context: LevelRenderContext) {
     var location: Vec3 = Vec3.ZERO
     var radius: Float = 1.0f
     var color: Color = Color.WHITE
@@ -38,16 +40,18 @@ class Render3DBuilder(val shape: Shape, val context: WorldRenderContext) {
     }
 
     companion object {
-        inline fun WorldRenderContext.sphere(block: Render3DBuilder.() -> Unit) {
+        inline fun LevelRenderContext.sphere(block: Render3DBuilder.() -> Unit) {
             Render3DBuilder(Shape.SPHERE, this).apply(block).render()
         }
 
-        inline fun WorldRenderContext.cylinder(block: Render3DBuilder.() -> Unit) {
+        inline fun LevelRenderContext.cylinder(block: Render3DBuilder.() -> Unit) {
             Render3DBuilder(Shape.CYLINDER, this).apply(block).render()
         }
 
-        inline fun build(shape: Shape, context: WorldRenderContext, block: Render3DBuilder.() -> Unit): Render3DBuilder {
+        inline fun build(shape: Shape, context: LevelRenderContext, block: Render3DBuilder.() -> Unit): Render3DBuilder {
             return Render3DBuilder(shape, context).apply(block)
         }
     }
 }
+//~}
+//~}
