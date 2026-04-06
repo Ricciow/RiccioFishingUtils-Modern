@@ -4,6 +4,7 @@ import cloud.glitchdev.rfu.config.Category
 import cloud.glitchdev.rfu.config.categories.RareScSettings.detectionAlert
 import cloud.glitchdev.rfu.constants.FishTrackingType
 import cloud.glitchdev.rfu.data.mob.DeployableType
+import cloud.glitchdev.rfu.feature.fishing.CatchMessageReplacer
 import cloud.glitchdev.rfu.feature.fishing.DoubleHookMessages
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 
@@ -132,12 +133,46 @@ object GeneralFishing : Category("General Fishing") {
         ) { toggleDoubleHookMessages }
     }
 
-
     var randomDoubleHookMessages by boolean(false) {
         name = Literal("Random Double Hook Messages")
         description = Literal("Makes double hook messages random")
         condition = { toggleDoubleHookMessages }
     }
+
+    init {
+        dualSeparator {
+            title = "Catch Messages"
+            description = "Replace standard catch messages with custom ones"
+        }
+    }
+
+    var replaceCatchMessages by observable(boolean(true) {
+        name = Literal("Replace Catch Messages")
+        description = Literal("Replaces standard catch messages with custom ones")
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var catchMessageTemplate by string("&3&lSEA CREATURE! &eYou caught {article} &3&l{name}") {
+        name = Literal("Catch Message Template")
+        description = Literal("The template for the catch message. Available: {article}, {article_upper}, {name}, {mob}")
+        condition = { replaceCatchMessages }
+    }
+
+    var doubleHookCatchMessageTemplate by string("&9&lDOUBLE HOOK! &eYou caught two &3&l{plural}") {
+        name = Literal("Double Hook Message Template")
+        description = Literal("The template for the double hook catch message. Available: {plural}, {mobs}")
+        condition = { replaceCatchMessages }
+    }
+
+    init {
+        previewButton(
+            CatchMessageReplacer::preview,
+            "Preview Message",
+            "Shows a preview of one of the catch messages in chat."
+        ) { replaceCatchMessages }
+    }
+
 
     init {
         dualSeparator {
