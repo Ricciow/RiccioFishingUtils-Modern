@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.feature.other
 
-import cloud.glitchdev.rfu.config.categories.GeneralFishing
+import cloud.glitchdev.rfu.config.categories.DropsSettings
 import cloud.glitchdev.rfu.events.managers.LootshareEvents.registerLootshareEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
@@ -16,7 +16,7 @@ import net.minecraft.world.item.ItemStackTemplate
 object LootshareDetector : Feature {
     override fun onInitialize() {
         registerLootshareEvent { contributors, items ->
-            if (!GeneralFishing.lootshareMessage) return@registerLootshareEvent
+            if (!DropsSettings.lootshareMessage) return@registerLootshareEvent
 
             val contributorStr = contributors.joinToString("&r, ").toMcCodes()
             val hoverComponent = Component.literal(contributorStr)

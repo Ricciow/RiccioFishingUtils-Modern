@@ -10,6 +10,13 @@ object RareScSettings : Category("Rare SCs") {
     override val description: TranslatableValue
         get() = Literal("Settings for your great catches!")
 
+    init {
+        dualSeparator {
+            title = "General"
+            description = "Basic settings for Rare Sea Creatures"
+        }
+    }
+
     var rareSC by draggable(*SeaCreatures.entries.filter { it.special }.toTypedArray()) {
         name = Literal("Rare Sea Creatures")
         description = Literal("Select which sea creatures are considered rare for the mod.")
@@ -18,19 +25,21 @@ object RareScSettings : Category("Rare SCs") {
     val RARE_SC_REGEX
         get() = rareSC.joinToString("|").toExactRegex()
 
-    var lootshareRange by boolean(true) {
-        name = Literal("Lootshare Range")
-        description = Literal("Shows a sphere around rare sea creatures to display their lootshare range")
-    }
-
-    var filledLsRange by boolean(true) {
-        name = Literal("Filled lootshare range")
-        description = Literal("Renders the lootshare range as a filled sphere")
-    }
-
     var rareScGlow by boolean(false) {
         name = Literal("Rare SC Glow")
         description = Literal("Makes rare sea creatures glow.")
+    }
+
+    var timeToKill by boolean(true) {
+        name = Literal("Time to kill")
+        description = Literal("Sends a message after killing a rare Sea Creature saying how long it took.")
+    }
+
+    init {
+        dualSeparator {
+            title = "Alerts"
+            description = "Be notified when a rare SC is found!"
+        }
     }
 
     var detectionAlert by observable(boolean(false) {
@@ -56,9 +65,28 @@ object RareScSettings : Category("Rare SCs") {
         condition = { detectionAlert && rareScSound }
     }
 
-    var timeToKill by boolean(true) {
-        name = Literal("Time to kill")
-        description = Literal("Sends a message after killing a rare Sea Creature saying how long it took.")
+    init {
+        dualSeparator {
+            title = "Lootshare"
+            description = "Settings for lootshare range rendering"
+        }
+    }
+
+    var lootshareRange by boolean(true) {
+        name = Literal("Lootshare Range")
+        description = Literal("Shows a sphere around rare sea creatures to display their lootshare range")
+    }
+
+    var filledLsRange by boolean(true) {
+        name = Literal("Filled lootshare range")
+        description = Literal("Renders the lootshare range as a filled sphere")
+    }
+
+    init {
+        dualSeparator {
+            title = "Golden Dragon"
+            description = "Alerts for when you're not using a Golden Dragon"
+        }
     }
 
     var goldenDragonAlert by observable(boolean(true) {
@@ -85,7 +113,7 @@ object RareScSettings : Category("Rare SCs") {
     init {
         dualSeparator {
             title = "Messages"
-            description = ""
+            description = "Customize messages sent when catching rare SCs"
         }
     }
 

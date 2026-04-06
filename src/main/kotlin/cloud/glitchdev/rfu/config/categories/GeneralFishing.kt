@@ -2,8 +2,6 @@ package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
 import cloud.glitchdev.rfu.config.categories.RareScSettings.detectionAlert
-import cloud.glitchdev.rfu.constants.Dyes
-import cloud.glitchdev.rfu.constants.RareDrops
 import cloud.glitchdev.rfu.constants.FishTrackingType
 import cloud.glitchdev.rfu.data.mob.DeployableType
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
@@ -45,69 +43,6 @@ object GeneralFishing : Category("General Fishing") {
         range = 0..60
         slider = true
     }
-
-
-    init {
-        dualSeparator {
-            title = "Rare Drops Tracking"
-            description = "Track your rare drops when you fish!"
-        }
-    }
-
-    var rareDrops by draggable(*RareDrops.entries.toTypedArray()) {
-        name = Literal("Rare Drops")
-        description = Literal("Select which drops are considered rare for the mod.")
-    }
-
-    var dyeDrops by draggable(*Dyes.entries.toTypedArray()) {
-        name = Literal("Dye drops")
-        description = Literal("Select which dyes are considered rare for the mod.")
-    }
-
-    var customRareDropMessage by observable(boolean(false) {
-        name = Literal("Enable Custom Rare Drop Message")
-        description = Literal("Shows a custom message when you get a rare drop")
-    }) { _, _ ->
-        reloadScreen()
-    }
-
-    var rareDropMessageFormat by string("&6&lRARE DROP! &e{drop} &b(+{magic_find} ✯ Magic Find) &7(Took {count} catches, {time} since last)") {
-        name = Literal("Custom Message Format")
-        description = Literal("Variables: {drop}, {magic_find}, {count}, {time}, {total}")
-        condition = { customRareDropMessage }
-    }
-
-    var rareDropPartyChat by boolean(true) {
-        name = Literal("Send in party chat")
-        description = Literal("Sends the drop message in party chat, uses the same message as above but removes the colors")
-        condition = { customRareDropMessage }
-    }
-
-    var lootshareMessage by boolean(true) {
-        name = Literal("Lootshare Message")
-        description = Literal("Sends a message when lootshare gives you an item.")
-    }
-
-    var rareDropTitleAlert by observable(boolean(true) {
-        name = Literal("Rare Drop Title Alert")
-        description = Literal("Shows a title on screen when you get a rare drop")
-    }) { _, _ ->
-        reloadScreen()
-    }
-
-        var rareDropTitleFormat by string("{dropcolor}&l{drop} &f#{total}") {
-            name = Literal("Rare Drop Title Format")
-            description = Literal("The title to show on screen. Variables: {drop}, {dropcolor}, {magic_find}, {count}, {time}, {total}")
-            condition = { rareDropTitleAlert }
-        }
-
-        var rareDropSubtitleFormat by string("&b(+{magic_find} ✯ Magic Find)") {
-            name = Literal("Rare Drop Subtitle Format")
-            description = Literal("The subtitle to show on screen. Variables: {drop}, {dropcolor}, {magic_find}, {count}, {time}, {total}")
-            condition = { rareDropTitleAlert }
-        }
-
-
 
     init {
         dualSeparator {

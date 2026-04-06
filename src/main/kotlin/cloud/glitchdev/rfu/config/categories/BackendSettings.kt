@@ -8,6 +8,13 @@ object BackendSettings : Category("Backend Settings") {
     override val description: TranslatableValue
         get() = Literal("Settings for the RFU Backend connection.")
 
+    init {
+        dualSeparator {
+            title = "Connection"
+            description = "Settings for the RFU Backend connection."
+        }
+    }
+
     var backendAccepted by observable(boolean(false) {
         name = Literal("Connect to Backend")
         description = Literal("Allows the mod to connect to the RFU backend for features like party finder.")
@@ -23,6 +30,13 @@ object BackendSettings : Category("Backend Settings") {
         name = Literal("Decision Made")
         description = Literal("Internal value to track if the user has made a decision.")
         condition = { false }
+    }
+
+    init {
+        dualSeparator {
+            title = "Data Sharing"
+            description = "Share data with the RFU community!"
+        }
     }
 
     var shareDyeData by boolean(true) {

@@ -8,6 +8,13 @@ object InkFishing : Category("Ink Fishing") {
     override val description: TranslatableValue
         get() = Literal("Settings for everything with ink fishing!")
 
+    init {
+        dualSeparator {
+            title = "Tracking"
+            description = "Track your ink fishing stats!"
+        }
+    }
+
     var inkTrackingDisplay by observable(boolean(true) {
         name = Literal("Toggle")
         description = Literal("Enables the Ink Tracking display")
@@ -43,30 +50,15 @@ object InkFishing : Category("Ink Fishing") {
         slider = true
     }
 
+    init {
+        dualSeparator {
+            title = "Alerts"
+            description = "Be notified about ink fishing events"
+        }
+    }
+
     var rainAlert by boolean(true) {
         name = Literal("Rain Alert")
         description = Literal("Show an alert+sound when rain expires in the park")
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

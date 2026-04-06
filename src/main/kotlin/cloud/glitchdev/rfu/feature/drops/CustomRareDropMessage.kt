@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.feature.drops
 
-import cloud.glitchdev.rfu.config.categories.GeneralFishing
+import cloud.glitchdev.rfu.config.categories.DropsSettings
 import cloud.glitchdev.rfu.events.managers.DropEvents
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
@@ -17,19 +17,19 @@ import net.minecraft.network.chat.Component
 object CustomRareDropMessage : Feature {
     override fun onInitialize() {
         DropEvents.registerRareDropEvent { rareDrop, magicFind ->
-            if (rareDrop !in GeneralFishing.rareDrops || !GeneralFishing.customRareDropMessage) return@registerRareDropEvent true
+            if (rareDrop !in DropsSettings.rareDrops || !DropsSettings.customRareDropMessage) return@registerRareDropEvent true
             sendCustomDropMessage(rareDrop.dropName, DropManager.dropHistory.getOrAdd(rareDrop).history, magicFind)
             return@registerRareDropEvent false
         }
 
         DropEvents.registerDyeDropEvent { dyeDrop, magicFind ->
-            if (dyeDrop !in GeneralFishing.dyeDrops || !GeneralFishing.customRareDropMessage) return@registerDyeDropEvent
+            if (dyeDrop !in DropsSettings.dyeDrops || !DropsSettings.customRareDropMessage) return@registerDyeDropEvent
             sendCustomDropMessage(dyeDrop.dyeName, DropManager.dropHistory.getOrAdd(dyeDrop).history, magicFind)
         }
     }
 
     private fun sendCustomDropMessage(dropName: String, history: List<DropRecord>, magicFind: Int?) {
-        if (!GeneralFishing.customRareDropMessage) return
+        if (!DropsSettings.customRareDropMessage) return
 
         val currentDrop = history.lastOrNull() ?: return
         val previousDrop = if (history.lastIndex - 1 >= 0) history[history.lastIndex - 1] else null
@@ -40,7 +40,7 @@ object CustomRareDropMessage : Feature {
             "First Drop"
         }
 
-        val messageString = GeneralFishing.rareDropMessageFormat
+        val messageString = DropsSettings.rareDropMessageFormat
             .replace("{drop}", dropName)
             .replace("{magic_find}", magicFind?.toString() ?: "0")
             .replace("{count}", currentDrop.sinceCount?.toString() ?: "N/A")
@@ -52,7 +52,7 @@ object CustomRareDropMessage : Feature {
 
         sendMessage(message)
 
-        if (GeneralFishing.rareDropPartyChat) {
+        if (DropsSettings.rareDropPartyChat) {
             sendPartyMessage(message.toUnformattedString())
         }
     }

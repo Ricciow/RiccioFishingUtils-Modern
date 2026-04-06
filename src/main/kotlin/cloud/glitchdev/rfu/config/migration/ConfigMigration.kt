@@ -12,7 +12,7 @@ import kotlin.io.path.readText
 import kotlin.io.path.writeText
 
 object ConfigMigration {
-    const val CURRENT_VERSION = 2
+    const val CURRENT_VERSION = 3
     const val VERSION_KEY = "rfuConfigVersion"
 
     private val logger = LoggerFactory.getLogger(ConfigMigration::class.java)
@@ -45,6 +45,7 @@ object ConfigMigration {
             when (version) {
                 0 -> migrateV0toV1(json)
                 1 -> migrateV1toV2(json)
+                2 -> migrateV2toV3(json)
             }
         }
     }
@@ -111,6 +112,19 @@ object ConfigMigration {
 
         if (!cat.has("fishTrackingOnlyWhenFishing")) {
             cat.addProperty("fishTrackingOnlyWhenFishing", schOnlyWhenFishing && xphOnlyWhenFishing)
+        }
+    }
+
+    private fun migrateV2toV3(json: JsonObject) {
+        val newCat = getOrCreateCategory(json, "Drops")
+        val rareDropKeys = listOf(
+            "rareDrops", "dyeDrops", "customRareDropMessage", "rareDropMessageFormat",
+            "rareDropPartyChat", "lootshareMessage", "rareDropTitleAlert",
+            "rareDropTitleFormat", "rareDropSubtitleFormat"
+        )
+        rareDropKeys.forEach { key ->
+            val value = deleteKey(json, "General Fishing", key)
+            if (value != null && !newCat.has(key)) newCat.add(key, value)
         }
     }
 

@@ -7,9 +7,23 @@ object JerryFishing : Category("Jerry Fishing") {
     override val description: TranslatableValue
         get() = Literal("Settings for Jerry Fishing!")
 
+    init {
+        dualSeparator {
+            title = "Reindrake"
+            description = "Alerts for the Reindrake!"
+        }
+    }
+
     var reindrakeAlert by boolean(true) {
         name = Literal("Reindrake Alert")
         description = Literal("Sends an alert when someone summons a Reindrake!")
+    }
+
+    init {
+        dualSeparator {
+            title = "Blizzard"
+            description = "Settings for the Jerry's Workshop blizzard!"
+        }
     }
 
     var blizzardTimerDisplay by observable(boolean(true) {
