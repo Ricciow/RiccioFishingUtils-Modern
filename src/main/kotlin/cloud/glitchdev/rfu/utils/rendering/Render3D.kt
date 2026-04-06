@@ -5,11 +5,9 @@ import com.mojang.blaze3d.systems.RenderSystem
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext
 import net.minecraft.client.Camera
 import net.minecraft.client.renderer.culling.Frustum
-//? if >=1.21.11 {
+//~ if <1.21.11 'rendertype.RenderTypes' -> 'RenderType' {
 import net.minecraft.client.renderer.rendertype.RenderTypes
-//?} else {
-/*import net.minecraft.client.renderer.RenderType
-*///?}
+//~}
 
 import com.mojang.blaze3d.vertex.VertexConsumer
 import net.minecraft.world.phys.AABB
@@ -95,11 +93,10 @@ object Render3D {
         }
 
         if (borderColor != null) {
-            //? if >=1.21.11 {
-            val buffer = consumers.getBuffer(RenderTypes.LINES)
-            //?} else {
-            /*val buffer = consumers.getBuffer(RenderType.lines())
-            *///?}
+            val buffer = consumers.getBuffer(
+                //$ if >=1.21.11 'RenderTypes.LINES' else 'RenderType.lines()'
+                RenderTypes.LINES
+            )
 
             for (i in 0 until stacks) {
                 val lat0 = Math.PI * (-0.5 + (i.toDouble() - 1) / stacks)
@@ -188,11 +185,10 @@ object Render3D {
             }
 
             if (borderColor != null) {
-                //? if >=1.21.11 {
-                val lineBuffer = consumers.getBuffer(RenderTypes.LINES)
-                //?} else {
-                /*val lineBuffer = consumers.getBuffer(RenderType.lines())
-                *///?}
+                val lineBuffer = consumers.getBuffer(
+                    //$ if >=1.21.11 'RenderTypes.LINES' else 'RenderType.lines()'
+                    RenderTypes.LINES
+                )
 
                 for (i in 0 until slices) {
                     val angle0 = 2 * Math.PI * i.toDouble() / slices
@@ -227,11 +223,9 @@ object Render3D {
         buffer.addVertex(matrix, x, y, z)
             .setColor(color.red, color.green, color.blue, color.alpha)
             .setNormal(1f, 0f, 0f)
-        //? if >=1.21.11 {
+        //~ if <1.21.11 '.setLineWidth(lineWidth)' -> 'RenderSystem.lineWidth(lineWidth)' {
         .setLineWidth(lineWidth)
-        //?} else {
-        /*RenderSystem.lineWidth(lineWidth)
-        *///?}
+        //~}
     }
 
     private fun isVisible(bounds: AABB): Boolean {

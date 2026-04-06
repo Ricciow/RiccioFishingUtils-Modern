@@ -6,6 +6,10 @@ plugins {
     id("com.modrinth.minotaur") version "2.8.7"
 }
 
+stonecutter {
+    properties.tags(current.version)
+}
+
 if (stonecutter.eval(stonecutter.current.version, ">=26.1")) {
     apply(plugin = "net.fabricmc.fabric-loom")
 } else {

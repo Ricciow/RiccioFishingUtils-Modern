@@ -16,6 +16,7 @@
 - Fixed reindrake alert not working
 
 ### Back-end:
+- Updated Stonecutter to 0.9 and modernized the codebase using the centralized property system and local code transformations.
 - Changed some of the sound names for rfu.
 - Automated sound registration
 - Optimized Hotspot size calculation to use a median-based cache by coordinate for improved accuracy and consistency.
