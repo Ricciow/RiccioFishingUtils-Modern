@@ -1,52 +1,73 @@
 package cloud.glitchdev.rfu.data.fishing
 
 import cloud.glitchdev.rfu.constants.FishingIslands
+import cloud.glitchdev.rfu.constants.LiquidTypes
+import cloud.glitchdev.rfu.utils.JsonFile
 import net.minecraft.core.BlockPos
-import java.util.Collections
-import java.util.LinkedHashMap
 
 object HotspotCache {
-    private const val MAX_LOCATIONS = 100
-    private const val MAX_MEASUREMENTS_PER_LOCATION = 250
+    private const val MAX_SESSION_MEASUREMENTS = 250
 
-    data class HotspotData(
-        var liquid: cloud.glitchdev.rfu.constants.LiquidTypes,
-        var buff: String,
-        var island: FishingIslands?,
-        var lastMetadataUpdate: Long = System.currentTimeMillis(),
-        val distances: MutableList<Double> = Collections.synchronizedList(mutableListOf())
+    private val storage = JsonFile(
+        filename = "hotspots.json",
+        type = CacheStorage::class.java,
+        defaultFactory = { CacheStorage() }
     )
 
-    private val cache = Collections.synchronizedMap(object : LinkedHashMap<BlockPos, HotspotData>(MAX_LOCATIONS, 0.75f, true) {
-        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<BlockPos, HotspotData>): Boolean {
-            return size > MAX_LOCATIONS
-        }
-    })
+    private val cache: MutableMap<String, HotspotData>
+        get() = storage.data.hotspots
 
-    fun addMeasurement(pos: BlockPos, distance: Double, liquid: cloud.glitchdev.rfu.constants.LiquidTypes, buff: String, island: FishingIslands?) {
-        val data = cache.getOrPut(pos) { HotspotData(liquid, buff, island) }
+    fun addMeasurement(pos: BlockPos, distance: Double, liquid: LiquidTypes, buff: String, island: FishingIslands?) {
+        val key = "${island?.island}_${pos.x},${pos.y},${pos.z}"
+        val data = synchronized(cache) {
+            cache.getOrPut(key) { HotspotData(liquid, island) }
+        }
+
         data.liquid = liquid
-        data.buff = buff
         data.island = island
         data.lastMetadataUpdate = System.currentTimeMillis()
-        val distances = data.distances
+        
+        if (buff.isNotEmpty()) {
+            data.setSessionBuff(buff)
+        }
+
+        val distances = data.sessionDistances
         synchronized(distances) {
+            // Seed the session buffer if it's empty but we have a cached radius
+            if (distances.isEmpty() && data.radius > 0) {
+                // Add the cached radius multiple times to weight it as the "basis"
+                repeat(25) { distances.add(data.radius.toDouble()) }
+            }
+
             distances.add(distance)
-            if (distances.size > MAX_MEASUREMENTS_PER_LOCATION) {
+            if (distances.size > MAX_SESSION_MEASUREMENTS) {
                 distances.removeAt(0)
+            }
+
+            // Update the radius property with the current median
+            val sorted = distances.sorted()
+            data.radius = (sorted[sorted.size / 2]).toFloat()
+        }
+    }
+
+    fun getMedian(pos: BlockPos, island: FishingIslands?): Float? {
+        val key = "${island?.island}_${pos.x},${pos.y},${pos.z}"
+        return synchronized(cache) {
+            cache[key]?.radius
+        }
+    }
+
+    fun getCachedEntries(island: FishingIslands?): List<Pair<BlockPos, HotspotData>> {
+        return synchronized(cache) {
+            cache.entries.mapNotNull { (key, data) ->
+                if (data.island != island) return@mapNotNull null
+                // Key format is "ISLAND_X,Y,Z"
+                val coordsPart = key.substringAfterLast('_')
+                val coords = coordsPart.split(",")
+                if (coords.size != 3) return@mapNotNull null
+                val pos = BlockPos(coords[0].toInt(), coords[1].toInt(), coords[2].toInt())
+                pos to data
             }
         }
     }
-
-    fun getMedian(pos: BlockPos): Float? {
-        val data = cache[pos] ?: return null
-        val distances = data.distances
-        synchronized(distances) {
-            if (distances.isEmpty()) return null
-            val sorted = distances.sorted()
-            return sorted[sorted.size / 2].toFloat()
-        }
-    }
-
-    fun getCachedEntries() = cache.entries.toList()
 }

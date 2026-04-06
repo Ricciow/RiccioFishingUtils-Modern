@@ -24,12 +24,12 @@ data class Hotspot(
     var virtualParticleCount = 0
 
     init {
-        radius = HotspotCache.getMedian(blockPos) ?: 0f
+        radius = HotspotCache.getMedian(blockPos, island) ?: 0f
     }
 
     fun addParticleDistance(distance: Double) {
         HotspotCache.addMeasurement(blockPos, distance, liquid, buff, island)
-        radius = HotspotCache.getMedian(blockPos) ?: 0f
+        radius = HotspotCache.getMedian(blockPos, island) ?: 0f
         lastUpdate = System.currentTimeMillis()
     }
 

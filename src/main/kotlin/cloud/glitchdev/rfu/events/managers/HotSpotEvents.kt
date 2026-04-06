@@ -28,6 +28,8 @@ object HotSpotEvents : RegisteredEvent {
     private val virtualUuids = mutableSetOf<UUID>()
 
     override fun register() {
+        HotspotCache.getCachedEntries(null)
+
         registerTickEvent(interval = 20) { client ->
             val world = client.level ?: return@registerTickEvent
             val entities = world.entitiesForRendering()
@@ -126,11 +128,11 @@ object HotSpotEvents : RegisteredEvent {
                 .minByOrNull { it.center.distanceTo(pos) }
 
             if (closestHotspot == null || abs(pos.y - closestHotspot.center.y) > 6.0 || Vec3(pos.x, 0.0, pos.z).distanceTo(Vec3(closestHotspot.center.x, 0.0, closestHotspot.center.z)) > 6.0) {
-                val cachedEntry = HotspotCache.getCachedEntries().find { (blockPos, data) ->
+                val cachedEntry = HotspotCache.getCachedEntries(World.island).find { (blockPos, data) ->
                     val center = Vec3(blockPos.x + 0.5, blockPos.y.toDouble(), blockPos.z + 0.5)
+
                     val liquidMatches = if (isSmoke) data.liquid == LiquidTypes.LAVA else data.liquid == LiquidTypes.WATER
-                    val islandMatches = data.island == World.island
-                    islandMatches && liquidMatches && abs(pos.y - center.y) <= 6.0 && Vec3(pos.x, 0.0, pos.z).distanceTo(Vec3(center.x, 0.0, center.z)) <= 6.0
+                    liquidMatches && abs(pos.y - center.y) <= 6.0 && Vec3(pos.x, 0.0, pos.z).distanceTo(Vec3(center.x, 0.0, center.z)) <= 6.0
                 }
 
                 if (cachedEntry != null) {
@@ -138,7 +140,8 @@ object HotSpotEvents : RegisteredEvent {
                     val center = Vec3(blockPos.x + 0.5, blockPos.y.toDouble(), blockPos.z + 0.5)
                     val uuid = UUID.nameUUIDFromBytes("virtual_${blockPos}".toByteArray())
 
-                    val buff = if (System.currentTimeMillis() - data.lastMetadataUpdate < 30000) data.buff else ""
+                    val now = System.currentTimeMillis()
+                    val buff = if (now - data.lastMetadataUpdate < 30000) data.sessionBuff else ""
                     val color = if (buff.isNotEmpty()) getColorForBuff(buff) else Color.WHITE
 
                     closestHotspot = hotspots.getOrPut(uuid) {
@@ -169,6 +172,8 @@ object HotSpotEvents : RegisteredEvent {
                     if (abs(horizontalDistance - closestHotspot.radius) <= 0.05) {
                         cancelable.cancel()
                     }
+                } else {
+                    cancelable.cancel()
                 }
             }
         }
