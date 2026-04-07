@@ -20,6 +20,8 @@
 - Made water hotspot particles even more strict for detections (When will this end?)
 - Added Hotspot scs to jerry island.
 - Fixed reindrake alert not working
+- Made rfu websocket only connect while in hypixel.
+- Transfering leadership now dequeues the party finder.
 
 ### Back-end:
 - Changed some of the sound names for rfu.

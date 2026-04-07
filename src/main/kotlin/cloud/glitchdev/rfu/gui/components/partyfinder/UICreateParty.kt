@@ -18,6 +18,7 @@ import cloud.glitchdev.rfu.utils.network.PartyWebSocket
 import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
 import cloud.glitchdev.rfu.events.managers.PartyEvents.registerMyPartyChangedEvent
 import cloud.glitchdev.rfu.utils.gui.isHidden
+import cloud.glitchdev.rfu.utils.network.WebSocketClient
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIWrappedText
@@ -255,11 +256,16 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
         } childOf endArea
 
         createButton.onClick = {
-            if (Party.isLeader || !Party.inParty) {
-                PartyWebSocket.submitParty(party)
-            } else {
-                popup.setText("You must be the party leader to create a party!")
+            if (!WebSocketClient.isConnected) {
+                popup.setText("Not connected to RFU Backend!")
                 popup.showPopup()
+            } else {
+                if (Party.isLeader || !Party.inParty) {
+                    PartyWebSocket.submitParty(party)
+                } else {
+                    popup.setText("You must be the party leader to create a party!")
+                    popup.showPopup()
+                }
             }
         }
 
@@ -287,10 +293,14 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
         }
         limitField.onChange = { limit ->
             if(limit.isNotEmpty()) {
-                party.players.max = limit.toInt()
+                val value = limit.toInt()
+                party.players.max = maxOf(value, party.players.current, 1)
+                if (party.players.max != value) {
+                    limitField.setText(party.players.max.toString())
+                }
             }
             else {
-                party.players.max = 6
+                party.players.max = maxOf(6, party.players.current)
             }
         }
         levelField.onChange = { level ->
@@ -350,6 +360,7 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
 
     fun onOpen() {
         party.players.current = Party.members.size + 1
+        needUpdating = true
     }
 
     override fun draw(matrixStack: UMatrixStack) {

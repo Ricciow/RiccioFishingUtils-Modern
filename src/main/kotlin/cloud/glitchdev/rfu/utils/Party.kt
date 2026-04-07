@@ -201,10 +201,10 @@ object Party : RegisteredEvent {
             return@registerAllowGameEvent false
         }
 
-        onPartyChange { inParty, _, members ->
+        onPartyChange { inParty, isLeader, members ->
             val currentParty: FishingParty? = PartyWebSocket.myParty
             if (currentParty != null) {
-                if (inParty) {
+                if (inParty && isLeader) {
                     currentParty.players.current = members.size + 1
                     PartyWebSocket.editParty(currentParty)
                 } else {
