@@ -22,6 +22,7 @@
 - Fixed reindrake alert not working
 - Made rfu websocket only connect while in hypixel.
 - Transfering leadership now dequeues the party finder.
+- Fixed party achievement not working with rfu websocket joins
 
 ### Back-end:
 - Changed some of the sound names for rfu.

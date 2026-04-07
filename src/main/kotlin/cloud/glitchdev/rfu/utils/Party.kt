@@ -36,7 +36,7 @@ object Party : RegisteredEvent {
     var isLeader = false
     val members: MutableSet<String> = mutableSetOf()
     val listeners: MutableList<(Boolean, Boolean, MutableSet<String>) -> Unit> = mutableListOf()
-    private var requestedUser: String? = null
+    var requestedUser: String? = null
     private val joinedCooldowns: MutableMap<String, Long> = mutableMapOf()
     private val pendingPFInvites: MutableSet<String> = mutableSetOf()
 
