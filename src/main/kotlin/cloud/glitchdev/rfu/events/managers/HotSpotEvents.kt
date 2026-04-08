@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.RiccioFishingUtils
+import cloud.glitchdev.rfu.config.categories.HotSpotSettings
 import cloud.glitchdev.rfu.constants.LiquidTypes
 import cloud.glitchdev.rfu.data.fishing.Hotspot
 import cloud.glitchdev.rfu.data.fishing.HotspotCache
@@ -196,7 +197,7 @@ object HotSpotEvents : RegisteredEvent {
                     }
                 }
 
-                if (closestHotspot.radius > 0) {
+                if (closestHotspot.radius > 0 && HotSpotSettings.highlightHotSpots) {
                     if (abs(horizontalDistance - closestHotspot.radius) <= 0.05) {
                         cancelable.cancel()
                     }

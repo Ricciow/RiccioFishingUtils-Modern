@@ -23,6 +23,7 @@
 - Made rfu websocket only connect while in hypixel.
 - Transfering leadership now dequeues the party finder.
 - Fixed party achievement not working with rfu websocket joins
+- Made hotspot particles only be hid with highlight hotspot on
 
 ### Back-end:
 - Changed some of the sound names for rfu.
