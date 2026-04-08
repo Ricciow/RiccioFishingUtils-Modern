@@ -22,6 +22,7 @@ data class Hotspot(
     var lastUpdate = System.currentTimeMillis()
     var isNotified = false
     var virtualParticleCount = 0
+    var rangeEntryTime: Long? = null
 
     init {
         radius = HotspotCache.getMedian(blockPos, island) ?: 0f
@@ -32,6 +33,4 @@ data class Hotspot(
         radius = HotspotCache.getMedian(blockPos, island) ?: 0f
         lastUpdate = System.currentTimeMillis()
     }
-
-    fun isRadiusCalculated() : Boolean = radius > 0f
 }

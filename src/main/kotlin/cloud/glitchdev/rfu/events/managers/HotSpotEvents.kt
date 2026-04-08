@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.events.managers
 
+import cloud.glitchdev.rfu.RiccioFishingUtils
 import cloud.glitchdev.rfu.constants.LiquidTypes
 import cloud.glitchdev.rfu.data.fishing.Hotspot
 import cloud.glitchdev.rfu.data.fishing.HotspotCache
@@ -88,6 +89,26 @@ object HotSpotEvents : RegisteredEvent {
                 val isSeen = seenUuids.contains(uuid)
 
                 if (!isSeen) {
+                    val player = client.player
+                    val distanceToPlayer = player?.position()?.distanceTo(hotspot.center) ?: 0.0
+
+                    if (distanceToPlayer < 25.0) {
+                        if (hotspot.rangeEntryTime == null) {
+                            hotspot.rangeEntryTime = now
+                        }
+
+                        if (now - (hotspot.rangeEntryTime ?: now) > 2000) {
+                            iterator.remove()
+                            virtualUuids.remove(uuid)
+                            if (hotspot.isNotified) {
+                                HotSpotDisposedEventManager.runTasks(hotspot)
+                            }
+                            continue
+                        }
+                    } else {
+                        hotspot.rangeEntryTime = null
+                    }
+
                     virtualUuids.add(uuid)
                     // Virtual hotspots expire after 1 second of no updates
                     if (now - hotspot.lastUpdate > 1000) {
@@ -128,8 +149,11 @@ object HotSpotEvents : RegisteredEvent {
                 .minByOrNull { it.center.distanceTo(pos) }
 
             if (closestHotspot == null || abs(pos.y - closestHotspot.center.y) > 6.0 || Vec3(pos.x, 0.0, pos.z).distanceTo(Vec3(closestHotspot.center.x, 0.0, closestHotspot.center.z)) > 6.0) {
+                val playerPos = RiccioFishingUtils.mc.player?.position() ?: return@registerParticleEvent
                 val cachedEntry = HotspotCache.getCachedEntries(World.island).find { (blockPos, data) ->
                     val center = Vec3(blockPos.x + 0.5, blockPos.y.toDouble(), blockPos.z + 0.5)
+
+                    if (playerPos.distanceTo(center) < 25.0) return@find false
 
                     val liquidMatches = if (isSmoke) data.liquid == LiquidTypes.LAVA else data.liquid == LiquidTypes.WATER
                     liquidMatches && abs(pos.y - center.y) <= 6.0 && Vec3(pos.x, 0.0, pos.z).distanceTo(Vec3(center.x, 0.0, center.z)) <= 6.0
@@ -142,7 +166,7 @@ object HotSpotEvents : RegisteredEvent {
 
                     val now = System.currentTimeMillis()
                     val buff = if (now - data.lastMetadataUpdate < 30000) data.sessionBuff else ""
-                    val color = if (buff.isNotEmpty()) getColorForBuff(buff) else Color.WHITE
+                    val color = getColorForBuff(buff)
 
                     closestHotspot = hotspots.getOrPut(uuid) {
                         virtualUuids.add(uuid)
@@ -157,7 +181,11 @@ object HotSpotEvents : RegisteredEvent {
             val horizontalDistance = Vec3(pos.x, 0.0, pos.z).distanceTo(Vec3(closestHotspot.center.x, 0.0, closestHotspot.center.z))
 
             if (horizontalDistance < 6.0) {
-                closestHotspot.addParticleDistance(horizontalDistance)
+                if (virtualUuids.contains(closestHotspot.uuid)) {
+                    closestHotspot.lastUpdate = System.currentTimeMillis()
+                } else {
+                    closestHotspot.addParticleDistance(horizontalDistance)
+                }
 
                 // Virtual threshold check
                 if (virtualUuids.contains(closestHotspot.uuid) && !closestHotspot.isNotified) {
@@ -195,6 +223,8 @@ object HotSpotEvents : RegisteredEvent {
             (horizontalDistance <= radius.toDouble()) && verticalDistance <= 6.0
         }
     }
+
+    fun getAllHotspots(): Collection<Hotspot> = hotspots.values
 
     object HotSpotDetectedEventManager : AbstractEventManager<(Hotspot) -> Unit, HotSpotDetectedEventManager.HotSpotDetectedEvent>() {
         override val runTasks: (Hotspot) -> Unit = { hotspot ->
@@ -261,13 +291,13 @@ object HotSpotEvents : RegisteredEvent {
         return ""
     }
 
-    private fun getColorForBuff(buff: String): Color {
+    private fun getColorForBuff(buff: String?): Color {
         return when {
-            buff.contains("Treasure Chance", ignoreCase = true) -> Color(255, 255, 85, 100) // &f
-            buff.contains("Fishing Speed", ignoreCase = true) -> Color(85, 255, 255, 100) // &b
-            buff.contains("Sea Creature Chance", ignoreCase = true) -> Color(0, 170, 170, 100) // &3
-            buff.contains("Double Hook Chance", ignoreCase = true) -> Color(85, 85, 255, 100) // &9
-            buff.contains("Trophy Fish Chance", ignoreCase = true) -> Color(255, 170, 0, 100) // &6
+            buff?.contains("Treasure Chance", ignoreCase = true) ?: false -> Color(255, 255, 85, 100) // &f
+            buff?.contains("Fishing Speed", ignoreCase = true) ?: false -> Color(85, 255, 255, 100) // &b
+            buff?.contains("Sea Creature Chance", ignoreCase = true) ?: false -> Color(0, 170, 170, 100) // &3
+            buff?.contains("Double Hook Chance", ignoreCase = true) ?: false -> Color(85, 85, 255, 100) // &9
+            buff?.contains("Trophy Fish Chance", ignoreCase = true) ?: false -> Color(255, 170, 0, 100) // &6
             else -> Color(255, 255, 255, 100) // &f
         }
     }
