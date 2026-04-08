@@ -8,7 +8,7 @@ import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.dsl.toMcCodes
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
-//? if 26.1 {
+//? if >= 26.1 {
 import net.minecraft.world.item.ItemStackTemplate
 //?}
 

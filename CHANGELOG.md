@@ -1,7 +1,7 @@
 # v1.8.0 - ???
 
 ### Features:
-- Added 26.1 Support
+- Added 26.1.x Support
 - Added a blizzard in a bottle timer/alert
 - Added a hotspot expired alert
 - Added an alert when a rare sea creature is at low HP without a Golden Dragon equipped

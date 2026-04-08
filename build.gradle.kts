@@ -10,14 +10,27 @@ stonecutter {
     properties.tags(current.version)
 }
 
+fun getProp(name: String): String {
+    if (project.hasProperty(name)) return project.property(name).toString()
+
+    val redirect = project.findProperty("stonecutter.redirect")?.toString()
+    if (redirect != null) {
+        val redirectedName = "$redirect.$name"
+        if (project.hasProperty(redirectedName)) {
+            return project.property(redirectedName).toString()
+        }
+    }
+    return project.property(name).toString()
+}
+
 if (stonecutter.eval(stonecutter.current.version, ">=26.1")) {
     apply(plugin = "net.fabricmc.fabric-loom")
 } else {
     apply(plugin = "fabric-loom")
 }
 
-version = "${property("mod.version")}+${stonecutter.current.version}"
-base.archivesName = property("mod.id") as String
+version = "${getProp("mod.version")}+${stonecutter.current.version}"
+base.archivesName = getProp("mod.id")
 
 if (project.name != rootProject.name && project.name != "processor") {
     modrinth {
@@ -36,9 +49,9 @@ if (project.name != rootProject.name && project.name != "processor") {
         changelog.set(System.getenv("CHANGELOG_BODY"))
 
         dependencies {
-            required.version("fabric-api", property("modrinth.fapi_version") as String)
-            required.version("fabric-language-kotlin", property("modrinth.kotlin_version") as String)
-            required.version("hypixel-mod-api", property("modrinth.hypixel_version") as String)
+            required.version("fabric-api", getProp("modrinth.fapi_version"))
+            required.version("fabric-language-kotlin", getProp("modrinth.kotlin_version"))
+            required.version("hypixel-mod-api", getProp("modrinth.hypixel_version"))
         }
 
         syncBodyFrom.set(rootProject.file("README.md").readText())
@@ -57,7 +70,8 @@ val requiredJava = when {
     else -> JavaVersion.VERSION_1_8
 }
 
-val awFileName = "rfu-${stonecutter.current.version}.accesswidener"
+val awVersion = if (stonecutter.eval(stonecutter.current.version, ">=26.1")) "26.1" else stonecutter.current.version
+val awFileName = "rfu-$awVersion.accesswidener"
 
 repositories {
     /**
@@ -101,33 +115,33 @@ dependencies {
     val modImpl = if (isModern) "implementation" else "modImplementation"
     val modRuntime = if (isModern) "runtimeOnly" else "modRuntimeOnly"
 
-    modImpl("net.fabricmc:fabric-loader:${property("deps.fabric_loader")}")
-    modImpl("net.fabricmc:fabric-language-kotlin:${property("fabric_language_kotlin")}")
-    modImpl("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric_api")}")
+    modImpl("net.fabricmc:fabric-loader:${getProp("deps.fabric_loader")}")
+    modImpl("net.fabricmc:fabric-language-kotlin:${getProp("fabric_language_kotlin")}")
+    modImpl("net.fabricmc.fabric-api:fabric-api:${getProp("deps.fabric_api")}")
 
-    val resConfig = "com.teamresourceful.resourcefulconfig:resourcefulconfig-fabric-${property("resourceful_mc_version")}:${property("resourceful_version")}"
+    val resConfig = "com.teamresourceful.resourcefulconfig:resourcefulconfig-fabric-${getProp("resourceful_mc_version")}:${getProp("resourceful_version")}"
     modImpl(resConfig)
     "include"(resConfig)
 
-    val resConfigKt = if (stonecutter.eval(stonecutter.current.version, "<26.1")) {
-        "com.teamresourceful.resourcefulconfigkt:resourcefulconfigkt-fabric-${property("resourcefulkt_mc_version")}:${property("resourcefulkt_version")}"
+    val resConfigKt = if (stonecutter.eval(stonecutter.current.version, "< 26.1")) {
+        "com.teamresourceful.resourcefulconfigkt:resourcefulconfigkt-fabric-${getProp("resourcefulkt_mc_version")}:${getProp("resourcefulkt_version")}"
     } else {
-        "com.teamresourceful.resourcefulconfigkt:resourcefulconfigkt-${property("resourcefulkt_mc_version")}-rc-1:${property("resourcefulkt_version")}-beta.1"
+        "com.teamresourceful.resourcefulconfigkt:resourcefulconfigkt-${getProp("resourcefulkt_mc_version")}-rc-1:${getProp("resourcefulkt_version")}-beta.1"
     }
     modImpl(resConfigKt)
     "include"(resConfigKt)
 
-    val univCraft = "gg.essential:universalcraft-${property("universalcraft_mc_version")}-fabric:${property("universalcraft_version")}"
+    val univCraft = "gg.essential:universalcraft-${getProp("universalcraft_mc_version")}-fabric:${getProp("universalcraft_version")}"
     modImpl(univCraft)
     "include"(univCraft)
 
-    val elementa = "gg.essential:elementa:${property("elementa_version")}"
+    val elementa = "gg.essential:elementa:${getProp("elementa_version")}"
     "implementation"(elementa)
     "include"(elementa)
 
-    "implementation"("net.hypixel:mod-api:${property("hypixel_mod_api_version")}")
+    "implementation"("net.hypixel:mod-api:${getProp("hypixel_mod_api_version")}")
 
-    modRuntime("me.djtheredstoner:DevAuth-fabric:${property("devauth_version")}")
+    modRuntime("me.djtheredstoner:DevAuth-fabric:${getProp("devauth_version")}")
 
     ksp(project(":processor"))
 }
@@ -140,11 +154,12 @@ configure<net.fabricmc.loom.api.LoomGradleExtensionAPI> {
         options.put("mark-corresponding-synthetics", "1")
     }
 
+    val modsFolder = project.findProperty("stonecutter.redirect")?.toString() ?: stonecutter.current.version
     runConfigs.all {
         ideConfigGenerated(true)
         vmArgs(
             "-Dmixin.debug.export=true",
-            "-Dfabric.addMods=mods/${stonecutter.current.version}",
+            "-Dfabric.addMods=mods/$modsFolder",
             "-Ddevauth.enabled=true",
             "-Ddevauth.account=main"
         )
@@ -171,21 +186,21 @@ kotlin {
 
 tasks {
     processResources {
-        inputs.property("id", project.property("mod.id"))
-        inputs.property("name", project.property("mod.name"))
+        inputs.property("id", getProp("mod.id"))
+        inputs.property("name", getProp("mod.name"))
         inputs.property("version", project.version)
-        inputs.property("minecraft", project.property("mod.mc_dep"))
-        inputs.property("fabric_language_kotlin", project.property("fabric_language_kotlin"))
-        inputs.property("hypixel_mod_api", project.property("hypixel_mod_api_version"))
+        inputs.property("minecraft", getProp("mod.mc_dep"))
+        inputs.property("fabric_language_kotlin", getProp("fabric_language_kotlin"))
+        inputs.property("hypixel_mod_api", getProp("hypixel_mod_api_version"))
         inputs.property("aw_file", awFileName)
 
         val props = mapOf(
-            "id" to project.property("mod.id"),
-            "name" to project.property("mod.name"),
+            "id" to getProp("mod.id"),
+            "name" to getProp("mod.name"),
             "version" to project.version,
-            "minecraft" to project.property("mod.mc_dep"),
-            "fabric_language_kotlin" to project.property("fabric_language_kotlin"),
-            "hypixel_mod_api" to project.property("hypixel_mod_api_version"),
+            "minecraft" to getProp("mod.mc_dep"),
+            "fabric_language_kotlin" to getProp("fabric_language_kotlin"),
+            "hypixel_mod_api" to getProp("hypixel_mod_api_version"),
             "aw_file" to awFileName
         )
 
