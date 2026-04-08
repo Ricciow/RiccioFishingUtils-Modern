@@ -45,9 +45,8 @@ jobs:
           chmod +x gradlew
           # Build all versions first
           ./gradlew build
-          # Publish all version subprojects to Modrinth. 
-          # The 'modrinth' task is disabled for root and processor in build.gradle.kts.
-          ./gradlew modrinth
+          # Publish all primary version subprojects to Modrinth. 
+          ./gradlew publishModrinth
         env:
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
           MODRINTH_PROJECT_ID: ${{ secrets.MODRINTH_PROJECT_ID }}

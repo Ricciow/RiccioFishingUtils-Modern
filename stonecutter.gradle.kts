@@ -23,3 +23,13 @@ stonecutter parameters {
     constants["release"] = getProp(project, "mod.id") != "rfu"
     dependencies["fapi"] = getProp(node.project, "deps.fabric_api")
 }
+
+tasks.register("publishModrinth") {
+    group = "publishing"
+    description = "Uploads all primary versions to Modrinth"
+    subprojects.forEach { sub ->
+        if (sub.name != "processor" && sub.findProperty("stonecutter.redirect") == null) {
+            dependsOn(sub.tasks.named("modrinth"))
+        }
+    }
+}

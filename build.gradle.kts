@@ -32,7 +32,7 @@ if (stonecutter.eval(stonecutter.current.version, ">=26.1")) {
 version = "${getProp("mod.version")}+${stonecutter.current.version}"
 base.archivesName = getProp("mod.id")
 
-if (project.name != rootProject.name && project.name != "processor") {
+if (project.name != rootProject.name && project.name != "processor" && project.findProperty("stonecutter.redirect") == null) {
     modrinth {
         token.set(System.getenv("MODRINTH_TOKEN"))
         projectId.set(System.getenv("MODRINTH_PROJECT_ID"))
@@ -44,6 +44,11 @@ if (project.name != rootProject.name && project.name != "processor") {
         uploadFile.set(tasks.named(uploadTaskName))
 
         gameVersions.add(stonecutter.current.version)
+        rootProject.subprojects.forEach {
+            if (it.findProperty("stonecutter.redirect")?.toString() == stonecutter.current.version) {
+                gameVersions.add(it.name)
+            }
+        }
         loaders.add("fabric")
 
         changelog.set(System.getenv("CHANGELOG_BODY"))
@@ -55,10 +60,6 @@ if (project.name != rootProject.name && project.name != "processor") {
         }
 
         syncBodyFrom.set(rootProject.file("README.md").readText())
-    }
-} else {
-    tasks.named("modrinth") {
-        enabled = false
     }
 }
 
