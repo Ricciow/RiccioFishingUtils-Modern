@@ -1,4 +1,4 @@
-# v1.8.0 - ???
+# v1.8.0 - Custom Snowstorm!
 
 ### Features:
 - Added 26.1.x Support
