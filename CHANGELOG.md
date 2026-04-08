@@ -24,6 +24,7 @@
 - Transfering leadership now dequeues the party finder.
 - Fixed party achievement not working with rfu websocket joins
 - Made hotspot particles only be hid with highlight hotspot on
+- Fixed collection items (e.g. Ink Sac) being double counted.
 
 ### Back-end:
 - Changed some of the sound names for rfu.
