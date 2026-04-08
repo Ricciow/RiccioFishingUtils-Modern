@@ -1,9 +1,6 @@
 plugins {
     id("dev.kikugie.stonecutter")
-    id("fabric-loom") apply false
 }
-
-stonecutter active "26.1"
 
 fun getProp(p: Project, name: String): String {
     if (p.hasProperty(name)) return p.property(name).toString()
@@ -16,6 +13,8 @@ fun getProp(p: Project, name: String): String {
     }
     return p.property(name).toString()
 }
+
+stonecutter active "26.1"
 
 stonecutter parameters {
     swaps["mod_version"] = "\"" + getProp(project, "mod.version") + "\";"
