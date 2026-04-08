@@ -34,4 +34,10 @@ object DoubleHookMessages : Feature {
             }
         }
     }
+
+    fun preview() {
+        if (GeneralFishing.doubleHookMessages.isEmpty()) return
+        val message = GeneralFishing.doubleHookMessages.random()
+        Chat.sendMessage(Component.literal(message.toMcCodes()))
+    }
 }

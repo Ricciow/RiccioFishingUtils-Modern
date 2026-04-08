@@ -57,18 +57,18 @@ object CollectionGainTracker : RegisteredEvent {
 
         // Track sack additions
         registerGameEvent(SACKS_MESSAGE_REGEX, isOverlay = false) { text, _, _ ->
-            text.siblings.forEach { component ->
+            val hoverText = text.siblings.firstNotNullOfOrNull { component ->
                 val hover = component.style.hoverEvent
                 if (hover is HoverEvent.ShowText) {
-                    val hoverText = hover.value.string
-                    if ("Added" in hoverText) {
-                        for (item in CollectionItem.entries) {
-                            val match = item.sackRegex.find(hoverText) ?: continue
-                            val amount = match.groupValues[1].toLongOrNull() ?: continue
-                            
-                            CollectionsHandler.add(item, amount, isSync = false)
-                        }
-                    }
+                    return@firstNotNullOfOrNull hover.value.string
+                }
+            } as? String ?: return@registerGameEvent
+
+            if ("Added" in hoverText) {
+                for (item in CollectionItem.entries) {
+                    val match = item.sackRegex.find(hoverText) ?: continue
+                    val amount = match.groupValues[1].toLongOrNull() ?: continue
+                    CollectionsHandler.add(item, amount, isSync = false)
                 }
             }
         }

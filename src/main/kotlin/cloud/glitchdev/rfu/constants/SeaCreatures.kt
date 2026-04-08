@@ -15,7 +15,8 @@ enum class SeaCreatures(
     val liquidType: LiquidTypes,
     val category: SeaCreatureCategory,
     val special: Boolean = false,
-    val condition: (Hotspot?, Vec3, Bait?) -> Boolean = { _, _, _ -> true }
+    val condition: (Hotspot?, Vec3, Bait?) -> Boolean = { _, _, _ -> true },
+    val lsRangeExcluded: Boolean = false
 ) {
     //Any water source
     @SerializedName("Sea Walker")
@@ -137,7 +138,7 @@ enum class SeaCreatures(
     @SerializedName("Nutcracker")
     NUTCRACKER("Nutcracker", "You found a forgotten Nutcracker laying beneath the ice.", WATER, WINTER),
     @SerializedName("Reindrake")
-    REINDRAKE("Reindrake", "A Reindrake forms from the depths.", WATER, WINTER, true),
+    REINDRAKE("Reindrake", "A Reindrake forms from the depths.", WATER, WINTER, true, { _, _, _ -> true }, true),
     //Festival
     @SerializedName("Nurse Shark")
     NURSE_SHARK("Nurse Shark", "A tiny fin emerges from the water, you've caught a Nurse Shark.", WATER, SHARK, false, { _, _, _ -> World.isFishingFestival() }),
@@ -184,6 +185,59 @@ enum class SeaCreatures(
 
     fun toDataOption() : DataOption {
         return DataOption(this, this.scName)
+    }
+
+    fun getSingularNameWithArticle(): String {
+        val name = getNameWithoutArticle()
+        val article = getArticle()
+        if (article.equals("The", ignoreCase = true)) return "$article $name"
+        return "$article $name"
+    }
+
+    fun getArticle(): String {
+        if (scName.startsWith("The ", ignoreCase = true)) return "The"
+        val vowels = setOf('a', 'e', 'i', 'o', 'u')
+        val firstChar = scName.lowercase().first()
+        return if (firstChar in vowels) "an" else "a"
+    }
+
+    fun getNameWithoutArticle(): String {
+        if (scName.startsWith("The ", ignoreCase = true)) return scName.substring(4)
+        return scName
+    }
+
+    fun getPluralName(): String {
+        var name = scName
+        if (name.startsWith("The ", ignoreCase = true)) {
+            name = name.substring(4)
+        }
+        return when (name) {
+            "Oasis Sheep" -> "Oasis Sheep"
+            "Rider of the Deep" -> "Riders of the Deep"
+            "Blue Ringed Octopus" -> "Blue Ringed Octopi"
+            "Werewolf" -> "Werewolves"
+            else -> {
+                if (name.endsWith("Man", ignoreCase = true)) return name.dropLast(3) + "Men"
+                if (name.endsWith("Pigman", ignoreCase = true)) return name.dropLast(3) + "Men"
+                if (name.endsWith("Witch", ignoreCase = true) ||
+                    name.endsWith("Leech", ignoreCase = true) ||
+                    name.endsWith("Grinch", ignoreCase = true) ||
+                    name.endsWith("Jawbus", ignoreCase = true) ||
+                    name.endsWith("Taurus", ignoreCase = true) ||
+                    name.endsWith("Blaze", ignoreCase = true) ||
+                    name.endsWith("Sludge", ignoreCase = true)) {
+                    return name + "es"
+                }
+                if (name.endsWith("y", ignoreCase = true) &&
+                    !name.endsWith("ay", ignoreCase = true) &&
+                    !name.endsWith("ey", ignoreCase = true) &&
+                    !name.endsWith("oy", ignoreCase = true) &&
+                    !name.endsWith("uy", ignoreCase = true)) {
+                    return name.dropLast(1) + "ies"
+                }
+                name + "s"
+            }
+        }
     }
 
     override fun toString(): String {

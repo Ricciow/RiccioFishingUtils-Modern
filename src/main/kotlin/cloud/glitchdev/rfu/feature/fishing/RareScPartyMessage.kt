@@ -7,6 +7,7 @@ import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.data.catches.CatchTracker
 import cloud.glitchdev.rfu.utils.Chat
+import cloud.glitchdev.rfu.utils.dsl.formatTemplate
 import cloud.glitchdev.rfu.utils.dsl.toReadableString
 import kotlin.time.Clock
 
@@ -34,13 +35,27 @@ object RareScPartyMessage : Feature {
                         val originalA = match.groupValues[1]
                         "$originalA$article $scName"
                     }
-                    .replace("{name}", scName)
-                    .replace("{total}", history.total.toString())
-                    .replace("{count}", (history.count + 1).toString())
-                    .replace("{time}", timeSinceLast)
-                    .replace("{dh}", if (isDoubleHook) RareScSettings.dhText else "")
+                    .formatTemplate(
+                        "name" to scName,
+                        "total" to history.total.toString(),
+                        "count" to (history.count + 1).toString(),
+                        "time" to timeSinceLast,
+                        "dh" to if (isDoubleHook) RareScSettings.dhText else ""
+                    )
                 Chat.sendPartyMessage(messageString)
             }
         }
+    }
+
+    fun preview() {
+        val preview = RareScSettings.rarePartyMessage.formatTemplate(
+            "name" to "Great White Shark",
+            "total" to "100",
+            "count" to "1",
+            "time" to "2m 30s",
+            "dh" to RareScSettings.dhText
+        )
+
+        Chat.sendMessage(net.minecraft.network.chat.Component.literal(preview))
     }
 }

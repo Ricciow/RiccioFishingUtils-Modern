@@ -2,10 +2,10 @@ package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
 import cloud.glitchdev.rfu.config.categories.RareScSettings.detectionAlert
-import cloud.glitchdev.rfu.constants.Dyes
-import cloud.glitchdev.rfu.constants.RareDrops
 import cloud.glitchdev.rfu.constants.FishTrackingType
 import cloud.glitchdev.rfu.data.mob.DeployableType
+import cloud.glitchdev.rfu.feature.fishing.CatchMessageReplacer
+import cloud.glitchdev.rfu.feature.fishing.DoubleHookMessages
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 
 object GeneralFishing : Category("General Fishing") {
@@ -44,48 +44,6 @@ object GeneralFishing : Category("General Fishing") {
         condition = { fishTrackingDisplay }
         range = 0..60
         slider = true
-    }
-
-
-    init {
-        dualSeparator {
-            title = "Rare Drops Tracking"
-            description = "Track your rare drops when you fish!"
-        }
-    }
-
-    var rareDrops by draggable(*RareDrops.entries.toTypedArray()) {
-        name = Literal("Rare Drops")
-        description = Literal("Select which drops are considered rare for the mod.")
-    }
-
-    var dyeDrops by draggable(*Dyes.entries.toTypedArray()) {
-        name = Literal("Dye drops")
-        description = Literal("Select which dyes are considered rare for the mod.")
-    }
-
-    var customRareDropMessage by observable(boolean(false) {
-        name = Literal("Enable Custom Rare Drop Message")
-        description = Literal("Shows a custom message when you get a rare drop")
-    }) { _, _ ->
-        reloadScreen()
-    }
-
-    var rareDropMessageFormat by string("&6&lRARE DROP! &e{drop} &b(+{magic_find}% ✯ Magic Find) &7(Took {count} catches, {time} since last)") {
-        name = Literal("Custom Message Format")
-        description = Literal("Variables: {drop}, {magic_find}, {count}, {time}")
-        condition = { customRareDropMessage }
-    }
-
-    var rareDropPartyChat by boolean(true) {
-        name = Literal("Send in party chat")
-        description = Literal("Sends the drop message in party chat, uses the same message as above but removes the colors")
-        condition = { customRareDropMessage }
-    }
-
-    var lootshareMessage by boolean(true) {
-        name = Literal("Lootshare Message")
-        description = Literal("Sends a message when lootshare gives you an item.")
     }
 
     init {
@@ -162,9 +120,17 @@ object GeneralFishing : Category("General Fishing") {
         "( ^_^) &b[ &3<>< &b]",
         "( >_<) &b[ &3RFU &b]"
     ) {
-        name = Literal("Double Hook messages")
-        description = Literal("Select what words will be sent when you get a double hook. Each line is one phrase.")
+        name = Literal("Double Hook Messages")
+        description = Literal("The messages sent to chat when you get a double hook. It will pick one at random.")
         condition = { toggleDoubleHookMessages }
+    }
+
+    init {
+        previewButton(
+            DoubleHookMessages::preview,
+            "Preview Message",
+            "Shows a preview of one of the double hook messages in chat."
+        ) { toggleDoubleHookMessages }
     }
 
     var randomDoubleHookMessages by boolean(false) {
@@ -172,6 +138,41 @@ object GeneralFishing : Category("General Fishing") {
         description = Literal("Makes double hook messages random")
         condition = { toggleDoubleHookMessages }
     }
+
+    init {
+        dualSeparator {
+            title = "Catch Messages"
+            description = "Replace standard catch messages with custom ones"
+        }
+    }
+
+    var replaceCatchMessages by observable(boolean(true) {
+        name = Literal("Replace Catch Messages")
+        description = Literal("Replaces standard catch messages with custom ones")
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var catchMessageTemplate by string("&3&lSEA CREATURE! &eYou caught {article} &3&l{name}") {
+        name = Literal("Catch Message Template")
+        description = Literal("The template for the catch message. Available: {article}, {article_upper}, {name}, {mob}")
+        condition = { replaceCatchMessages }
+    }
+
+    var doubleHookCatchMessageTemplate by string("&9&lDOUBLE HOOK! &eYou caught two &3&l{plural}") {
+        name = Literal("Double Hook Message Template")
+        description = Literal("The template for the double hook catch message. Available: {plural}, {mobs}")
+        condition = { replaceCatchMessages }
+    }
+
+    init {
+        previewButton(
+            CatchMessageReplacer::preview,
+            "Preview Message",
+            "Shows a preview of one of the catch messages in chat."
+        ) { replaceCatchMessages }
+    }
+
 
     init {
         dualSeparator {

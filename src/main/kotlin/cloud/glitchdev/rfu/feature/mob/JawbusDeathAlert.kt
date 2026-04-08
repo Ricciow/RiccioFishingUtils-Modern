@@ -25,7 +25,7 @@ object JawbusDeathAlert : Feature {
                 val username = matches?.groupValues?.getOrNull(1) ?: return@registerGameEvent
                 Title.showTitle("${TextColor.DARK_GRAY}☠ ${TextColor.GRAY}$username ${TextColor.DARK_GRAY}☠", "${TextColor.LIGHT_RED}was killed by Lord Jawbus")
                 lastAlert = now
-                Sounds.playSound("rfu:death", 1f, LavaFishing.diedJawbusVolume)
+                Sounds.playSound("rfu:jawbus_death", 1f, LavaFishing.diedJawbusVolume)
             }
         }
     }

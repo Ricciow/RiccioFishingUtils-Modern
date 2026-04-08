@@ -162,6 +162,7 @@ object PartyWebSocket : RegisteredEvent {
 
     fun joinParty(targetUser: String) {
         lastJoinTarget = targetUser
+        Party.requestedUser = targetUser
         WebSocketClient.send("/app/party/join", mapOf("targetUser" to targetUser))
         Chat.sendMessage(TextUtils.rfupfLiteral("Sent a join request to $targetUser", TextColor.YELLOW))
     }

@@ -7,6 +7,13 @@ object DevSettings : Category("Developer") {
     override val description: TranslatableValue
         get() = Literal("These settings are for developers, don't mess with them if you don't know what you're doing!")
 
+    init {
+        dualSeparator {
+            title = "General"
+            description = "General developer settings"
+        }
+    }
+
     var devMode by observable(boolean(false) {
         name = Literal("Developer Mode")
         description = Literal("Enable developer mode.")
@@ -18,6 +25,13 @@ object DevSettings : Category("Developer") {
         name = Literal("Force In Skyblock")
         description = Literal("Forces the mod to consider you're inside skyblock.")
         condition = { devMode }
+    }
+
+    init {
+        dualSeparator {
+            title = "Environment"
+            description = "Settings for the mod environment"
+        }
     }
 
     var backEndEnvironment by string("https://rfu.glitchdev.cloud/api") {

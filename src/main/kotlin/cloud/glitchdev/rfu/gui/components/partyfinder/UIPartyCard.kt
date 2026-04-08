@@ -53,11 +53,22 @@ class UIPartyCard(val party: FishingParty, radius : Float) : UIRoundedRectangle(
         val joinErrorPopup = UIPopup(5f, "") childOf this
 
         this.onMouseClick {
+            if (!cloud.glitchdev.rfu.utils.network.WebSocketClient.isConnected) {
+                joinErrorPopup.setText("Not connected to RFU Backend!")
+                joinErrorPopup.showPopup()
+                return@onMouseClick
+            }
             if (party.user.isUser()) {
                 joinErrorPopup.setText("You are already the leader of this party!")
                 joinErrorPopup.showPopup()
             } else if (Party.members.contains(party.user)) {
                 joinErrorPopup.setText("You are already in this party!")
+                joinErrorPopup.showPopup()
+            } else if (party.players.current >= party.players.max) {
+                joinErrorPopup.setText("This party is full!")
+                joinErrorPopup.showPopup()
+            } else if (PartyWebSocket.myParty != null) {
+                joinErrorPopup.setText("You are already hosting a party! Please delete your current party listing before joining another.")
                 joinErrorPopup.showPopup()
             } else {
                 PartyWebSocket.joinParty(party.user)

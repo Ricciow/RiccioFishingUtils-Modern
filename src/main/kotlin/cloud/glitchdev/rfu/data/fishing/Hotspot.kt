@@ -1,6 +1,9 @@
 package cloud.glitchdev.rfu.data.fishing
 
+import cloud.glitchdev.rfu.constants.FishingIslands
 import cloud.glitchdev.rfu.constants.LiquidTypes
+import cloud.glitchdev.rfu.utils.World
+import net.minecraft.core.BlockPos
 import net.minecraft.world.phys.Vec3
 import java.awt.Color
 import java.util.UUID
@@ -14,25 +17,20 @@ data class Hotspot(
     val liquid: LiquidTypes,
     val startTime: Long = System.currentTimeMillis()
 ) {
-    private val particleDistances = mutableListOf<Double>()
-    private val particleCount
-        get() = when(liquid) {
-            LiquidTypes.LAVA -> 100
-            else -> 50
-        }
+    val blockPos = BlockPos.containing(center.x, center.y, center.z)
+    var island: FishingIslands? = World.island
+    var lastUpdate = System.currentTimeMillis()
+    var isNotified = false
+    var virtualParticleCount = 0
+    var rangeEntryTime: Long? = null
 
-    fun addParticleDistance(distance: Double) {
-        if (particleDistances.size < particleCount) {
-            particleDistances.add(distance)
-
-            if (particleDistances.size >= 50) {
-                val sorted = particleDistances.sorted()
-                val percentile = sorted[(sorted.size * 0.50).toInt()]
-
-                radius = percentile.toFloat()
-            }
-        }
+    init {
+        radius = HotspotCache.getMedian(blockPos, island) ?: 0f
     }
 
-    fun isRadiusCalculated() : Boolean = particleDistances.size == particleCount
+    fun addParticleDistance(distance: Double) {
+        HotspotCache.addMeasurement(blockPos, distance, liquid, buff, island)
+        radius = HotspotCache.getMedian(blockPos, island) ?: 0f
+        lastUpdate = System.currentTimeMillis()
+    }
 }

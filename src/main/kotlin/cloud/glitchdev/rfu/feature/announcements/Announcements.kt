@@ -35,7 +35,7 @@ object Announcements : Feature {
             val isNew = newAnnouncement != null && (announcement == null || announcement?.id != newAnnouncement.id)
             
             if (isNew) {
-                sendAnnouncementMessage(newAnnouncement!!)
+                sendAnnouncementMessage(newAnnouncement)
             }
             announcement = newAnnouncement
         }

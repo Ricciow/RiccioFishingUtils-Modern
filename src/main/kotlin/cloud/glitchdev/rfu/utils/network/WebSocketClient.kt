@@ -218,6 +218,9 @@ object WebSocketClient {
 
     fun disconnect() {
         webSocket?.sendClose(WebSocket.NORMAL_CLOSURE, "Disconnecting")
+        webSocket = null
         isConnected = false
+        isReconnecting = false
+        lastAuthToken = null
     }
 }

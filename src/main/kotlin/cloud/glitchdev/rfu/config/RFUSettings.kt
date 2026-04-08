@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.config
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.BackendSettings
 import cloud.glitchdev.rfu.config.categories.DevSettings
+import cloud.glitchdev.rfu.config.categories.DropsSettings
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.config.categories.HotSpotSettings
 import cloud.glitchdev.rfu.config.categories.InkFishing
@@ -15,11 +16,9 @@ import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.network.VersionHttp.isOutdated
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 import com.teamresourceful.resourcefulconfigkt.api.ConfigKt
-//? if >=1.21.11 {
+//~ if <1.21.11 'net.minecraft.util.Util' -> 'net.minecraft.Util' {
 import net.minecraft.util.Util
-//?} else {
-/*import net.minecraft.Util
-*///?}
+//~}
 
 object RFUSettings : ConfigKt("rfu/settings") {
     override val name: TranslatableValue
@@ -127,11 +126,12 @@ object RFUSettings : ConfigKt("rfu/settings") {
         }
 
         category(GeneralFishing)
-        category(RareScSettings)
         category(LavaFishing)
         category(HotSpotSettings)
         category(InkFishing)
         category(JerryFishing)
+        category(RareScSettings)
+        category(DropsSettings)
         category(OtherSettings)
         category(BackendSettings)
         category(DevSettings)

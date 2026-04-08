@@ -10,12 +10,23 @@
       }
     ]
   },
-  "death": {
+  "rain_expired": {
+    "category": "player",
+    "subtitle": "Rain Expired",
+    "sounds": [
+      {
+        "name": "rfu:rare_sc",
+        "preload": true,
+        "stream": false
+      }
+    ]
+  },
+  "jawbus_death": {
     "category": "player",
     "subtitle": "Someone Has Skill Issue",
     "sounds": [
       {
-        "name": "rfu:death",
+        "name": "rfu:jawbus_death",
         "preload": true,
         "stream": false
       }
@@ -24,6 +35,26 @@
   "deployable_expired": {
     "category": "player",
     "subtitle": "Deployable Expired",
+    "sounds": [
+      {
+        "name": "entity.elder_guardian.curse",
+        "type": "event"
+      }
+    ]
+  },
+  "blizzard_expired": {
+    "category": "player",
+    "subtitle": "Blizzard Expired",
+    "sounds": [
+      {
+        "name": "entity.elder_guardian.curse",
+        "type": "event"
+      }
+    ]
+  },
+  "hotspot_expired": {
+    "category": "player",
+    "subtitle": "Hotspot Expired",
     "sounds": [
       {
         "name": "entity.elder_guardian.curse",
@@ -49,6 +80,16 @@
     "sounds": [
       {
         "name": "ui.toast.challenge_complete",
+        "type": "event"
+      }
+    ]
+  },
+  "gdrag_alert": {
+    "category": "player",
+    "subtitle": "No Golden Dragon",
+    "sounds": [
+      {
+        "name": "block.note_block.pling",
         "type": "event"
       }
     ]

@@ -26,7 +26,7 @@ jobs:
       - name: Read version
         id: version
         run: |
-          VERSION=$(grep 'mod.version' gradle.properties | cut -d'=' -f2)
+          VERSION=$(grep 'mod.version' stonecutter.properties.toml | head -n 1 | cut -d'=' -f2 | tr -d '" ' )
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Parse Changelog
@@ -45,9 +45,8 @@ jobs:
           chmod +x gradlew
           # Build all versions first
           ./gradlew build
-          # Publish all version subprojects to Modrinth. 
-          # The 'modrinth' task is disabled for root and processor in build.gradle.kts.
-          ./gradlew modrinth
+          # Publish all primary version subprojects to Modrinth. 
+          ./gradlew publishModrinth
         env:
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
           MODRINTH_PROJECT_ID: ${{ secrets.MODRINTH_PROJECT_ID }}
@@ -85,4 +84,23 @@ jobs:
           curl -X POST https://rfu.glitchdev.cloud/api/announcement \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer $RFU_API_TOKEN" \
+            -d "$JSON_PAYLOAD"
+
+      - name: Discord Announcement
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_ROLE_ID: ${{ secrets.DISCORD_ROLE_ID }}
+          TITLE: ${{ steps.changelog.outputs.title }}
+          BODY: ${{ steps.changelog.outputs.body }}
+        run: |
+          # Combine role ping, title, and body
+          MESSAGE="<@&$DISCORD_ROLE_ID>
+          # $TITLE
+          $BODY"
+
+          # Prepare the payload using jq
+          JSON_PAYLOAD=$(jq -n --arg content "$MESSAGE" '{content: $content}')
+
+          curl -X POST "$DISCORD_WEBHOOK" \
+            -H "Content-Type: application/json" \
             -d "$JSON_PAYLOAD"

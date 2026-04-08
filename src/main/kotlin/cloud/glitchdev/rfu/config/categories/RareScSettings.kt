@@ -3,12 +3,20 @@ package cloud.glitchdev.rfu.config.categories
 import cloud.glitchdev.rfu.config.Category
 import cloud.glitchdev.rfu.constants.SeaCreatures
 import cloud.glitchdev.rfu.constants.RareScDisplayDataType
+import cloud.glitchdev.rfu.feature.fishing.RareScPartyMessage
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 
 object RareScSettings : Category("Rare SCs") {
     override val description: TranslatableValue
         get() = Literal("Settings for your great catches!")
+
+    init {
+        dualSeparator {
+            title = "General"
+            description = "Basic settings for Rare Sea Creatures"
+        }
+    }
 
     var rareSC by draggable(*SeaCreatures.entries.filter { it.special }.toTypedArray()) {
         name = Literal("Rare Sea Creatures")
@@ -18,14 +26,21 @@ object RareScSettings : Category("Rare SCs") {
     val RARE_SC_REGEX
         get() = rareSC.joinToString("|").toExactRegex()
 
-    var lootshareRange by boolean(true) {
-        name = Literal("Lootshare Range")
-        description = Literal("Shows a sphere around rare sea creatures to display their lootshare range")
+    var rareScGlow by boolean(false) {
+        name = Literal("Rare SC Glow")
+        description = Literal("Makes rare sea creatures glow.")
     }
 
-    var filledLsRange by boolean(true) {
-        name = Literal("Filled lootshare range")
-        description = Literal("Renders the lootshare range as a filled sphere")
+    var timeToKill by boolean(true) {
+        name = Literal("Time to kill")
+        description = Literal("Sends a message after killing a rare Sea Creature saying how long it took.")
+    }
+
+    init {
+        dualSeparator {
+            title = "Alerts"
+            description = "Be notified when a rare SC is found!"
+        }
     }
 
     var detectionAlert by observable(boolean(false) {
@@ -51,15 +66,55 @@ object RareScSettings : Category("Rare SCs") {
         condition = { detectionAlert && rareScSound }
     }
 
-    var timeToKill by boolean(true) {
-        name = Literal("Time to kill")
-        description = Literal("Sends a message after killing a rare Sea Creature saying how long it took.")
+    init {
+        dualSeparator {
+            title = "Lootshare"
+            description = "Settings for lootshare range rendering"
+        }
+    }
+
+    var lootshareRange by boolean(true) {
+        name = Literal("Lootshare Range")
+        description = Literal("Shows a sphere around rare sea creatures to display their lootshare range")
+    }
+
+    var filledLsRange by boolean(true) {
+        name = Literal("Filled lootshare range")
+        description = Literal("Renders the lootshare range as a filled sphere")
+    }
+
+    init {
+        dualSeparator {
+            title = "Golden Dragon"
+            description = "Alerts for when you're not using a Golden Dragon"
+        }
+    }
+
+    var goldenDragonAlert by observable(boolean(true) {
+        name = Literal("Golden Dragon Alert")
+        description = Literal("Sends an alert when a rare SC is low health and you don't have Golden Dragon equipped.")
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var gdragAlertThreshold by int(20) {
+        name = Literal("GDrag Alert Threshold (%)")
+        description = Literal("The health percentage at which the alert will trigger.")
+        range = 1..100
+        slider = true
+        condition = { goldenDragonAlert }
+    }
+
+    var goldenDragonSound by boolean(true) {
+        name = Literal("GDrag Alert Sound")
+        description = Literal("Plays a sound when the alert triggers.")
+        condition = { goldenDragonAlert }
     }
 
     init {
         dualSeparator {
             title = "Messages"
-            description = ""
+            description = "Customize messages sent when catching rare SCs"
         }
     }
 
@@ -74,6 +129,14 @@ object RareScSettings : Category("Rare SCs") {
         name = Literal("Rare SC message")
         description = Literal("Variables: {name} {total} {count}, {time}, {dh}")
         condition = { rarePartyMessages }
+    }
+
+    init {
+        previewButton(
+            RareScPartyMessage::preview,
+            "Preview Message",
+            "Shows a preview of the rare SC party message in chat."
+        ) { rarePartyMessages }
     }
 
     var dhText by string("(Double Hook) ") {

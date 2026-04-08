@@ -15,7 +15,7 @@ enum class SeaCreatureCategory(val islands: List<FishingIslands>, val partyTypes
         listOf(PartyTypes.REGULAR, PartyTypes.HOTSPOT, PartyTypes.BARN)
     ),
     HOTSPOT_WATER(
-        listOf(FishingIslands.BAYOU, FishingIslands.HUB, FishingIslands.SPIDER),
+        listOf(FishingIslands.BAYOU, FishingIslands.HUB, FishingIslands.SPIDER, FishingIslands.JERRY),
         listOf(PartyTypes.HOTSPOT)
     ),
     HOTSPOT_LAVA(

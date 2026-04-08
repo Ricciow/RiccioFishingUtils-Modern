@@ -30,6 +30,14 @@ fun String.toExactRegex() : Regex {
     return """^$this$""".toRegex()
 }
 
+fun String.formatTemplate(vararg vars: Pair<String, Any>) : String {
+    var result = this
+    vars.forEach { (key, value) ->
+        result = result.replace("{$key}", value.toString())
+    }
+    return result.toMcCodes()
+}
+
 fun String.isUser() : Boolean {
     return User.isUser(this)
 }

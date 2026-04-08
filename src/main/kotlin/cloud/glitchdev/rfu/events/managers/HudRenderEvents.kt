@@ -4,9 +4,10 @@ import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.utils.dsl.getResource
-import net.minecraft.client.gui.GuiGraphics
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements
+//~ if >= 26.1 'GuiGraphics' -> 'GuiGraphicsExtractor' {
+import net.minecraft.client.gui.GuiGraphicsExtractor
 
 /**
  * Manages HUD rendering tasks.
@@ -14,7 +15,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements
  * Callback Signature: (DrawContext, tickDelta: Float) -> Unit
  */
 @AutoRegister
-object HudRenderEvents : AbstractEventManager<(GuiGraphics, Float) -> Unit, HudRenderEvents.HudRenderEvent>(), RegisteredEvent {
+object HudRenderEvents : AbstractEventManager<(GuiGraphicsExtractor, Float) -> Unit, HudRenderEvents.HudRenderEvent>(), RegisteredEvent {
     private val HUD_ID = getResource("hud_renderer")
 
     override fun register() {
@@ -26,7 +27,7 @@ object HudRenderEvents : AbstractEventManager<(GuiGraphics, Float) -> Unit, HudR
         }
     }
 
-    override val runTasks: (GuiGraphics, Float) -> Unit = { context, tickDelta ->
+    override val runTasks: (GuiGraphicsExtractor, Float) -> Unit = { context, tickDelta ->
         safeExecution {
             for (task in tasks) {
                 task.callback(context, tickDelta)
@@ -34,15 +35,16 @@ object HudRenderEvents : AbstractEventManager<(GuiGraphics, Float) -> Unit, HudR
         }
     }
 
-    fun registerHudRenderEvent(priority: Int = 20, callback: (GuiGraphics, Float) -> Unit): HudRenderEvent {
+    fun registerHudRenderEvent(priority: Int = 20, callback: (GuiGraphicsExtractor, Float) -> Unit): HudRenderEvent {
         return HudRenderEvent(priority, callback).register()
     }
 
     class HudRenderEvent(
         priority: Int,
-        callback: (GuiGraphics, Float) -> Unit
-    ) : ManagedTask<(GuiGraphics, Float) -> Unit, HudRenderEvent>(priority, callback) {
+        callback: (GuiGraphicsExtractor, Float) -> Unit
+    ) : ManagedTask<(GuiGraphicsExtractor, Float) -> Unit, HudRenderEvent>(priority, callback) {
         override fun register() = submitTask(this)
         override fun unregister() = removeTask(this)
     }
 }
+//~}

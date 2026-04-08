@@ -44,7 +44,11 @@ object Chat {
     fun sendMessage(message : Component) {
         //Ensure it's in the render thread.
         mc.execute {
-            mc.player?.displayClientMessage(message, false)
+            //? if >=26.1 {
+            mc.player?.sendSystemMessage(message)
+            //?} else {
+            /*mc.player?.displayClientMessage(message, false)
+            *///?}
         }
     }
 

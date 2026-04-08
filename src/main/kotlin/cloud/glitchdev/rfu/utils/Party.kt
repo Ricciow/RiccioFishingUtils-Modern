@@ -36,7 +36,7 @@ object Party : RegisteredEvent {
     var isLeader = false
     val members: MutableSet<String> = mutableSetOf()
     val listeners: MutableList<(Boolean, Boolean, MutableSet<String>) -> Unit> = mutableListOf()
-    private var requestedUser: String? = null
+    var requestedUser: String? = null
     private val joinedCooldowns: MutableMap<String, Long> = mutableMapOf()
     private val pendingPFInvites: MutableSet<String> = mutableSetOf()
 
@@ -201,10 +201,10 @@ object Party : RegisteredEvent {
             return@registerAllowGameEvent false
         }
 
-        onPartyChange { inParty, _, members ->
+        onPartyChange { inParty, isLeader, members ->
             val currentParty: FishingParty? = PartyWebSocket.myParty
             if (currentParty != null) {
-                if (inParty) {
+                if (inParty && isLeader) {
                     currentParty.players.current = members.size + 1
                     PartyWebSocket.editParty(currentParty)
                 } else {
