@@ -213,7 +213,11 @@ object WebSocketClient {
                 "Body: ${if (body.isEmpty()) "(empty)" else body}\n" +
                 "---------------------------")
         
-        ws.sendText(frame.toString(), true)
+        try {
+            ws.sendText(frame.toString(), true)
+        } catch (e: Exception) {
+            RFULogger.error("Error sending STOMP frame: ", e)
+        }
     }
 
     fun disconnect() {

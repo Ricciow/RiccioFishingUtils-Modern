@@ -131,7 +131,12 @@ object PartyWebSocket : RegisteredEvent {
 
         WebSocketClient.subscribe("/topic/parties", updateCallback)
         WebSocketClient.subscribe("/app/topic/parties", listCallback)
+        WebSocketClient.subscribe("/user/queue/parties", listCallback)
         WebSocketClient.subscribe("/user/queue/join-requests", joinRequestCallback)
+    }
+
+    fun syncParties() {
+        WebSocketClient.send("/app/party/sync", "")
     }
 
     fun publishParty(party: FishingParty) {
