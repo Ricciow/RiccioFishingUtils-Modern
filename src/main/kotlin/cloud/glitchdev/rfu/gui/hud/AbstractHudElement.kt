@@ -287,6 +287,7 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
 
     fun closeEdit() {
         isEditing = false
+        scaleTextEnabled = false
         updateState()
         onCloseEdit()
     }
