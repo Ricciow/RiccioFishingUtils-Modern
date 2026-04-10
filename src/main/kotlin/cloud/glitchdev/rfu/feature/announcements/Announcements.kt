@@ -25,6 +25,7 @@ import java.time.Instant
 @RFUFeature
 object Announcements : Feature {
     var announcement: Announcement? = null
+    private var lastShownId: String? = null
 
     val gson: Gson = GsonBuilder()
         .registerTypeAdapter(Instant::class.java, InstantTypeAdapter())
@@ -54,6 +55,9 @@ object Announcements : Feature {
     }
 
     private fun sendAnnouncementMessage(announcement: Announcement) {
+        if (announcement.id == lastShownId) return
+        lastShownId = announcement.id
+
         Chat.sendMessage(
             announcement.message.toInteractiveText(
                 "/rfuannouncement open",
