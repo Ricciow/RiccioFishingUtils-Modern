@@ -1,33 +1,13 @@
-# v1.8.0 - Custom Snowstorm!
+# v1.8.1 - Small patch
 
 ### Features:
-- Added 26.1.x Support
-- Added a blizzard in a bottle timer/alert
-- Added a hotspot expired alert
-- Added an alert when a rare sea creature is at low HP without a Golden Dragon equipped
-- Added a rare drop title alert
-- Added a custom resourcepack that allows changing sounds. (READ "note.txt" if you're planning on using this!)
-- Added a setting to make Rare SCs glow. (Off by default, Use at your own risk!)
-- Added customizable catch messages with context-aware placeholders like `{mob}` and `{mobs}`.
-- Added the hability to preview custom messages/titles
 
 ### Changes:
-- Removed the 30 minute to expire message in the party finder creation area.
-- Made Reindrake not display the lootshare range
-- Reorganized settings, added rare drops category
-- Spaced default positions for hud elements a bit (Still not what i want, but should cause less overlap for now)
 
 ### Fixes:
-- Made water hotspot particles even more strict for detections (When will this end?)
-- Added Hotspot scs to jerry island.
-- Fixed reindrake alert not working
-- Made rfu websocket only connect while in hypixel.
-- Transfering leadership now dequeues the party finder.
-- Fixed party achievement not working with rfu websocket joins
-- Made hotspot particles only be hid with highlight hotspot on
-- Fixed collection items (e.g. Ink Sac) being double counted.
+- Fixed scale text not disappearing after closing rfumove
+- Added a resyncing process in case party finder is de-synced
+- Prevented same announcement being sent twice
+- Fixed not detecting being on hypixel if the dns name had capital letters
 
 ### Back-end:
-- Changed some of the sound names for rfu.
-- Automated sound registration
-- Optimized Hotspot size calculation to use a median-based cache by coordinate for improved accuracy and consistency.

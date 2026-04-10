@@ -50,7 +50,7 @@ object Network : RegisteredEvent {
     private val client = HttpClient.newHttpClient()
 
     val isOnHypixel: Boolean
-        get() = mc.currentServer?.ip?.endsWith("hypixel.net") == true
+        get() = mc.currentServer?.ip?.lowercase()?.endsWith("hypixel.net") == true
 
     override fun register() {
         registerJoinEvent {
@@ -210,12 +210,16 @@ object Network : RegisteredEvent {
      * and rfu back-end if the token has expired or is invalid
      */
     fun authenticateUser() {
+        RFULogger.dev("Authenticating user...")
+
         if (!BackendSettings.decisionMade) {
+            RFULogger.warn("Decision isn't made")
             sendAcknowledgementMessage()
             return
         }
 
         if (!BackendSettings.backendAccepted || !isOnHypixel) {
+            RFULogger.warn("Backend not accepted or not on hypixel")
             WebSocketClient.disconnect()
             return
         }
@@ -250,7 +254,10 @@ object Network : RegisteredEvent {
             }
         } else {
             if (isOnHypixel) {
+                RFULogger.dev("Renewing Token")
                 WebSocketClient.connect(token!!)
+            } else {
+                RFULogger.debug("Not on hypixel, not renewing")
             }
         }
     }
