@@ -62,7 +62,7 @@ modrinth.hypixel_version = "1.0.1+build.1+mc1.21"
 deps.fabric_api = "0.144.4+26.1"
 modrinth.fapi_version = "0.144.4+26.1"
 #Minecraft
-mod.mc_dep = ">=26.1 <=26.1.1"
+mod.mc_dep = ">=26.1 < 26.2"
 #Essential
 universalcraft_mc_version = "26.1"
 #ResourcefulConfig
@@ -75,4 +75,7 @@ hypixel_mod_api_version = "1.0.2"
 modrinth.hypixel_version = "1.0.2+build.1+mc26.1"
 
 ["26.1.1"]
+stonecutter.redirect = "26.1"
+
+["26.1.2"]
 stonecutter.redirect = "26.1"
