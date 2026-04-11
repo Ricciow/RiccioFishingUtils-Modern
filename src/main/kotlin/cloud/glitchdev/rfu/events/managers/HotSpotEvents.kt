@@ -13,6 +13,7 @@ import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.utils.World
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.client.multiplayer.ClientLevel
+import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.DustParticleOptions
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.world.entity.decoration.ArmorStand
@@ -23,6 +24,8 @@ import java.awt.Color
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.abs
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 @AutoRegister
 object HotSpotEvents : RegisteredEvent {
@@ -32,26 +35,22 @@ object HotSpotEvents : RegisteredEvent {
     override fun register() {
         HotspotCache.getCachedEntries(null)
 
-        registerTickEvent(interval = 20) { client ->
+        registerTickEvent(interval = 2) { client ->
             val world = client.level ?: return@registerTickEvent
             val entities = world.entitiesForRendering()
             val seenUuids = mutableSetOf<UUID>()
             val now = System.currentTimeMillis()
 
             entities.forEach { entity ->
-                val name = when (entity) {
-                    is ArmorStand -> if (entity.hasCustomName()) entity.customName?.toUnformattedString() else null
-                    is TextDisplay -> entity.text.toUnformattedString()
-                    else -> null
-                } ?: ""
+                val isHotspot = entity.customName?.toUnformattedString()?.contains("HOTSPOT") ?: return@forEach
 
-                if (name.contains("HOTSPOT", ignoreCase = true)) {
+                if (isHotspot) {
                     val uuid = entity.uuid
                     seenUuids.add(uuid)
 
                     if (!hotspots.containsKey(uuid)) {
                         val pos = entity.position()
-                        val blockPos = net.minecraft.core.BlockPos.containing(pos.x, pos.y, pos.z)
+                        val blockPos = BlockPos.containing(pos.x, pos.y, pos.z)
 
                         // Check if there is a virtual hotspot at this location and remove it
                         val virtualUuid = UUID.nameUUIDFromBytes("virtual_${blockPos}".toByteArray())
@@ -111,8 +110,8 @@ object HotSpotEvents : RegisteredEvent {
                     }
 
                     virtualUuids.add(uuid)
-                    // Virtual hotspots expire after 1 second of no updates
-                    if (now - hotspot.lastUpdate > 1000) {
+
+                    if (now - hotspot.lastUpdate > 200) {
                         iterator.remove()
                         virtualUuids.remove(uuid)
                         if (hotspot.isNotified) {
@@ -140,6 +139,7 @@ object HotSpotEvents : RegisteredEvent {
 
                 if(red != 255 || green != 105 || blue != 180) return@registerParticleEvent
             }
+
             val pos = Vec3(packet.x, packet.y, packet.z)
 
             var closestHotspot = hotspots.values
@@ -149,7 +149,7 @@ object HotSpotEvents : RegisteredEvent {
                 }
                 .minByOrNull { it.center.distanceTo(pos) }
 
-            if (closestHotspot == null || abs(pos.y - closestHotspot.center.y) > 6.0 || Vec3(pos.x, 0.0, pos.z).distanceTo(Vec3(closestHotspot.center.x, 0.0, closestHotspot.center.z)) > 6.0) {
+            if (closestHotspot == null || abs(pos.y - closestHotspot.center.y) > 6.0 || pos.horizontalDistance(closestHotspot.center) > 6.0) {
                 val playerPos = RiccioFishingUtils.mc.player?.position() ?: return@registerParticleEvent
                 val cachedEntry = HotspotCache.getCachedEntries(World.island).find { (blockPos, data) ->
                     val center = Vec3(blockPos.x + 0.5, blockPos.y.toDouble(), blockPos.z + 0.5)
@@ -157,7 +157,7 @@ object HotSpotEvents : RegisteredEvent {
                     if (playerPos.distanceTo(center) < 25.0) return@find false
 
                     val liquidMatches = if (isSmoke) data.liquid == LiquidTypes.LAVA else data.liquid == LiquidTypes.WATER
-                    liquidMatches && abs(pos.y - center.y) <= 6.0 && Vec3(pos.x, 0.0, pos.z).distanceTo(Vec3(center.x, 0.0, center.z)) <= 6.0
+                    liquidMatches && abs(pos.y - center.y) <= 6.0 && pos.horizontalDistance(center) <= 6.0
                 }
 
                 if (cachedEntry != null) {
@@ -179,7 +179,7 @@ object HotSpotEvents : RegisteredEvent {
             if (closestHotspot == null) return@registerParticleEvent
             if (abs(pos.y - closestHotspot.center.y) > 6.0) return@registerParticleEvent
 
-            val horizontalDistance = Vec3(pos.x, 0.0, pos.z).distanceTo(Vec3(closestHotspot.center.x, 0.0, closestHotspot.center.z))
+            val horizontalDistance = pos.horizontalDistance(closestHotspot.center)
 
             if (horizontalDistance < 6.0) {
                 if (virtualUuids.contains(closestHotspot.uuid)) {
@@ -216,7 +216,7 @@ object HotSpotEvents : RegisteredEvent {
 
     fun getHotspotAt(pos: Vec3): Hotspot? {
         return hotspots.values.find { hotspot ->
-            val horizontalDistance = Vec3(pos.x, 0.0, pos.z).distanceTo(Vec3(hotspot.center.x, 0.0, hotspot.center.z))
+            val horizontalDistance = pos.horizontalDistance(hotspot.center)
             val verticalDistance = abs(pos.y - hotspot.center.y)
             val radius = if (hotspot.radius > 0) hotspot.radius else 6.0
             (horizontalDistance <= radius.toDouble()) && verticalDistance <= 6.0
@@ -272,18 +272,13 @@ object HotSpotEvents : RegisteredEvent {
         )
         
         val entities = world.getEntitiesOfClass(ArmorStand::class.java, searchBox).toList()
-        val textDisplays = world.getEntitiesOfClass(TextDisplay::class.java, searchBox).toList()
         
-        for (entity in entities + textDisplays) {
-            val name = when (entity) {
-                is ArmorStand -> if (entity.hasCustomName()) entity.customName?.toUnformattedString() else null
-                is TextDisplay -> entity.text.toUnformattedString()
-                else -> null
-            } ?: ""
+        for (entity in entities) {
+            val name = entity.customName?.toUnformattedString() ?: continue
             
-            if (name.contains("Chance", ignoreCase = true) || 
-                name.contains("Speed", ignoreCase = true) ||
-                name.contains("Double Hook", ignoreCase = true)) {
+            if (name.contains("Chance") ||
+                name.contains("Speed") ||
+                name.contains("Double Hook")) {
                 return name
             }
         }
@@ -292,11 +287,11 @@ object HotSpotEvents : RegisteredEvent {
 
     private fun getColorForBuff(buff: String?): Color {
         return when {
-            buff?.contains("Treasure Chance", ignoreCase = true) ?: false -> Color(255, 255, 85, 100) // &f
-            buff?.contains("Fishing Speed", ignoreCase = true) ?: false -> Color(85, 255, 255, 100) // &b
-            buff?.contains("Sea Creature Chance", ignoreCase = true) ?: false -> Color(0, 170, 170, 100) // &3
-            buff?.contains("Double Hook Chance", ignoreCase = true) ?: false -> Color(85, 85, 255, 100) // &9
-            buff?.contains("Trophy Fish Chance", ignoreCase = true) ?: false -> Color(255, 170, 0, 100) // &6
+            buff?.contains("Treasure Chance") ?: false -> Color(255, 255, 85, 100) // &f
+            buff?.contains("Fishing Speed") ?: false -> Color(85, 255, 255, 100) // &b
+            buff?.contains("Sea Creature Chance") ?: false -> Color(0, 170, 170, 100) // &3
+            buff?.contains("Double Hook Chance") ?: false -> Color(85, 85, 255, 100) // &9
+            buff?.contains("Trophy Fish Chance") ?: false -> Color(255, 170, 0, 100) // &6
             else -> Color(255, 255, 255, 100) // &f
         }
     }
@@ -305,11 +300,15 @@ object HotSpotEvents : RegisteredEvent {
         for (dx in -1..1) {
             for (dz in -1..1) {
                 for (dy in -4..1) {
-                    val blockPos = net.minecraft.core.BlockPos.containing(pos.x + dx, pos.y + dy, pos.z + dz)
+                    val blockPos = BlockPos.containing(pos.x + dx, pos.y + dy, pos.z + dz)
                     if (world.getBlockState(blockPos).`is`(Blocks.LAVA)) return LiquidTypes.LAVA
                 }
             }
         }
         return LiquidTypes.WATER
+    }
+
+    private fun Vec3.horizontalDistance(pos: Vec3): Double {
+        return sqrt((this.x - pos.x).pow(2.0) + (this.z - pos.z).pow(2.0))
     }
 }

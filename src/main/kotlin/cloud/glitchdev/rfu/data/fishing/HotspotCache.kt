@@ -33,9 +33,7 @@ object HotspotCache {
 
         val distances = data.sessionDistances
         synchronized(distances) {
-            // Seed the session buffer if it's empty but we have a cached radius
             if (distances.isEmpty() && data.radius > 0) {
-                // Add the cached radius multiple times to weight it as the "basis"
                 repeat(25) { distances.add(data.radius.toDouble()) }
             }
 
@@ -44,7 +42,6 @@ object HotspotCache {
                 distances.removeAt(0)
             }
 
-            // Update the radius property with the current median
             val sorted = distances.sorted()
             data.radius = (sorted[sorted.size / 2]).toFloat()
         }
