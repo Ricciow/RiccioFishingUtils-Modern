@@ -7,5 +7,6 @@
 
 ### Fixes:
 - Actually fixed hotspot particles being hid while highlight hotspot is off
+- Fixed pet display not saving in between sessions
 
 ### Back-end:
