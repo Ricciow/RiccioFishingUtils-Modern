@@ -1,6 +1,7 @@
 # v1.8.2 - Small patch no 2
 
 ### Features:
+- Added 26.1.2 support
 
 ### Changes:
 
