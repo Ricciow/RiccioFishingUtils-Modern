@@ -5,6 +5,7 @@
 
 ### Changes:
 - Added a stability check before resizing hotspots
+- Updated flare radius and alerts logic (Timer only shows while in radius, alerts only on expiration while in radius)
 
 ### Fixes:
 - Actually fixed hotspot particles being hid while highlight hotspot is off

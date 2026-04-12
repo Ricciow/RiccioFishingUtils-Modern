@@ -2,10 +2,8 @@ package cloud.glitchdev.rfu.data.mob
 
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
-import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.core.component.DataComponents
@@ -13,6 +11,8 @@ import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.entity.projectile.FireworkRocketEntity
 import net.minecraft.world.item.PlayerHeadItem
+import net.minecraft.world.phys.Vec3
+import kotlin.math.round
 
 @AutoRegister
 object DeployableManager : RegisteredEvent {
@@ -21,7 +21,18 @@ object DeployableManager : RegisteredEvent {
         val type: DeployableType,
         val endTimeMillis: Long,
         val accentLabel: String = "",
-    )
+        val posX: Double? = null,
+        val posZ: Double? = null,
+        val highestY: Double? = null,
+    ) {
+        fun isInFlareRadius(playerPos : Vec3): Boolean {
+            if (posX == null || posZ == null || highestY == null) return true
+            val dy = playerPos.y - (round(highestY * 2.0) / 2.0 + 0.35)
+            val dx = playerPos.x - posX
+            val dz = playerPos.z - posZ
+            return dx * dx + dy * dy + dz * dz <= 40 * 40
+        }
+    }
 
     private enum class FlareType(val accentLabel: String, val texture: String) {
         SOS("+125%", "ewogICJ0aW1lc3RhbXAiIDogMTY2MjY4Mjc3NjUxNiwKICAicHJvZmlsZUlkIiA6ICI4YjgyM2E1YmU0Njk0YjhiOTE0NmE5MWRhMjk4ZTViNSIsCiAgInByb2ZpbGVOYW1lIiA6ICJTZXBoaXRpcyIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9jMDA2MmNjOThlYmRhNzJhNmE0Yjg5NzgzYWRjZWYyODE1YjQ4M2EwMWQ3M2VhODdiM2RmNzYwNzJhODlkMTNiIiwKICAgICAgIm1ldGFkYXRhIiA6IHsKICAgICAgICAibW9kZWwiIDogInNsaW0iCiAgICAgIH0KICAgIH0KICB9Cn0="),
@@ -42,10 +53,6 @@ object DeployableManager : RegisteredEvent {
 
         registerJoinEvent {
             clearAll()
-        }
-
-        registerGameEvent("Your flare disappeared because you were too far away!".toExactRegex()) { _, _, _ ->
-            resetFlare()
         }
     }
 
@@ -111,6 +118,9 @@ object DeployableManager : RegisteredEvent {
                 activeDeployables[DeployableType.FLARE] = Deployable(
                     type = DeployableType.FLARE,
                     endTimeMillis = System.currentTimeMillis() + 180_000,
+                    posX = entity.x,
+                    posZ = entity.z,
+                    highestY = entity.y,
                 )
                 return true
             }
@@ -125,12 +135,24 @@ object DeployableManager : RegisteredEvent {
         val flareType = FlareType.entries.find { it != FlareType.UNDEFINED && textures.contains(it.texture) }
             ?: return false
 
+        val current = activeDeployables[DeployableType.FLARE]
+        val highestY = maxOf(current?.highestY ?: 0.0, entity.y)
+
         if (!seenFlares.contains(entity.id)) {
             seenFlares.add(entity.id)
             activeDeployables[DeployableType.FLARE] = Deployable(
                 type = DeployableType.FLARE,
                 endTimeMillis = System.currentTimeMillis() + 180_000,
                 accentLabel = flareType.accentLabel,
+                posX = entity.x,
+                posZ = entity.z,
+                highestY = highestY
+            )
+        } else if (current != null) {
+            activeDeployables[DeployableType.FLARE] = current.copy(
+                highestY = highestY,
+                posX = entity.x,
+                posZ = entity.z
             )
         }
         return true
