@@ -6,8 +6,7 @@ import cloud.glitchdev.rfu.utils.JsonFile
 import com.google.gson.Gson
 
 
-@RFUFeature
-object SeaCreatureSettingsManager : Feature {
+object SeaCreatureSettingsManager {
     val seaCreatureConfigFile = JsonFile(
         directory = "repo",
         filename = "sc-config.json",
@@ -34,7 +33,7 @@ object SeaCreatureSettingsManager : Feature {
         return extractor(default!!)!!
     }
 
-    override fun onInitialize() {
+    fun onInitialize() {
         val gson = Gson()
 
         val stream = Thread.currentThread()
@@ -43,8 +42,5 @@ object SeaCreatureSettingsManager : Feature {
             ?: error("Missing resource: assets/rfu/defaults/sc-config.json")
 
         defaultConfig = gson.fromJson(stream.bufferedReader(), SeaCreatureSettings::class.java)
-
-        println("******** Loaded config ******** Loaded config")
-        println(defaultConfig)
     }
 }

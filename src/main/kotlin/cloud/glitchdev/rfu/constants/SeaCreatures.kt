@@ -15,7 +15,6 @@ enum class SeaCreatures(
     val catchMessage : String,
     val liquidType: LiquidTypes,
     val category: SeaCreatureCategory,
-    private val defaultSpecial: Boolean = false,
     val condition: (Hotspot?, Vec3, Bait?) -> Boolean = { _, _, _ -> true },
     val lsRangeExcluded: Boolean = false
 ) {
@@ -37,7 +36,7 @@ enum class SeaCreatures(
     @SerializedName("Catfish")
     CATFISH("Catfish", "Huh? A Catfish!", WATER, GENERAL_WATER),
     @SerializedName("Carrot King")
-    CARROT_KING("Carrot King", "Is this even a fish? It's the Carrot King!", WATER, GENERAL_WATER, true, { _, _, b -> b == Bait.CARROT }),
+    CARROT_KING("Carrot King", "Is this even a fish? It's the Carrot King!", WATER, GENERAL_WATER, { _, _, b -> b == Bait.CARROT }),
     @SerializedName("Agarimoo")
     AGARIMOO("Agarimoo", "Your Chumcap Bucket trembles, it's an Agarimoo.", WATER, GENERAL_WATER),
     @SerializedName("Sea Leech")
@@ -47,10 +46,10 @@ enum class SeaCreatures(
     @SerializedName("Deep Sea Protector")
     DEEP_SEA_PROTECTOR("Deep Sea Protector", "You have awoken the Deep Sea Protector, prepare for a battle!", WATER, GENERAL_WATER),
     @SerializedName("Water Hydra")
-    WATER_HYDRA("Water Hydra", "The Water Hydra has come to test your strength.", WATER, GENERAL_WATER, true),
+    WATER_HYDRA("Water Hydra", "The Water Hydra has come to test your strength.", WATER, GENERAL_WATER),
     //Galatea
     @SerializedName("The Loch Emperor")
-    SEA_EMPEROR("The Loch Emperor", "The Loch Emperor arises from the depths.", WATER, GALATEA, true),
+    SEA_EMPEROR("The Loch Emperor", "The Loch Emperor arises from the depths.", WATER, GALATEA),
     @SerializedName("Wetwing")
     WETWING("Wetwing", "Look! A Wetwing emerges!", WATER, GALATEA),
     @SerializedName("Tadgang")
@@ -65,13 +64,13 @@ enum class SeaCreatures(
     STRIDERSURFER("Stridersurfer", "You caught a Stridersurfer.", LAVA, GALATEA),
     //Water Hotspot
     @SerializedName("Frog Man")
-    FROG_MAN("Frog Man", "Is it a frog? Is it a man? Well, yes, sorta, IT'S FROG MAN!!!!!!", WATER, HOTSPOT_WATER, false, { h, _, _ -> h?.liquid?.isWater() == true }),
+    FROG_MAN("Frog Man", "Is it a frog? Is it a man? Well, yes, sorta, IT'S FROG MAN!!!!!!", WATER, HOTSPOT_WATER, { h, _, _ -> h?.liquid?.isWater() == true }),
     @SerializedName("Snapping Turtle")
-    SNAPPING_TURTLE("Snapping Turtle", "A Snapping Turtle is coming your way, and it's ANGRY!", WATER, HOTSPOT_WATER, false, { h, _, _ -> h?.liquid?.isWater() == true }),
+    SNAPPING_TURTLE("Snapping Turtle", "A Snapping Turtle is coming your way, and it's ANGRY!", WATER, HOTSPOT_WATER, { h, _, _ -> h?.liquid?.isWater() == true }),
     @SerializedName("Blue Ringed Octopus")
-    BLUE_RINGED_OCTOPUS("Blue Ringed Octopus", "A garish set of tentacles arise. It's a Blue Ringed Octopus!", WATER, HOTSPOT_WATER, true, { h, _, _ -> h?.liquid?.isWater() == true }),
+    BLUE_RINGED_OCTOPUS("Blue Ringed Octopus", "A garish set of tentacles arise. It's a Blue Ringed Octopus!", WATER, HOTSPOT_WATER, { h, _, _ -> h?.liquid?.isWater() == true }),
     @SerializedName("Wiki Tiki")
-    WIKI_TIKI("Wiki Tiki", "The water bubbles and froths. A massive form emerges- you have disturbed the Wiki Tiki! You shall pay the price.", WATER, HOTSPOT_WATER, true, { h, _, _ -> h?.liquid?.isWater() == true }),
+    WIKI_TIKI("Wiki Tiki", "The water bubbles and froths. A massive form emerges- you have disturbed the Wiki Tiki! You shall pay the price.", WATER, HOTSPOT_WATER, { h, _, _ -> h?.liquid?.isWater() == true }),
     //Oasis
     @SerializedName("Oasis Rabbit")
     OASIS_RABBIT("Oasis Rabbit","An Oasis Rabbit appears from the water.", WATER, OASIS),
@@ -83,7 +82,7 @@ enum class SeaCreatures(
     @SerializedName("Poisoned Water Worm")
     POISONED_WATER_WORM("Poisoned Water Worm", "A Poisoned Water Worm surfaces!", WATER, HOLLOWS),
     @SerializedName("Abyssal Miner")
-    ABYSSAL_MINER("Abyssal Miner", "An Abyssal Miner breaks out of the water!", WATER, HOLLOWS, true, { _, p, _ ->
+    ABYSSAL_MINER("Abyssal Miner", "An Abyssal Miner breaks out of the water!", WATER, HOLLOWS, { _, p, _ ->
         p.x !in 202.0..512.0 ||
         p.y !in 64.0..190.0 ||
         p.z !in 514.0..823.0
@@ -113,20 +112,20 @@ enum class SeaCreatures(
     @SerializedName("Bayou Sludge")
     BAYOU_SLUDGE("Bayou Sludge", "A swampy mass of slime emerges, the Bayou Sludge!", WATER, BAYOU),
     @SerializedName("Alligator")
-    ALLIGATOR("Alligator", "A long snout breaks the surface of the water. It's an Alligator!", WATER, BAYOU, true),
+    ALLIGATOR("Alligator", "A long snout breaks the surface of the water. It's an Alligator!", WATER, BAYOU),
     @SerializedName("Titanoboa")
-    TITANOBOA("Titanoboa", "A massive Titanoboa surfaces. Its body stretches as far as the eye can see.", WATER, BAYOU, true),
+    TITANOBOA("Titanoboa", "A massive Titanoboa surfaces. Its body stretches as far as the eye can see.", WATER, BAYOU),
     //Spooky
     @SerializedName("Scarecrow")
-    SCARECROW("Scarecrow", "Phew! It's only a Scarecrow.", WATER, SPOOKY, false, { _, _, _ -> World.isSpookyFestival() }),
+    SCARECROW("Scarecrow", "Phew! It's only a Scarecrow.", WATER, SPOOKY, { _, _, _ -> World.isSpookyFestival() }),
     @SerializedName("Nightmare")
-    NIGHTMARE("Nightmare", "You hear trotting from beneath the waves, you caught a Nightmare.", WATER, SPOOKY, false, { _, _, _ -> World.isSpookyFestival() }),
+    NIGHTMARE("Nightmare", "You hear trotting from beneath the waves, you caught a Nightmare.", WATER, SPOOKY, { _, _, _ -> World.isSpookyFestival() }),
     @SerializedName("Werewolf")
-    WEREWOLF("Werewolf", "It must be a full moon, a Werewolf appears.", WATER, SPOOKY, false, { _, _, _ -> World.isSpookyFestival() }),
+    WEREWOLF("Werewolf", "It must be a full moon, a Werewolf appears.", WATER, SPOOKY, { _, _, _ -> World.isSpookyFestival() }),
     @SerializedName("Phantom Fisher")
-    PHANTOM_FISHER("Phantom Fisher", "The spirit of a long lost Phantom Fisher has come to haunt you.", WATER, SPOOKY, true, { _, _, _ -> World.isSpookyFestival() }),
+    PHANTOM_FISHER("Phantom Fisher", "The spirit of a long lost Phantom Fisher has come to haunt you.", WATER, SPOOKY, { _, _, _ -> World.isSpookyFestival() }),
     @SerializedName("Grim Reaper")
-    GRIM_REAPER("Grim Reaper", "This can't be! The manifestation of death himself!", WATER, SPOOKY, true, { _, _, _ -> World.isSpookyFestival() }),
+    GRIM_REAPER("Grim Reaper", "This can't be! The manifestation of death himself!", WATER, SPOOKY, { _, _, _ -> World.isSpookyFestival() }),
     //Winter
     @SerializedName("Frozen Steve")
     FROZEN_STEVE("Frozen Steve", "Frozen Steve fell into the pond long ago, never to resurface...until now!", WATER, WINTER),
@@ -135,20 +134,20 @@ enum class SeaCreatures(
     @SerializedName("Grinch")
     GRINCH("Grinch", "The Grinch stole Jerry's Gifts...get them back!", WATER, WINTER),
     @SerializedName("Yeti")
-    YETI("Yeti", "What is this creature!?", WATER, WINTER, true),
+    YETI("Yeti", "What is this creature!?", WATER, WINTER),
     @SerializedName("Nutcracker")
     NUTCRACKER("Nutcracker", "You found a forgotten Nutcracker laying beneath the ice.", WATER, WINTER),
     @SerializedName("Reindrake")
-    REINDRAKE("Reindrake", "A Reindrake forms from the depths.", WATER, WINTER, true, { _, _, _ -> true }, true),
+    REINDRAKE("Reindrake", "A Reindrake forms from the depths.", WATER, WINTER, { _, _, _ -> true }, true),
     //Festival
     @SerializedName("Nurse Shark")
-    NURSE_SHARK("Nurse Shark", "A tiny fin emerges from the water, you've caught a Nurse Shark.", WATER, SHARK, false, { _, _, _ -> World.isFishingFestival() }),
+    NURSE_SHARK("Nurse Shark", "A tiny fin emerges from the water, you've caught a Nurse Shark.", WATER, SHARK, { _, _, _ -> World.isFishingFestival() }),
     @SerializedName("Blue Shark")
-    BLUE_SHARK("Blue Shark", "You spot a fin as blue as the water it came from, it's a Blue Shark.", WATER, SHARK, false, { _, _, _ -> World.isFishingFestival() }),
+    BLUE_SHARK("Blue Shark", "You spot a fin as blue as the water it came from, it's a Blue Shark.", WATER, SHARK, { _, _, _ -> World.isFishingFestival() }),
     @SerializedName("Tiger Shark")
-    TIGER_SHARK("Tiger Shark", "A striped beast bounds from the depths, the wild Tiger Shark!", WATER, SHARK, false, { _, _, _ -> World.isFishingFestival() }),
+    TIGER_SHARK("Tiger Shark", "A striped beast bounds from the depths, the wild Tiger Shark!", WATER, SHARK, { _, _, _ -> World.isFishingFestival() }),
     @SerializedName("Great White Shark")
-    GREAT_WHITE_SHARK("Great White Shark", "Hide no longer, a Great White Shark has tracked your scent and thirsts for your blood!", WATER, SHARK, true, { _, _, _ -> World.isFishingFestival() }),
+    GREAT_WHITE_SHARK("Great White Shark", "Hide no longer, a Great White Shark has tracked your scent and thirsts for your blood!", WATER, SHARK, { _, _, _ -> World.isFishingFestival() }),
     //Isle
     @SerializedName("Magma Slug")
     MAGMA_SLUG("Magma Slug", "From beneath the lava appears a Magma Slug.", LAVA, ISLE),
@@ -165,32 +164,32 @@ enum class SeaCreatures(
     @SerializedName("Taurus")
     TAURUS("Taurus", "Taurus and his steed emerge.", LAVA, ISLE),
     @SerializedName("Plhlegblast")
-    PLHLEGBLAST("Plhlegblast", "WOAH! A Plhlegblast appeared.", LAVA, ISLE, true, { _, p, _ ->
+    PLHLEGBLAST("Plhlegblast", "WOAH! A Plhlegblast appeared.", LAVA, ISLE, { _, p, _ ->
         p.x in -398.0..-357.0 &&
         p.y in 72.0..100.0 &&
         p.z in -722.0..-683.0
     }),
     @SerializedName("Thunder")
-    THUNDER("Thunder", "You hear a massive rumble as Thunder emerges.", LAVA, ISLE, true),
+    THUNDER("Thunder", "You hear a massive rumble as Thunder emerges.", LAVA, ISLE),
     @SerializedName("Lord Jawbus")
-    JAWBUS("Lord Jawbus", "You have angered a legendary creature... Lord Jawbus has arrived.", LAVA, ISLE, true),
+    JAWBUS("Lord Jawbus", "You have angered a legendary creature... Lord Jawbus has arrived.", LAVA, ISLE),
     //Lava Hotspot
     @SerializedName("Fried Chicken")
-    FRIED_CHICKEN("Fried Chicken", "Smells of burning. Must be a Fried Chicken.", LAVA, HOTSPOT_LAVA, false, { h, _, _ -> h?.liquid?.isLava() == true }),
+    FRIED_CHICKEN("Fried Chicken", "Smells of burning. Must be a Fried Chicken.", LAVA, HOTSPOT_LAVA, { h, _, _ -> h?.liquid?.isLava() == true }),
     @SerializedName("Fireproof Witch")
-    FIREPROOF_WITCH("Fireproof Witch", "Trouble's brewing, it's a Fireproof Witch!", LAVA, HOTSPOT_LAVA, false, { h, _, _ -> h?.liquid?.isLava() == true }),
+    FIREPROOF_WITCH("Fireproof Witch", "Trouble's brewing, it's a Fireproof Witch!", LAVA, HOTSPOT_LAVA, { h, _, _ -> h?.liquid?.isLava() == true }),
     @SerializedName("Fiery Scuttler")
-    FIERY_SCUTTER("Fiery Scuttler", "A Fiery Scuttler inconspicuously waddles up to you, friends in tow.", LAVA, HOTSPOT_LAVA, true, { h, _, _ -> h?.liquid?.isLava() == true }),
+    FIERY_SCUTTER("Fiery Scuttler", "A Fiery Scuttler inconspicuously waddles up to you, friends in tow.", LAVA, HOTSPOT_LAVA, { h, _, _ -> h?.liquid?.isLava() == true }),
     @SerializedName("Ragnarok")
-    RAGNAROK("Ragnarok", "The sky darkens and the air thickens. The end times are upon us: Ragnarok is here.", LAVA, HOTSPOT_LAVA, true, { h, _, _ -> h?.liquid?.isLava() == true });
+    RAGNAROK("Ragnarok", "The sky darkens and the air thickens. The end times are upon us: Ragnarok is here.", LAVA, HOTSPOT_LAVA, { h, _, _ -> h?.liquid?.isLava() == true });
 
-    val special: Boolean = defaultSpecial
+    val special: Boolean = SeaCreatureSettingsManager.isSpecial(scName)
     fun toDataOption(): DataOption = DataOption(this, this.scName)
     fun getSingularNameWithArticle(): String = "${getArticle()} ${getNameWithoutArticle()}"
     fun getArticle(): String = SeaCreatureSettingsManager.getArticle(scName)
     fun getNameWithoutArticle(): String = SeaCreatureSettingsManager.getName(scName)
     fun getPluralName(): String = SeaCreatureSettingsManager.getPlural(scName)
-    fun getFormatCode(): String = SeaCreatureSettingsManager.getFormat(scName);
+    fun getFormatCode(): String = SeaCreatureSettingsManager.getFormat(scName)
 
     override fun toString(): String {
         return scName
