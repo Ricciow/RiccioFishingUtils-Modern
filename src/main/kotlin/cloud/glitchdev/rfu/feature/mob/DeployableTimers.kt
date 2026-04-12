@@ -7,6 +7,7 @@ import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.gui.hud.elements.DeployablesDisplay
 import cloud.glitchdev.rfu.data.mob.DeployableManager
 import cloud.glitchdev.rfu.data.mob.DeployableType
+import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.utils.Sounds
 import cloud.glitchdev.rfu.utils.Title
 
@@ -15,6 +16,10 @@ object DeployableTimers : Feature {
     private val previouslyActive = HashMap<DeployableType, DeployableManager.Deployable?>()
 
     override fun onInitialize() {
+        registerJoinEvent {
+            previouslyActive.clear()
+        }
+
         registerTickEvent(interval = 20) {
             val active = DeployableManager.getActiveDeployables()
 
