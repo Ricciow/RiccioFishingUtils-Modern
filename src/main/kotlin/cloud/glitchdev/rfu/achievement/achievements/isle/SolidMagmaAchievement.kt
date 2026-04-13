@@ -29,7 +29,7 @@ object SolidMagmaAchievement : NumericStageAchievement() {
         addStageInfo(5, "Solid Magma", "Don't catch a Plhlegblast for 2500 catches.\nMust've caught atleast one Plhlegblast before.", AchievementDifficulty.IMPOSSIBLE)
     }
 
-    val creature = SeaCreatures.PLHLEGBLAST
+    val creature = SeaCreatures.get("Plhlegblast")!!
 
     override fun setupListeners() {
         val history = catchHistory.getOrAdd(creature)

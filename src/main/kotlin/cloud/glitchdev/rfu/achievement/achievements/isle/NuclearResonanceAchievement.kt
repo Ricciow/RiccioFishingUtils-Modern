@@ -25,7 +25,7 @@ object NuclearResonanceAchievement : NumericAchievement() {
     override val category: AchievementCategory = AchievementCategory.ISLE
     override val targetCount: Long = 2L
 
-    private val SEA_CREATURE = SeaCreatures.JAWBUS
+    private val SEA_CREATURE = SeaCreatures.get("Lord Jawbus")!!
     private val DROP = RareDrops.RADIOACTIVE_VIAL
     private val foundJawbusses: MutableSet<SkyblockEntity> = mutableSetOf()
 

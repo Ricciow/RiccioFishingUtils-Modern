@@ -49,17 +49,6 @@ class SeaCreatures(
             registry[sc.scName] = sc
         }
 
-        // Static references for compatibility
-        val SQUID get() = get("Squid")!!
-        val NIGHT_SQUID get() = get("Night Squid")!!
-        val CARROT_KING get() = get("Carrot King")!!
-        val JAWBUS get() = get("Lord Jawbus")!!
-        val RAGNAROK get() = get("Ragnarok")!!
-        val WIKI_TIKI get() = get("Wiki Tiki")!!
-        val THUNDER get() = get("Thunder")!!
-        val PLHLEGBLAST get() = get("Plhlegblast")!!
-        val TITANOBOA get() = get("Titanoboa")!!
-
         fun toDataOptions(
             liquidType: LiquidTypes,
             island: FishingIslands,

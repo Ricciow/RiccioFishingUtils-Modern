@@ -24,7 +24,7 @@ object EasterAchievement: BaseAchievement() {
 
         activeListeners.add(registerSeaCreatureCatchEvent
         { sc, _, _, _, _ ->
-            if (sc == SeaCreatures.CARROT_KING) {
+            if (sc == SeaCreatures.get("Carrot King")!!) {
                 if(World.SBMonth == 4) { // april
                     complete()
                 }

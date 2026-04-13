@@ -21,7 +21,7 @@ object SquidStreakAchievement: NumericAchievement() {
     override fun setupListeners() {
         activeListeners.add(registerSeaCreatureCatchEvent
         { sc, _, _, _, _ ->
-            if (sc == SeaCreatures.SQUID) {
+            if (sc == SeaCreatures.get("Squid")!!) {
                 addProgress()
             } else {
                 currentCount = 0L

@@ -14,8 +14,7 @@ import cloud.glitchdev.rfu.constants.FishingIslands
 import cloud.glitchdev.rfu.feature.fishing.FishingSession
 import cloud.glitchdev.rfu.feature.ink.InkSessionTracker
 import cloud.glitchdev.rfu.data.catches.CatchTracker.catchHistory
-import cloud.glitchdev.rfu.constants.SeaCreatures.Companion.NIGHT_SQUID
-import cloud.glitchdev.rfu.constants.SeaCreatures.Companion.SQUID
+import cloud.glitchdev.rfu.constants.SeaCreatures
 import cloud.glitchdev.rfu.data.collections.CollectionItem
 import cloud.glitchdev.rfu.data.collections.CollectionsHandler
 import cloud.glitchdev.rfu.utils.World
@@ -86,7 +85,7 @@ object InkTrackingDisplay : AbstractTextHudElement("inktrackingdisplay") {
 
         if(items.contains(InkTrackingType.SQUIDS)) {
 
-            val squidNow = catchHistory.getOrAdd(sc=SQUID).total
+            val squidNow = catchHistory.getOrAdd(sc=SeaCreatures.get("Squid")!!).total
             val squidGain = InkSessionTracker.squidGain
 
             val line = buildString {
@@ -98,7 +97,7 @@ object InkTrackingDisplay : AbstractTextHudElement("inktrackingdisplay") {
 
         if(items.contains(InkTrackingType.N_SQUID)) {
 
-            val nightSquidNow = catchHistory.getOrAdd(NIGHT_SQUID).total
+            val nightSquidNow = catchHistory.getOrAdd(SeaCreatures.get("Night Squid")!!).total
             val nSquidGain = InkSessionTracker.nightSquidGain
 
             val line = buildString {

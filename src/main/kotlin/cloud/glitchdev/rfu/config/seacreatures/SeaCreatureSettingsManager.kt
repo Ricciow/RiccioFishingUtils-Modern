@@ -46,10 +46,6 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent {
 
         val newSettings = scConfig.copy(creatures = creatures)
 
-        // Reflection to update the private 'data' field in JsonFile if necessary,
-        // or just rely on the fact that we can't easily change it without a setter.
-        // Actually, JsonFile's 'data' is a 'var' but with 'private set'.
-        // We can use reflection to set it.
         try {
             val field: Field = JsonFile::class.java.getDeclaredField("data")
             field.isAccessible = true
@@ -58,7 +54,6 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent {
             e.printStackTrace()
         }
 
-        // Update the registry as well
         val sc = SeaCreatures(
             scName = scName,
             catchMessage = updated.catchMessage ?: defaultConfig.creatures[scName]?.catchMessage ?: "",
@@ -146,7 +141,6 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent {
 
         defaultConfig = gson.fromJson(stream.bufferedReader(), SeaCreatureSettings::class.java)
 
-        // Populate SeaCreatures registry
         defaultConfig.creatures.forEach { (scName, setting) ->
             val sc = SeaCreatures(
                 scName = scName,

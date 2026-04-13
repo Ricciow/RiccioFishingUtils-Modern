@@ -2,8 +2,7 @@ package cloud.glitchdev.rfu.feature.ink
 
 import cloud.glitchdev.rfu.config.categories.InkFishing
 import cloud.glitchdev.rfu.constants.FishingIslands
-import cloud.glitchdev.rfu.constants.SeaCreatures.Companion.NIGHT_SQUID
-import cloud.glitchdev.rfu.constants.SeaCreatures.Companion.SQUID
+import cloud.glitchdev.rfu.constants.SeaCreatures
 import cloud.glitchdev.rfu.constants.text.TextColor.GOLD
 import cloud.glitchdev.rfu.constants.text.TextColor.LIGHT_GREEN
 import cloud.glitchdev.rfu.constants.text.TextColor.YELLOW
@@ -54,8 +53,8 @@ object InkSessionTracker : Feature {
     private var squidStart: Long = 0L
     private var nightSquidStart: Long = 0L
 
-    val squidGain: Long get() = catchHistory.getOrAdd(SQUID).total - squidStart
-    val nightSquidGain: Long get() = catchHistory.getOrAdd(NIGHT_SQUID).total - nightSquidStart
+    val squidGain: Long get() = catchHistory.getOrAdd(SeaCreatures.get("Squid")!!).total - squidStart
+    val nightSquidGain: Long get() = catchHistory.getOrAdd(SeaCreatures.get("Night Squid")!!).total - nightSquidStart
 
     // Goal tracking
     val percentageToGoal: Double
@@ -79,8 +78,8 @@ object InkSessionTracker : Feature {
 
     override fun onInitialize() {
         // Initialize start counts
-        squidStart = catchHistory.getOrAdd(SQUID).total.toLong()
-        nightSquidStart = catchHistory.getOrAdd(NIGHT_SQUID).total.toLong()
+        squidStart = catchHistory.getOrAdd(SeaCreatures.get("Squid")!!).total.toLong()
+        nightSquidStart = catchHistory.getOrAdd(SeaCreatures.get("Night Squid")!!).total.toLong()
 
         registerCollectionUpdateEvent { item, amount, _, isSync ->
             if (item == CollectionItem.INK_SAC && amount > 0 && !isSync) {
@@ -182,8 +181,8 @@ object InkSessionTracker : Feature {
         currentInkPerHour = 0.0
         
         // Reset squid tracking to current values
-        squidStart = catchHistory.getOrAdd(SQUID).total.toLong()
-        nightSquidStart = catchHistory.getOrAdd(NIGHT_SQUID).total.toLong()
+        squidStart = catchHistory.getOrAdd(SeaCreatures.get("Squid")!!).total.toLong()
+        nightSquidStart = catchHistory.getOrAdd(SeaCreatures.get("Night Squid")!!).total.toLong()
     }
 
 }
