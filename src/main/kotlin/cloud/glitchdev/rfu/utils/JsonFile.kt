@@ -17,12 +17,13 @@ import kotlin.time.Instant
  * Modified to support kotlinx.datetime.Instant serialization.
  */
 class JsonFile<T : Any>(
+    directory: String = "data",
     private val filename: String,
     private val type: Class<T>,
     private val defaultFactory: () -> T,
     private val onSave: () -> Unit = {},
-    builder : (GsonBuilder) -> Gson = { it.create() }
-) {
+    builder : (GsonBuilder) -> Gson = { it.create() },
+    ) {
     private val gson: Gson = builder(
         GsonBuilder()
             .setPrettyPrinting()
@@ -34,7 +35,7 @@ class JsonFile<T : Any>(
             })
     )
 
-    private val file: File = CONFIG_DIR.resolve(MOD_ID).resolve("data").resolve(filename).toFile()
+    private val file: File = CONFIG_DIR.resolve(MOD_ID).resolve(directory).resolve(filename).toFile()
 
     var data: T = defaultFactory()
         private set

@@ -29,6 +29,7 @@ object CatchMessageReplacer : Feature {
                     .replace("{article}", sc.getArticle())
                     .replace("{article_upper}", sc.getArticle().replaceFirstChar { it.uppercaseChar() })
                     .replace("{name}", sc.getNameWithoutArticle())
+                    .replace("{format}", sc.getFormatCode())
                     .replace("{plural}", sc.getPluralName())
                     .replace("{mob}", sc.getSingularNameWithArticle())
                     .replace("{mobs}", sc.getPluralName())

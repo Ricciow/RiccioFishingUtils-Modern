@@ -1,0 +1,508 @@
+{
+  "creatures": {
+    "Sea Walker": {
+      "name": "Sea Walker",
+      "plural": "Sea Walkers",
+      "article": "a",
+      "special": false,
+      "format": "§a"
+    },
+    "Squid": {
+      "name": "Squid",
+      "plural": "Squid",
+      "article": "a",
+      "special": false,
+      "format": "§7"
+    },
+    "Night Squid": {
+      "name": "Night Squid",
+      "plural": "Night Squids",
+      "article": "a",
+      "special": false,
+      "format": "§8"
+    },
+    "Sea Guardian": {
+      "name": "Sea Guardian",
+      "plural": "Sea Guardians",
+      "article": "a",
+      "special": false,
+      "format": "§3"
+    },
+    "Sea Witch": {
+      "name": "Sea Witch",
+      "plural": "Sea Witches",
+      "article": "a",
+      "special": false,
+      "format": "§9"
+    },
+    "Sea Archer": {
+      "name": "Sea Archer",
+      "plural": "Sea Archers",
+      "article": "a",
+      "special": false,
+      "format": "§a"
+    },
+    "Rider of the Deep": {
+      "name": "Rider of the Deep",
+      "plural": "Riders of the Deep",
+      "article": "a",
+      "special": false,
+      "format": "§5"
+    },
+    "Catfish": {
+      "name": "Catfish",
+      "plural": "Catfish",
+      "article": "a",
+      "special": false,
+      "format": "§e"
+    },
+    "Carrot King": {
+      "name": "Carrot King",
+      "plural": "Carrot Kings",
+      "article": "the",
+      "special": true,
+      "format": "§6"
+    },
+    "Agarimoo": {
+      "name": "Agarimoo",
+      "plural": "Agarimoos",
+      "article": "an",
+      "special": false,
+      "format": "§e"
+    },
+    "Sea Leech": {
+      "name": "Sea Leech",
+      "plural": "Sea Leeches",
+      "article": "a",
+      "special": false,
+      "format": "§7"
+    },
+    "Guardian Defender": {
+      "name": "Guardian Defender",
+      "plural": "Guardian Defenders",
+      "article": "a",
+      "special": false,
+      "format": "§5"
+    },
+    "Deep Sea Protector": {
+      "name": "Deep Sea Protector",
+      "plural": "Deep Sea Protectors",
+      "article": "a",
+      "special": false,
+      "format": "§5"
+    },
+    "Water Hydra": {
+      "name": "Water Hydra",
+      "plural": "Water Hydras",
+      "article": "a",
+      "special": true,
+      "format": "§6"
+    },
+    "The Loch Emperor": {
+      "name": "The Loch Emperor",
+      "plural": "Loch Emperors",
+      "article": "the",
+      "special": true,
+      "format": "§6"
+    },
+    "Wetwing": {
+      "name": "Wetwing",
+      "plural": "Wetwings",
+      "article": "a",
+      "special": false,
+      "format": "§9"
+    },
+    "Tadgang": {
+      "name": "Tadgang",
+      "plural": "Tadgangs",
+      "article": "a",
+      "special": false,
+      "format": "§a"
+    },
+    "Ent": {
+      "name": "Ent",
+      "plural": "Ents",
+      "article": "an",
+      "special": false,
+      "format": "§2"
+    },
+    "Bogged": {
+      "name": "Bogged",
+      "plural": "Bogged",
+      "article": "a",
+      "special": false,
+      "format": "§2"
+    },
+    "Nessie": {
+      "name": "Nessie",
+      "plural": "Nessies",
+      "article": "",
+      "special": false,
+      "format": "§3"
+    },
+    "Stridersurfer": {
+      "name": "Stridersurfer",
+      "plural": "Stridersurfers",
+      "article": "a",
+      "special": false,
+      "format": "§c"
+    },
+    "Frog Man": {
+      "name": "Frog Man",
+      "plural": "Frog Men",
+      "article": "a",
+      "special": false,
+      "format": "§a"
+    },
+    "Snapping Turtle": {
+      "name": "Snapping Turtle",
+      "plural": "Snapping Turtles",
+      "article": "a",
+      "special": false,
+      "format": "§2"
+    },
+    "Blue Ringed Octopus": {
+      "name": "Blue Ringed Octopus",
+      "plural": "Blue Ringed Octopuses",
+      "article": "a",
+      "special": true,
+      "format": "§9"
+    },
+    "Wiki Tiki": {
+      "name": "Wiki Tiki",
+      "plural": "Wiki Tikis",
+      "article": "a",
+      "special": true,
+      "format": "§d"
+    },
+    "Oasis Rabbit": {
+      "name": "Oasis Rabbit",
+      "plural": "Oasis Rabbits",
+      "article": "an",
+      "special": false,
+      "format": "§f"
+    },
+    "Oasis Sheep": {
+      "name": "Oasis Sheep",
+      "plural": "Oasis Sheep",
+      "article": "an",
+      "special": false,
+      "format": "§b"
+    },
+    "Water Worm": {
+      "name": "Water Worm",
+      "plural": "Water Worms",
+      "article": "a",
+      "special": false,
+      "format": "§9"
+    },
+    "Poisoned Water Worm": {
+      "name": "Poisoned Water Worm",
+      "plural": "Poisoned Water Worms",
+      "article": "a",
+      "special": false,
+      "format": "§a"
+    },
+    "Abyssal Miner": {
+      "name": "Abyssal Miner",
+      "plural": "Abyssal Miners",
+      "article": "an",
+      "special": true,
+      "format": "§6"
+    },
+    "Flaming Worm": {
+      "name": "Flaming Worm",
+      "plural": "Flaming Worms",
+      "article": "a",
+      "special": false,
+      "format": "§c"
+    },
+    "Lava Blaze": {
+      "name": "Lava Blaze",
+      "plural": "Lava Blazes",
+      "article": "a",
+      "special": false,
+      "format": "§5"
+    },
+    "Lava Pigman": {
+      "name": "Lava Pigman",
+      "plural": "Lava Pigmen",
+      "article": "a",
+      "special": false,
+      "format": "§5"
+    },
+    "Mithril Grubber": {
+      "name": "Mithril Grubber",
+      "plural": "Mithril Grubbers",
+      "article": "a",
+      "special": false,
+      "format": "§3"
+    },
+    "Medium Mithril Grubber": {
+      "name": "Medium Mithril Grubber",
+      "plural": "Medium Mithril Grubbers",
+      "article": "a",
+      "special": false,
+      "format": "§3"
+    },
+    "Large Mithril Grubber": {
+      "name": "Large Mithril Grubber",
+      "plural": "Large Mithril Grubbers",
+      "article": "a",
+      "special": false,
+      "format": "§3"
+    },
+    "Bloated Mithril Grubber": {
+      "name": "Bloated Mithril Grubber",
+      "plural": "Bloated Mithril Grubbers",
+      "article": "a",
+      "special": false,
+      "format": "§3"
+    },
+    "Dumpster Diver": {
+      "name": "Dumpster Diver",
+      "plural": "Dumpster Divers",
+      "article": "a",
+      "special": false,
+      "format": "§3"
+    },
+    "Trash Gobbler": {
+      "name": "Trash Gobbler",
+      "plural": "Trash Gobblers",
+      "article": "a",
+      "special": false,
+      "format": "§2"
+    },
+    "Banshee": {
+      "name": "Banshee",
+      "plural": "Banshees",
+      "article": "a",
+      "special": false,
+      "format": "§5"
+    },
+    "Bayou Sludge": {
+      "name": "Bayou Sludge",
+      "plural": "Bayou Sludges",
+      "article": "a",
+      "special": false,
+      "format": "§a"
+    },
+    "Alligator": {
+      "name": "Alligator",
+      "plural": "Alligators",
+      "article": "an",
+      "special": true,
+      "format": "§2"
+    },
+    "Titanoboa": {
+      "name": "Titanoboa",
+      "plural": "Titanoboas",
+      "article": "a",
+      "special": true,
+      "format": "§3"
+    },
+    "Scarecrow": {
+      "name": "Scarecrow",
+      "plural": "Scarecrows",
+      "article": "a",
+      "special": false,
+      "format": "§9"
+    },
+    "Nightmare": {
+      "name": "Nightmare",
+      "plural": "Nightmares",
+      "article": "a",
+      "special": false,
+      "format": "§7"
+    },
+    "Werewolf": {
+      "name": "Werewolf",
+      "plural": "Werewolves",
+      "article": "a",
+      "special": false,
+      "format": "§5"
+    },
+    "Phantom Fisher": {
+      "name": "Phantom Fisher",
+      "plural": "Phantom Fishers",
+      "article": "a",
+      "special": true,
+      "format": "§6"
+    },
+    "Grim Reaper": {
+      "name": "Grim Reaper",
+      "plural": "Grim Reapers",
+      "article": "the",
+      "special": true,
+      "format": "§6"
+    },
+    "Frozen Steve": {
+      "name": "Frozen Steve",
+      "plural": "Frozen Steves",
+      "article": "a",
+      "special": false,
+      "format": "§b"
+    },
+    "Frosty": {
+      "name": "Frosty",
+      "plural": "Frosties",
+      "article": "a",
+      "special": false,
+      "format": "§f"
+    },
+    "Grinch": {
+      "name": "Grinch",
+      "plural": "Grinches",
+      "article": "the",
+      "special": false,
+      "format": "§2"
+    },
+    "Yeti": {
+      "name": "Yeti",
+      "plural": "Yetis",
+      "article": "a",
+      "special": true,
+      "format": "§6"
+    },
+    "Nutcracker": {
+      "name": "Nutcracker",
+      "plural": "Nutcrackers",
+      "article": "a",
+      "special": false,
+      "format": "§c"
+    },
+    "Reindrake": {
+      "name": "Reindrake",
+      "plural": "Reindrakes",
+      "article": "a",
+      "special": true,
+      "format": "§6"
+    },
+    "Nurse Shark": {
+      "name": "Nurse Shark",
+      "plural": "Nurse Sharks",
+      "article": "a",
+      "special": false,
+      "format": "§d"
+    },
+    "Blue Shark": {
+      "name": "Blue Shark",
+      "plural": "Blue Sharks",
+      "article": "a",
+      "special": false,
+      "format": "§9"
+    },
+    "Tiger Shark": {
+      "name": "Tiger Shark",
+      "plural": "Tiger Sharks",
+      "article": "a",
+      "special": false,
+      "format": "§6"
+    },
+    "Great White Shark": {
+      "name": "Great White Shark",
+      "plural": "Great White Sharks",
+      "article": "a",
+      "special": true,
+      "format": "§f"
+    },
+    "Magma Slug": {
+      "name": "Magma Slug",
+      "plural": "Magma Slugs",
+      "article": "a",
+      "special": false,
+      "format": "§4"
+    },
+    "Moogma": {
+      "name": "Moogma",
+      "plural": "Moogmata",
+      "article": "a",
+      "special": false,
+      "format": "§c"
+    },
+    "Lava Leech": {
+      "name": "Lava Leech",
+      "plural": "Lava Leeches",
+      "article": "a",
+      "special": false,
+      "format": "§c"
+    },
+    "Pyroclastic Worm": {
+      "name": "Pyroclastic Worm",
+      "plural": "Pyroclastic Worms",
+      "article": "a",
+      "special": false,
+      "format": "§c"
+    },
+    "Lava Flame": {
+      "name": "Lava Flame",
+      "plural": "Lava Flames",
+      "article": "a",
+      "special": false,
+      "format": "§5"
+    },
+    "Fire Eel": {
+      "name": "Fire Eel",
+      "plural": "Fire Eels",
+      "article": "a",
+      "special": false,
+      "format": "§c"
+    },
+    "Taurus": {
+      "name": "Taurus",
+      "plural": "Tauri",
+      "article": "a",
+      "special": false,
+      "format": "§d"
+    },
+    "Plhlegblast": {
+      "name": "Plhlegblast",
+      "plural": "Plhlegblasts",
+      "article": "a",
+      "special": true,
+      "format": "§9"
+    },
+    "Thunder": {
+      "name": "Thunder",
+      "plural": "Thunders",
+      "article": "",
+      "special": true,
+      "format": "§d"
+    },
+    "Lord Jawbus": {
+      "name": "Lord Jawbus",
+      "plural": "Lord Jawbi",
+      "article": "",
+      "special": true,
+      "format": "§d"
+    },
+    "Fried Chicken": {
+      "name": "Fried Chicken",
+      "plural": "Fried Chickens",
+      "article": "a",
+      "special": false,
+      "format": "§6"
+    },
+    "Fireproof Witch": {
+      "name": "Fireproof Witch",
+      "plural": "Fireproof Witches",
+      "article": "a",
+      "special": false,
+      "format": "§5"
+    },
+    "Fiery Scuttler": {
+      "name": "Fiery Scuttler",
+      "plural": "Fiery Scuttlers",
+      "article": "a",
+      "special": true,
+      "format": "§c"
+    },
+    "Ragnarok": {
+      "name": "Ragnarok",
+      "plural": "Ragnaroks",
+      "article": "",
+      "special": true,
+      "format": "§4"
+    }
+  }
+}
