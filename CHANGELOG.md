@@ -1,7 +1,8 @@
-# v1.8.2 - Small patch no 2
+# v1.9.0 - ???
 
 ### Features:
 - Added 26.1.2 support
+- Added a littlefoot alert (Haven't tested it, thats Narga's job)
 
 ### Changes:
 - Added a stability check before resizing hotspots

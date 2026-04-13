@@ -22,6 +22,11 @@ object OtherSettings : Category("Other") {
         description = Literal("Shows the currently tracked achievements.")
     }
 
+    var littlefootAlert by boolean(false) {
+        name = Literal("Littlefoot Alert")
+        description = Literal("Sends an alert whenever a Littlefoot is found.")
+    }
+
     var zoomEtherwarp by boolean(false) {
         name = Literal("Zoom on etherwarp")
         description = Literal("Zooms when etherwarping")
