@@ -5,13 +5,14 @@ import cloud.glitchdev.rfu.config.Category
 import cloud.glitchdev.rfu.constants.SeaCreatures
 import cloud.glitchdev.rfu.constants.RareScDisplayDataType
 import cloud.glitchdev.rfu.feature.fishing.RareScPartyMessage
+import cloud.glitchdev.rfu.feature.fishing.CatchMessageReplacer
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import cloud.glitchdev.rfu.gui.window.SeaCreatureEditWindow
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 
-object RareScSettings : Category("Rare SCs") {
+object SeaCreatureConfig : Category("Sea Creatures") {
     override val description: TranslatableValue
-        get() = Literal("Settings for your great catches!")
+        get() = Literal("Settings for all your sea creature needs!")
 
     init {
         dualSeparator {
@@ -38,6 +39,40 @@ object RareScSettings : Category("Rare SCs") {
     var timeToKill by boolean(true) {
         name = Literal("Time to kill")
         description = Literal("Sends a message after killing a rare Sea Creature saying how long it took.")
+    }
+
+    init {
+        dualSeparator {
+            title = "Catch Messages"
+            description = "Replace standard catch messages with custom ones"
+        }
+    }
+
+    var replaceCatchMessages by observable(boolean(true) {
+        name = Literal("Replace Catch Messages")
+        description = Literal("Replaces standard catch messages with custom ones")
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var catchMessageTemplate by string("&3&lSEA CREATURE! &eYou caught {article} {style}&l{name}") {
+        name = Literal("Catch Message Template")
+        description = Literal("The template for the catch message. Available: {article}, {article_upper}, {name}, {style}, {plural}, {mob}, {mobs}")
+        condition = { replaceCatchMessages }
+    }
+
+    var doubleHookCatchMessageTemplate by string("&9&lDOUBLE HOOK! &eYou caught two {style}&l{plural}") {
+        name = Literal("Double Hook Message Template")
+        description = Literal("The template for the double hook catch message. Available: {article}, {article_upper}, {name}, {style}, {plural}, {mob}, {mobs}")
+        condition = { replaceCatchMessages }
+    }
+
+    init {
+        previewButton(
+            CatchMessageReplacer::preview,
+            "Preview Message",
+            "Shows a preview of one of the catch messages in chat."
+        ) { replaceCatchMessages }
     }
 
     init {

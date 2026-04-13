@@ -5,7 +5,7 @@ import cloud.glitchdev.rfu.config.seacreatures.SeaCreatureSettingsManager
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.checkbox.UICheckbox
 import cloud.glitchdev.rfu.gui.components.textinput.UIDecoratedTextInput
-import cloud.glitchdev.rfu.config.categories.GeneralFishing
+import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
 import cloud.glitchdev.rfu.utils.dsl.toMcCodes
 import cloud.glitchdev.rfu.utils.gui.addHoverColoring
 import gg.essential.elementa.UIComponent
@@ -309,8 +309,8 @@ class SeaCreatureEditWindow : BaseWindow(true) {
         val articleUpper = article.replaceFirstChar { it.uppercaseChar() }
         val mob = if (article.isNotEmpty()) "$article $name" else name
 
-        val normalTemplate = GeneralFishing.catchMessageTemplate
-        val doubleTemplate = GeneralFishing.doubleHookCatchMessageTemplate
+        val normalTemplate = SeaCreatureConfig.catchMessageTemplate
+        val doubleTemplate = SeaCreatureConfig.doubleHookCatchMessageTemplate
 
         fun style(template: String): String {
             return template

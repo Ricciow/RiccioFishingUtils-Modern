@@ -1,7 +1,7 @@
 package cloud.glitchdev.rfu.feature.mob
 
-import cloud.glitchdev.rfu.config.categories.RareScSettings
-import cloud.glitchdev.rfu.config.categories.RareScSettings.RARE_SC_REGEX
+import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
+import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig.RARE_SC_REGEX
 import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDetectEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
@@ -15,7 +15,7 @@ object RareAlert : Feature {
 
     override fun onInitialize() {
         registerMobDetectEvent { entities ->
-            if(!RareScSettings.detectionAlert) return@registerMobDetectEvent
+            if(!SeaCreatureConfig.detectionAlert) return@registerMobDetectEvent
             val entities = entities.filter { RARE_SC_REGEX.matches(it.sbName) }.toSet()
             val newEntities = entities.minus(lastEntities)
             lastEntities = entities
@@ -30,8 +30,8 @@ object RareAlert : Feature {
                 Title.showTitle("§6§l[§fα§6§l] §3§l${entity.sbName} §6§l[§fα§6§l]") { !entity.isRemoved() }
             }
 
-            if(newEntities.isNotEmpty() && RareScSettings.rareScSound) {
-                Sounds.playSound("rfu:rare_sc", 1f, RareScSettings.rareScSoundVolume)
+            if(newEntities.isNotEmpty() && SeaCreatureConfig.rareScSound) {
+                Sounds.playSound("rfu:rare_sc", 1f, SeaCreatureConfig.rareScSoundVolume)
             }
         }
     }

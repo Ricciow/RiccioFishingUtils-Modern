@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.feature.fishing
 
-import cloud.glitchdev.rfu.config.categories.GeneralFishing
+import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
 import cloud.glitchdev.rfu.constants.SeaCreatures
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerAllowGameEvent
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents
@@ -15,15 +15,15 @@ import net.minecraft.network.chat.Component
 object CatchMessageReplacer : Feature {
     override fun onInitialize() {
         registerAllowGameEvent(SeaCreatureCatchEvents.SC_MESSAGE_REGEX) { _, _, _ ->
-            !GeneralFishing.replaceCatchMessages
+            !SeaCreatureConfig.replaceCatchMessages
         }
 
         registerAllowGameEvent(SeaCreatureCatchEvents.DOUBLE_HOOK_REGEX) { _, _, _ ->
-            !GeneralFishing.replaceCatchMessages
+            !SeaCreatureConfig.replaceCatchMessages
         }
 
         registerSeaCreatureCatchEvent { sc, isDoubleHook, _, _, _ ->
-            if (GeneralFishing.replaceCatchMessages) {
+            if (SeaCreatureConfig.replaceCatchMessages) {
 
                 val formattedMessage = getTemplate(isDoubleHook)
                     .replace("{article}", sc.getArticle())
@@ -59,9 +59,9 @@ object CatchMessageReplacer : Feature {
 
     private fun getTemplate(isDoubleHook : Boolean) : String {
         return if (isDoubleHook) {
-            GeneralFishing.doubleHookCatchMessageTemplate
+            SeaCreatureConfig.doubleHookCatchMessageTemplate
         } else {
-            GeneralFishing.catchMessageTemplate
+            SeaCreatureConfig.catchMessageTemplate
         }
     }
 }

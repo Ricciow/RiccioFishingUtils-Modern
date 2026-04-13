@@ -1,7 +1,7 @@
 package cloud.glitchdev.rfu.gui.hud.elements
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
-import cloud.glitchdev.rfu.config.categories.RareScSettings
+import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
 import cloud.glitchdev.rfu.constants.RareScDisplayDataType
 import cloud.glitchdev.rfu.constants.SeaCreatures
 import cloud.glitchdev.rfu.constants.LiquidTypes
@@ -33,7 +33,7 @@ object RareSCDisplay : AbstractTextHudElement("rareSCDisplay") {
         get() = FishingSession.isFishing
 
     override val enabled: Boolean
-        get() = RareScSettings.rareScDisplay && (super.enabled || !RareScSettings.rareScOnlyWhenFishing || isFishing)
+        get() = SeaCreatureConfig.rareScDisplay && (super.enabled || !SeaCreatureConfig.rareScOnlyWhenFishing || isFishing)
 
     override fun onInitialize() {
         super.onInitialize()
@@ -93,7 +93,7 @@ object RareSCDisplay : AbstractTextHudElement("rareSCDisplay") {
             return
         }
 
-        val dataOrder = RareScSettings.rareScDisplayDataOrder
+        val dataOrder = SeaCreatureConfig.rareScDisplayDataOrder
 
         selectedScs.forEach { sc: SeaCreatures ->
             if (currentIsland == null || !sc.category.islands.contains(currentIsland)) {
