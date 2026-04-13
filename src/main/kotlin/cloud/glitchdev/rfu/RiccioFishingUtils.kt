@@ -3,7 +3,6 @@ package cloud.glitchdev.rfu
 import cloud.glitchdev.rfu.config.RFUSettings
 import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.config.migration.ConfigMigration
-import cloud.glitchdev.rfu.config.seacreatures.SeaCreatureSettingsManager
 import net.fabricmc.api.ClientModInitializer
 import net.minecraft.client.Minecraft
 import cloud.glitchdev.rfu.generated.RFULoader
