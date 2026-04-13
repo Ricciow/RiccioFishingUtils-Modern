@@ -164,7 +164,7 @@ object GeneralFishing : Category("General Fishing") {
 
     var failCastVolume by float(1f) {
         name = Literal("Sound Volume")
-        description = Literal("The volume for the expired sound")
+        description = Literal("The volume for the failed cast sound")
         range = 0f..1f
         slider = true
         condition = { failCastAlert && failCastSound }
