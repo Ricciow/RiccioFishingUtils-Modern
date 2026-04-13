@@ -3,6 +3,7 @@
 ### Features:
 - Added 26.1.2 support
 - Added a littlefoot alert (Haven't tested it, thats Narga's job)
+- Added volume sliders to all sounds that were missing it
 
 ### Changes:
 - Added a stability check before resizing hotspots

@@ -1,7 +1,6 @@
 package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
-import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig.detectionAlert
 import cloud.glitchdev.rfu.constants.FishTrackingType
 import cloud.glitchdev.rfu.data.mob.DeployableType
 import cloud.glitchdev.rfu.feature.fishing.DoubleHookMessages
@@ -66,8 +65,8 @@ object GeneralFishing : Category("General Fishing") {
     }
 
     var deployableExpiredAlert by observable(boolean(true) {
-        name = Literal("Deployable Display")
-        description = Literal("Toggles the deployable display")
+        name = Literal("Deployable Expired Alert")
+        description = Literal("Toggles the alert for expired deployables")
     }) { _, _ ->
         reloadScreen()
     }
@@ -81,7 +80,7 @@ object GeneralFishing : Category("General Fishing") {
     var deployableExpiredSound by observable(boolean(true) {
         name = Literal("Expired Sound")
         description = Literal("Plays a sound whenever a deployable expires.")
-        condition = { detectionAlert }
+        condition = { deployableExpiredAlert }
     }) { _, _ ->
         reloadScreen()
     }

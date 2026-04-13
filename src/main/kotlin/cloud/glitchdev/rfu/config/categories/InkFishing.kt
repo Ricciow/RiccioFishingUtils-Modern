@@ -57,8 +57,26 @@ object InkFishing : Category("Ink Fishing") {
         }
     }
 
-    var rainAlert by boolean(true) {
+    var rainAlert by observable(boolean(true) {
         name = Literal("Rain Alert")
-        description = Literal("Show an alert+sound when rain expires in the park")
+        description = Literal("Show an alert when rain expires in the park")
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var rainAlertSound by observable(boolean(true) {
+        name = Literal("Rain Alert Sound")
+        description = Literal("Plays a sound when rain expires in the park")
+        condition = { rainAlert }
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var rainAlertVolume by float(1f) {
+        name = Literal("Sound Volume")
+        description = Literal("The volume for the rain alert sound")
+        range = 0f..1f
+        slider = true
+        condition = { rainAlert && rainAlertSound }
     }
 }

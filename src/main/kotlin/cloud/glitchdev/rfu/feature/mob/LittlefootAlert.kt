@@ -25,7 +25,9 @@ object LittlefootAlert : Feature {
             }
 
             if(newLittlefoots.isNotEmpty()) {
-                Sounds.playSound("rfu:littlefoot", 1f, 1f)
+                if (OtherSettings.littlefootSound) {
+                    Sounds.playSound("rfu:littlefoot", 1f, OtherSettings.littlefootVolume)
+                }
             }
         }
     }

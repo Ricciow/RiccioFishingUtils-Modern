@@ -144,10 +144,20 @@ object SeaCreatureConfig : Category("Sea Creatures") {
         condition = { goldenDragonAlert }
     }
 
-    var goldenDragonSound by boolean(true) {
+    var goldenDragonSound by observable(boolean(true) {
         name = Literal("GDrag Alert Sound")
         description = Literal("Plays a sound when the alert triggers.")
         condition = { goldenDragonAlert }
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var goldenDragonVolume by float(1f) {
+        name = Literal("Sound Volume")
+        description = Literal("The volume for the GDrag alert sound")
+        range = 0f..1f
+        slider = true
+        condition = { goldenDragonAlert && goldenDragonSound }
     }
 
     init {

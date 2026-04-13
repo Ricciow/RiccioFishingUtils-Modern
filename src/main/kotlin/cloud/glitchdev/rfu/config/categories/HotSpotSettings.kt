@@ -26,4 +26,20 @@ object HotSpotSettings : Category("Hot Spots") {
         name = Literal("Hotspot Expired Alert")
         description = Literal("Sends an alert when the hotspot you're fishing in expires!")
     }
+
+    var hotspotExpiredSound by observable(boolean(true) {
+        name = Literal("Hotspot Expired Sound")
+        description = Literal("Plays a sound when the hotspot you're fishing in expires!")
+        condition = { hotspotExpiredAlert }
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var hotspotExpiredVolume by float(1f) {
+        name = Literal("Sound Volume")
+        description = Literal("The volume for the hotspot expired sound")
+        range = 0f..1f
+        slider = true
+        condition = { hotspotExpiredAlert && hotspotExpiredSound }
+    }
 }
