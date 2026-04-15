@@ -215,6 +215,11 @@ class UIPartyCard(val party: FishingParty, val radiusProps: Float) : UIRoundedRe
             height = GroupMaxSizeConstraint("PartyCardTags", BoundingBoxConstraint())
         } childOf innerContainer
 
+        UIConditionCard(Requisite("location", party.island.island, true)).constrain {
+            x = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
+            y = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
+        } childOf tagsContainer
+
         if(party.liquid == LiquidTypes.WATER) {
             UIConditionCard(
                 Requisite("water", "Water", true)

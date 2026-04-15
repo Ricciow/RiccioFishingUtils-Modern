@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.gui
 
+import cloud.glitchdev.rfu.constants.FishingIslands
 import java.awt.Color
 
 object UIScheme {
@@ -93,6 +94,20 @@ object UIScheme {
     val pfConditionCardEnderman9Border = Color(170, 0, 170)
     val pfConditionCardBrainFood = Color(128, 42, 128)
     val pfConditionCardBrainFoodBorder = Color(255, 85, 255)
+    val pfConditionCardIsland = Color(45, 45, 45)
+    val pfConditionCardIslandBorder = Color(100, 100, 100)
+
+    fun getIslandColor(island: String): Color {
+        val islandObj = FishingIslands.findIslandObject(island)
+        val baseColor = islandObj?.color ?: pfConditionCardIsland
+        return Color(baseColor.red / 3, baseColor.green / 3, baseColor.blue / 3)
+    }
+
+    fun getIslandBorderColor(island: String): Color {
+        val islandObj = FishingIslands.findIslandObject(island)
+        return islandObj?.color ?: pfConditionCardIslandBorder
+    }
+
     val pfConditionCardUnknown = Color(100, 100, 100)
     val pfConditionCardUnknownBorder = Color(200, 200, 200)
 
