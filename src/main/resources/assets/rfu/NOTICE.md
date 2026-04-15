@@ -52,6 +52,28 @@ SOFTWARE.
 ========================================================================
 
 ========================================================================
+4. Icons
+
+   A. RPG Game Filled Icons
+   Author: nagoshiashumari (via SVG Repo)
+   License: GNU General Public License (GPL)
+   Source: https://www.svgrepo.com/collection/rpg-game-filled-icons/
+
+   B. Gentlecons Interface Icons
+   Author: Konstantin Filatov (via SVG Repo)
+   License: Creative Commons Attribution License (CC BY)
+   Source: https://www.svgrepo.com/collection/gentlecons-interface-icons/
+   Note: These icons are used under the CC BY license, requiring
+   attribution to the original creator.
+
+   C. Bigmug Interface Icons
+   Author: Catalin Fertu
+   License: Creative Commons Attribution License (CC BY)
+   Source: https://www.svgrepo.com/collection/bigmug-interface-icons/
+
+========================================================================
+
+========================================================================
 
 LGPL v3 License Text (Applies to UniversalCraft and Elementa)
 

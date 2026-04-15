@@ -60,6 +60,7 @@ object UIScheme {
     val pfInputBg = Color(100, 100, 100, 200)
     val pfInputBgHovered = Color(45, 75, 200, 100)
     val pfDropdownSelected = Color(45, 75, 200, 200)
+    val pfScrollBar = pfWindowSeparator
     //Pf card
     val pfCardBg = pfWindowBackground
     val pfCardBorderWidth = 1.5f
@@ -77,6 +78,23 @@ object UIScheme {
     val pfCardLevelBgColor = pfWindowBackground
     val pfCardLevelLabelColor = Color(180, 180, 180)
     val pfCardDescriptionColor = Color(150, 150, 150)
+    //ConditionCard
+    val pfConditionCardWidth = 1f
+    val pfConditionCardPadding = 2f
+    val pfConditionCardWater = Color(42, 42, 128)
+    val pfConditionCardWaterBorder = Color(85, 85, 255)
+    val pfConditionCardLooting5 = Color(42, 128, 128)
+    val pfConditionCardLooting5Border = Color(85, 255, 255)
+    val pfConditionCardLava = Color(128, 85, 0)
+    val pfConditionCardLavaBorder = Color(255, 170, 0)
+    val pfConditionCardKiller = Color(128, 42, 42)
+    val pfConditionCardKillerBorder = Color(255, 85, 85)
+    val pfConditionCardEnderman9 = Color(85, 0, 85)
+    val pfConditionCardEnderman9Border = Color(170, 0, 170)
+    val pfConditionCardBrainFood = Color(128, 42, 128)
+    val pfConditionCardBrainFoodBorder = Color(255, 85, 255)
+    val pfConditionCardUnknown = Color(100, 100, 100)
+    val pfConditionCardUnknownBorder = Color(200, 200, 200)
 
     const val HOVER_EFFECT_DURATION = 0.1f
 

@@ -3,7 +3,6 @@ package cloud.glitchdev.rfu.utils.network
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents
-import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.runPartyCreatedTasks
 import cloud.glitchdev.rfu.model.network.WebSocketEvent
 import cloud.glitchdev.rfu.model.network.WebSocketEventType
 import cloud.glitchdev.rfu.model.party.FishingParty
@@ -96,7 +95,7 @@ object PartyWebSocket : RegisteredEvent {
                             if (updatedParty.user == User.getUsername()) {
                                 myParty = updatedParty
                                 if (event.type == WebSocketEventType.CREATED) {
-                                    runPartyCreatedTasks(updatedParty)
+                                    PartyFinderEvents.handleCreated(updatedParty)
                                 }
                             }
                             PartyFinderEvents.handleUpdate(updatedParty)

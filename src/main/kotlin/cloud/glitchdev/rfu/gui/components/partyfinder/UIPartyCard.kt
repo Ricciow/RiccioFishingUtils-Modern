@@ -1,11 +1,15 @@
 package cloud.glitchdev.rfu.gui.components.partyfinder
 
+import cloud.glitchdev.rfu.constants.LiquidTypes
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.UIPopup
+import cloud.glitchdev.rfu.gui.window.PartyFinderWindow
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.gui.components.elementa.BoundingBoxConstraint
 import cloud.glitchdev.rfu.gui.components.elementa.CopyComponentSizeConstraint
+import cloud.glitchdev.rfu.gui.components.elementa.GroupMaxSizeConstraint
 import cloud.glitchdev.rfu.gui.components.elementa.TextWrappingConstraint
+import cloud.glitchdev.rfu.model.party.Requisite
 import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.dsl.isUser
 import cloud.glitchdev.rfu.utils.network.PartyWebSocket
@@ -18,6 +22,7 @@ import gg.essential.elementa.components.UIWrappedText
 import gg.essential.elementa.constraints.AspectConstraint
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
+import gg.essential.elementa.constraints.CramSiblingConstraint
 import gg.essential.elementa.constraints.FillConstraint
 import gg.essential.elementa.constraints.MinConstraint
 import gg.essential.elementa.constraints.ScaledTextConstraint
@@ -49,11 +54,11 @@ class UIPartyCard(val party: FishingParty, val radiusProps: Float) : UIRoundedRe
     }
 
     fun create() {
-        val joinErrorPopup = UIPopup(5f, "") childOf this
+        val joinErrorPopup = PartyFinderWindow.popup
 
         this.constrain {
             color = UIScheme.pfCardBorder.toConstraint()
-            height = ChildBasedSizeConstraint() + (borderWidth * 2).pixels
+            height = BoundingBoxConstraint() + (borderWidth * 2).pixels
         }.onMouseEnter {
             animate {
                 setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, UIScheme.pfCardBorderHovered.toConstraint())
@@ -145,8 +150,9 @@ class UIPartyCard(val party: FishingParty, val radiusProps: Float) : UIRoundedRe
         } childOf header
 
         val userText = UIText(party.user) childOf textContainer
+        val title = party.title.ifEmpty { party.island.island }
 
-        titleText = UIText("§l${party.title}").constrain {
+        titleText = UIText("§l$title").constrain {
             x = 0.pixels
             y = SiblingConstraint(UIScheme.pfCardSmallPadding)
             width = MinConstraint(ScaledTextConstraint(1f), 70.percent)
@@ -202,7 +208,7 @@ class UIPartyCard(val party: FishingParty, val radiusProps: Float) : UIRoundedRe
             x = CenterConstraint()
             y = SiblingConstraint(UIScheme.pfCardInnerPadding)
             width = 100.percent
-            height = BoundingBoxConstraint()
+            height = GroupMaxSizeConstraint("PartyCardDescription", BoundingBoxConstraint())
         } childOf innerContainer
 
         descriptionSeparator = UIBlock() childOf descriptionContainer
@@ -226,7 +232,37 @@ class UIPartyCard(val party: FishingParty, val radiusProps: Float) : UIRoundedRe
     }
 
     fun createTags() {
+        val tagsContainer = UIContainer().constrain {
+            x = CenterConstraint()
+            y = SiblingConstraint(UIScheme.pfCardInnerPadding)
+            width = 100.percent
+            height = GroupMaxSizeConstraint("PartyCardTags", BoundingBoxConstraint())
+        } childOf innerContainer
 
+        if(party.liquid == LiquidTypes.WATER) {
+            UIConditionCard(
+                Requisite("water", "Water", true)
+            ).constrain {
+                x = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
+                y = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
+            } childOf tagsContainer
+        } else {
+            UIConditionCard(
+                Requisite("lava", "Lava", true)
+            ).constrain {
+                x = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
+                y = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
+            } childOf tagsContainer
+        }
+
+        party.requisites.forEach { requisite ->
+            if(requisite.value) {
+                UIConditionCard(requisite).constrain {
+                    x = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
+                    y = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
+                } childOf tagsContainer
+            }
+        }
     }
 
     fun createFloating() {

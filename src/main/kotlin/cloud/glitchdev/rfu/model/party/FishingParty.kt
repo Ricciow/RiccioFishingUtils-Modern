@@ -12,7 +12,7 @@ import com.google.gson.Gson
 
 data class FishingParty(
     @Transient
-    var id: String = "?",
+    var id: String? = "?",
     var user: String,
     var level: Int,
     var title: String,

@@ -120,6 +120,13 @@ object PartyFinderEvents {
         PartyListChanged.runTasks(_parties.toList())
     }
 
+    fun handleCreated(party: FishingParty) {
+        _parties.removeIf { it.user == party.user }
+        _parties.add(party)
+        PartyListChanged.runTasks(_parties.toList())
+        PartyCreated.runTasks(party)
+    }
+
     fun registerPartyCreatedEvent(priority: Int = 20, callback: (FishingParty) -> Unit): PartyCreated.PartyCreatedEvent {
         return PartyCreated.register(priority, callback)
     }
@@ -131,10 +138,6 @@ object PartyFinderEvents {
     fun registerPartyListChangedEvent(priority: Int = 20, callback: (List<FishingParty>) -> Unit) = PartyListChanged.register(priority, callback)
     fun registerJoinRequestEvent(priority: Int = 20, callback: (String) -> Unit) = JoinRequest.register(priority, callback)
     fun registerMyPartyChangedEvent(priority: Int = 20, callback: (FishingParty?) -> Unit) = MyPartyChanged.register(priority, callback)
-
-    fun runPartyCreatedTasks(party: FishingParty) {
-        PartyCreated.runTasks(party)
-    }
 
     fun runPartyJoinedTasks() {
         PartyJoined.runTasks()

@@ -1,10 +1,12 @@
 package cloud.glitchdev.rfu.gui.components.elementa
 
+import cloud.glitchdev.rfu.utils.gui.isHidden
 import gg.essential.elementa.UIComponent
 import gg.essential.elementa.constraints.ConstraintType
 import gg.essential.elementa.constraints.SizeConstraint
 import gg.essential.elementa.constraints.resolution.ConstraintVisitor
 import gg.essential.elementa.dsl.pixel
+import java.lang.ref.WeakReference
 
 class GroupMaxSizeConstraint(
     val groupKey: String,
@@ -14,49 +16,77 @@ class GroupMaxSizeConstraint(
     override var recalculate = true
     override var constrainTo: UIComponent? = null
 
+    private fun ensureRegistered(component: UIComponent) {
+        val list = globalGroups.getOrPut(groupKey) { mutableListOf() }
+
+        list.removeAll {
+            val comp = it.second.get()
+            comp == null || comp.isHidden()
+        }
+
+        if (!component.isHidden() && list.none { it.first === this && it.second.get() === component }) {
+            list.add(Pair(this, WeakReference(component)))
+        }
+    }
+
     override fun getWidthImpl(component: UIComponent): Float {
-        if (!component.hasParent) return baseConstraint.getWidthImpl(component)
+        ensureRegistered(component)
 
-        return component.parent.children.maxOfOrNull { sibling ->
-            val siblingConstraint = sibling.constraints.width as? GroupMaxSizeConstraint
+        val group = globalGroups[groupKey] ?: return baseConstraint.getWidthImpl(component)
 
-            if (siblingConstraint != null && siblingConstraint.groupKey == this.groupKey) {
-                siblingConstraint.baseConstraint.getWidthImpl(sibling)
+        return group.mapNotNull { (constraint, weakRef) ->
+            val comp = weakRef.get()
+            if (comp != null) {
+                constraint.baseConstraint.getWidthImpl(comp)
             } else {
-                0f
+                null
             }
-        } ?: 0f
+        }.maxOrNull() ?: 0f
     }
 
     override fun getHeightImpl(component: UIComponent): Float {
-        if (!component.hasParent) return baseConstraint.getHeightImpl(component)
+        ensureRegistered(component)
 
-        return component.parent.children.maxOfOrNull { sibling ->
-            val siblingConstraint = sibling.constraints.height as? GroupMaxSizeConstraint
+        val group = globalGroups[groupKey] ?: return baseConstraint.getHeightImpl(component)
 
-            if (siblingConstraint != null && siblingConstraint.groupKey == this.groupKey) {
-                siblingConstraint.baseConstraint.getHeightImpl(sibling)
+        return group.mapNotNull { (constraint, weakRef) ->
+            val comp = weakRef.get()
+            if (comp != null) {
+                constraint.baseConstraint.getHeightImpl(comp)
             } else {
-                0f
+                null
             }
-        } ?: 0f
+        }.maxOrNull() ?: 0f
     }
 
     override fun getRadiusImpl(component: UIComponent): Float {
-        if (!component.hasParent) return baseConstraint.getRadiusImpl(component)
+        ensureRegistered(component)
 
-        return component.parent.children.maxOfOrNull { sibling ->
-            val siblingConstraint = sibling.constraints.radius as? GroupMaxSizeConstraint
+        val group = globalGroups[groupKey] ?: return baseConstraint.getRadiusImpl(component)
 
-            if (siblingConstraint != null && siblingConstraint.groupKey == this.groupKey) {
-                siblingConstraint.baseConstraint.getRadiusImpl(sibling)
+        return group.mapNotNull { (constraint, weakRef) ->
+            val comp = weakRef.get()
+            if (comp != null) {
+                constraint.baseConstraint.getRadiusImpl(comp)
             } else {
-                0f
+                null
             }
-        } ?: 0f
+        }.maxOrNull() ?: 0f
     }
 
     override fun visitImpl(visitor: ConstraintVisitor, type: ConstraintType) {
         baseConstraint.visitImpl(visitor, type)
+    }
+
+    companion object {
+        private val globalGroups = mutableMapOf<String, MutableList<Pair<GroupMaxSizeConstraint, WeakReference<UIComponent>>>>()
+
+        fun clearGroup(groupKey: String) {
+            globalGroups.remove(groupKey)
+        }
+
+        fun clearAll() {
+            globalGroups.clear()
+        }
     }
 }

@@ -31,8 +31,8 @@ class UIPopup(
     lateinit var popupContainer : UIRoundedRectangle
 
     init {
-        create()
         this.hide()
+        create()
     }
 
     fun setText(text : String) {

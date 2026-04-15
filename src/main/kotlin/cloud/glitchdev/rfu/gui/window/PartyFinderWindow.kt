@@ -1,26 +1,40 @@
 package cloud.glitchdev.rfu.gui.window
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
+import cloud.glitchdev.rfu.constants.FishingIslands
+import cloud.glitchdev.rfu.constants.LiquidTypes
+import cloud.glitchdev.rfu.constants.PartyTypes
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.UIPopup
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyListChangedEvent
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerMyPartyChangedEvent
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyCreatedEvent
 import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
+import cloud.glitchdev.rfu.events.managers.PartyFinderEvents
 import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.colors
 import cloud.glitchdev.rfu.gui.components.elementa.BoundingBoxConstraint
 import cloud.glitchdev.rfu.gui.components.elementa.GroupMaxSizeConstraint
+import cloud.glitchdev.rfu.gui.components.elementa.JustifiedCramSiblingConstraint
 import cloud.glitchdev.rfu.gui.components.partyfinder.UIFilterArea
 import cloud.glitchdev.rfu.gui.components.partyfinder.UIPartyCard
 import cloud.glitchdev.rfu.model.party.FishingParty
+import cloud.glitchdev.rfu.model.party.Players
+import cloud.glitchdev.rfu.model.party.Requisite
+import cloud.glitchdev.rfu.utils.Chat
+import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.utils.User
+import cloud.glitchdev.rfu.utils.command.Command
+import cloud.glitchdev.rfu.utils.command.SimpleCommand
+import com.mojang.brigadier.context.CommandContext
 import gg.essential.elementa.UIComponent
+import gg.essential.elementa.components.ScrollComponent
 import gg.essential.elementa.components.UIBlock
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIImage
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
+import gg.essential.elementa.components.Window
 import gg.essential.elementa.components.inspector.Inspector
 import gg.essential.elementa.constraints.AspectConstraint
 import gg.essential.elementa.constraints.CenterConstraint
@@ -39,6 +53,8 @@ import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.toConstraint
 import gg.essential.elementa.effects.ScissorEffect
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
+import net.minecraft.network.chat.Component
 
 object PartyFinderWindow : BaseWindow(false) {
     val primaryColor = UIScheme.pfWindowBackground.toConstraint()
@@ -46,29 +62,31 @@ object PartyFinderWindow : BaseWindow(false) {
     private val headerHeight = 30.pixels
     private val filterHeight = 50.pixels
     private val spacing = 10f
+    private val smallSpacing = 4f
     private var filtersOpen = false
+    private var parties : List<FishingParty> = PartyFinderEvents.parties
+    private var partyCards : MutableList<UIPartyCard> = mutableListOf()
 
     lateinit var popup: UIPopup
-    lateinit var createButton: UIButton
     lateinit var filterArea : UIContainer
     lateinit var filterContainer : UIFilterArea
+    lateinit var scrollArea : ScrollComponent
 
     init {
         create()
         onUpdate()
 
         registerPartyListChangedEvent { parties ->
+            this.parties = parties
+            println(parties)
             onUpdate()
         }
 
         registerPartyCreatedEvent { party ->
+            //Meant to move back to the pf window after creation
             if (party.user == User.getUsername()) {
                 onUpdate()
             }
-        }
-
-        registerMyPartyChangedEvent {
-            onUpdate()
         }
 
         registerErrorMessageEvent { message, origin ->
@@ -102,6 +120,8 @@ object PartyFinderWindow : BaseWindow(false) {
         createFilterArea(useableArea)
         createPartyArea(useableArea)
 
+        popup = UIPopup(5f, "") childOf window
+
         Inspector(window) childOf window
     }
 
@@ -131,7 +151,7 @@ object PartyFinderWindow : BaseWindow(false) {
         } childOf header
 
         val createImage = UIImage.ofResource("/assets/rfu/ui/edit.png")
-        createButton = UIButton.withImage(createImage, 5f) {
+        UIButton.withImage(createImage, 5f) {
             //Open Party creation window (will be a new window)
         }.constrain {
             x = SiblingConstraint(5f, alignOpposite = true)
@@ -144,7 +164,7 @@ object PartyFinderWindow : BaseWindow(false) {
         } childOf rightArea
 
         val filterImage = UIImage.ofResource("/assets/rfu/ui/filter.png")
-        createButton = UIButton.withImage(filterImage, 5f) {
+        UIButton.withImage(filterImage, 5f) {
             filtersOpen = !filtersOpen
             onUpdate()
         }.constrain {
@@ -167,7 +187,7 @@ object PartyFinderWindow : BaseWindow(false) {
         } childOf background effect ScissorEffect()
 
         filterContainer = UIFilterArea(filterHeight) {
-            println("Filter Changed")
+            onUpdate()
         }.constrain {
             x = CenterConstraint()
             y = 0.pixels
@@ -193,16 +213,48 @@ object PartyFinderWindow : BaseWindow(false) {
             height = FillConstraint()
         } childOf background
 
-        val party = FishingParty.blankParty()
-
-        party.user = "ricciow"
-        party.title = "Super Cool Title"
-        party.description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean congue auctor semper. Proin egestas tincidunt finibus. Donec venenatis neque non orci vulputate, ut malesuada justo lobortis massa nunc."
-        party.level = 1
-
-        UIPartyCard(party, 5f).constrain {
-            width = 33.percent
+        scrollArea = ScrollComponent().constrain {
+            x = CenterConstraint()
+            y = smallSpacing.pixels
+            width = 100.percent
+            height = 100.percent - smallSpacing.pixels
         } childOf partiesContainer
+
+        val scrollBar = UIRoundedRectangle(5f).constrain {
+            x = 0.pixels(true)
+            width = 3.pixels
+        } childOf partiesContainer
+
+        scrollArea.setScrollBarComponent(scrollBar, hideWhenUseless = true, isHorizontal = false)
+
+        updateFiltering()
+    }
+
+    fun updateFiltering() {
+        if(::scrollArea.isInitialized) {
+            //Delete Old Cards
+            partyCards.forEach { partyCard ->
+                scrollArea.removeChild(partyCard)
+            }
+            partyCards.clear()
+
+            //Recreate new cards
+            val parties = if(filtersOpen) {
+                filterContainer.applyFilter(parties)
+            } else {
+                parties
+            }
+
+            parties.forEach { party ->
+                val card = UIPartyCard(party, 5f).constrain {
+                    x = JustifiedCramSiblingConstraint(2f)
+                    y = JustifiedCramSiblingConstraint()
+                    width = 33.percent
+                } childOf scrollArea
+
+                partyCards.add(card)
+            }
+        }
     }
 
     fun onUpdate() {
@@ -215,5 +267,6 @@ object PartyFinderWindow : BaseWindow(false) {
                 setHeightAnimation(Animations.OUT_EXP, 0.5f, 1.pixels)
             }
         }
+        updateFiltering()
     }
 }
