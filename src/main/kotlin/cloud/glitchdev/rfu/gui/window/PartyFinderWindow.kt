@@ -231,29 +231,30 @@ object PartyFinderWindow : BaseWindow(false) {
     }
 
     fun updateFiltering() {
-        if(::scrollArea.isInitialized) {
-            //Delete Old Cards
-            partyCards.forEach { partyCard ->
-                scrollArea.removeChild(partyCard)
-            }
-            partyCards.clear()
+        if (!::scrollArea.isInitialized) return
 
-            //Recreate new cards
-            val parties = if(filtersOpen) {
-                filterContainer.applyFilter(parties)
+        val currentFilteredParties = if (filtersOpen) filterContainer.applyFilter(parties) else parties
+        val existingCardsMap = partyCards.associateBy { it.party.user }
+
+        val newCards = currentFilteredParties.map { party ->
+            val existingCard = existingCardsMap[party.user]
+            if (existingCard?.party === party) {
+                existingCard
             } else {
-                parties
-            }
-
-            parties.forEach { party ->
-                val card = UIPartyCard(party, 5f).constrain {
+                UIPartyCard(party, 5f).constrain {
                     x = JustifiedCramSiblingConstraint(2f)
                     y = JustifiedCramSiblingConstraint()
                     width = 33.percent
-                } childOf scrollArea
-
-                partyCards.add(card)
+                }
             }
+        }
+
+        if (newCards != partyCards) {
+            scrollArea.clearChildren()
+            newCards.forEach { it childOf scrollArea }
+
+            partyCards.clear()
+            partyCards.addAll(newCards)
         }
     }
 
