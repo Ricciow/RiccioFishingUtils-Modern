@@ -9,7 +9,11 @@ import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyCreate
 import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
 import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.colors
+import cloud.glitchdev.rfu.gui.components.elementa.BoundingBoxConstraint
+import cloud.glitchdev.rfu.gui.components.elementa.GroupMaxSizeConstraint
 import cloud.glitchdev.rfu.gui.components.partyfinder.UIFilterArea
+import cloud.glitchdev.rfu.gui.components.partyfinder.UIPartyCard
+import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.utils.User
 import gg.essential.elementa.UIComponent
 import gg.essential.elementa.components.UIBlock
@@ -185,9 +189,20 @@ object PartyFinderWindow : BaseWindow(false) {
         val partiesContainer = UIContainer().constrain {
             x = CenterConstraint()
             y = SiblingConstraint()
-            width = 100.percent
+            width = 100.percent - (2 * spacing).pixels
             height = FillConstraint()
         } childOf background
+
+        val party = FishingParty.blankParty()
+
+        party.user = "ricciow"
+        party.title = "Super Cool Title"
+        party.description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean congue auctor semper. Proin egestas tincidunt finibus. Donec venenatis neque non orci vulputate, ut malesuada justo lobortis massa nunc."
+        party.level = 1
+
+        UIPartyCard(party, 5f).constrain {
+            width = 33.percent
+        } childOf partiesContainer
     }
 
     fun onUpdate() {

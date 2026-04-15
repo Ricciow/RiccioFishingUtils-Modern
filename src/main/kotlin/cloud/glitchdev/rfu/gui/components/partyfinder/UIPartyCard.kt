@@ -2,64 +2,96 @@ package cloud.glitchdev.rfu.gui.components.partyfinder
 
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.UIPopup
-import cloud.glitchdev.rfu.gui.components.elementa.TextWrappingConstraint
 import cloud.glitchdev.rfu.model.party.FishingParty
-import cloud.glitchdev.rfu.utils.User
-import cloud.glitchdev.rfu.utils.Chat
-import cloud.glitchdev.rfu.utils.TextUtils
-import cloud.glitchdev.rfu.constants.text.TextColor
-import cloud.glitchdev.rfu.gui.UIScheme.decreaseOpacity
+import cloud.glitchdev.rfu.gui.components.elementa.BoundingBoxConstraint
+import cloud.glitchdev.rfu.gui.components.elementa.CopyComponentSizeConstraint
+import cloud.glitchdev.rfu.gui.components.elementa.TextWrappingConstraint
 import cloud.glitchdev.rfu.utils.Party
-import cloud.glitchdev.rfu.utils.gui.addHoverColoring
-import cloud.glitchdev.rfu.utils.gui.setHidden
 import cloud.glitchdev.rfu.utils.dsl.isUser
 import cloud.glitchdev.rfu.utils.network.PartyWebSocket
+import cloud.glitchdev.rfu.utils.network.WebSocketClient
+import gg.essential.elementa.components.UIBlock
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
 import gg.essential.elementa.components.UIWrappedText
+import gg.essential.elementa.constraints.AspectConstraint
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
-import gg.essential.elementa.constraints.CramSiblingConstraint
 import gg.essential.elementa.constraints.FillConstraint
+import gg.essential.elementa.constraints.MinConstraint
 import gg.essential.elementa.constraints.ScaledTextConstraint
 import gg.essential.elementa.constraints.SiblingConstraint
 import gg.essential.elementa.constraints.TextAspectConstraint
 import gg.essential.elementa.constraints.animation.Animations
+import gg.essential.elementa.dsl.animate
 import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
-import gg.essential.elementa.dsl.max
+import gg.essential.elementa.dsl.div
 import gg.essential.elementa.dsl.minus
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
+import gg.essential.elementa.dsl.plus
+import gg.essential.elementa.dsl.times
 import gg.essential.elementa.dsl.toConstraint
 
-class UIPartyCard(val party: FishingParty, radius : Float) : UIRoundedRectangle(radius) {
-    val primaryColor = UIScheme.primaryColorOpaque.decreaseOpacity(80).toConstraint()
-    val hoverColor = UIScheme.secondaryColorOpaque.toConstraint()
-    val textColor = UIScheme.primaryTextColor.toConstraint()
-    val hoverText = UIScheme.denyColor.toConstraint()
-    val hoverDuration = UIScheme.HOVER_EFFECT_DURATION
-    val fontSize = 1f
+class UIPartyCard(val party: FishingParty, val radiusProps: Float) : UIRoundedRectangle(radiusProps) {
+    val borderWidth = UIScheme.pfCardBorderWidth
+    val innerPadding = UIScheme.pfCardInnerPadding
+    lateinit var titleText : UIText
+    lateinit var innerContainer : UIContainer
+    lateinit var levelBorder : UIRoundedRectangle
+    lateinit var levelText : UIText
+    lateinit var descriptionSeparator : UIBlock
 
     init {
         create()
     }
 
     fun create() {
-        this.constrain {
-            color = primaryColor
-        }
-
         val joinErrorPopup = UIPopup(5f, "") childOf this
 
-        this.onMouseClick {
-            if (!cloud.glitchdev.rfu.utils.network.WebSocketClient.isConnected) {
+        this.constrain {
+            color = UIScheme.pfCardBorder.toConstraint()
+            height = ChildBasedSizeConstraint() + (borderWidth * 2).pixels
+        }.onMouseEnter {
+            animate {
+                setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, UIScheme.pfCardBorderHovered.toConstraint())
+            }
+            titleText.animate {
+                setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, UIScheme.pfCardTitleHoverColor.toConstraint())
+            }
+            levelText.animate {
+                setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, UIScheme.pfCardTitleHoverColor.toConstraint())
+            }
+            levelBorder.animate {
+                setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, UIScheme.pfCardLevelBorderHoveredColor.toConstraint())
+            }
+            descriptionSeparator.animate {
+                setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, UIScheme.pfCardSeparatorHover.toConstraint())
+            }
+        }.onMouseLeave {
+            animate {
+                setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, UIScheme.pfCardBorder.toConstraint())
+            }
+            titleText.animate {
+                setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, UIScheme.pfCardTitleColor.toConstraint())
+            }
+            levelText.animate {
+                setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, UIScheme.pfCardTitleColor.toConstraint())
+            }
+            levelBorder.animate {
+                setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, UIScheme.pfCardLevelBorderColor.toConstraint())
+            }
+            descriptionSeparator.animate {
+                setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, UIScheme.pfCardSeparator.toConstraint())
+            }
+        }.onMouseClick {
+            if (!WebSocketClient.isConnected) {
                 joinErrorPopup.setText("Not connected to RFU Backend!")
                 joinErrorPopup.showPopup()
                 return@onMouseClick
-            }
-            if (party.user.isUser()) {
+            } else if (party.user.isUser()) {
                 joinErrorPopup.setText("You are already the leader of this party!")
                 joinErrorPopup.showPopup()
             } else if (Party.members.contains(party.user)) {
@@ -76,136 +108,128 @@ class UIPartyCard(val party: FishingParty, radius : Float) : UIRoundedRectangle(
             }
         }
 
-        this.addHoverColoring(Animations.IN_EXP, hoverDuration, primaryColor, hoverColor)
-
-        val mainContainer = UIContainer().constrain {
+        val innerBg = UIRoundedRectangle(radiusProps).constrain {
             x = CenterConstraint()
-            y = CenterConstraint()
-            width = 100.percent() - 5.pixels()
-            height = 100.percent() - 5.pixels()
+            y = borderWidth.pixels
+            width = 100.percent - (borderWidth * 2).pixels
+            height = ChildBasedSizeConstraint() + (innerPadding * 2).pixels
+            color = UIScheme.pfCardBg.toConstraint()
         } childOf this
 
-        val leftArea = UIContainer().constrain {
-            x = SiblingConstraint()
-            y = CenterConstraint()
-            width = FillConstraint()
-            height = 100.percent()
-        } childOf mainContainer
+        innerContainer = UIContainer().constrain {
+            x = innerPadding.pixels
+            y = innerPadding.pixels
+            width = 100.percent - (innerPadding * 2).pixels
+            height = BoundingBoxConstraint()
+        } childOf innerBg
 
-        UIWrappedText(party.getTitleString()).constrain {
-            x = 0.pixels()
-            y = SiblingConstraint(2f)
-            width = 100.percent()
-            height = TextWrappingConstraint()
-            color = textColor
-        } childOf leftArea
+        createHeader()
+        createDescription()
+        createTags()
+        createFloating()
+    }
 
-        UIWrappedText(party.description, trimText = true).constrain {
-            x = 0.pixels()
-            y = SiblingConstraint(2f)
-            width = 100.percent()
-            height = FillConstraint() - 4.pixels()
-            color = textColor
-        } childOf leftArea
+    fun createHeader() {
+        val header = UIContainer().constrain {
+            x = CenterConstraint()
+            y = SiblingConstraint()
+            width = 100.percent
+            height = BoundingBoxConstraint()
+        } childOf innerContainer
 
-        UIWrappedText(party.getCountString()).constrain {
-            x = 0.pixels()
-            y = SiblingConstraint(2f)
-            width = 100.percent()
-            height = TextWrappingConstraint()
-            color = textColor
-        } childOf leftArea
+        val textContainer = UIContainer().constrain {
+            x = 0.pixels
+            y = 0.pixels
+            width = BoundingBoxConstraint()
+            height = BoundingBoxConstraint()
+        } childOf header
 
-        val rightArea = UIContainer().constrain {
-            x = SiblingConstraint(2f)
-            y = CenterConstraint()
-            width = max(33.percent(), 180.pixels())- 2.pixels()
-            height = 100.percent()
-        } childOf mainContainer
+        val userText = UIText(party.user) childOf textContainer
 
-        UIText("Type: ${party.fishingType.type}").constrain {
-            x = 0.pixels()
-            y = SiblingConstraint(2f)
-            width = ScaledTextConstraint(fontSize)
+        titleText = UIText("§l${party.title}").constrain {
+            x = 0.pixels
+            y = SiblingConstraint(UIScheme.pfCardSmallPadding)
+            width = MinConstraint(ScaledTextConstraint(1f), 70.percent)
             height = TextAspectConstraint()
-            color = textColor
-        } childOf rightArea
+        } childOf textContainer
 
-        val restrictions = UIContainer().constrain {
-            x = 0.pixels()
-            y = SiblingConstraint(2f)
-            width = 100.percent()
-            height = ChildBasedSizeConstraint()
-        } childOf rightArea
-
-        for(requisites in party.requisites) {
-            UICheckedText(requisites).constrain {
-                x = CramSiblingConstraint(8f)
-                y = CramSiblingConstraint(2f)
-                width = 40.percent()
-                height = 9.pixels()
-            } childOf restrictions
+        userText.constrain {
+            x = 0.pixels
+            y = SiblingConstraint()
+            width = TextAspectConstraint()
+            height = CopyComponentSizeConstraint(titleText) * 0.75
+            color = UIScheme.pfCardUserColor.toConstraint()
         }
 
-        UIWrappedText("SCs: ${party.getSeaCreatureString()}", trimText = true).constrain {
-            x = 0.pixels()
-            y = SiblingConstraint(2f)
-            width = 100.percent()
-            height = FillConstraint()
-        } childOf rightArea
+        levelBorder = UIRoundedRectangle(5f).constrain {
+            x = 0.pixels(true)
+            y = 0.pixels
+            width = AspectConstraint(1f)
+            height = CopyComponentSizeConstraint(textContainer)
+            color = UIScheme.pfCardLevelBorderColor.toConstraint()
+        } childOf header
 
-        val reportPopup = UIPopup(5f, "Are you sure you want to report ${party.user}'s party?", onConfirm = {
-            PartyWebSocket.reportParty(party.user)
-            Chat.sendMessage(TextUtils.rfupfLiteral("Party reported", TextColor.YELLOW))
-        }) childOf this
+        val levelContainer = UIRoundedRectangle(4f).constrain {
+            x = CenterConstraint()
+            y = CenterConstraint()
+            width = 100.percent - 2.pixels
+            height = 100.percent - 2.pixels
+            color = UIScheme.pfCardLevelBgColor.toConstraint()
+        } childOf levelBorder
 
-        val buttonsContainer = UIContainer().constrain {
-            x = 2.pixels(true)
-            y = 2.pixels()
-            width = 10.pixels()
-            height = ChildBasedSizeConstraint()
-        } childOf mainContainer
+        UIText("LVL").constrain {
+            x = CenterConstraint()
+            y = SiblingConstraint() + 2.pixels
+            width = TextAspectConstraint()
+            height = CopyComponentSizeConstraint(titleText) * 0.75
+            color = UIScheme.pfCardLevelLabelColor.toConstraint()
+        } childOf levelContainer
 
-        val reportButton = if (!party.user.isUser()) {
-            UIText("⚠").constrain {
-                x = SiblingConstraint(5f)
-                y = CenterConstraint()
-                width = ScaledTextConstraint(1f)
-                height = TextAspectConstraint()
-            } childOf buttonsContainer
-        } else null
+        levelText = UIText("${party.level}").constrain {
+            x = CenterConstraint()
+            y = SiblingConstraint() + 1.pixels
+            width = TextAspectConstraint()
+            height = CopyComponentSizeConstraint(titleText) * 0.85
+        } childOf levelContainer
 
-        reportButton?.addHoverColoring(Animations.IN_EXP, hoverDuration, textColor, hoverText)
-        reportButton?.setHidden(true)
-        reportButton?.onMouseClick { event ->
-            event.stopPropagation()
-            reportPopup.showPopup()
+        if(party.level == 0) {
+            levelBorder.hide()
         }
+    }
 
-        val deleteButton = if (party.user.isUser()) {
-            UIText("❌").constrain {
-                x = SiblingConstraint(5f)
-                y = CenterConstraint()
-                width = ScaledTextConstraint(1f)
-                height = TextAspectConstraint()
-                isFloating = true
-            } childOf buttonsContainer
-        } else null
+    fun createDescription() {
+        val descriptionContainer = UIContainer().constrain {
+            x = CenterConstraint()
+            y = SiblingConstraint(UIScheme.pfCardInnerPadding)
+            width = 100.percent
+            height = BoundingBoxConstraint()
+        } childOf innerContainer
 
-        deleteButton?.addHoverColoring(Animations.IN_EXP, hoverDuration, textColor, hoverText)
-        deleteButton?.setHidden(true)
-        deleteButton?.onMouseClick { event ->
-            event.stopPropagation()
-            PartyWebSocket.deleteParty(User.getUsername())
-        }
+        descriptionSeparator = UIBlock() childOf descriptionContainer
 
-        this.onMouseEnter {
-            deleteButton?.setHidden(false)
-            reportButton?.setHidden(false)
+        val description = UIWrappedText(party.description).constrain {
+            x = SiblingConstraint(UIScheme.pfCardSmallPadding)
+            y = UIScheme.pfCardSmallPadding.pixels
+            width = FillConstraint()
+            height = TextWrappingConstraint()
+            textScale = CopyComponentSizeConstraint(titleText) * 0.75 / 9
+            color = UIScheme.pfCardDescriptionColor.toConstraint()
+        } childOf descriptionContainer
+
+        descriptionSeparator.constrain {
+            x = SiblingConstraint(UIScheme.pfCardSmallPadding)
+            y = 0.pixels
+            width = 1.pixels
+            height = CopyComponentSizeConstraint(description) + (UIScheme.pfCardSmallPadding * 2).pixels
+            color = UIScheme.pfCardSeparator.toConstraint()
         }
-        this.onMouseLeave {
-            deleteButton?.setHidden(true)
-            reportButton?.setHidden(true)
-        }
+    }
+
+    fun createTags() {
+
+    }
+
+    fun createFloating() {
+
     }
 }

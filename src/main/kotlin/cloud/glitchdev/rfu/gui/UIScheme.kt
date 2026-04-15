@@ -60,6 +60,23 @@ object UIScheme {
     val pfInputBg = Color(100, 100, 100, 200)
     val pfInputBgHovered = Color(45, 75, 200, 100)
     val pfDropdownSelected = Color(45, 75, 200, 200)
+    //Pf card
+    val pfCardBg = pfWindowBackground
+    val pfCardBorderWidth = 1.5f
+    val pfCardInnerPadding = 5f
+    val pfCardSmallPadding = 3f
+    val pfCardBorder = Color(100, 100, 100, 100)
+    val pfCardBorderHovered = Color(45, 75, 200, 100)
+    val pfCardUserColor = Color(100, 100, 100)
+    val pfCardTitleColor = Color.WHITE
+    val pfCardTitleHoverColor = Color(45, 75, 200)
+    val pfCardSeparator = Color(100, 100, 100)
+    val pfCardSeparatorHover = pfWindowSeparator
+    val pfCardLevelBorderColor = Color(100, 100, 100)
+    val pfCardLevelBorderHoveredColor = pfWindowSeparator
+    val pfCardLevelBgColor = pfWindowBackground
+    val pfCardLevelLabelColor = Color(180, 180, 180)
+    val pfCardDescriptionColor = Color(150, 150, 150)
 
     const val HOVER_EFFECT_DURATION = 0.1f
 

@@ -20,7 +20,6 @@ import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.toConstraint
 import cloud.glitchdev.rfu.gui.components.Colorable
-import java.awt.Color
 
 /**
  * Simple Checkbox Component
