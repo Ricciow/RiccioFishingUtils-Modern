@@ -195,7 +195,9 @@ class UIPartyCard(val party: FishingParty, val radiusProps: Float) : UIRoundedRe
 
         descriptionSeparator = UIBlock() childOf descriptionContainer
 
-        val description = UIWrappedText(party.description).constrain {
+        val descriptionText = party.description.ifEmpty { "${party.island.island} fishing." }
+
+        val description = UIWrappedText(descriptionText).constrain {
             x = SiblingConstraint(UIScheme.pfCardSmallPadding)
             y = UIScheme.pfCardSmallPadding.pixels
             width = FillConstraint()

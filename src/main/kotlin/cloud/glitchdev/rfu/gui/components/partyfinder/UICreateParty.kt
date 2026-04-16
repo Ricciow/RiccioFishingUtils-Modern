@@ -17,6 +17,8 @@ import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.network.PartyWebSocket
 import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerMyPartyChangedEvent
+import cloud.glitchdev.rfu.gui.UIScheme
+import cloud.glitchdev.rfu.gui.components.colors
 import cloud.glitchdev.rfu.utils.gui.isHidden
 import cloud.glitchdev.rfu.utils.network.WebSocketClient
 import gg.essential.elementa.components.UIContainer
@@ -30,6 +32,7 @@ import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.dsl.minus
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
+import gg.essential.elementa.dsl.toConstraint
 import gg.essential.universal.UMatrixStack
 
 class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
@@ -83,7 +86,14 @@ class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
             height = 100.percent()
         } childOf this
 
-        popup = UIPopup(5f, "Failed to create party!") childOf this
+        popup = UIPopup(5f, "Failed to create party!", isBordered = true).childOf(this).colors {
+            primaryColor = UIScheme.pfCardBorder.toConstraint()
+            innerColor = UIScheme.pfCardBg.toConstraint()
+            textColor = UIScheme.errorPopupColor.toConstraint()
+            buttonPrimaryColor = UIScheme.pfCardBorder.toConstraint()
+            buttonHoverColor = UIScheme.pfCardBorderHovered.toConstraint()
+            buttonHoverTextColor = UIScheme.pfCardTitleHoverColor.toConstraint()
+        }
 
         UIWrappedText("Create your party here:").constrain {
             x = 0.pixels()

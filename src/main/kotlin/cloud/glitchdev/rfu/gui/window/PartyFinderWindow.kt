@@ -67,7 +67,14 @@ object PartyFinderWindow : BaseWindow(false) {
     private var parties : List<FishingParty> = listOf(FishingParty.blankParty().apply { user = "ricciow"; title = "Title"; description = "Description"; level = 1 })
     private var partyCards : MutableList<UIPartyCard> = mutableListOf()
 
-    val popup: UIPopup = UIPopup(5f, "") childOf window
+    val popup: UIPopup = UIPopup(5f, "", isBordered = true).childOf(window).colors {
+        primaryColor = UIScheme.pfCardBorder.toConstraint()
+        innerColor = UIScheme.pfCardBg.toConstraint()
+        textColor = UIScheme.errorPopupColor.toConstraint()
+        buttonPrimaryColor = UIScheme.pfCardBorder.toConstraint()
+        buttonHoverColor = UIScheme.pfCardBorderHovered.toConstraint()
+        buttonHoverTextColor = UIScheme.pfCardTitleHoverColor.toConstraint()
+    }
     lateinit var filterArea : UIContainer
     lateinit var filterContainer : UIFilterArea
     lateinit var scrollArea : ScrollComponent

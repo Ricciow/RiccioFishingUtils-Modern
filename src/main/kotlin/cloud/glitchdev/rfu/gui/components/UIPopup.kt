@@ -12,23 +12,34 @@ import gg.essential.elementa.constraints.RelativeWindowConstraint
 import gg.essential.elementa.constraints.SiblingConstraint
 import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
+import gg.essential.elementa.dsl.minus
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
+import gg.essential.elementa.dsl.times
 import gg.essential.elementa.dsl.toConstraint
-import cloud.glitchdev.rfu.gui.components.Colorable
 import java.awt.Color
 
 class UIPopup(
     val radiusPopup: Float,
     val text: String,
+    val isBordered: Boolean = false,
     val onConfirm: (() -> Unit)? = null
 ) : UIBlock(), Colorable {
     var backgroundColor = Color.BLACK.increaseOpacity(127).toConstraint()
-    var errorColor = UIScheme.errorPopupColor.toConstraint()
+    var textColor = UIScheme.primaryTextColor.toConstraint()
     var primaryColor = UIScheme.secondaryColorOpaque.toConstraint()
+    var innerColor = Color.BLACK.toConstraint()
+    var borderWidth = 1f
+
+    var buttonPrimaryColor = UIScheme.secondaryColorOpaque.toConstraint()
+    var buttonHoverColor = UIScheme.secondaryColor.toConstraint()
+    var buttonTextColor = UIScheme.primaryTextColor.toConstraint()
+    var buttonHoverTextColor = UIScheme.primaryTextColor.toConstraint()
 
     lateinit var uiText : UIWrappedText
     lateinit var popupContainer : UIRoundedRectangle
+    lateinit var innerBg : UIRoundedRectangle
+    private val buttons = mutableListOf<UIButton>()
 
     init {
         this.hide()
@@ -61,23 +72,36 @@ class UIPopup(
             color = primaryColor
         } childOf this
 
+        val contentParent = if (isBordered) {
+            innerBg = UIRoundedRectangle(radiusPopup).constrain {
+                x = CenterConstraint()
+                y = CenterConstraint()
+                width = 100.percent - (borderWidth * 2).pixels
+                height = 100.percent - (borderWidth * 2).pixels
+                color = innerColor
+            } childOf popupContainer
+            innerBg
+        } else {
+            popupContainer
+        }
+
         val container = UIContainer().constrain {
             x = CenterConstraint()
             y = CenterConstraint()
             width = 90.percent()
             height = 90.percent()
-        } childOf popupContainer
+        } childOf contentParent
 
         uiText = UIWrappedText(text).constrain {
             x = CenterConstraint()
             y = SiblingConstraint()
             width = 100.percent()
             height = FillConstraint()
-            color = errorColor
+            color = textColor
         } childOf container
 
         if (onConfirm == null) {
-            UIButton("Ok", 5f) {
+            val okButton = UIButton("Ok", 5f, isBordered = isBordered) {
                 this.hide()
             }.constrain {
                 x = CenterConstraint()
@@ -85,6 +109,7 @@ class UIPopup(
                 width = 100.percent()
                 height = 20.pixels()
             } childOf container
+            buttons.add(okButton)
         } else {
             val buttonContainer = UIContainer().constrain {
                 x = CenterConstraint()
@@ -93,7 +118,7 @@ class UIPopup(
                 height = 20.pixels()
             } childOf container
 
-            UIButton("Confirm", 5f) {
+            val confirmButton = UIButton("Confirm", 5f, isBordered = isBordered) {
                 onConfirm.invoke()
                 this.hide()
             }.constrain {
@@ -102,8 +127,9 @@ class UIPopup(
                 width = 45.percent()
                 height = 100.percent()
             } childOf buttonContainer
+            buttons.add(confirmButton)
 
-            UIButton("Cancel", 5f) {
+            val cancelButton = UIButton("Cancel", 5f, isBordered = isBordered) {
                 this.hide()
             }.constrain {
                 x = 0.pixels(true)
@@ -111,6 +137,19 @@ class UIPopup(
                 width = 45.percent()
                 height = 100.percent()
             } childOf buttonContainer
+            buttons.add(cancelButton)
+        }
+        refreshButtonColors()
+    }
+
+    private fun refreshButtonColors() {
+        buttons.forEach { button ->
+            button.colors {
+                primaryColor = this@UIPopup.buttonPrimaryColor
+                hoverColor = this@UIPopup.buttonHoverColor
+                textColor = this@UIPopup.buttonTextColor
+                hoverTextColor = this@UIPopup.buttonHoverTextColor
+            }
         }
     }
 
@@ -121,6 +160,8 @@ class UIPopup(
     override fun refreshColors() {
         this.constrain { color = backgroundColor }
         if (::popupContainer.isInitialized) popupContainer.constrain { color = primaryColor }
-        if (::uiText.isInitialized) uiText.constrain { color = errorColor }
+        if (isBordered && ::innerBg.isInitialized) innerBg.constrain { color = innerColor }
+        if (::uiText.isInitialized) uiText.constrain { color = textColor }
+        refreshButtonColors()
     }
 }
