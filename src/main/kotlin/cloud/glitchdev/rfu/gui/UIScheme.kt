@@ -79,6 +79,7 @@ object UIScheme {
     val pfCardLevelBgColor = pfWindowBackground
     val pfCardLevelLabelColor = Color(180, 180, 180)
     val pfCardDescriptionColor = Color(150, 150, 150)
+    val pfCardOverlayHoverColor = Color(255, 85, 85)
     //ConditionCard
     val pfConditionCardWidth = 1f
     val pfConditionCardPadding = 2f

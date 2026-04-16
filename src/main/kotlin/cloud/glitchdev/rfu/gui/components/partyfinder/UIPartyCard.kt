@@ -2,10 +2,12 @@ package cloud.glitchdev.rfu.gui.components.partyfinder
 
 import cloud.glitchdev.rfu.constants.LiquidTypes
 import cloud.glitchdev.rfu.gui.UIScheme
-import cloud.glitchdev.rfu.gui.components.UIPopup
+import cloud.glitchdev.rfu.gui.components.UIButton
+import cloud.glitchdev.rfu.gui.components.colors
 import cloud.glitchdev.rfu.gui.window.PartyFinderWindow
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.gui.components.elementa.BoundingBoxConstraint
+import cloud.glitchdev.rfu.gui.components.elementa.CenteredPixelConstraint
 import cloud.glitchdev.rfu.gui.components.elementa.CopyComponentSizeConstraint
 import cloud.glitchdev.rfu.gui.components.elementa.GroupMaxSizeConstraint
 import cloud.glitchdev.rfu.gui.components.elementa.TextWrappingConstraint
@@ -16,6 +18,7 @@ import cloud.glitchdev.rfu.utils.network.PartyWebSocket
 import cloud.glitchdev.rfu.utils.network.WebSocketClient
 import gg.essential.elementa.components.UIBlock
 import gg.essential.elementa.components.UIContainer
+import gg.essential.elementa.components.UIImage
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
 import gg.essential.elementa.components.UIWrappedText
@@ -48,6 +51,7 @@ class UIPartyCard(val party: FishingParty, val radiusProps: Float) : UIRoundedRe
     lateinit var levelBadge : UIPartyBadge
     lateinit var memberBadge : UIPartyBadge
     lateinit var descriptionSeparator : UIBlock
+    lateinit var overlayButton : UIButton
 
     init {
         create()
@@ -71,6 +75,7 @@ class UIPartyCard(val party: FishingParty, val radiusProps: Float) : UIRoundedRe
             descriptionSeparator.animate {
                 setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, UIScheme.pfCardSeparatorHover.toConstraint())
             }
+            overlayButton.unhide()
         }.onMouseLeave {
             animate {
                 setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, UIScheme.pfCardBorder.toConstraint())
@@ -83,6 +88,7 @@ class UIPartyCard(val party: FishingParty, val radiusProps: Float) : UIRoundedRe
             descriptionSeparator.animate {
                 setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, UIScheme.pfCardSeparator.toConstraint())
             }
+            overlayButton.hide()
         }.onMouseClick {
             if (!WebSocketClient.isConnected) {
                 joinErrorPopup.setText("Not connected to RFU Backend!")
@@ -247,6 +253,30 @@ class UIPartyCard(val party: FishingParty, val radiusProps: Float) : UIRoundedRe
     }
 
     fun createFloating() {
+        val isUser = party.user.isUser()
+        val icon = if(isUser) "delete" else "report"
+        val image = UIImage.ofResource("/assets/rfu/ui/$icon.png")
+        overlayButton = UIButton.withImage(image, 5f, isBordered = true) {
+            println("Clicked")
+        }.constrain {
+            x = CenteredPixelConstraint(0f, true)
+            y = CenteredPixelConstraint(0f)
+            height = AspectConstraint()
+            width = 10.percent
+        } childOf this
+        overlayButton.colors {
+            primaryColor = UIScheme.pfCardBorder.toConstraint()
+            hoverColor = UIScheme.pfCardBorderHovered.toConstraint()
+            hoverTextColor = UIScheme.pfCardOverlayHoverColor.toConstraint()
+        }
 
+        overlayButton.isFloating = true
+        overlayButton.hide(true)
+
+        overlayButton.onMouseLeave {
+            if(!this@UIPartyCard.isHovered()) {
+                hide()
+            }
+        }
     }
 }
