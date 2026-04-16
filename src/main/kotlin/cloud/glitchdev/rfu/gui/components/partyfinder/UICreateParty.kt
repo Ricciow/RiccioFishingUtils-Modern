@@ -19,6 +19,7 @@ import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerMyPartyChangedEvent
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.colors
+import cloud.glitchdev.rfu.gui.window.PartyFinderWindow
 import cloud.glitchdev.rfu.utils.gui.isHidden
 import cloud.glitchdev.rfu.utils.network.WebSocketClient
 import gg.essential.elementa.components.UIContainer
@@ -35,352 +36,38 @@ import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.toConstraint
 import gg.essential.universal.UMatrixStack
 
-class UICreateParty(radius: Float) : UIRoundedRectangle(radius) {
-    lateinit var titleField : UIDecoratedTextInput
-    lateinit var typeField : UIDropdown
-    lateinit var islandField : UIDropdown
-    lateinit var limitField : UIDecoratedTextInput
-    lateinit var levelField : UIDecoratedTextInput
-    lateinit var liquidField : UIRadio
-    lateinit var killerField : UICheckbox
-    lateinit var endermanField : UICheckbox
-    lateinit var lootingField: UICheckbox
-    lateinit var brainFoodField : UICheckbox
-    lateinit var mobsField : UISelectionDropdown
-    lateinit var descriptionField : UIWrappedDecoratedTextInput
-    lateinit var popup: UIPopup
-    lateinit var createButton: UIButton
-
-    private val TIMEOUT = 300000
+class UICreateParty : UIContainer() {
+    val popup: UIPopup = PartyFinderWindow.popup
 
     init {
-        val currentTime = System.currentTimeMillis()
-        if(createdAt + TIMEOUT < currentTime) {
-            party = FishingParty.blankParty()
-            createdAt = currentTime
-        }
-
-        create()
-        createInteractions()
-
         registerErrorMessageEvent { message, origin ->
             if (!this.isHidden() && (origin == "/app/party/publish" || origin == "/app/party/edit")) {
                 popup.show(message)
             }
         }
 
-        registerMyPartyChangedEvent { value ->
-            if (value != null) {
-                party = value
-            }
-            needUpdating = true
+        registerMyPartyChangedEvent { party ->
+
         }
+
+        create()
     }
 
     fun create() {
-        val container = UIContainer().constrain {
+        val border = UIRoundedRectangle(5f).constrain {
             x = CenterConstraint()
-            y = CenterConstraint()
-            width = 96.percent()
-            height = 100.percent()
+            y = UIScheme.pfSmallSpacing.pixels
+            width = 100.percent()
+            height = 100.percent() - UIScheme.pfSmallSpacing.pixels
+            color = UIScheme.pfCardBorder.toConstraint()
         } childOf this
 
-        popup = UIPopup(5f, "Failed to create party!", isBordered = true).childOf(this).colors {
-            primaryColor = UIScheme.pfCardBorder.toConstraint()
-            innerColor = UIScheme.pfCardBg.toConstraint()
-            textColor = UIScheme.errorPopupColor.toConstraint()
-            buttonPrimaryColor = UIScheme.pfCardBorder.toConstraint()
-            buttonHoverColor = UIScheme.pfCardBorderHovered.toConstraint()
-            buttonHoverTextColor = UIScheme.pfCardTitleHoverColor.toConstraint()
-        }
-
-        UIWrappedText("Create your party here:").constrain {
-            x = 0.pixels()
-            y = SiblingConstraint()
-            width = 100.percent()
-            height = 18.pixels()
-        } childOf container
-
-        val fieldArea = UIContainer().constrain {
+        val innerContainer = UIRoundedRectangle(5f).constrain {
             x = CenterConstraint()
-            y = SiblingConstraint(2f)
-            width = 100.percent()
-            height = 25.pixels()
-        } childOf container
-
-        val titleArea = UITitledSection("Title:").constrain {
-            x = SiblingConstraint(2f)
             y = CenterConstraint()
-            width = 20.percent() - 1.6.pixels()
-            height = 100.percent()
-        } childOf fieldArea
-
-        titleField = UIDecoratedTextInput("Max 20 chars", 5f, false, 20)
-        titleArea.addSection(titleField)
-
-        val typeArea = UITitledSection("Type:").constrain {
-            x = SiblingConstraint(2f)
-            y = CenterConstraint()
-            width = 20.percent() - 1.6.pixels()
-            height = 100.percent()
-        } childOf fieldArea
-
-        typeField = UIDropdown(PartyTypes.toDataOptions(), 0, 5f)
-        typeArea.addSection(typeField)
-
-        val islandArea = UITitledSection("Island:").constrain {
-            x = SiblingConstraint(2f)
-            y = CenterConstraint()
-            width = 20.percent() - 1.6.pixels()
-            height = 100.percent()
-        } childOf fieldArea
-
-        islandField = UIDropdown(FishingIslands.toDataOptions(), 0, 5f)
-        islandArea.addSection(islandField)
-
-        val limitArea = UITitledSection("Max Players:").constrain {
-            x = SiblingConstraint(2f)
-            y = CenterConstraint()
-            width = 20.percent() - 1.6.pixels()
-            height = 100.percent()
-        } childOf fieldArea
-
-        limitField = UIDecoratedTextInput("6", 5f, true, 2)
-        limitArea.addSection(limitField)
-
-        val levelArea = UITitledSection("Min Level:").constrain {
-            x = SiblingConstraint(2f)
-            y = CenterConstraint()
-            width = 20.percent() - 1.6.pixels()
-            height = 100.percent()
-        } childOf fieldArea
-
-        levelField = UIDecoratedTextInput("0", 5f, true, 3)
-        levelArea.addSection(levelField)
-
-        val liquidArea = UITitledSection("Liquid:").constrain {
-            x = CenterConstraint()
-            y = SiblingConstraint(4f)
-            width = 100.percent()
-            height = 25.pixels()
-        } childOf container
-
-        liquidField = UIRadio(LiquidTypes.toDataOptions(), 0)
-        liquidArea.addSection(liquidField)
-
-        val requisitesArea = UITitledSection("Extras:").constrain {
-            x = CenterConstraint()
-            y = SiblingConstraint(4f)
-            width = 100.percent()
-            height = 25.pixels()
-        } childOf container
-
-        val requisitesFields = UIContainer()
-        requisitesArea.addSection(requisitesFields)
-
-        killerField = UICheckbox("Has Killer").constrain {
-            x = SiblingConstraint(4f)
-            y = CenterConstraint()
-            width = ChildBasedSizeConstraint()
-            height = 100.percent()
-        } childOf requisitesFields
-
-        endermanField = UICheckbox("Enderman 9").constrain {
-            x = SiblingConstraint(4f)
-            y = CenterConstraint()
-            width = ChildBasedSizeConstraint()
-            height = 100.percent()
-        } childOf requisitesFields
-
-        lootingField = UICheckbox("Looting 5").constrain {
-            x = SiblingConstraint(4f)
-            y = CenterConstraint()
-            width = ChildBasedSizeConstraint()
-            height = 100.percent()
-        } childOf requisitesFields
-
-        brainFoodField = UICheckbox("Brain Food").constrain {
-            x = SiblingConstraint(4f)
-            y = CenterConstraint()
-            width = ChildBasedSizeConstraint()
-            height = 100.percent()
-        } childOf requisitesFields
-
-        val mobsArea = UITitledSection("Sea Creatures:").constrain {
-            x = CenterConstraint()
-            y = SiblingConstraint(4f)
-            width = 100.percent()
-            height = 25.pixels()
-        } childOf container
-
-        val mobsFieldContainer = UIContainer()
-
-        mobsField = UISelectionDropdown(
-            SeaCreatures.toDataOptions(party.liquid, party.island, party.fishingType),
-            5,
-            HashSet(),
-            5f,
-            false
-        ).constrain {
-            width = 20.percent()
-            height = 100.percent()
-        } childOf mobsFieldContainer
-
-        mobsField.setOptionsStates(party.seaCreatures.map {it.toDataOption()}, true)
-
-        mobsArea.addSection(mobsFieldContainer)
-
-        val descriptionArea = UITitledSection("Description:").constrain {
-            x = CenterConstraint()
-            y = SiblingConstraint(4f)
-            width = 100.percent()
-        } childOf container
-
-        descriptionField = UIWrappedDecoratedTextInput("Max 200 Chars", 5f, 200)
-
-        descriptionArea.addSection(descriptionField)
-
-        val endArea = UIContainer().constrain {
-            x = CenterConstraint()
-            y = SiblingConstraint(4f)
-            width = 100.percent()
-            height = 20.pixels()
-        } childOf container
-
-        UIButton("Pull data from current island", 5f) {
-            party = FishingParty.blankParty()
-            updateFields()
-        }.constrain {
-            x = 0.pixels()
-            y = CenterConstraint()
-            width = 40.percent()
-            height = 100.percent()
-        } childOf endArea
-
-        createButton = UIButton("Create", 5f).constrain {
-            x = 0.pixels(true)
-            y = CenterConstraint()
-            width = 10.percent()
-            height = 100.percent()
-        } childOf endArea
-
-        createButton.onClick = {
-            if (!WebSocketClient.isConnected) {
-                popup.show("Not connected to RFU Backend!")
-            } else {
-                if (Party.isLeader || !Party.inParty) {
-                    PartyWebSocket.submitParty(party)
-                } else {
-                    popup.show("You must be the party leader to create a party!")
-                }
-            }
-        }
-
-        descriptionArea.constrain {
-            height = 60.pixels()
-        }
-    }
-
-    fun createInteractions() {
-        titleField.onChange = { title ->
-            party.title = title
-        }
-        typeField.onSelect = { data ->
-            party.fishingType = data.value as PartyTypes
-            updateFields()
-        }
-        islandField.onSelect = { data ->
-            val island = data.value as FishingIslands
-            party.island = island
-            val availableLiquids = island.availableLiquids
-            if(!availableLiquids.contains(party.liquid)) {
-                party.liquid = availableLiquids.getOrNull(0) ?: LiquidTypes.LAVA
-            }
-            updateFields()
-        }
-        limitField.onChange = { limit ->
-            if(limit.isNotEmpty()) {
-                val value = limit.toInt()
-                party.players.max = maxOf(value, party.players.current, 1)
-                if (party.players.max != value) {
-                    limitField.setText(party.players.max.toString())
-                }
-            }
-            else {
-                party.players.max = maxOf(6, party.players.current)
-            }
-        }
-        levelField.onChange = { level ->
-            if(level.isNotEmpty()) {
-                party.level = level.toInt()
-            }
-            else {
-                party.level = 0
-            }
-        }
-        liquidField.onChange = { data ->
-            party.liquid = data.value as LiquidTypes
-            updateFields()
-        }
-        killerField.onChange = { state ->
-            party.setRequisite("has_killer", "Has Killer", state)
-        }
-        endermanField.onChange = { state ->
-            party.setRequisite("enderman_9", "Enderman 9", state)
-        }
-        lootingField.onChange = { state ->
-            party.setRequisite("looting_5", "Looting 5", state)
-        }
-        brainFoodField.onChange = { state ->
-            party.setRequisite("brain_food", "Brain Food", state)
-        }
-        mobsField.onSelectionChanged = { options ->
-            party.seaCreatures = options.map { it.value as SeaCreatures }
-        }
-        descriptionField.onChange = { description ->
-            party.description = description
-        }
-    }
-
-    fun updateFields() {
-        titleField.setText(party.title)
-        typeField.setSelected(party.fishingType.toDataOption())
-        islandField.setSelected(party.island.toDataOption())
-        limitField.setText(party.players.max.toString())
-        levelField.setText(party.level.toString())
-        liquidField.setSelected(party.liquid.toDataOption())
-        killerField.state = party.getRequisite("has_killer", "Has Killer").value
-        endermanField.state = party.getRequisite("enderman_9", "Enderman 9").value
-        lootingField.state = party.getRequisite("looting_5", "Looting 5").value
-        brainFoodField.state = party.getRequisite("brain_food", "Brain Food").value
-        mobsField.setValues(SeaCreatures.toDataOptions(party.liquid, party.island, party.fishingType))
-        mobsField.setOptionsStates(party.seaCreatures.map {it.toDataOption()}, true)
-        descriptionField.setText(party.description)
-        
-        if (::createButton.isInitialized) {
-            val newText = if (PartyWebSocket.myParty == null) "Create" else "Update"
-            if (createButton.text != newText) {
-                createButton.updateText(newText)
-            }
-        }
-    }
-
-    fun onOpen() {
-        party.players.current = Party.members.size
-        needUpdating = true
-    }
-
-    override fun draw(matrixStack: UMatrixStack) {
-        if(needUpdating && this.getWidth() != 0f) {
-            updateFields()
-            needUpdating = false
-        }
-        super.draw(matrixStack)
-    }
-
-    companion object {
-        var party : FishingParty = FishingParty.blankParty()
-        var createdAt : Long = 0
-        var needUpdating = true
+            width = 100.percent() - (UIScheme.pfCardBorderWidth * 2).pixels()
+            height = 100.percent() - (UIScheme.pfCardBorderWidth * 2).pixels()
+            color = UIScheme.pfCardBg.toConstraint()
+        } childOf border
     }
 }

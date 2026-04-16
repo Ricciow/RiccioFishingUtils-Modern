@@ -62,8 +62,9 @@ object UIScheme {
     val pfTitleText = pfWindowSeparator
     val pfInputBg = Color(100, 100, 100, 200)
     val pfInputBgHovered = Color(45, 75, 200, 100)
-    val pfDropdownSelected = Color(45, 75, 200, 200)
     val pfScrollBar = pfWindowSeparator
+    val pfSpacing = 10f
+    val pfSmallSpacing = 4f
     //Pf card
     val pfCardBg = pfWindowBackground
     val pfCardBorderWidth = 1.5f

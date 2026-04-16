@@ -1,34 +1,23 @@
 package cloud.glitchdev.rfu.gui.window
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
-import cloud.glitchdev.rfu.constants.FishingIslands
-import cloud.glitchdev.rfu.constants.LiquidTypes
-import cloud.glitchdev.rfu.constants.PartyTypes
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.UIPopup
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyListChangedEvent
-import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerMyPartyChangedEvent
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyCreatedEvent
 import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
-import cloud.glitchdev.rfu.events.managers.PartyFinderEvents
 import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.colors
 import cloud.glitchdev.rfu.gui.components.elementa.BoundingBoxConstraint
-import cloud.glitchdev.rfu.gui.components.elementa.GroupMaxSizeConstraint
+import cloud.glitchdev.rfu.gui.components.elementa.CopyComponentSizeConstraint
 import cloud.glitchdev.rfu.gui.components.elementa.JustifiedCramSiblingConstraint
+import cloud.glitchdev.rfu.gui.components.partyfinder.UICreateParty
 import cloud.glitchdev.rfu.gui.components.partyfinder.UIFilterArea
 import cloud.glitchdev.rfu.gui.components.partyfinder.UIPartyCard
 import cloud.glitchdev.rfu.model.party.FishingParty
-import cloud.glitchdev.rfu.model.party.Players
-import cloud.glitchdev.rfu.model.party.Requisite
-import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.Coroutines
-import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.utils.User
-import cloud.glitchdev.rfu.utils.command.Command
-import cloud.glitchdev.rfu.utils.command.SimpleCommand
 import cloud.glitchdev.rfu.utils.network.PartyWebSocket
-import com.mojang.brigadier.context.CommandContext
 import gg.essential.elementa.UIComponent
 import gg.essential.elementa.components.ScrollComponent
 import gg.essential.elementa.components.UIBlock
@@ -36,7 +25,6 @@ import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIImage
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
-import gg.essential.elementa.components.Window
 import gg.essential.elementa.components.inspector.Inspector
 import gg.essential.elementa.constraints.AspectConstraint
 import gg.essential.elementa.constraints.CenterConstraint
@@ -56,17 +44,17 @@ import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.toConstraint
 import gg.essential.elementa.effects.ScissorEffect
 import kotlinx.coroutines.delay
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
-import net.minecraft.network.chat.Component
 
 object PartyFinderWindow : BaseWindow(false) {
-    val primaryColor = UIScheme.pfWindowBackground.toConstraint()
-
+    private val primaryColor = UIScheme.pfWindowBackground.toConstraint()
     private val headerHeight = 30.pixels
     private val filterHeight = 50.pixels
-    private val spacing = 10f
-    private val smallSpacing = 4f
+    private val spacing = UIScheme.pfSpacing
+    private val smallSpacing = UIScheme.pfSmallSpacing
     private var filtersOpen = false
+    private var wasFilterOpen = false
+    private var creationOpen = false
+    private var reloadOnCooldown = false
     private var parties : List<FishingParty> = listOf(FishingParty.blankParty().apply { user = "ricciow"; title = "Title"; description = "Description"; level = 1 })
     private var partyCards : MutableList<UIPartyCard> = mutableListOf()
 
@@ -79,10 +67,14 @@ object PartyFinderWindow : BaseWindow(false) {
         buttonHoverTextColor = UIScheme.pfCardTitleHoverColor.toConstraint()
     }
 
+    lateinit var filterButton : UIButton
     lateinit var refreshButton : UIButton
     lateinit var filterArea : UIContainer
     lateinit var filterContainer : UIFilterArea
+    lateinit var contentWrapper : UIContainer
+    lateinit var creationArea : UICreateParty
     lateinit var scrollArea : ScrollComponent
+    lateinit var partiesContainer : UIContainer
 
     init {
         create()
@@ -95,8 +87,8 @@ object PartyFinderWindow : BaseWindow(false) {
         }
 
         registerPartyCreatedEvent { party ->
-            //Meant to move back to the pf window after creation
             if (party.user == User.getUsername()) {
+                creationOpen = false
                 onUpdate()
             }
         }
@@ -129,7 +121,16 @@ object PartyFinderWindow : BaseWindow(false) {
 
         createHeader(useableArea)
         createFilterArea(useableArea)
-        createPartyArea(useableArea)
+
+        contentWrapper = UIContainer().constrain {
+            x = CenterConstraint()
+            y = SiblingConstraint()
+            width = 100.percent - (2 * spacing).pixels
+            height = FillConstraint()
+        } childOf useableArea effect ScissorEffect()
+
+        createPartyCreationArea(contentWrapper)
+        createPartyArea(contentWrapper)
 
         Inspector(window) childOf window
     }
@@ -161,7 +162,8 @@ object PartyFinderWindow : BaseWindow(false) {
 
         val createImage = UIImage.ofResource("/assets/rfu/ui/edit.png")
         UIButton.withImage(createImage, 5f) {
-            //Open Party creation window (will be a new window)
+            creationOpen = !creationOpen
+            onUpdate()
         }.constrain {
             x = SiblingConstraint(5f, alignOpposite = true)
             y = CenterConstraint()
@@ -173,7 +175,7 @@ object PartyFinderWindow : BaseWindow(false) {
         } childOf rightArea
 
         val filterImage = UIImage.ofResource("/assets/rfu/ui/filter.png")
-        UIButton.withImage(filterImage, 5f) {
+        filterButton = UIButton.withImage(filterImage, 5f) {
             filtersOpen = !filtersOpen
             onUpdate()
         }.constrain {
@@ -190,9 +192,13 @@ object PartyFinderWindow : BaseWindow(false) {
         refreshButton = UIButton.withImage(refreshImage, 5f) {
             PartyWebSocket.syncParties()
             refreshButton.disabled = true
+            reloadOnCooldown = true
             Coroutines.launch {
                 delay(1000)
-                refreshButton.disabled = false
+                reloadOnCooldown = false
+                if(!creationOpen) {
+                    refreshButton.disabled = false
+                }
             }
         }.constrain {
             x = SiblingConstraint(2f, alignOpposite = true)
@@ -233,11 +239,11 @@ object PartyFinderWindow : BaseWindow(false) {
     }
 
     fun createPartyArea(background: UIComponent) {
-        val partiesContainer = UIContainer().constrain {
+        partiesContainer = UIContainer().constrain {
             x = CenterConstraint()
             y = SiblingConstraint()
-            width = 100.percent - (2 * spacing).pixels
-            height = FillConstraint()
+            width = 100.percent
+            height = 100.percent
         } childOf background
 
         scrollArea = ScrollComponent().constrain {
@@ -255,6 +261,15 @@ object PartyFinderWindow : BaseWindow(false) {
         scrollArea.setScrollBarComponent(scrollBar, hideWhenUseless = true, isHorizontal = false)
 
         updateFiltering()
+    }
+
+    fun createPartyCreationArea(background: UIComponent) {
+        creationArea = UICreateParty().constrain {
+            x = CenterConstraint()
+            y = SiblingConstraint()
+            width = 100.percent
+            height = 0.pixels
+        } childOf background
     }
 
     fun updateFiltering() {
@@ -286,6 +301,29 @@ object PartyFinderWindow : BaseWindow(false) {
     }
 
     fun onUpdate() {
+        if(creationOpen) {
+            if(filtersOpen) {
+                filtersOpen = false
+                wasFilterOpen = true
+            }
+            creationArea.animate {
+                setHeightAnimation(Animations.OUT_EXP, 0.5f, 100.percent)
+            }
+        } else {
+            if(wasFilterOpen) {
+                filtersOpen = true
+                wasFilterOpen = false
+            }
+            creationArea.animate {
+                setHeightAnimation(Animations.OUT_EXP, 0.5f, 0.pixels)
+            }
+        }
+
+        filterButton.disabled = creationOpen
+        if(!reloadOnCooldown) {
+            refreshButton.disabled = creationOpen
+        }
+
         if(filtersOpen) {
             filterArea.animate {
                 setHeightAnimation(Animations.OUT_EXP, 0.5f, ChildBasedSizeConstraint())
