@@ -5,14 +5,15 @@
       "plural": "Sea Walkers",
       "article": "a",
       "special": false,
-      "style": "§a",
+      "style": "§2",
       "catchMessage": "You caught a Sea Walker.",
       "liquidType": "WATER",
       "category": "GENERAL_WATER",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§a"
+      "scDisplayColor": "§3"
     },
     "Lava Leech": {
       "name": "Lava Leech",
@@ -23,7 +24,8 @@
       "catchMessage": "A small but fearsome Lava Leech emerges.",
       "liquidType": "LAVA",
       "category": "ISLE",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§c"
@@ -37,7 +39,8 @@
       "catchMessage": "You hear a faint Moo from the lava... A Moogma appears.",
       "liquidType": "LAVA",
       "category": "ISLE",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§c"
@@ -51,7 +54,8 @@
       "catchMessage": "From beneath the lava appears a Magma Slug.",
       "liquidType": "LAVA",
       "category": "ISLE",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§c"
@@ -69,37 +73,40 @@
       "conditions": {
         "isFestival": true
       },
-      "gdragAlert": true,
+      "bossbar": true,
+      "gdragAlert": false,
       "rareSCAlert": true,
       "scDisplayColor": "§f"
     },
     "Thunder": {
       "name": "Thunder",
       "plural": "Thunders",
-      "article": "",
+      "article": "a",
       "special": true,
       "style": "§b",
       "catchMessage": "You hear a massive rumble as Thunder emerges.",
       "liquidType": "LAVA",
       "category": "ISLE",
       "lsRangeEnabled": true,
+      "bossbar": true,
       "gdragAlert": true,
       "rareSCAlert": true,
-      "scDisplayColor": "§b"
+      "scDisplayColor": "§4"
     },
     "Water Hydra": {
       "name": "Water Hydra",
       "plural": "Water Hydras",
       "article": "a",
       "special": true,
-      "style": "§1",
+      "style": "§9",
       "catchMessage": "The Water Hydra has come to test your strength.",
       "liquidType": "WATER",
       "category": "GENERAL_WATER",
       "lsRangeEnabled": true,
-      "gdragAlert": true,
+      "bossbar": true,
+      "gdragAlert": false,
       "rareSCAlert": true,
-      "scDisplayColor": "§1"
+      "scDisplayColor": "§9"
     },
     "Poisoned Water Worm": {
       "name": "Poisoned Water Worm",
@@ -110,7 +117,8 @@
       "catchMessage": "A Poisoned Water Worm surfaces!",
       "liquidType": "WATER",
       "category": "HOLLOWS",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§9"
@@ -124,7 +132,8 @@
       "catchMessage": "A Water Worm surfaces!",
       "liquidType": "WATER",
       "category": "HOLLOWS",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§9"
@@ -135,12 +144,13 @@
       "article": "an",
       "special": true,
       "style": "§2",
-      "catchMessage": "A long snout breaks the surface of the water. It's an Alligator!",
+      "catchMessage": "A long snout breaks the surface of the water. It\u0027s an Alligator!",
       "liquidType": "WATER",
       "category": "BAYOU",
       "lsRangeEnabled": true,
-      "gdragAlert": true,
-      "rareSCAlert": true,
+      "bossbar": true,
+      "gdragAlert": false,
+      "rareSCAlert": false,
       "scDisplayColor": "§2"
     },
     "Bayou Sludge": {
@@ -152,7 +162,8 @@
       "catchMessage": "A swampy mass of slime emerges, the Bayou Sludge!",
       "liquidType": "WATER",
       "category": "BAYOU",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§a"
@@ -162,14 +173,15 @@
       "plural": "Bloated Mithril Grubbers",
       "article": "a",
       "special": false,
-      "style": "§3",
-      "catchMessage": "A leech of the mines surfaces... you've caught a Bloated Mithril Grubber.",
+      "style": "§2",
+      "catchMessage": "A leech of the mines surfaces... you\u0027ve caught a Bloated Mithril Grubber.",
       "liquidType": "WATER",
       "category": "DWARVEN",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§3"
+      "scDisplayColor": "§6"
     },
     "Bogged": {
       "name": "Bogged",
@@ -177,24 +189,26 @@
       "article": "a",
       "special": false,
       "style": "§2",
-      "catchMessage": "You've hooked a Bogged!",
+      "catchMessage": "You\u0027ve hooked a Bogged!",
       "liquidType": "WATER",
       "category": "GALATEA",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§2"
+      "scDisplayColor": "§a"
     },
     "Deep Sea Protector": {
       "name": "Deep Sea Protector",
       "plural": "Deep Sea Protectors",
       "article": "a",
       "special": false,
-      "style": "§3",
+      "style": "§7",
       "catchMessage": "You have awoken the Deep Sea Protector, prepare for a battle!",
       "liquidType": "WATER",
       "category": "GENERAL_WATER",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§3"
@@ -205,14 +219,15 @@
       "article": "a",
       "special": true,
       "style": "§9",
-      "catchMessage": "A garish set of tentacles arise. It's a Blue Ringed Octopus!",
+      "catchMessage": "A garish set of tentacles arise. It\u0027s a Blue Ringed Octopus!",
       "liquidType": "WATER",
       "category": "HOTSPOT_WATER",
       "lsRangeEnabled": true,
       "conditions": {
         "hotspot": "WATER"
       },
-      "gdragAlert": true,
+      "bossbar": true,
+      "gdragAlert": false,
       "rareSCAlert": true,
       "scDisplayColor": "§9"
     },
@@ -225,10 +240,11 @@
       "catchMessage": "The desolate wail of a Banshee breaks the silence.",
       "liquidType": "WATER",
       "category": "BAYOU",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§5"
+      "scDisplayColor": "§a"
     },
     "Carrot King": {
       "name": "Carrot King",
@@ -236,14 +252,15 @@
       "article": "the",
       "special": true,
       "style": "§6",
-      "catchMessage": "Is this even a fish? It's the Carrot King!",
+      "catchMessage": "Is this even a fish? It\u0027s the Carrot King!",
       "liquidType": "WATER",
       "category": "GENERAL_WATER",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
       "conditions": {
         "bait": "CARROT"
       },
-      "gdragAlert": true,
+      "bossbar": false,
+      "gdragAlert": false,
       "rareSCAlert": true,
       "scDisplayColor": "§6"
     },
@@ -253,13 +270,14 @@
       "article": "an",
       "special": false,
       "style": "§2",
-      "catchMessage": "You've hooked an Ent, as ancient as the forest itself.",
+      "catchMessage": "You\u0027ve hooked an Ent, as ancient as the forest itself.",
       "liquidType": "WATER",
       "category": "GALATEA",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§2"
+      "scDisplayColor": "§a"
     },
     "Agarimoo": {
       "name": "Agarimoo",
@@ -267,13 +285,14 @@
       "article": "an",
       "special": false,
       "style": "§c",
-      "catchMessage": "Your Chumcap Bucket trembles, it's an Agarimoo.",
+      "catchMessage": "Your Chumcap Bucket trembles, it\u0027s an Agarimoo.",
       "liquidType": "WATER",
       "category": "GENERAL_WATER",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§c"
+      "scDisplayColor": "§3"
     },
     "Abyssal Miner": {
       "name": "Abyssal Miner",
@@ -298,8 +317,9 @@
           }
         ]
       },
-      "gdragAlert": true,
-      "rareSCAlert": true,
+      "bossbar": true,
+      "gdragAlert": false,
+      "rareSCAlert": false,
       "scDisplayColor": "§6"
     },
     "Grim Reaper": {
@@ -308,29 +328,31 @@
       "article": "the",
       "special": true,
       "style": "§5",
-      "catchMessage": "This can't be! The manifestation of death himself!",
+      "catchMessage": "This can\u0027t be! The manifestation of death himself!",
       "liquidType": "WATER",
       "category": "SPOOKY",
       "lsRangeEnabled": true,
       "conditions": {
         "isSpooky": true
       },
-      "gdragAlert": true,
+      "bossbar": true,
+      "gdragAlert": false,
       "rareSCAlert": true,
       "scDisplayColor": "§5"
     },
     "Nessie": {
       "name": "Nessie",
       "plural": "Nessies",
-      "article": "",
-      "special": false,
+      "article": "a",
+      "special": true,
       "style": "§2",
-      "catchMessage": "You've caused a disturbance in the loch. Could it be... Nessie?",
+      "catchMessage": "You\u0027ve caused a disturbance in the loch. Could it be... Nessie?",
       "liquidType": "WATER",
       "category": "GALATEA",
       "lsRangeEnabled": true,
+      "bossbar": true,
       "gdragAlert": false,
-      "rareSCAlert": false,
+      "rareSCAlert": true,
       "scDisplayColor": "§2"
     },
     "Mithril Grubber": {
@@ -338,25 +360,27 @@
       "plural": "Mithril Grubbers",
       "article": "a",
       "special": false,
-      "style": "§3",
-      "catchMessage": "A leech of the mines surfaces... you've caught a Mithril Grubber.",
+      "style": "§2",
+      "catchMessage": "A leech of the mines surfaces... you\u0027ve caught a Mithril Grubber.",
       "liquidType": "WATER",
       "category": "DWARVEN",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§3"
+      "scDisplayColor": "§6"
     },
     "Lord Jawbus": {
       "name": "Lord Jawbus",
       "plural": "Lord Jawbusses",
-      "article": "",
+      "article": "a",
       "special": true,
-      "style": "§4",
+      "style": "§c",
       "catchMessage": "You have angered a legendary creature... Lord Jawbus has arrived.",
       "liquidType": "LAVA",
       "category": "ISLE",
       "lsRangeEnabled": true,
+      "bossbar": true,
       "gdragAlert": true,
       "rareSCAlert": true,
       "scDisplayColor": "§4"
@@ -370,7 +394,8 @@
       "catchMessage": "A Lava Flame flies out from beneath the lava.",
       "liquidType": "LAVA",
       "category": "ISLE",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§c"
@@ -381,16 +406,17 @@
       "article": "a",
       "special": false,
       "style": "§9",
-      "catchMessage": "You spot a fin as blue as the water it came from, it's a Blue Shark.",
+      "catchMessage": "You spot a fin as blue as the water it came from, it\u0027s a Blue Shark.",
       "liquidType": "WATER",
       "category": "SHARK",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
       "conditions": {
         "isFestival": true
       },
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§9"
+      "scDisplayColor": "§b"
     },
     "Catfish": {
       "name": "Catfish",
@@ -401,17 +427,18 @@
       "catchMessage": "Huh? A Catfish!",
       "liquidType": "WATER",
       "category": "GENERAL_WATER",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§e"
+      "scDisplayColor": "§3"
     },
     "Wiki Tiki": {
       "name": "Wiki Tiki",
       "plural": "Wiki Tikis",
       "article": "a",
       "special": true,
-      "style": "§6",
+      "style": "§9",
       "catchMessage": "The water bubbles and froths. A massive form emerges- you have disturbed the Wiki Tiki! You shall pay the price.",
       "liquidType": "WATER",
       "category": "HOTSPOT_WATER",
@@ -419,37 +446,40 @@
       "conditions": {
         "hotspot": "WATER"
       },
+      "bossbar": true,
       "gdragAlert": true,
       "rareSCAlert": true,
-      "scDisplayColor": "§6"
+      "scDisplayColor": "§9"
     },
     "Wetwing": {
       "name": "Wetwing",
       "plural": "Wetwings",
       "article": "a",
       "special": false,
-      "style": "§9",
+      "style": "§3",
       "catchMessage": "Look! A Wetwing emerges!",
       "liquidType": "WATER",
       "category": "GALATEA",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§9"
+      "scDisplayColor": "§a"
     },
     "Squid": {
       "name": "Squid",
       "plural": "Squids",
       "article": "a",
       "special": false,
-      "style": "§7",
+      "style": "§9",
       "catchMessage": "A Squid appeared.",
       "liquidType": "WATER",
       "category": "GENERAL_WATER",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§7"
+      "scDisplayColor": "§3"
     },
     "Night Squid": {
       "name": "Night Squid",
@@ -460,10 +490,11 @@
       "catchMessage": "Pitch darkness reveals a Night Squid.",
       "liquidType": "WATER",
       "category": "GENERAL_WATER",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§8"
+      "scDisplayColor": "§3"
     },
     "Sea Guardian": {
       "name": "Sea Guardian",
@@ -474,7 +505,8 @@
       "catchMessage": "You stumbled upon a Sea Guardian.",
       "liquidType": "WATER",
       "category": "GENERAL_WATER",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§3"
@@ -484,28 +516,30 @@
       "plural": "Sea Witches",
       "article": "a",
       "special": false,
-      "style": "§9",
-      "catchMessage": "It looks like you've disrupted the Sea Witch's brewing session. Watch out, she's furious!",
+      "style": "§5",
+      "catchMessage": "It looks like you\u0027ve disrupted the Sea Witch\u0027s brewing session. Watch out, she\u0027s furious!",
       "liquidType": "WATER",
       "category": "GENERAL_WATER",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§9"
+      "scDisplayColor": "§3"
     },
     "Sea Archer": {
       "name": "Sea Archer",
       "plural": "Sea Archers",
       "article": "a",
       "special": false,
-      "style": "§a",
+      "style": "§7",
       "catchMessage": "You reeled in a Sea Archer.",
       "liquidType": "WATER",
       "category": "GENERAL_WATER",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§a"
+      "scDisplayColor": "§3"
     },
     "Rider of the Deep": {
       "name": "Rider of the Deep",
@@ -516,7 +550,8 @@
       "catchMessage": "The Rider of the Deep has emerged.",
       "liquidType": "WATER",
       "category": "GENERAL_WATER",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§3"
@@ -530,10 +565,11 @@
       "catchMessage": "Gross! A Sea Leech!",
       "liquidType": "WATER",
       "category": "GENERAL_WATER",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§7"
+      "scDisplayColor": "§3"
     },
     "Guardian Defender": {
       "name": "Guardian Defender",
@@ -541,10 +577,11 @@
       "article": "a",
       "special": false,
       "style": "§3",
-      "catchMessage": "You've discovered a Guardian Defender of the sea.",
+      "catchMessage": "You\u0027ve discovered a Guardian Defender of the sea.",
       "liquidType": "WATER",
       "category": "GENERAL_WATER",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§3"
@@ -559,7 +596,8 @@
       "liquidType": "WATER",
       "category": "GALATEA",
       "lsRangeEnabled": true,
-      "gdragAlert": true,
+      "bossbar": true,
+      "gdragAlert": false,
       "rareSCAlert": true,
       "scDisplayColor": "§2"
     },
@@ -572,7 +610,8 @@
       "catchMessage": "A gang of Liltads!",
       "liquidType": "WATER",
       "category": "GALATEA",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§a"
@@ -586,7 +625,8 @@
       "catchMessage": "You caught a Stridersurfer.",
       "liquidType": "LAVA",
       "category": "GALATEA",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§c"
@@ -597,16 +637,17 @@
       "article": "a",
       "special": false,
       "style": "§a",
-      "catchMessage": "Is it a frog? Is it a man? Well, yes, sorta, IT'S FROG MAN!!!!!!",
+      "catchMessage": "Is it a frog? Is it a man? Well, yes, sorta, IT\u0027S FROG MAN!!!!!!",
       "liquidType": "WATER",
       "category": "HOTSPOT_WATER",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
       "conditions": {
         "hotspot": "WATER"
       },
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§a"
+      "scDisplayColor": "§3"
     },
     "Snapping Turtle": {
       "name": "Snapping Turtle",
@@ -614,16 +655,17 @@
       "article": "a",
       "special": false,
       "style": "§2",
-      "catchMessage": "A Snapping Turtle is coming your way, and it's ANGRY!",
+      "catchMessage": "A Snapping Turtle is coming your way, and it\u0027s ANGRY!",
       "liquidType": "WATER",
       "category": "HOTSPOT_WATER",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
       "conditions": {
         "hotspot": "WATER"
       },
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§2"
+      "scDisplayColor": "§9"
     },
     "Oasis Rabbit": {
       "name": "Oasis Rabbit",
@@ -634,10 +676,11 @@
       "catchMessage": "An Oasis Rabbit appears from the water.",
       "liquidType": "WATER",
       "category": "OASIS",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§f"
+      "scDisplayColor": "§a"
     },
     "Oasis Sheep": {
       "name": "Oasis Sheep",
@@ -648,10 +691,11 @@
       "catchMessage": "An Oasis Sheep appears from the water.",
       "liquidType": "WATER",
       "category": "OASIS",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§f"
+      "scDisplayColor": "§a"
     },
     "Flaming Worm": {
       "name": "Flaming Worm",
@@ -662,7 +706,8 @@
       "catchMessage": "A Flaming Worm surfaces from the depths!",
       "liquidType": "LAVA",
       "category": "HOLLOWS",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§c"
@@ -676,7 +721,8 @@
       "catchMessage": "A Lava Blaze has surfaced from the depths!",
       "liquidType": "LAVA",
       "category": "HOLLOWS",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§6"
@@ -690,7 +736,8 @@
       "catchMessage": "A Lava Pigman arose from the depths!",
       "liquidType": "LAVA",
       "category": "HOLLOWS",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§6"
@@ -700,28 +747,30 @@
       "plural": "Medium Mithril Grubbers",
       "article": "a",
       "special": false,
-      "style": "§3",
-      "catchMessage": "A leech of the mines surfaces... you've caught a Medium Mithril Grubber.",
+      "style": "§2",
+      "catchMessage": "A leech of the mines surfaces... you\u0027ve caught a Medium Mithril Grubber.",
       "liquidType": "WATER",
       "category": "DWARVEN",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§3"
+      "scDisplayColor": "§6"
     },
     "Large Mithril Grubber": {
       "name": "Large Mithril Grubber",
       "plural": "Large Mithril Grubbers",
       "article": "a",
       "special": false,
-      "style": "§3",
-      "catchMessage": "A leech of the mines surfaces... you've caught a Large Mithril Grubber.",
+      "style": "§2",
+      "catchMessage": "A leech of the mines surfaces... you\u0027ve caught a Large Mithril Grubber.",
       "liquidType": "WATER",
       "category": "DWARVEN",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§3"
+      "scDisplayColor": "§6"
     },
     "Dumpster Diver": {
       "name": "Dumpster Diver",
@@ -732,10 +781,11 @@
       "catchMessage": "A Dumpster Diver has emerged from the swamp!",
       "liquidType": "WATER",
       "category": "BAYOU",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§3"
+      "scDisplayColor": "§a"
     },
     "Trash Gobbler": {
       "name": "Trash Gobbler",
@@ -746,10 +796,11 @@
       "catchMessage": "The Trash Gobbler is hungry for you!",
       "liquidType": "WATER",
       "category": "BAYOU",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§2"
+      "scDisplayColor": "§a"
     },
     "Titanoboa": {
       "name": "Titanoboa",
@@ -761,6 +812,7 @@
       "liquidType": "WATER",
       "category": "BAYOU",
       "lsRangeEnabled": true,
+      "bossbar": true,
       "gdragAlert": true,
       "rareSCAlert": true,
       "scDisplayColor": "§2"
@@ -771,13 +823,14 @@
       "article": "a",
       "special": false,
       "style": "§5",
-      "catchMessage": "Phew! It's only a Scarecrow.",
+      "catchMessage": "Phew! It\u0027s only a Scarecrow.",
       "liquidType": "WATER",
       "category": "SPOOKY",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
       "conditions": {
         "isSpooky": true
       },
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§5"
@@ -787,17 +840,18 @@
       "plural": "Nightmares",
       "article": "a",
       "special": false,
-      "style": "§2",
+      "style": "§5",
       "catchMessage": "You hear trotting from beneath the waves, you caught a Nightmare.",
       "liquidType": "WATER",
       "category": "SPOOKY",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
       "conditions": {
         "isSpooky": true
       },
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§2"
+      "scDisplayColor": "§5"
     },
     "Werewolf": {
       "name": "Werewolf",
@@ -808,10 +862,11 @@
       "catchMessage": "It must be a full moon, a Werewolf appears.",
       "liquidType": "WATER",
       "category": "SPOOKY",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
       "conditions": {
         "isSpooky": true
       },
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§5"
@@ -821,7 +876,7 @@
       "plural": "Phantom Fishers",
       "article": "a",
       "special": true,
-      "style": "§6",
+      "style": "§5",
       "catchMessage": "The spirit of a long lost Phantom Fisher has come to haunt you.",
       "liquidType": "WATER",
       "category": "SPOOKY",
@@ -829,9 +884,10 @@
       "conditions": {
         "isSpooky": true
       },
-      "gdragAlert": true,
+      "bossbar": true,
+      "gdragAlert": false,
       "rareSCAlert": true,
-      "scDisplayColor": "§6"
+      "scDisplayColor": "§5"
     },
     "Frozen Steve": {
       "name": "Frozen Steve",
@@ -842,7 +898,8 @@
       "catchMessage": "Frozen Steve fell into the pond long ago, never to resurface...until now!",
       "liquidType": "WATER",
       "category": "WINTER",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§b"
@@ -853,27 +910,29 @@
       "article": "a",
       "special": false,
       "style": "§f",
-      "catchMessage": "It's a snowman! He looks harmless.",
+      "catchMessage": "It\u0027s a snowman! He looks harmless.",
       "liquidType": "WATER",
       "category": "WINTER",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§f"
+      "scDisplayColor": "§b"
     },
     "Grinch": {
       "name": "Grinch",
       "plural": "Grinches",
       "article": "the",
       "special": false,
-      "style": "§2",
-      "catchMessage": "The Grinch stole Jerry's Gifts...get them back!",
+      "style": "§a",
+      "catchMessage": "The Grinch stole Jerry\u0027s Gifts...get them back!",
       "liquidType": "WATER",
       "category": "WINTER",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§2"
+      "scDisplayColor": "§b"
     },
     "Yeti": {
       "name": "Yeti",
@@ -885,7 +944,8 @@
       "liquidType": "WATER",
       "category": "WINTER",
       "lsRangeEnabled": true,
-      "gdragAlert": true,
+      "bossbar": true,
+      "gdragAlert": false,
       "rareSCAlert": true,
       "scDisplayColor": "§f"
     },
@@ -898,10 +958,11 @@
       "catchMessage": "You found a forgotten Nutcracker laying beneath the ice.",
       "liquidType": "WATER",
       "category": "WINTER",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§c"
+      "scDisplayColor": "§b"
     },
     "Reindrake": {
       "name": "Reindrake",
@@ -913,9 +974,10 @@
       "liquidType": "WATER",
       "category": "WINTER",
       "lsRangeEnabled": false,
-      "gdragAlert": true,
+      "bossbar": false,
+      "gdragAlert": false,
       "rareSCAlert": true,
-      "scDisplayColor": "§d"
+      "scDisplayColor": "§f"
     },
     "Nurse Shark": {
       "name": "Nurse Shark",
@@ -923,16 +985,17 @@
       "article": "a",
       "special": false,
       "style": "§3",
-      "catchMessage": "A tiny fin emerges from the water, you've caught a Nurse Shark.",
+      "catchMessage": "A tiny fin emerges from the water, you\u0027ve caught a Nurse Shark.",
       "liquidType": "WATER",
       "category": "SHARK",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
       "conditions": {
         "isFestival": true
       },
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§3"
+      "scDisplayColor": "§b"
     },
     "Tiger Shark": {
       "name": "Tiger Shark",
@@ -943,13 +1006,14 @@
       "catchMessage": "A striped beast bounds from the depths, the wild Tiger Shark!",
       "liquidType": "WATER",
       "category": "SHARK",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
       "conditions": {
         "isFestival": true
       },
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§6"
+      "scDisplayColor": "§b"
     },
     "Pyroclastic Worm": {
       "name": "Pyroclastic Worm",
@@ -960,7 +1024,8 @@
       "catchMessage": "You feel the heat radiating as a Pyroclastic Worm surfaces.",
       "liquidType": "LAVA",
       "category": "ISLE",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§c"
@@ -974,7 +1039,8 @@
       "catchMessage": "A Fire Eel slithers out from the depths.",
       "liquidType": "LAVA",
       "category": "ISLE",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§c"
@@ -988,7 +1054,8 @@
       "catchMessage": "Taurus and his steed emerge.",
       "liquidType": "LAVA",
       "category": "ISLE",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§c"
@@ -1006,15 +1073,17 @@
       "conditions": {
         "coords": [
           {
-            "x0": -398,
-            "x1": -357,
-            "y0": 72,
-            "y1": 100,
-            "z0": -722,
-            "z1": -683
+            "x0": -398.0,
+            "x1": -357.0,
+            "y0": 72.0,
+            "y1": 100.0,
+            "z0": -722.0,
+            "z1": -683.0,
+            "exclude": false
           }
         ]
       },
+      "bossbar": true,
       "gdragAlert": true,
       "rareSCAlert": true,
       "scDisplayColor": "§4"
@@ -1024,34 +1093,36 @@
       "plural": "Fried Chickens",
       "article": "a",
       "special": false,
-      "style": "§6",
+      "style": "§c",
       "catchMessage": "Smells of burning. Must be a Fried Chicken.",
       "liquidType": "LAVA",
       "category": "HOTSPOT_LAVA",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
       "conditions": {
         "hotspot": "LAVA"
       },
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§6"
+      "scDisplayColor": "§c"
     },
     "Fireproof Witch": {
       "name": "Fireproof Witch",
       "plural": "Fireproof Witches",
       "article": "a",
       "special": false,
-      "style": "§5",
-      "catchMessage": "Trouble's brewing, it's a Fireproof Witch!",
+      "style": "§c",
+      "catchMessage": "Trouble\u0027s brewing, it\u0027s a Fireproof Witch!",
       "liquidType": "LAVA",
       "category": "HOTSPOT_LAVA",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
       "conditions": {
         "hotspot": "LAVA"
       },
+      "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§5"
+      "scDisplayColor": "§c"
     },
     "Fiery Scuttler": {
       "name": "Fiery Scuttler",
@@ -1066,16 +1137,17 @@
       "conditions": {
         "hotspot": "LAVA"
       },
-      "gdragAlert": true,
+      "bossbar": true,
+      "gdragAlert": false,
       "rareSCAlert": true,
-      "scDisplayColor": "§c"
+      "scDisplayColor": "§4"
     },
     "Ragnarok": {
       "name": "Ragnarok",
       "plural": "Ragnaroks",
-      "article": "",
+      "article": "a",
       "special": true,
-      "style": "§d",
+      "style": "§4",
       "catchMessage": "The sky darkens and the air thickens. The end times are upon us: Ragnarok is here.",
       "liquidType": "LAVA",
       "category": "HOTSPOT_LAVA",
@@ -1083,9 +1155,10 @@
       "conditions": {
         "hotspot": "LAVA"
       },
+      "bossbar": true,
       "gdragAlert": true,
       "rareSCAlert": true,
-      "scDisplayColor": "§d"
+      "scDisplayColor": "§4"
     }
   }
 }
