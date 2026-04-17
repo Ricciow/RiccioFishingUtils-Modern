@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.gui.components.elementa
 import gg.essential.elementa.UIComponent
 import gg.essential.elementa.constraints.*
 import gg.essential.elementa.constraints.resolution.ConstraintVisitor
+import cloud.glitchdev.rfu.gui.components.elementa.group.GroupMaxSizeConstraint
 
 /**
  * Constraints the width/height to the actual elements inside it

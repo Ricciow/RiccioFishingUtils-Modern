@@ -10,7 +10,7 @@ import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.gui.components.elementa.BoundingBoxConstraint
 import cloud.glitchdev.rfu.gui.components.elementa.CenteredPixelConstraint
 import cloud.glitchdev.rfu.gui.components.elementa.CopyComponentSizeConstraint
-import cloud.glitchdev.rfu.gui.components.elementa.GroupMaxSizeConstraint
+import cloud.glitchdev.rfu.gui.components.elementa.group.GroupMaxSizeConstraint
 import cloud.glitchdev.rfu.gui.components.elementa.TextWrappingConstraint
 import cloud.glitchdev.rfu.model.party.Requisite
 import cloud.glitchdev.rfu.utils.Chat

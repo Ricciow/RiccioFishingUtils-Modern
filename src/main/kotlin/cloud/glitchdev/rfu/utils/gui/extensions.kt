@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.utils.gui
 
 import gg.essential.elementa.UIComponent
+import gg.essential.elementa.components.Window
 import gg.essential.elementa.constraints.ColorConstraint
 import gg.essential.elementa.constraints.animation.AnimationStrategy
 import gg.essential.elementa.dsl.animate
@@ -20,6 +21,19 @@ fun <T : UIComponent> T.setHidden(state: Boolean) : UIComponent {
 
 fun <T : UIComponent> T.isHidden() : Boolean {
     return !this.hasParent || !this.parent.children.contains(this)
+}
+
+fun <T : UIComponent> T.isDeepHidden(): Boolean {
+    var current: UIComponent? = this
+    while (current != null) {
+        if (current is Window) return false
+        if (!current.hasParent) return true
+        val parent = current.parent
+        if (parent === current) return false
+        if (!parent.children.contains(current)) return true
+        current = parent
+    }
+    return true
 }
 
 fun <T : UIComponent> T.toggleHidden() : UIComponent {
