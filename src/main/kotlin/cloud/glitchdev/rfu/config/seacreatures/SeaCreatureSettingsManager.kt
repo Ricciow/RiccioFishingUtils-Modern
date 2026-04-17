@@ -1,7 +1,7 @@
 package cloud.glitchdev.rfu.config.seacreatures
 
-import cloud.glitchdev.rfu.events.InstantRegister
-import cloud.glitchdev.rfu.events.InstantRegisteredEvent
+import cloud.glitchdev.rfu.events.AutoRegister
+import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.utils.JsonFile
 import cloud.glitchdev.rfu.constants.Bait
 import cloud.glitchdev.rfu.constants.LiquidTypes
@@ -16,26 +16,41 @@ import cloud.glitchdev.rfu.utils.network.Network
 import com.google.gson.Gson
 import java.lang.reflect.Field
 
-@InstantRegister
-object SeaCreatureSettingsManager : InstantRegisteredEvent {
+@AutoRegister
+object SeaCreatureSettingsManager : RegisteredEvent {
     val seaCreatureConfigFile = JsonFile(
         directory = "repo",
         filename = "sc-config.json",
         type = SeaCreatureSettings::class.java,
-        defaultFactory = { SeaCreatureSettings.empty() }
+        defaultFactory = { loadDefaults() }
     )
 
-    private lateinit var defaultConfig: SeaCreatureSettings
+    private val defaultConfig: SeaCreatureSettings by lazy { loadDefaults() }
     private val scConfig get() = seaCreatureConfigFile.data
+
+    private fun loadDefaults(): SeaCreatureSettings {
+        val stream = Thread.currentThread()
+            .contextClassLoader
+            .getResourceAsStream("assets/rfu/defaults/sc-config.json")
+            ?: return SeaCreatureSettings.empty()
+
+        return try {
+            Gson().fromJson(stream.bufferedReader(), SeaCreatureSettings::class.java)
+        } catch (e: Exception) {
+            RFULogger.error("Failed to load Sea Creature defaults", e)
+            SeaCreatureSettings.empty()
+        }
+    }
 
     fun getName(scName: String): String = resolve(scName) { it.name }
     fun getPlural(scName: String): String = resolve(scName) { it.plural }
     fun getArticle(scName: String): String = resolve(scName) { it.article }
     fun getStyle(scName: String): String = resolve(scName) { it.style }
     fun isSpecial(scName: String): Boolean = resolve(scName) { it.special }
-    fun isLsRangeEnabled(scName: String): Boolean = resolve(scName) { it.lsRangeEnabled }
-    fun isGdragAlert(scName: String): Boolean = resolve(scName) { it.gdragAlert }
-    fun isRareSCAlert(scName: String): Boolean = resolve(scName) { it.rareSCAlert }
+    fun isLsRangeEnabled(scName: String): Boolean = isSpecial(scName) && resolve(scName) { it.lsRangeEnabled }
+    fun isGdragAlert(scName: String): Boolean = isSpecial(scName) && resolve(scName) { it.gdragAlert }
+    fun isRareSCAlert(scName: String): Boolean = isSpecial(scName) && resolve(scName) { it.rareSCAlert }
+    fun isBossbarEnabled(scName: String): Boolean = isSpecial(scName) && resolve(scName) { it.bossbar }
     fun getScDisplayColor(scName: String): String = resolve(scName) { it.scDisplayColor }
 
     fun save() {
@@ -44,7 +59,16 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent {
 
     fun updateCreature(scName: String, update: (SeaCreatureSetting) -> SeaCreatureSetting) {
         val current = scConfig.creatures[scName] ?: defaultConfig.creatures[scName]!!
-        val updated = update(current)
+        var updated = update(current)
+        
+        if (updated.special == false) {
+            updated = updated.copy(
+                lsRangeEnabled = false,
+                bossbar = false,
+                gdragAlert = false,
+                rareSCAlert = false
+            )
+        }
 
         if (updated == current) return
 
@@ -62,20 +86,24 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent {
             RFULogger.error("Failed to update Sea Creature $scName in config file", e)
         }
 
+        registerCreature(scName)
+    }
+
+    private fun registerCreature(scName: String) {
         val sc = SeaCreatures(
             scName = scName,
-            catchMessage = updated.catchMessage ?: defaultConfig.creatures[scName]?.catchMessage ?: "",
-            liquidType = LiquidTypes.valueOf(updated.liquidType ?: defaultConfig.creatures[scName]?.liquidType ?: "WATER"),
-            category = SeaCreatureCategory.valueOf(updated.category ?: defaultConfig.creatures[scName]?.category ?: "GENERAL_WATER"),
-            condition = buildCondition(updated.conditions ?: defaultConfig.creatures[scName]?.conditions),
-            lsRangeEnabled = updated.lsRangeEnabled ?: defaultConfig.creatures[scName]?.lsRangeEnabled ?: true,
-            bossbar = updated.bossbar ?: defaultConfig.creatures[scName]?.bossbar ?: false,
-            gdragAlert = updated.gdragAlert ?: defaultConfig.creatures[scName]?.gdragAlert ?: false,
-            rareSCAlert = updated.rareSCAlert ?: defaultConfig.creatures[scName]?.rareSCAlert ?: false,
-            scDisplayColor = updated.scDisplayColor ?: defaultConfig.creatures[scName]?.scDisplayColor ?: "§f"
+            catchMessage = resolve(scName) { it.catchMessage },
+            liquidType = LiquidTypes.valueOf(resolve(scName) { it.liquidType }),
+            category = SeaCreatureCategory.valueOf(resolve(scName) { it.category }),
+            condition = buildCondition(scConfig.creatures[scName]?.conditions ?: defaultConfig.creatures[scName]?.conditions),
+            lsRangeEnabled = isLsRangeEnabled(scName),
+            bossbar = isBossbarEnabled(scName),
+            gdragAlert = isGdragAlert(scName),
+            rareSCAlert = isRareSCAlert(scName),
+            scDisplayColor = resolve(scName) { it.scDisplayColor }
         )
         SeaCreatures.register(sc)
-        RFULogger.dev("Registered updated Sea Creature: $scName")
+        RFULogger.dev("Registered Sea Creature: $scName")
     }
 
     private fun <T> resolve(
@@ -102,23 +130,21 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent {
                 val currentConfig = seaCreatureConfigFile.data
                 val mergedCreatures = currentConfig.creatures.toMutableMap()
                 var updatedCount = 0
+                var addedCount = 0
+                var deletedCount = 0
 
                 backendConfig.creatures.forEach { (scName, backendSc) ->
                     val currentSc = mergedCreatures[scName]
                     if (currentSc == null) {
                         mergedCreatures[scName] = backendSc
-                        updatedCount++
+                        addedCount++
                         RFULogger.dev("New Sea Creature from backend: $scName")
                     } else {
                         val updatedSc = currentSc.copy(
                             catchMessage = backendSc.catchMessage,
                             liquidType = backendSc.liquidType,
                             category = backendSc.category,
-                            conditions = backendSc.conditions,
-                            gdragAlert = backendSc.gdragAlert,
-                            rareSCAlert = backendSc.rareSCAlert,
-                            scDisplayColor = backendSc.scDisplayColor,
-                            lsRangeEnabled = backendSc.lsRangeEnabled
+                            conditions = backendSc.conditions
                         )
                         if (updatedSc != currentSc) {
                             mergedCreatures[scName] = updatedSc
@@ -128,7 +154,17 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent {
                     }
                 }
 
-                if (updatedCount == 0) return@getRequest
+                val backendKeys = backendConfig.creatures.keys
+                val currentKeys = mergedCreatures.keys.toSet()
+                currentKeys.forEach { key ->
+                    if (!backendKeys.contains(key)) {
+                        mergedCreatures.remove(key)
+                        deletedCount++
+                        RFULogger.dev("Removed Sea Creature not in backend: $key")
+                    }
+                }
+
+                if (addedCount == 0 && updatedCount == 0 && deletedCount == 0) return@getRequest
 
                 val newSettings = SeaCreatureSettings(mergedCreatures)
 
@@ -136,23 +172,11 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent {
                     val field: Field = JsonFile::class.java.getDeclaredField("data")
                     field.isAccessible = true
                     field.set(seaCreatureConfigFile, newSettings)
-                    RFULogger.info("Updated $updatedCount Sea Creatures from backend")
+                    RFULogger.info("Backend SC sync complete: $addedCount added, $updatedCount updated, $deletedCount deleted")
                     seaCreatureConfigFile.save()
 
-                    newSettings.creatures.forEach { (name, setting) ->
-                        val sc = SeaCreatures(
-                            scName = name,
-                            catchMessage = setting.catchMessage ?: "",
-                            liquidType = LiquidTypes.valueOf(setting.liquidType ?: "WATER"),
-                            category = SeaCreatureCategory.valueOf(setting.category ?: "GENERAL_WATER"),
-                            condition = buildCondition(setting.conditions),
-                            lsRangeEnabled = setting.lsRangeEnabled ?: true,
-                            bossbar = setting.bossbar ?: false,
-                            gdragAlert = setting.gdragAlert ?: false,
-                            rareSCAlert = setting.rareSCAlert ?: false,
-                            scDisplayColor = setting.scDisplayColor ?: "§f"
-                        )
-                        SeaCreatures.register(sc)
+                    newSettings.creatures.keys.forEach { name ->
+                        registerCreature(name)
                     }
                 } catch (e: Exception) {
                     RFULogger.error("Failed to apply backend Sea Creature settings", e)
@@ -162,33 +186,9 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent {
         }
     }
 
-    override fun instantRegister() {
-        val gson = Gson()
-
-        val stream = Thread.currentThread()
-            .contextClassLoader
-            .getResourceAsStream("assets/rfu/defaults/sc-config.json")
-            ?: run {
-                RFULogger.error("Missing resource: assets/rfu/defaults/sc-config.json")
-                error("Missing resource: assets/rfu/defaults/sc-config.json")
-            }
-
-        defaultConfig = gson.fromJson(stream.bufferedReader(), SeaCreatureSettings::class.java)
-
-        defaultConfig.creatures.forEach { (scName, setting) ->
-            val sc = SeaCreatures(
-                scName = scName,
-                catchMessage = setting.catchMessage ?: "",
-                liquidType = LiquidTypes.valueOf(setting.liquidType ?: "WATER"),
-                category = SeaCreatureCategory.valueOf(setting.category ?: "GENERAL_WATER"),
-                condition = buildCondition(setting.conditions),
-                lsRangeEnabled = setting.lsRangeEnabled ?: true,
-                bossbar = setting.bossbar ?: false,
-                gdragAlert = setting.gdragAlert ?: false,
-                rareSCAlert = setting.rareSCAlert ?: false,
-                scDisplayColor = setting.scDisplayColor ?: "§f"
-            )
-            SeaCreatures.register(sc)
+    override fun register() {
+        seaCreatureConfigFile.data.creatures.keys.forEach { scName ->
+            registerCreature(scName)
         }
 
         updateFromBackend()
