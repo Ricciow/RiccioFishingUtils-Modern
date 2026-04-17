@@ -14,6 +14,8 @@ class BoundingBoxConstraint : SizeConstraint {
     override var recalculate = true
     override var constrainTo: UIComponent? = null
 
+    private var isCalculating = false
+
     private fun isChildDependent(constraint: Any?): Boolean {
         if (constraint == null) return false
         if (constraint is BoundingBoxConstraint) return true
@@ -41,7 +43,7 @@ class BoundingBoxConstraint : SizeConstraint {
             }
             current = current.parent
         }
-        return startComponent.parent
+        return null
     }
 
     private fun redirectToAncestor(constraint: Any?, safeAncestor: UIComponent) {
@@ -54,6 +56,12 @@ class BoundingBoxConstraint : SizeConstraint {
             }
             is CenterConstraint -> {
                 if (constraint.constrainTo == null) constraint.constrainTo = safeAncestor
+            }
+            is JustifiedCramSiblingConstraint -> {
+                if (constraint.constrainTo == null) constraint.constrainTo = safeAncestor
+            }
+            is GroupMaxSizeConstraint -> {
+                redirectToAncestor(constraint.baseConstraint, safeAncestor)
             }
             is MinConstraint -> {
                 redirectToAncestor(constraint.first, safeAncestor)
@@ -88,25 +96,39 @@ class BoundingBoxConstraint : SizeConstraint {
     }
 
     override fun getWidthImpl(component: UIComponent): Float {
-        val target = constrainTo ?: component
-        val validChildren = target.children.filter { !it.isFloating }
-        if (validChildren.isEmpty()) return 0f
+        if (isCalculating) return cachedValue
+        isCalculating = true
 
-        patchChildrenConstraints(target, isWidth = true)
+        try {
+            val target = constrainTo ?: component
+            val validChildren = target.children.filter { !it.isFloating }
+            if (validChildren.isEmpty()) return 0f
 
-        val rightMost = validChildren.maxOfOrNull { it.getRight() } ?: target.getLeft()
-        return rightMost - target.getLeft()
+            patchChildrenConstraints(target, isWidth = true)
+
+            val rightMost = validChildren.maxOfOrNull { it.getRight() } ?: target.getLeft()
+            return rightMost - target.getLeft()
+        } finally {
+            isCalculating = false
+        }
     }
 
     override fun getHeightImpl(component: UIComponent): Float {
-        val target = constrainTo ?: component
-        val validChildren = target.children.filter { !it.isFloating }
-        if (validChildren.isEmpty()) return 0f
+        if (isCalculating) return cachedValue
+        isCalculating = true
 
-        patchChildrenConstraints(target, isWidth = false)
+        try {
+            val target = constrainTo ?: component
+            val validChildren = target.children.filter { !it.isFloating }
+            if (validChildren.isEmpty()) return 0f
 
-        val bottomMost = validChildren.maxOfOrNull { it.getBottom() } ?: target.getTop()
-        return bottomMost - target.getTop()
+            patchChildrenConstraints(target, isWidth = false)
+
+            val bottomMost = validChildren.maxOfOrNull { it.getBottom() } ?: target.getTop()
+            return bottomMost - target.getTop()
+        } finally {
+            isCalculating = false
+        }
     }
 
     override fun getRadiusImpl(component: UIComponent): Float = getHeightImpl(component) / 2f

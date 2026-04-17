@@ -25,21 +25,18 @@ import gg.essential.elementa.constraints.ConstraintType
 import gg.essential.elementa.constraints.SiblingConstraint
 import gg.essential.elementa.constraints.resolution.ConstraintVisitor
 import java.lang.UnsupportedOperationException
+import kotlin.math.min
 
 /**
- * Similar to [CramSiblingConstraint], but acts like flexbox `space-between`.
- * If a line wraps (is full), it dynamically increases the padding between elements
- * so they fill the entire width of the parent evenly.
- * The last line (or lines that don't wrap) will use the provided [basePadding].
+ * Left-aligns elements using [basePadding] as a maximum gap.
+ * If the elements exceed the parent width, it squishes the padding (making it smaller)
+ * to fit them evenly on one line. It only wraps when the padding reaches 0.
  */
 class JustifiedCramSiblingConstraint(private val basePadding: Float = 0f) : SiblingConstraint(basePadding) {
     override var cachedValue = 0f
     override var recalculate = true
     override var constrainTo: UIComponent? = null
 
-    /**
-     * Simulates standard cram layout to group the parent's children into rows (lines).
-     */
     private fun getLines(parent: UIComponent): List<List<UIComponent>> {
         val lines = mutableListOf<List<UIComponent>>()
         var currentLine = mutableListOf<UIComponent>()
@@ -48,13 +45,15 @@ class JustifiedCramSiblingConstraint(private val basePadding: Float = 0f) : Sibl
         for (child in parent.children) {
             val childWidth = child.getWidth()
 
+            // REMOVED basePadding from the wrap calculation.
+            // Elements will now stay on the same line until they literally touch (padding = 0).
             if (currentLine.isNotEmpty() && currentX + childWidth > parent.getRight() + precisionAdjustmentFactor) {
                 lines.add(currentLine)
                 currentLine = mutableListOf(child)
-                currentX = parent.getLeft() + childWidth + basePadding
+                currentX = parent.getLeft() + childWidth
             } else {
                 currentLine.add(child)
-                currentX += childWidth + basePadding
+                currentX += childWidth
             }
         }
 
@@ -82,21 +81,18 @@ class JustifiedCramSiblingConstraint(private val basePadding: Float = 0f) : Sibl
             return parent.getLeft()
         }
 
-        val isLastLine = lineIndex == lines.size - 1
-        if (!isLastLine && line.size > 1) {
-            val totalComponentsWidth = line.sumOf { it.getWidth().toDouble() }.toFloat()
-            val availableSpace = parent.getWidth() - totalComponentsWidth
-            val dynamicPadding = availableSpace / (line.size - 1)
+        val totalComponentsWidth = line.sumOf { it.getWidth().toDouble() }.toFloat()
+        val availableSpace = parent.getWidth() - totalComponentsWidth
+        val dynamicPadding = availableSpace / (line.size - 1)
 
-            var x = parent.getLeft()
-            for (i in 0 until indexInLine) {
-                x += line[i].getWidth() + dynamicPadding
-            }
-            return x
+        // The core logic change: use basePadding, UNLESS the available spacing is smaller
+        val actualPadding = min(basePadding, dynamicPadding)
+
+        var x = parent.getLeft()
+        for (i in 0 until indexInLine) {
+            x += line[i].getWidth() + actualPadding
         }
-
-        val sibling = parent.children[index - 1]
-        return sibling.getRight() + basePadding
+        return x
     }
 
     override fun getYPositionImpl(component: UIComponent): Float {
@@ -125,7 +121,7 @@ class JustifiedCramSiblingConstraint(private val basePadding: Float = 0f) : Sibl
     }
 
     override fun visitImpl(visitor: ConstraintVisitor, type: ConstraintType) {
-        val indexInParent = visitor.component.let { it.parent.children.indexOf(it) }
+        val indexInParent = visitor.component.parent.children.indexOf(visitor.component)
 
         when (type) {
             ConstraintType.X, ConstraintType.Y -> {
@@ -135,7 +131,10 @@ class JustifiedCramSiblingConstraint(private val basePadding: Float = 0f) : Sibl
                 }
 
                 visitor.visitSibling(ConstraintType.X, indexInParent - 1)
+                visitor.visitSibling(ConstraintType.Y, indexInParent - 1)
                 visitor.visitSibling(ConstraintType.WIDTH, indexInParent - 1)
+                visitor.visitSibling(ConstraintType.HEIGHT, indexInParent - 1)
+
                 visitor.visitSelf(ConstraintType.WIDTH)
                 visitor.visitParent(ConstraintType.X)
                 visitor.visitParent(ConstraintType.WIDTH)
@@ -156,14 +155,11 @@ class JustifiedCramSiblingConstraint(private val basePadding: Float = 0f) : Sibl
         val line = lines[lineIndex]
         if (line.first() == component) return 0f
 
-        val isLastLine = lineIndex == lines.size - 1
-        if (!isLastLine && line.size > 1) {
-            val totalComponentsWidth = line.sumOf { it.getWidth().toDouble() }.toFloat()
-            val availableSpace = parent.getWidth() - totalComponentsWidth
-            return availableSpace / (line.size - 1)
-        }
+        val totalComponentsWidth = line.sumOf { it.getWidth().toDouble() }.toFloat()
+        val availableSpace = parent.getWidth() - totalComponentsWidth
+        val dynamicPadding = availableSpace / (line.size - 1)
 
-        return basePadding
+        return min(basePadding, dynamicPadding)
     }
 
     override fun getVerticalPadding(component: UIComponent): Float {

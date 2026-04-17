@@ -57,7 +57,12 @@ object PartyFinderWindow : BaseWindow(false) {
     private var wasFilterOpen = false
     private var creationOpen = false
     private var reloadOnCooldown = false
-    private var parties : List<FishingParty> = listOf(FishingParty.blankParty().apply { user = "ricciow"; title = "Title"; description = "Description"; level = 1 })
+    private var parties : List<FishingParty> = listOf(
+        FishingParty.blankParty().apply { user = "ricciow"; title = "Title"; description = "Description"; level = 1 },
+        FishingParty.blankParty().apply { user = "ricciow"; title = "Title"; description = "Description"; level = 1 },
+        FishingParty.blankParty().apply { user = "ricciow"; title = "Title"; description = "Description"; level = 1 },
+        FishingParty.blankParty().apply { user = "ricciow"; title = "Title"; description = "Description"; level = 1 }
+    )
     private var partyCards : MutableList<UIPartyCard> = mutableListOf()
 
     val popup: UIPopup = UIPopup(5f, "", isBordered = true).childOf(window).colors {
@@ -294,7 +299,7 @@ object PartyFinderWindow : BaseWindow(false) {
             } else {
                 UIPartyCard(party, 5f).constrain {
                     x = JustifiedCramSiblingConstraint(2f)
-                    y = JustifiedCramSiblingConstraint()
+                    y = JustifiedCramSiblingConstraint(2f)
                     width = 33.percent
                 }
             }
