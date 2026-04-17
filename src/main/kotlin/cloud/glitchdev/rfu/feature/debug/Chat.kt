@@ -45,5 +45,6 @@ object Chat : AbstractCommand("chat") {
         Chat.sendMessage(text)
         ChatEvents.ChatEventManager.runTasks(text)
         ChatEvents.GameEventManager.runTasks(text, true)
+        ChatEvents.GameEventManager.runTasks(text, false)
     }
 }

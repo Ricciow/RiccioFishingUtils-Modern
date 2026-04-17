@@ -29,7 +29,7 @@ object SunnyDayAchievement : NumericStageAchievement() {
         addStageInfo(5, "Sunny Day", "Don't catch a Thunder for 300 catches.\nMust've caught atleast one Thunder before.", AchievementDifficulty.MEDIUM)
     }
 
-    val creature = SeaCreatures.THUNDER
+    val creature = SeaCreatures.get("Thunder")!!
 
     override fun setupListeners() {
         val history = catchHistory.getOrAdd(creature)

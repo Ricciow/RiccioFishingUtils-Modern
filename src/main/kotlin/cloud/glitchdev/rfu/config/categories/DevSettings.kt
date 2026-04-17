@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
+import cloud.glitchdev.rfu.utils.network.Network
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 
 object DevSettings : Category("Developer") {
@@ -38,5 +39,13 @@ object DevSettings : Category("Developer") {
         name = Literal("Back-end Environment")
         description = Literal("The url which the mod will use for its back-end features")
         condition = { devMode }
+    }
+
+    var bypassHypixelCheck by observable(boolean(false) {
+        name = Literal("Bypass Hypixel Check")
+        description = Literal("Bypasses the requirement of being on Hypixel to connect to the websocket.")
+        condition = { devMode }
+    }) { _, _ ->
+        Network.authenticateUser()
     }
 }

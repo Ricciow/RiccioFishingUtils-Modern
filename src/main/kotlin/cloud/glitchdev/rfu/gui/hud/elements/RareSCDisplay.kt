@@ -1,11 +1,10 @@
 package cloud.glitchdev.rfu.gui.hud.elements
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
-import cloud.glitchdev.rfu.config.categories.RareScSettings
+import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
 import cloud.glitchdev.rfu.constants.RareScDisplayDataType
 import cloud.glitchdev.rfu.constants.SeaCreatures
 import cloud.glitchdev.rfu.constants.LiquidTypes
-import cloud.glitchdev.rfu.constants.text.TextColor.CYAN
 import cloud.glitchdev.rfu.constants.text.TextColor.YELLOW
 import cloud.glitchdev.rfu.constants.text.TextColor.WHITE
 import cloud.glitchdev.rfu.constants.text.TextColor.GRAY
@@ -33,7 +32,7 @@ object RareSCDisplay : AbstractTextHudElement("rareSCDisplay") {
         get() = FishingSession.isFishing
 
     override val enabled: Boolean
-        get() = RareScSettings.rareScDisplay && (super.enabled || !RareScSettings.rareScOnlyWhenFishing || isFishing)
+        get() = SeaCreatureConfig.rareScDisplay && (super.enabled || !SeaCreatureConfig.rareScOnlyWhenFishing || isFishing)
 
     override fun onInitialize() {
         super.onInitialize()
@@ -58,7 +57,7 @@ object RareSCDisplay : AbstractTextHudElement("rareSCDisplay") {
         super.onUpdateState()
 
         val lines = mutableListOf<String>()
-        val selectedScs = RareScSettings.rareSC
+        val selectedScs = SeaCreatures.entries.filter { it.special }
         val currentIsland = World.island
 
         val catchHistory = CatchTracker.catchHistory
@@ -93,59 +92,29 @@ object RareSCDisplay : AbstractTextHudElement("rareSCDisplay") {
             return
         }
 
-        val dataOrder = RareScSettings.rareScDisplayDataOrder
+        val dataOrder = SeaCreatureConfig.rareScDisplayDataOrder
 
-        selectedScs.forEach { sc ->
-            if (currentIsland == null || !sc.category.islands.contains(currentIsland)) {
-                return@forEach
-            }
-
-            if (lastPos != Vec3.ZERO && !sc.condition(lastHotspot, lastPos, lastBait)) {
-                return@forEach
-            }
-
-            if (lastLiquid != null && sc.liquidType != lastLiquid) {
-                return@forEach
-            }
-
-            val record = catchHistory.getOrAdd(sc)
-
-            // Building the customized line
-            val line = buildString {
-                append("$CYAN${BOLD}${sc.scName}:")
-
-                dataOrder.forEach { dataType ->
-                    when (dataType) {
-                        RareScDisplayDataType.STREAK -> {
-                            append(" $YELLOW${record.count}")
-                        }
-                        RareScDisplayDataType.AVERAGE -> {
-                            val avg = if (record.history.isNotEmpty()) ceil(record.history.average()).toInt().toString() else "0"
-                            append(" $GRAY($YELLOW$avg$GRAY)")
-                        }
-                        RareScDisplayDataType.TOTAL -> {
-                            append(" $CYAN[$YELLOW${record.total}$CYAN]")
-                        }
-                        RareScDisplayDataType.TIME_SINCE -> {
-                            val lastTime = if (record.total > 0) {
-                                (Clock.System.now() - record.time).toReadableString()
-                            } else {
-                                "Never"
-                            }
-                            append(" $WHITE$lastTime")
-                        }
-                    }
+        selectedScs.groupBy { it.category }.forEach { (_, scsInCategory) ->
+            scsInCategory.forEach { sc ->
+                if (currentIsland == null || !sc.category.islands.contains(currentIsland)) {
+                    return@forEach
                 }
-            }
-            lines.add(line)
-        }
 
-        if (isEditing && lines.isEmpty()) {
-            val examples = if (selectedScs.isNotEmpty()) selectedScs.take(3) else SeaCreatures.entries.filter { it.special }.take(3)
-            examples.forEach { sc ->
+                if (lastPos != Vec3.ZERO && !sc.condition(lastHotspot, lastPos, lastBait)) {
+                    return@forEach
+                }
+
+                if (lastLiquid != null && sc.liquidType != lastLiquid) {
+                    return@forEach
+                }
+
                 val record = catchHistory.getOrAdd(sc)
+
+                // Building the customized line
                 val line = buildString {
-                    append("$CYAN${BOLD}${sc.scName}:")
+                    val color = sc.scDisplayColor.ifEmpty { WHITE }
+                    append("$color${BOLD}${sc.scName}:")
+
                     dataOrder.forEach { dataType ->
                         when (dataType) {
                             RareScDisplayDataType.STREAK -> {
@@ -156,7 +125,7 @@ object RareSCDisplay : AbstractTextHudElement("rareSCDisplay") {
                                 append(" $GRAY($YELLOW$avg$GRAY)")
                             }
                             RareScDisplayDataType.TOTAL -> {
-                                append(" $CYAN[$YELLOW${record.total}$CYAN]")
+                                append(" $color[$YELLOW${record.total}$color]")
                             }
                             RareScDisplayDataType.TIME_SINCE -> {
                                 val lastTime = if (record.total > 0) {
@@ -170,6 +139,42 @@ object RareSCDisplay : AbstractTextHudElement("rareSCDisplay") {
                     }
                 }
                 lines.add(line)
+            }
+        }
+
+        if (isEditing && lines.isEmpty()) {
+            val examples = SeaCreatures.entries.filter { it.special }.take(3)
+            examples.groupBy { it.category }.forEach { (_, scsInCategory) ->
+                scsInCategory.forEach { sc ->
+                    val record = catchHistory.getOrAdd(sc)
+                    val line = buildString {
+                        val color = sc.scDisplayColor
+                        append("$color${BOLD}${sc.scName}:")
+                        dataOrder.forEach { dataType ->
+                            when (dataType) {
+                                RareScDisplayDataType.STREAK -> {
+                                    append(" $YELLOW${record.count}")
+                                }
+                                RareScDisplayDataType.AVERAGE -> {
+                                    val avg = if (record.history.isNotEmpty()) ceil(record.history.average()).toInt().toString() else "0"
+                                    append(" $GRAY($YELLOW$avg$GRAY)")
+                                }
+                                RareScDisplayDataType.TOTAL -> {
+                                    append(" $color[$YELLOW${record.total}$color]")
+                                }
+                                RareScDisplayDataType.TIME_SINCE -> {
+                                    val lastTime = if (record.total > 0) {
+                                        (Clock.System.now() - record.time).toReadableString()
+                                    } else {
+                                        "Never"
+                                    }
+                                    append(" $WHITE$lastTime")
+                                }
+                            }
+                        }
+                    }
+                    lines.add(line)
+                }
             }
         }
 

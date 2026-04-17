@@ -19,9 +19,8 @@ object SquidStreakAchievement: NumericAchievement() {
     override val targetCount: Long = 12L
 
     override fun setupListeners() {
-        activeListeners.add(registerSeaCreatureCatchEvent
-        { sc, _, _, _, _ ->
-            if (sc == SeaCreatures.SQUID) {
+        activeListeners.add(registerSeaCreatureCatchEvent { sc, _, _, _, _ ->
+            if (sc.scName == "Squid") {
                 addProgress()
             } else {
                 currentCount = 0L

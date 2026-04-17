@@ -11,6 +11,7 @@ import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.config.categories.BackendSettings
+import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
@@ -50,7 +51,7 @@ object Network : RegisteredEvent {
     private val client = HttpClient.newHttpClient()
 
     val isOnHypixel: Boolean
-        get() = mc.currentServer?.ip?.lowercase()?.endsWith("hypixel.net") == true
+        get() = DevSettings.bypassHypixelCheck || mc.currentServer?.ip?.lowercase()?.endsWith("hypixel.net") == true
 
     override fun register() {
         registerJoinEvent {

@@ -43,8 +43,8 @@ jobs:
       - name: Build and Publish
         run: |
           chmod +x gradlew
-          # Build all versions first
-          ./gradlew build
+          # Build all primary versions
+          ./gradlew buildPrimary
           # Publish all primary version subprojects to Modrinth. 
           ./gradlew publishModrinth
         env:

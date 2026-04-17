@@ -21,7 +21,8 @@ object NightSquidStreakAchievement: NumericAchievement() {
     override fun setupListeners() {
         activeListeners.add(registerSeaCreatureCatchEvent
         { sc, _, _, _, _ ->
-            if (sc == SeaCreatures.NIGHT_SQUID) {
+            val nightSquid = SeaCreatures.get("Night Squid")
+            if (nightSquid != null && sc == nightSquid) {
                 addProgress()
             } else {
                 currentCount = 0L

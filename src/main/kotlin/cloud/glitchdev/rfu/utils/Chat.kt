@@ -7,6 +7,7 @@ import kotlinx.coroutines.delay
 object Chat {
     private val queue: ArrayDeque<String> = ArrayDeque()
     private var isRunning = false
+    var isSendingModMessage = false
     
     private fun sendPartyMessages() {
         if (isRunning) return
@@ -44,11 +45,16 @@ object Chat {
     fun sendMessage(message : Component) {
         //Ensure it's in the render thread.
         mc.execute {
-            //? if >=26.1 {
-            mc.player?.sendSystemMessage(message)
-            //?} else {
-            /*mc.player?.displayClientMessage(message, false)
-            *///?}
+            isSendingModMessage = true
+            try {
+                //? if >=26.1 {
+                mc.player?.sendSystemMessage(message)
+                //?} else {
+                /*mc.player?.displayClientMessage(message, false)
+                *///?}
+            } finally {
+                isSendingModMessage = false
+            }
         }
     }
 

@@ -29,7 +29,7 @@ object RagnarokDryStreakAchievement : NumericStageAchievement() {
         addStageInfo(5, "Distant Ragnarok", "Don't catch a Ragnarok for 1500 catches.\nMust've caught atleast one Ragnarok before.", AchievementDifficulty.HARD)
     }
 
-    val creature = SeaCreatures.RAGNAROK
+    val creature = SeaCreatures.get("Ragnarok")!!
 
     override fun setupListeners() {
         val history = catchHistory.getOrAdd(creature)

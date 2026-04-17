@@ -92,7 +92,12 @@ object ResourcePackFeature : Feature {
                 val soundsEntries = customSounds.joinToString(",\n") { name ->
                     """
                     |  "$name": {
-                    |    "sounds": ["$MOD_ID:$name"]
+                    |    "replace": true,
+                    |    "sounds": [{
+                    |       "name": "$MOD_ID:$name",
+                    |       "preload": true,
+                    |       "stream": false
+                    |    }]
                     |  }
                     """.trimMargin()
                 }

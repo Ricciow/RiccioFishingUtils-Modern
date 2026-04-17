@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.events.managers
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
+import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.RFULogger
 import gg.essential.universal.utils.toFormattedString
 import gg.essential.universal.utils.toUnformattedString
@@ -14,12 +15,14 @@ import net.minecraft.network.chat.Component
 object ChatEvents : RegisteredEvent {
     override fun register() {
         ClientReceiveMessageEvents.ALLOW_CHAT.register { message, _, _, _, _ ->
+            if (Chat.isSendingModMessage) return@register true
             val result = ChatEventManager.runTasks(message)
             if(!result) RFULogger.dev("Chat message was hid: ${message.toFormattedString()}")
             result
         }
 
         ClientReceiveMessageEvents.ALLOW_GAME.register { message, overlay ->
+            if (Chat.isSendingModMessage) return@register true
             val result = GameEventManager.runTasks(message, overlay)
             if(!result) RFULogger.dev("Game message was hid: ${message.toFormattedString()}")
             result

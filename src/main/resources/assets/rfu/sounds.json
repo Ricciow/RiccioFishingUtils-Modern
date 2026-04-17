@@ -21,6 +21,17 @@
       }
     ]
   },
+  "littlefoot": {
+    "category": "player",
+    "subtitle": "Rain Expired",
+    "sounds": [
+      {
+        "name": "rfu:rare_sc",
+        "preload": true,
+        "stream": false
+      }
+    ]
+  },
   "jawbus_death": {
     "category": "player",
     "subtitle": "Someone Has Skill Issue",

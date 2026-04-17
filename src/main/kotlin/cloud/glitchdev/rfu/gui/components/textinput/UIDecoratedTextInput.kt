@@ -2,7 +2,6 @@ package cloud.glitchdev.rfu.gui.components.textinput
 
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.elementa.UISpecialTextInput
-import cloud.glitchdev.rfu.utils.gui.addHoverColoring
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.animation.Animations
@@ -11,13 +10,33 @@ import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.toConstraint
 import gg.essential.universal.UMatrixStack
+import cloud.glitchdev.rfu.gui.components.Colorable
+import gg.essential.elementa.dsl.animate
+import gg.essential.elementa.dsl.minus
+import gg.essential.elementa.dsl.pixels
 
-class UIDecoratedTextInput(val placeholder : String, radius : Float, val numberOnly: Boolean = false, val maxChars : Int = 0, var onChange : (String) -> Unit = {}) : UIRoundedRectangle(radius) {
-    val primaryColor = UIScheme.secondaryColorOpaque.toConstraint()
-    val hoverColor = UIScheme.secondaryColor.toConstraint()
-    val textColor = UIScheme.primaryTextColor.toConstraint()
+class UIDecoratedTextInput(
+    val placeholder: String,
+    radius: Float,
+    val numberOnly: Boolean = false,
+    val maxChars: Int = 0,
+    var onChange: (String) -> Unit = {}
+) : UIRoundedRectangle(radius), Colorable {
+    var primaryColor = UIScheme.secondaryColorOpaque.toConstraint()
+    var hoverColor = UIScheme.secondaryColor.toConstraint()
+    var textColor = UIScheme.primaryTextColor.toConstraint()
+    var unselectedTextColor = UIScheme.placeholderTextColor.toConstraint()
     val hoverDuration = UIScheme.HOVER_EFFECT_DURATION
-
+    var isEnabled = true
+        set(value) {
+            field = value
+            this.constrain {
+                color = (if (value) primaryColor else UIScheme.disabledColor.toConstraint())
+            }
+            updateTextColor()
+        }
+    var isFocused = false
+        private set
     private var textChanged = false
     private val numberRegex = "[^0-9]".toRegex()
 
@@ -29,20 +48,38 @@ class UIDecoratedTextInput(val placeholder : String, radius : Float, val numberO
 
     fun create() {
         this.constrain {
-            color = primaryColor
+            color = if (isEnabled) primaryColor else UIScheme.disabledColor.toConstraint()
         }
-        this.addHoverColoring(Animations.IN_EXP, hoverDuration, primaryColor, hoverColor)
+        this.onMouseEnter {
+            if (!isEnabled) return@onMouseEnter
+            this.animate {
+                setColorAnimation(Animations.IN_EXP, hoverDuration, hoverColor)
+            }
+        }.onMouseLeave {
+            if (!isEnabled) return@onMouseLeave
+            this.animate {
+                setColorAnimation(Animations.IN_EXP, hoverDuration, primaryColor)
+            }
+        }
 
         textInput = (UISpecialTextInput(placeholder).constrain {
             x = CenterConstraint()
             y = CenterConstraint()
-            width = 90.percent()
-            height = 90.percent()
-            color = textColor
+            width = 100.percent() - 4.pixels
+            height = 100.percent() - 2.pixels
+            color = if (isEnabled) unselectedTextColor else UIScheme.disabledTextColor.toConstraint()
         }.onMouseClick {
+            if (!isEnabled) return@onMouseClick
             grabWindowFocus()
         }.onKeyType { _, _ ->
+            if (!isEnabled) return@onKeyType
             textChanged = true
+        }.onFocus {
+            isFocused = true
+            updateTextColor()
+        }.onFocusLost {
+            isFocused = false
+            updateTextColor()
         } childOf this) as UISpecialTextInput
     }
 
@@ -62,12 +99,31 @@ class UIDecoratedTextInput(val placeholder : String, radius : Float, val numberO
         super.draw(matrixStack)
     }
 
-    fun setText(text : String) {
+    fun setText(text : String, triggerOnChange: Boolean = false) {
         textInput.setText(text)
-        textChanged = true
+        textChanged = triggerOnChange
+        updateTextColor()
     }
 
     fun getText() : String {
         return textInput.getText()
+    }
+
+    fun updateTextColor() {
+        val targetColor = when {
+            !isEnabled -> UIScheme.disabledTextColor.toConstraint()
+            !isFocused && getText().isEmpty() -> unselectedTextColor
+            else -> textColor
+        }
+        textInput.constrain {
+            color = targetColor
+        }
+    }
+
+    override fun refreshColors() {
+        this.constrain { color = primaryColor }
+        if (::textInput.isInitialized) {
+            updateTextColor()
+        }
     }
 }

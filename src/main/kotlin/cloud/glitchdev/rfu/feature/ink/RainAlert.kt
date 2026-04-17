@@ -28,7 +28,9 @@ object RainAlert : Feature {
                 } else if(hasRained && !alertSent) {
                     alertSent = true
                     Title.showTitle("§b§lRain Expired!", "§7Go to Vanessa!", 10, 20, 10)
-                    Sounds.playSound("rfu:rain_expired", 1f, 1f)
+                    if (InkFishing.rainAlertSound) {
+                        Sounds.playSound("rfu:rain_expired", 1f, InkFishing.rainAlertVolume)
+                    }
                 }
             }
         }

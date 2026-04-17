@@ -6,7 +6,7 @@ import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.TextUtils
-import cloud.glitchdev.rfu.events.managers.PartyEvents.registerPartyListChangedEvent
+import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyListChangedEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.model.party.FishingParty
 import net.minecraft.network.chat.ClickEvent

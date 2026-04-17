@@ -162,7 +162,8 @@ configure<net.fabricmc.loom.api.LoomGradleExtensionAPI> {
             "-Dmixin.debug.export=true",
             "-Dfabric.addMods=mods/$modsFolder",
             "-Ddevauth.enabled=true",
-            "-Ddevauth.account=main"
+            "-Ddevauth.account=main",
+            "-Delementa.dev=true"
         )
         runDir = "../../run"
     }
@@ -216,13 +217,15 @@ tasks {
         delete(rootProject.layout.buildDirectory.file("libs/${base.archivesName.get()}-${version}.jar"))
     }
 
+    val isPrimary = project.name != rootProject.name && project.name != "processor" && project.findProperty("stonecutter.redirect") == null
+
     if (stonecutter.eval(stonecutter.current.version, "<26.1")) {
         named("remapJar", net.fabricmc.loom.task.RemapJarTask::class) {
-            destinationDirectory.set(rootProject.layout.buildDirectory.dir("libs"))
+            if (isPrimary) destinationDirectory.set(rootProject.layout.buildDirectory.dir("libs"))
         }
     } else {
         named("jar", Jar::class) {
-            destinationDirectory.set(rootProject.layout.buildDirectory.dir("libs"))
+            if (isPrimary) destinationDirectory.set(rootProject.layout.buildDirectory.dir("libs"))
         }
     }
 }

@@ -22,6 +22,44 @@ object OtherSettings : Category("Other") {
         description = Literal("Shows the currently tracked achievements.")
     }
 
+    var littlefootAlert by observable(boolean(false) {
+        name = Literal("Littlefoot Alert")
+        description = Literal("Sends an alert whenever a Littlefoot is found.")
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var littlefootSound by observable(boolean(true) {
+        name = Literal("Littlefoot Alert Sound")
+        description = Literal("Plays a sound whenever a Littlefoot is found.")
+        condition = { littlefootAlert }
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var littlefootVolume by float(1f) {
+        name = Literal("Sound Volume")
+        description = Literal("The volume for the Littlefoot alert sound")
+        range = 0f..1f
+        slider = true
+        condition = { littlefootAlert && littlefootSound }
+    }
+
+    var achievementSound by observable(boolean(true) {
+        name = Literal("Achievement Sound")
+        description = Literal("Plays a sound when you unlock an achievement.")
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var achievementVolume by float(1f) {
+        name = Literal("Achievement Volume")
+        description = Literal("The volume for the achievement unlock sound")
+        range = 0f..1f
+        slider = true
+        condition = { achievementSound }
+    }
+
     var zoomEtherwarp by boolean(false) {
         name = Literal("Zoom on etherwarp")
         description = Literal("Zooms when etherwarping")

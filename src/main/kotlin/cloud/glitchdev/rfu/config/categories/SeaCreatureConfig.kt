@@ -1,30 +1,40 @@
 package cloud.glitchdev.rfu.config.categories
 
+import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.Category
-import cloud.glitchdev.rfu.constants.SeaCreatures
 import cloud.glitchdev.rfu.constants.RareScDisplayDataType
+import cloud.glitchdev.rfu.constants.SeaCreatures
+import cloud.glitchdev.rfu.feature.fishing.CatchMessageReplacer
 import cloud.glitchdev.rfu.feature.fishing.RareScPartyMessage
+import cloud.glitchdev.rfu.gui.window.SeaCreatureEditWindow
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
+import com.teamresourceful.resourcefulconfig.client.ConfigScreen
 
-object RareScSettings : Category("Rare SCs") {
+object SeaCreatureConfig : Category("Sea Creatures") {
     override val description: TranslatableValue
-        get() = Literal("Settings for your great catches!")
+        get() = Literal("Settings for all your sea creature needs!")
 
     init {
         dualSeparator {
             title = "General"
             description = "Basic settings for Rare Sea Creatures"
         }
-    }
 
-    var rareSC by draggable(*SeaCreatures.entries.filter { it.special }.toTypedArray()) {
-        name = Literal("Rare Sea Creatures")
-        description = Literal("Select which sea creatures are considered rare for the mod.")
+        customButton(
+            {
+                @Suppress("UnstableApiUsage")
+                val window = SeaCreatureEditWindow(mc.screen as? ConfigScreen)
+                mc.setScreen(window)
+            },
+            "Edit Sea Creatures",
+            "Open a window to edit sea creature properties (Name, Plural, Article, Special, etc.)",
+            "Edit"
+        )
     }
 
     val RARE_SC_REGEX
-        get() = rareSC.joinToString("|").toExactRegex()
+        get() = SeaCreatures.entries.filter { it.special }.joinToString("|") { it.scName }.toExactRegex()
 
     var rareScGlow by boolean(false) {
         name = Literal("Rare SC Glow")
@@ -34,6 +44,40 @@ object RareScSettings : Category("Rare SCs") {
     var timeToKill by boolean(true) {
         name = Literal("Time to kill")
         description = Literal("Sends a message after killing a rare Sea Creature saying how long it took.")
+    }
+
+    init {
+        dualSeparator {
+            title = "Catch Messages"
+            description = "Replace standard catch messages with custom ones"
+        }
+    }
+
+    var replaceCatchMessages by observable(boolean(true) {
+        name = Literal("Replace Catch Messages")
+        description = Literal("Replaces standard catch messages with custom ones")
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var catchMessageTemplate by string("&3&lSEA CREATURE! &eYou caught {article} {style}&l{name}") {
+        name = Literal("Catch Message Template")
+        description = Literal("The template for the catch message. Available: {article}, {article_upper}, {name}, {style}, {plural}, {mob}, {mobs}")
+        condition = { replaceCatchMessages }
+    }
+
+    var doubleHookCatchMessageTemplate by string("&9&lDOUBLE HOOK! &eYou caught two {style}&l{plural}") {
+        name = Literal("Double Hook Message Template")
+        description = Literal("The template for the double hook catch message. Available: {article}, {article_upper}, {name}, {style}, {plural}, {mob}, {mobs}")
+        condition = { replaceCatchMessages }
+    }
+
+    init {
+        previewButton(
+            CatchMessageReplacer::preview,
+            "Preview Message",
+            "Shows a preview of one of the catch messages in chat."
+        ) { replaceCatchMessages }
     }
 
     init {
@@ -105,10 +149,20 @@ object RareScSettings : Category("Rare SCs") {
         condition = { goldenDragonAlert }
     }
 
-    var goldenDragonSound by boolean(true) {
+    var goldenDragonSound by observable(boolean(true) {
         name = Literal("GDrag Alert Sound")
         description = Literal("Plays a sound when the alert triggers.")
         condition = { goldenDragonAlert }
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var goldenDragonVolume by float(1f) {
+        name = Literal("Sound Volume")
+        description = Literal("The volume for the GDrag alert sound")
+        range = 0f..1f
+        slider = true
+        condition = { goldenDragonAlert && goldenDragonSound }
     }
 
     init {
@@ -159,14 +213,8 @@ object RareScSettings : Category("Rare SCs") {
         reloadScreen()
     }
 
-    var healthBarMobs by draggable(*SeaCreatures.entries.filter { it.special }.toTypedArray()) {
-        name = Literal("Boss Health Bar mobs")
-        description = Literal("Select which mobs will have their health bars displayed")
-        condition = { bossHealthBars }
-    }
-
     val HEALTH_BAR_REGEX
-        get() = healthBarMobs.joinToString("|").toExactRegex()
+        get() = SeaCreatures.entries.filter { it.special }.joinToString("|") { it.scName }.toExactRegex()
 
 
     var coloredShurikenBar by boolean(true) {

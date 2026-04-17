@@ -38,4 +38,24 @@ open class Category(id: String) : CategoryKt(id) {
             this.condition = condition
         }
     }
-}
+
+    fun customButton(
+        onClickAction: () -> Unit,
+        title: String,
+        description: String = "",
+        buttonText: String = "Open",
+        condition: () -> Boolean = { true }
+    ) {
+        button {
+            this.title = title
+            this.description = description
+            text = buttonText
+            onClick {
+                mc.schedule {
+                    onClickAction()
+                }
+            }
+            this.condition = condition
+        }
+    }
+    }

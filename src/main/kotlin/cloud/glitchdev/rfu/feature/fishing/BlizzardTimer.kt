@@ -1,6 +1,5 @@
 package cloud.glitchdev.rfu.feature.fishing
 
-import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.config.categories.JerryFishing
 import cloud.glitchdev.rfu.constants.FishingIslands
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
@@ -51,8 +50,8 @@ object BlizzardTimer : Feature {
             if (World.island == FishingIslands.JERRY) {
                 if (blizzardActive && JerryFishing.blizzardExpiredAlert) {
                     Title.showTitle("§b§lBlizzard Expired!")
-                    if (GeneralFishing.deployableExpiredSound) {
-                        Sounds.playSound("rfu:blizzard_expired", 1f, GeneralFishing.deployableExpiredVolume)
+                    if (JerryFishing.blizzardExpiredSound) {
+                        Sounds.playSound("rfu:blizzard_expired", 1f, JerryFishing.blizzardExpiredVolume)
                     }
                 }
                 blizzardActive = false

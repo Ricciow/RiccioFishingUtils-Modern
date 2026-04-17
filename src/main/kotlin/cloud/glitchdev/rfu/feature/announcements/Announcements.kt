@@ -1,7 +1,6 @@
 package cloud.glitchdev.rfu.feature.announcements
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.API_URL
-import cloud.glitchdev.rfu.config.categories.BackendSettings
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.events.managers.AnnouncementEvents.registerAnnouncementUpdateEvent
 import cloud.glitchdev.rfu.feature.RFUFeature
@@ -14,6 +13,7 @@ import cloud.glitchdev.rfu.utils.command.Command
 import cloud.glitchdev.rfu.utils.command.AbstractCommand
 import cloud.glitchdev.rfu.utils.dsl.toInteractiveText
 import cloud.glitchdev.rfu.utils.network.Network
+import cloud.glitchdev.rfu.utils.network.WebSocketClient
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
@@ -43,7 +43,7 @@ object Announcements : Feature {
 
         registerJoinEvent(delayMillis = 3000) { wasConnected ->
             if (!wasConnected) {
-                if (!BackendSettings.backendAccepted) {
+                if (!WebSocketClient.isConnected) {
                     fetchLatestAnnouncement { fetched ->
                         fetched?.let { sendAnnouncementMessage(it) }
                     }

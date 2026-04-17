@@ -15,6 +15,8 @@ object PetDisplay : AbstractTextHudElement("petDisplay") {
     private var currentPet : String? = null
 
     override fun onInitialize() {
+        currentPet = PetUpdateEventManager.currentPet
+
         registerPetUpdateEvent { pet ->
             currentPet = pet
             updateState()

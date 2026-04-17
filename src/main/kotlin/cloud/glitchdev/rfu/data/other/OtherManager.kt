@@ -1,7 +1,5 @@
 package cloud.glitchdev.rfu.data.other
 
-import cloud.glitchdev.rfu.events.AutoRegister
-import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.data.other.data.CakesEntry
 import cloud.glitchdev.rfu.data.other.data.Entry
 import cloud.glitchdev.rfu.data.other.data.StringEntry
@@ -13,8 +11,7 @@ import com.google.gson.JsonParseException
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
 
-@AutoRegister
-object OtherManager : RegisteredEvent {
+object OtherManager {
     val file = JsonFile(
         filename = "other.json",
         type = OtherData::class.java,
@@ -42,9 +39,6 @@ object OtherManager : RegisteredEvent {
 
     val data
         get() = file.data
-
-    override fun register() {
-    }
 
     fun getField(key : String) : Entry? {
         return data.savedStuff[key]

@@ -1,13 +1,12 @@
 package cloud.glitchdev.rfu.data.fishing
 
 import cloud.glitchdev.rfu.constants.FishingIslands
+import cloud.glitchdev.rfu.constants.HotSpotConstants
 import cloud.glitchdev.rfu.constants.LiquidTypes
 import cloud.glitchdev.rfu.utils.JsonFile
 import net.minecraft.core.BlockPos
 
 object HotspotCache {
-    private const val MAX_SESSION_MEASUREMENTS = 250
-
     private val storage = JsonFile(
         filename = "hotspots.json",
         type = CacheStorage::class.java,
@@ -33,27 +32,41 @@ object HotspotCache {
 
         val distances = data.sessionDistances
         synchronized(distances) {
-            // Seed the session buffer if it's empty but we have a cached radius
             if (distances.isEmpty() && data.radius > 0) {
-                // Add the cached radius multiple times to weight it as the "basis"
-                repeat(25) { distances.add(data.radius.toDouble()) }
+                repeat(HotSpotConstants.INITIAL_MEASUREMENT_PADDING) { distances.add(data.radius.toDouble()) }
             }
 
             distances.add(distance)
-            if (distances.size > MAX_SESSION_MEASUREMENTS) {
+            if (distances.size > HotSpotConstants.MAX_SESSION_MEASUREMENTS) {
                 distances.removeAt(0)
             }
-
-            // Update the radius property with the current median
-            val sorted = distances.sorted()
-            data.radius = (sorted[sorted.size / 2]).toFloat()
         }
     }
 
     fun getMedian(pos: BlockPos, island: FishingIslands?): Float? {
         val key = "${island?.island}_${pos.x},${pos.y},${pos.z}"
+        val data = synchronized(cache) { cache[key] } ?: return null
+        
+        val distances = data.sessionDistances
+        return synchronized(distances) {
+            if (distances.isEmpty()) return@synchronized data.radius
+            val sorted = distances.sorted()
+            (sorted[sorted.size / 2]).toFloat()
+        }
+    }
+
+    fun getRadius(pos: BlockPos, island: FishingIslands?): Float? {
+        val key = "${island?.island}_${pos.x},${pos.y},${pos.z}"
         return synchronized(cache) {
             cache[key]?.radius
+        }
+    }
+
+    fun updateRadius(pos: BlockPos, radius: Float, island: FishingIslands?) {
+        val key = "${island?.island}_${pos.x},${pos.y},${pos.z}"
+        synchronized(cache) {
+            val data = cache[key] ?: return@synchronized
+            data.radius = radius
         }
     }
 

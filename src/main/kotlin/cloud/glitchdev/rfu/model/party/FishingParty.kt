@@ -7,13 +7,13 @@ import cloud.glitchdev.rfu.constants.SeaCreatures
 import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.World
+import cloud.glitchdev.rfu.model.data.DataOption
 import com.google.gson.annotations.SerializedName
 import com.google.gson.Gson
-import kotlin.math.max
 
 data class FishingParty(
     @Transient
-    var id: String = "?",
+    var id: String? = "?",
     var user: String,
     var level: Int,
     var title: String,
@@ -87,7 +87,7 @@ data class FishingParty(
                     Requisite("brain_food", "Brain Food", false),
                 ),
                 listOf(),
-                Players(max(Party.members.size + 1, 1), 6)
+                Players(maxOf(Party.members.size, 1), 6)
             )
         }
     }
@@ -101,6 +101,10 @@ data class Requisite(
     fun update(name: String = this.name, value: Boolean = this.value) {
         this.name = name
         this.value = value
+    }
+
+    fun toDataOption(): DataOption {
+        return DataOption(id, name)
     }
 }
 

@@ -14,7 +14,7 @@ fun getProp(p: Project, name: String): String {
     return p.property(name).toString()
 }
 
-stonecutter active "26.1"
+stonecutter active "26.1.2"
 
 stonecutter parameters {
     swaps["mod_version"] = "\"" + getProp(project, "mod.version") + "\";"
@@ -29,6 +29,16 @@ tasks.register("publishModrinth") {
     subprojects.forEach { sub ->
         if (sub.name != "processor" && sub.findProperty("stonecutter.redirect") == null) {
             dependsOn(sub.tasks.named("modrinth"))
+        }
+    }
+}
+
+tasks.register("buildPrimary") {
+    group = "build"
+    description = "Builds all primary versions"
+    subprojects.forEach { sub ->
+        if (sub.name != "processor" && sub.findProperty("stonecutter.redirect") == null) {
+            dependsOn(sub.tasks.named("build"))
         }
     }
 }

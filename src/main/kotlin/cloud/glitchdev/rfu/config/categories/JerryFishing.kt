@@ -33,8 +33,26 @@ object JerryFishing : Category("Jerry Fishing") {
         reloadScreen()
     }
 
-    var blizzardExpiredAlert by boolean(true) {
+    var blizzardExpiredAlert by observable(boolean(true) {
         name = Literal("Blizzard Expired Alert")
         description = Literal("Sends an alert whenever the blizzard expires.")
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var blizzardExpiredSound by observable(boolean(true) {
+        name = Literal("Blizzard Expired Sound")
+        description = Literal("Plays a sound whenever the blizzard expires.")
+        condition = { blizzardExpiredAlert }
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var blizzardExpiredVolume by float(1f) {
+        name = Literal("Sound Volume")
+        description = Literal("The volume for the blizzard expired sound")
+        range = 0f..1f
+        slider = true
+        condition = { blizzardExpiredAlert && blizzardExpiredSound }
     }
 }

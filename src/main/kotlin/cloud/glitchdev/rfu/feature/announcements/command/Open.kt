@@ -9,6 +9,7 @@ import cloud.glitchdev.rfu.model.announcement.Announcement
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.command.SimpleCommand
 import cloud.glitchdev.rfu.utils.gui.Gui
+import cloud.glitchdev.rfu.utils.network.WebSocketClient
 import com.mojang.brigadier.context.CommandContext
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import java.time.Instant
@@ -19,7 +20,7 @@ object Open : SimpleCommand("open") {
     override fun execute(context: CommandContext<FabricClientCommandSource>): Int {
         if (announcement != null) {
             open(announcement)
-        } else {
+        } else if (!WebSocketClient.isConnected) {
             context.source.sendFeedback(
                 TextUtils.rfuLiteral(
                     "Attempting to fetch latest announcement...",
@@ -38,6 +39,13 @@ object Open : SimpleCommand("open") {
                     )
                 }
             }
+        } else {
+            context.source.sendFeedback(
+                TextUtils.rfuLiteral(
+                    "No announcement found.",
+                    TextStyle(GRAY)
+                )
+            )
         }
 
         return 1

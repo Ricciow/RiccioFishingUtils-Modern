@@ -3,7 +3,6 @@ package cloud.glitchdev.rfu.gui.hud.elements
 import cloud.glitchdev.rfu.constants.text.TextColor.CYAN
 import cloud.glitchdev.rfu.constants.text.TextColor.YELLOW
 import cloud.glitchdev.rfu.constants.text.TextColor.LIGHT_GREEN
-
 import cloud.glitchdev.rfu.constants.text.TextEffects.BOLD
 import cloud.glitchdev.rfu.constants.text.TextColor.RED
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
@@ -15,8 +14,7 @@ import cloud.glitchdev.rfu.constants.FishingIslands
 import cloud.glitchdev.rfu.feature.fishing.FishingSession
 import cloud.glitchdev.rfu.feature.ink.InkSessionTracker
 import cloud.glitchdev.rfu.data.catches.CatchTracker.catchHistory
-import cloud.glitchdev.rfu.constants.SeaCreatures.NIGHT_SQUID
-import cloud.glitchdev.rfu.constants.SeaCreatures.SQUID
+import cloud.glitchdev.rfu.constants.SeaCreatures
 import cloud.glitchdev.rfu.data.collections.CollectionItem
 import cloud.glitchdev.rfu.data.collections.CollectionsHandler
 import cloud.glitchdev.rfu.utils.World
@@ -86,27 +84,25 @@ object InkTrackingDisplay : AbstractTextHudElement("inktrackingdisplay") {
         }
 
         if(items.contains(InkTrackingType.SQUIDS)) {
-
-            val squidNow = catchHistory.getOrAdd(sc=SQUID).total
+            val squid = SeaCreatures.get("Squid")
+            val squidNow = squid?.let { catchHistory.getOrAdd(it).total } ?: 0
             val squidGain = InkSessionTracker.squidGain
 
             val line = buildString {
                 append("$CYAN${BOLD}Squids: $YELLOW${squidGain} $CYAN($LIGHT_GREEN${squidNow}$CYAN)")
             }
             lines.add(line)
-
         }
 
         if(items.contains(InkTrackingType.N_SQUID)) {
-
-            val nightSquidNow = catchHistory.getOrAdd(NIGHT_SQUID).total
+            val nightSquid = SeaCreatures.get("Night Squid")
+            val nightSquidNow = nightSquid?.let { catchHistory.getOrAdd(it).total } ?: 0
             val nSquidGain = InkSessionTracker.nightSquidGain
 
             val line = buildString {
                 append("$CYAN${BOLD}Night Squids: $YELLOW${nSquidGain} $CYAN($LIGHT_GREEN${nightSquidNow}$CYAN)")
             }
             lines.add(line)
-
         }
 
         val inkGoal = InkFishing.goalInk

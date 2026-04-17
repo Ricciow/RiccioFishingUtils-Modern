@@ -2,8 +2,8 @@ package cloud.glitchdev.rfu.data.mob
 
 import cloud.glitchdev.rfu.access.EntityAccess
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
-import cloud.glitchdev.rfu.config.categories.RareScSettings
-import cloud.glitchdev.rfu.config.categories.RareScSettings.RARE_SC_REGEX
+import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
+import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig.RARE_SC_REGEX
 import cloud.glitchdev.rfu.constants.SeaCreatures
 import cloud.glitchdev.rfu.events.managers.RenderEvents
 import cloud.glitchdev.rfu.events.managers.RenderEvents.registerRenderEvent
@@ -94,7 +94,7 @@ class SkyblockEntity(
     fun registerLsRange() {
         registerRenderer { context, entity ->
             val sc = SeaCreatures.entries.find { it.scName == sbName }
-            if (RareScSettings.lootshareRange && RARE_SC_REGEX.matches(sbName) && sc?.lsRangeExcluded != true) {
+            if (SeaCreatureConfig.lootshareRange && RARE_SC_REGEX.matches(sbName) && sc?.lsRangeEnabled == true) {
                 val bColor = if ((mc.player?.distanceTo(modelEntity) ?: 0f) < 30f) {
                     Color(85, 255, 85)
                 } else {
@@ -108,8 +108,8 @@ class SkyblockEntity(
                         borderColor = bColor
                         stacks = 32
                         slices = 32
-                        filled = RareScSettings.filledLsRange
-                        if (RareScSettings.filledLsRange) {
+                        filled = SeaCreatureConfig.filledLsRange
+                        if (SeaCreatureConfig.filledLsRange) {
                             color = Color(255, 255, 255, 50)
                         }
                     }

@@ -1,6 +1,5 @@
 package cloud.glitchdev.rfu.data.catches
 
-import cloud.glitchdev.rfu.config.categories.RareScSettings
 import cloud.glitchdev.rfu.constants.SeaCreatures
 import cloud.glitchdev.rfu.constants.Bait
 import cloud.glitchdev.rfu.constants.LiquidTypes
@@ -66,7 +65,7 @@ class CatchHistory {
             }
         }
 
-        if(RareScSettings.rareSC.contains(sc)) {
+        if(sc.special) {
             currentRecord.history.add(currentRecord.count)
         }
         currentRecord.time = Clock.System.now()

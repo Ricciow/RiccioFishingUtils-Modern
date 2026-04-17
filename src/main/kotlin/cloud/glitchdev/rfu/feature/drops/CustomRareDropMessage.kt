@@ -9,7 +9,6 @@ import cloud.glitchdev.rfu.data.drops.DropRecord
 import cloud.glitchdev.rfu.utils.Chat.sendMessage
 import cloud.glitchdev.rfu.utils.Chat.sendPartyMessage
 import cloud.glitchdev.rfu.utils.dsl.formatTemplate
-import cloud.glitchdev.rfu.utils.dsl.toMcCodes
 import cloud.glitchdev.rfu.utils.dsl.toReadableString
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.network.chat.Component
@@ -48,7 +47,7 @@ object CustomRareDropMessage : Feature {
             "time" to timeSinceLast,
             "total" to history.size.toString()
         )
-
+        
         val message = Component.literal(messageString)
 
         sendMessage(message)

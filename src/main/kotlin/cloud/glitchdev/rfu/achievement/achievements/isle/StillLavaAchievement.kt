@@ -29,7 +29,7 @@ object      StillLavaAchievement : NumericStageAchievement() {
         addStageInfo(5, "Still Lava", "Don't catch a Jawbus for 1500 catches.\nMust've caught atleast one Jawbus before.", AchievementDifficulty.HARD)
     }
 
-    val creature = SeaCreatures.JAWBUS
+    val creature = SeaCreatures.get("Lord Jawbus")!!
 
     override fun setupListeners() {
         val history = catchHistory.getOrAdd(creature)

@@ -1,7 +1,7 @@
 package cloud.glitchdev.rfu.feature.fishing
 
-import cloud.glitchdev.rfu.config.categories.RareScSettings
-import cloud.glitchdev.rfu.config.categories.RareScSettings.RARE_SC_REGEX
+import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
+import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig.RARE_SC_REGEX
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
@@ -15,7 +15,7 @@ import kotlin.time.Clock
 object RareScPartyMessage : Feature {
     override fun onInitialize() {
         registerSeaCreatureCatchEvent(-10) { seaCreature, isDoubleHook, _, _, _ ->
-            if(!RareScSettings.rarePartyMessages) return@registerSeaCreatureCatchEvent
+            if(!SeaCreatureConfig.rarePartyMessages) return@registerSeaCreatureCatchEvent
 
             if(RARE_SC_REGEX.matches(seaCreature.scName)) {
                 val history = CatchTracker.catchHistory.getOrAdd(seaCreature)
@@ -29,7 +29,7 @@ object RareScPartyMessage : Feature {
                 val article = if (scName.take(1).lowercase() in "aeiou") "n" else ""
                 val startsWithThe = scName.startsWith("The ", ignoreCase = true)
 
-                val messageString = RareScSettings.rarePartyMessage
+                val messageString = SeaCreatureConfig.rarePartyMessage
                     .replace("""(?i)\b(a)\s\{name\}""".toRegex()) { match  ->
                         if (startsWithThe) return@replace scName
                         val originalA = match.groupValues[1]
@@ -40,7 +40,7 @@ object RareScPartyMessage : Feature {
                         "total" to history.total.toString(),
                         "count" to (history.count + 1).toString(),
                         "time" to timeSinceLast,
-                        "dh" to if (isDoubleHook) RareScSettings.dhText else ""
+                        "dh" to if (isDoubleHook) SeaCreatureConfig.dhText else ""
                     )
                 Chat.sendPartyMessage(messageString)
             }
@@ -48,12 +48,12 @@ object RareScPartyMessage : Feature {
     }
 
     fun preview() {
-        val preview = RareScSettings.rarePartyMessage.formatTemplate(
+        val preview = SeaCreatureConfig.rarePartyMessage.formatTemplate(
             "name" to "Great White Shark",
             "total" to "100",
             "count" to "1",
             "time" to "2m 30s",
-            "dh" to RareScSettings.dhText
+            "dh" to SeaCreatureConfig.dhText
         )
 
         Chat.sendMessage(net.minecraft.network.chat.Component.literal(preview))
