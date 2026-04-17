@@ -1,7 +1,7 @@
 package cloud.glitchdev.rfu.gui.components.partyfinder
 
 import cloud.glitchdev.rfu.gui.UIScheme
-import cloud.glitchdev.rfu.model.party.Requisite
+import cloud.glitchdev.rfu.model.data.DataOption
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIImage
 import gg.essential.elementa.components.UIRoundedRectangle
@@ -27,7 +27,7 @@ import gg.essential.elementa.dsl.toConstraint
 import java.awt.Color
 
 class UIToggleCard(
-    val requisite: Requisite,
+    val option: DataOption,
     initialState: Boolean = false,
     var onToggle: (Boolean) -> Unit = {}
 ) : UIRoundedRectangle(5f) {
@@ -42,7 +42,7 @@ class UIToggleCard(
     private val innerColor: ColorConstraint
         get() {
             if (!selected) return UIScheme.pfCardBg.toConstraint()
-            return when(requisite.id) {
+            return when(option.value as? String) {
                 "water" -> UIScheme.pfConditionCardWater
                 "lava" -> UIScheme.pfConditionCardLava
                 "has_killer" -> UIScheme.pfConditionCardKiller
@@ -50,7 +50,7 @@ class UIToggleCard(
                 "enderman_9" -> UIScheme.pfConditionCardEnderman9
                 "brain_food" -> UIScheme.pfConditionCardBrainFood
                 "can_join" -> UIScheme.pfConditionCardCanJoin
-                "location" -> UIScheme.getIslandColor(requisite.name)
+                "location" -> UIScheme.getIslandColor(option.label)
                 else -> UIScheme.pfConditionCardUnknown
             }.toConstraint()
         }
@@ -58,7 +58,7 @@ class UIToggleCard(
     private val borderColor: ColorConstraint
         get() {
             if (!selected) return UIScheme.pfCardBorder.toConstraint()
-            return when(requisite.id) {
+            return when(option.value as? String) {
                 "water" -> UIScheme.pfConditionCardWaterBorder
                 "lava" -> UIScheme.pfConditionCardLavaBorder
                 "has_killer" -> UIScheme.pfConditionCardKillerBorder
@@ -66,7 +66,7 @@ class UIToggleCard(
                 "enderman_9" -> UIScheme.pfConditionCardEnderman9Border
                 "brain_food" -> UIScheme.pfConditionCardBrainFoodBorder
                 "can_join" -> UIScheme.pfConditionCardCanJoinBorder
-                "location" -> UIScheme.getIslandBorderColor(requisite.name)
+                "location" -> UIScheme.getIslandBorderColor(option.label)
                 else -> UIScheme.pfConditionCardUnknownBorder
             }.toConstraint()
         }
@@ -80,7 +80,7 @@ class UIToggleCard(
     val textHeight: HeightConstraint = ScaledTextConstraint(0.7f)
     val icon: String
         get() {
-            return when(requisite.id) {
+            return when(option.value as? String) {
                 "water" -> "/assets/rfu/ui/water.png"
                 "lava" -> "/assets/rfu/ui/lava.png"
                 "has_killer" -> "/assets/rfu/ui/has_killer.png"
@@ -135,7 +135,7 @@ class UIToggleCard(
             color = textColor
         } childOf innerContainer
 
-        textUI = UIText(requisite.name.uppercase()).constrain {
+        textUI = UIText(option.label.uppercase()).constrain {
             x = SiblingConstraint(UIScheme.pfConditionCardPadding)
             y = CenterConstraint()
             width = TextAspectConstraint()

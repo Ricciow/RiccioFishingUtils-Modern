@@ -2,7 +2,7 @@ package cloud.glitchdev.rfu.gui.components.partyfinder
 
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.elementa.CopyComponentSizeConstraint
-import cloud.glitchdev.rfu.model.party.Requisite
+import cloud.glitchdev.rfu.model.data.DataOption
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIImage
 import gg.essential.elementa.components.UIRoundedRectangle
@@ -27,32 +27,32 @@ import gg.essential.elementa.dsl.toConstraint
 import java.awt.Color
 
 class UIConditionCard(
-    val requisite: Requisite
+    val option: DataOption
 ) : UIRoundedRectangle(5f) {
     val innerColor: ColorConstraint
         get() {
-            return when(requisite.id) {
+            return when(option.value as? String) {
                 "water" -> UIScheme.pfConditionCardWater
                 "lava" -> UIScheme.pfConditionCardLava
                 "has_killer" -> UIScheme.pfConditionCardKiller
                 "looting_5" -> UIScheme.pfConditionCardLooting5
                 "enderman_9" -> UIScheme.pfConditionCardEnderman9
                 "brain_food" -> UIScheme.pfConditionCardBrainFood
-                "location" -> UIScheme.getIslandColor(requisite.name)
+                "location" -> UIScheme.getIslandColor(option.label)
                 else -> UIScheme.pfConditionCardUnknown
             }.toConstraint()
         }
 
     val borderColor: ColorConstraint
         get() {
-            return when(requisite.id) {
+            return when(option.value as? String) {
                 "water" -> UIScheme.pfConditionCardWaterBorder
                 "lava" -> UIScheme.pfConditionCardLavaBorder
                 "has_killer" -> UIScheme.pfConditionCardKillerBorder
                 "looting_5" -> UIScheme.pfConditionCardLooting5Border
                 "enderman_9" -> UIScheme.pfConditionCardEnderman9Border
                 "brain_food" -> UIScheme.pfConditionCardBrainFoodBorder
-                "location" -> UIScheme.getIslandBorderColor(requisite.name)
+                "location" -> UIScheme.getIslandBorderColor(option.label)
                 else -> UIScheme.pfConditionCardUnknownBorder
             }.toConstraint()
         }
@@ -60,7 +60,7 @@ class UIConditionCard(
     val textHeight: HeightConstraint = ScaledTextConstraint(0.5f)
     val icon: String
         get() {
-            return when(requisite.id) {
+            return when(option.value as? String) {
                 "water" -> "/assets/rfu/ui/water.png"
                 "lava" -> "/assets/rfu/ui/lava.png"
                 "has_killer" -> "/assets/rfu/ui/has_killer.png"
@@ -105,7 +105,7 @@ class UIConditionCard(
 
         val image = UIImage.ofResource(icon) childOf innerContainer
 
-        textUI = UIText(requisite.name).constrain {
+        textUI = UIText(option.label).constrain {
             x = SiblingConstraint(UIScheme.pfConditionCardPadding)
             y = CenterConstraint()
             width = TextAspectConstraint()

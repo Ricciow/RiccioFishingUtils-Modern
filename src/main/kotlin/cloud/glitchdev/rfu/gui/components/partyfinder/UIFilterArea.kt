@@ -6,8 +6,8 @@ import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.textinput.UIDecoratedTextInput
 import cloud.glitchdev.rfu.gui.components.colors
 import cloud.glitchdev.rfu.gui.components.elementa.CramAwareMaxSizeConstraint
+import cloud.glitchdev.rfu.model.data.DataOption
 import cloud.glitchdev.rfu.model.party.FishingParty
-import cloud.glitchdev.rfu.model.party.Requisite
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
@@ -74,14 +74,14 @@ class UIFilterArea(private val filterHeight : YConstraint, var onFilterChange: (
             height = CramAwareMaxSizeConstraint()
         } childOf this
 
-        canJoinToggle = UIToggleCard(Requisite("can_join", "Can Join", true)) {
+        canJoinToggle = UIToggleCard(DataOption("can_join", "Can Join")) {
             onFilterChange()
         }.constrain {
             x = CramSiblingConstraint(4f)
             y = CramSiblingConstraint()
         } childOf bottomArea
 
-        waterToggle = UIToggleCard(Requisite("water", "Water", true), false) { selected ->
+        waterToggle = UIToggleCard(DataOption("water", "Water"), false) { selected ->
             if (selected) {
                 lavaToggle.selected = false
             }
@@ -91,7 +91,7 @@ class UIFilterArea(private val filterHeight : YConstraint, var onFilterChange: (
             y = CramSiblingConstraint()
         } childOf bottomArea
 
-        lavaToggle = UIToggleCard(Requisite("lava", "Lava", true), false) { selected ->
+        lavaToggle = UIToggleCard(DataOption("lava", "Lava"), false) { selected ->
             if (selected) {
                 waterToggle.selected = false
             }
@@ -101,28 +101,28 @@ class UIFilterArea(private val filterHeight : YConstraint, var onFilterChange: (
             y = CramSiblingConstraint()
         } childOf bottomArea
 
-        killerToggle = UIToggleCard(Requisite("has_killer", "Has Killer", true)) {
+        killerToggle = UIToggleCard(DataOption("has_killer", "Has Killer")) {
             onFilterChange()
         }.constrain {
             x = CramSiblingConstraint(4f)
             y = CramSiblingConstraint()
         } childOf bottomArea
 
-        endermanToggle = UIToggleCard(Requisite("enderman_9", "Enderman 9", true)) {
+        endermanToggle = UIToggleCard(DataOption("enderman_9", "Enderman 9")) {
             onFilterChange()
         }.constrain {
             x = CramSiblingConstraint(4f)
             y = CramSiblingConstraint()
         } childOf bottomArea
 
-        lootingToggle = UIToggleCard(Requisite("looting_5", "Looting 5", true)) {
+        lootingToggle = UIToggleCard(DataOption("looting_5", "Looting 5")) {
             onFilterChange()
         }.constrain {
             x = CramSiblingConstraint(4f)
             y = CramSiblingConstraint()
         } childOf bottomArea
 
-        brainFoodToggle = UIToggleCard(Requisite("brain_food", "Brain Food", true)) {
+        brainFoodToggle = UIToggleCard(DataOption("brain_food", "Brain Food")) {
             onFilterChange()
         }.constrain {
             x = CramSiblingConstraint(4f)

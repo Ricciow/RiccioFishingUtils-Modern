@@ -12,7 +12,7 @@ import cloud.glitchdev.rfu.gui.components.elementa.CenteredPixelConstraint
 import cloud.glitchdev.rfu.gui.components.elementa.CopyComponentSizeConstraint
 import cloud.glitchdev.rfu.gui.components.elementa.group.GroupMaxSizeConstraint
 import cloud.glitchdev.rfu.gui.components.elementa.TextWrappingConstraint
-import cloud.glitchdev.rfu.model.party.Requisite
+import cloud.glitchdev.rfu.model.data.DataOption
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.TextUtils
@@ -225,21 +225,21 @@ class UIPartyCard(
             height = GroupMaxSizeConstraint("PartyCardTags", BoundingBoxConstraint())
         } childOf innerContainer
 
-        UIConditionCard(Requisite("location", party.island.island, true)).constrain {
+        UIConditionCard(DataOption("location", party.island.island)).constrain {
             x = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
             y = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
         } childOf tagsContainer
 
         if(party.liquid == LiquidTypes.WATER) {
             UIConditionCard(
-                Requisite("water", "Water", true)
+                DataOption("water", "Water")
             ).constrain {
                 x = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
                 y = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
             } childOf tagsContainer
         } else {
             UIConditionCard(
-                Requisite("lava", "Lava", true)
+                DataOption("lava", "Lava")
             ).constrain {
                 x = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
                 y = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
@@ -248,7 +248,7 @@ class UIPartyCard(
 
         party.requisites.forEach { requisite ->
             if(requisite.value) {
-                UIConditionCard(requisite).constrain {
+                UIConditionCard(requisite.toDataOption()).constrain {
                     x = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
                     y = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
                 } childOf tagsContainer

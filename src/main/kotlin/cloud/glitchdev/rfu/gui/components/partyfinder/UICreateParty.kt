@@ -8,6 +8,7 @@ import cloud.glitchdev.rfu.gui.components.UIPopup
 import cloud.glitchdev.rfu.gui.components.textinput.UIDecoratedTextInput
 import cloud.glitchdev.rfu.gui.components.dropdown.UIDropdown
 import cloud.glitchdev.rfu.gui.components.textinput.UIWrappedDecoratedTextInput
+import cloud.glitchdev.rfu.model.data.DataOption
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.model.party.Requisite
 import cloud.glitchdev.rfu.utils.Party
@@ -236,7 +237,7 @@ class UICreateParty : UIContainer() {
             height = ChildBasedMaxSizeConstraint()
         } childOf parent
 
-        waterToggle = UIToggleCard(Requisite("water", "Water", true), party.liquid == LiquidTypes.WATER) { selected ->
+        waterToggle = UIToggleCard(DataOption("water", "Water"), party.liquid == LiquidTypes.WATER) { selected ->
             if (selected) {
                 party.liquid = LiquidTypes.WATER
                 lavaToggle.selected = false
@@ -248,7 +249,7 @@ class UICreateParty : UIContainer() {
             y = CenterConstraint()
         } childOf envContainer
 
-        lavaToggle = UIToggleCard(Requisite("lava", "Lava", true), party.liquid == LiquidTypes.LAVA) { selected ->
+        lavaToggle = UIToggleCard(DataOption("lava", "Lava"), party.liquid == LiquidTypes.LAVA) { selected ->
             if (selected) {
                 party.liquid = LiquidTypes.LAVA
                 waterToggle.selected = false
@@ -271,28 +272,28 @@ class UICreateParty : UIContainer() {
             height = ChildBasedMaxSizeConstraint()
         } childOf parent
 
-        killerToggle = UIToggleCard(Requisite("has_killer", "Has Killer", true), party.getRequisite("has_killer", "Has Killer").value) {
+        killerToggle = UIToggleCard(party.getRequisite("has_killer", "Has Killer").toDataOption(), party.getRequisite("has_killer", "Has Killer").value) {
             updatePartyModel()
         }.constrain {
             x = SiblingConstraint(5f)
             y = CenterConstraint()
         } childOf reqContainer
 
-        endermanToggle = UIToggleCard(Requisite("enderman_9", "Enderman 9", true), party.getRequisite("enderman_9", "Enderman 9").value) {
+        endermanToggle = UIToggleCard(party.getRequisite("enderman_9", "Enderman 9").toDataOption(), party.getRequisite("enderman_9", "Enderman 9").value) {
             updatePartyModel()
         }.constrain {
             x = SiblingConstraint(5f)
             y = CenterConstraint()
         } childOf reqContainer
 
-        lootingToggle = UIToggleCard(Requisite("looting_5", "Looting 5", true), party.getRequisite("looting_5", "Looting 5").value) {
+        lootingToggle = UIToggleCard(party.getRequisite("looting_5", "Looting 5").toDataOption(), party.getRequisite("looting_5", "Looting 5").value) {
             updatePartyModel()
         }.constrain {
             x = SiblingConstraint(5f)
             y = CenterConstraint()
         } childOf reqContainer
 
-        brainFoodToggle = UIToggleCard(Requisite("brain_food", "Brain Food", true), party.getRequisite("brain_food", "Brain Food").value) {
+        brainFoodToggle = UIToggleCard(party.getRequisite("brain_food", "Brain Food").toDataOption(), party.getRequisite("brain_food", "Brain Food").value) {
             updatePartyModel()
         }.constrain {
             x = SiblingConstraint(5f)
