@@ -2,13 +2,14 @@ package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.Category
-import cloud.glitchdev.rfu.constants.SeaCreatures
 import cloud.glitchdev.rfu.constants.RareScDisplayDataType
-import cloud.glitchdev.rfu.feature.fishing.RareScPartyMessage
+import cloud.glitchdev.rfu.constants.SeaCreatures
 import cloud.glitchdev.rfu.feature.fishing.CatchMessageReplacer
-import cloud.glitchdev.rfu.utils.dsl.toExactRegex
+import cloud.glitchdev.rfu.feature.fishing.RareScPartyMessage
 import cloud.glitchdev.rfu.gui.window.SeaCreatureEditWindow
+import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
+import com.teamresourceful.resourcefulconfig.client.ConfigScreen
 
 object SeaCreatureConfig : Category("Sea Creatures") {
     override val description: TranslatableValue
@@ -21,7 +22,11 @@ object SeaCreatureConfig : Category("Sea Creatures") {
         }
 
         customButton(
-            { mc.setScreen(SeaCreatureEditWindow) },
+            {
+                @Suppress("UnstableApiUsage")
+                val window = SeaCreatureEditWindow(mc.screen as? ConfigScreen)
+                mc.setScreen(window)
+            },
             "Edit Sea Creatures",
             "Open a window to edit sea creature properties (Name, Plural, Article, Special, etc.)",
             "Edit"

@@ -77,7 +77,7 @@ class UISeaCreatureEditor : UIContainer() {
             x = CenterConstraint()
             y = 0.pixels()
             width = 100.percent()
-            height = BoundingBoxConstraint()
+            height = BoundingBoxConstraint() + 15.pixels
             color = UIScheme.contentBackground.toConstraint()
         } childOf scrollArea
 

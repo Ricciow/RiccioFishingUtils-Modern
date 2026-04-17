@@ -5,16 +5,19 @@ import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.seacreature.UISeaCreatureEditor
 import cloud.glitchdev.rfu.gui.components.seacreature.UISeaCreatureList
 import cloud.glitchdev.rfu.utils.gui.addHoverColoring
+import com.teamresourceful.resourcefulconfig.client.ConfigScreen
 import gg.essential.elementa.UIComponent
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
-import gg.essential.elementa.components.inspector.Inspector
-import gg.essential.elementa.constraints.*
+import gg.essential.elementa.constraints.CenterConstraint
+import gg.essential.elementa.constraints.FillConstraint
+import gg.essential.elementa.constraints.SiblingConstraint
 import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.*
 
-object SeaCreatureEditWindow : BaseWindow(true) {
+@Suppress("UnstableApiUsage")
+class SeaCreatureEditWindow(val settingsScreen : ConfigScreen?) : BaseWindow(true) {
     private val primaryColor = UIScheme.windowBackground.toConstraint()
     private val radius = 5f
     private val spacing = 5f
@@ -38,8 +41,8 @@ object SeaCreatureEditWindow : BaseWindow(true) {
         mainContainer = UIRoundedRectangle(radius).constrain {
             x = CenterConstraint()
             y = CenterConstraint()
-            width = 80.percent()
-            height = 80.percent()
+            width = 100.percent()
+            height = 100.percent()
             color = primaryColor
         } childOf window
 
@@ -83,27 +86,6 @@ object SeaCreatureEditWindow : BaseWindow(true) {
             y = CenterConstraint()
             color = UIScheme.primaryTextColor.toConstraint()
         } childOf header
-
-        UIRoundedRectangle(5f).constrain {
-            x = 0.pixels(true)
-            y = CenterConstraint()
-            width = 20.pixels()
-            height = 20.pixels()
-            color = UIScheme.denyColor.toConstraint()
-        }.addHoverColoring(
-            Animations.OUT_EXP,
-            UIScheme.HOVER_EFFECT_DURATION,
-            UIScheme.denyColor.toConstraint(),
-            UIScheme.denyColor.brighter().toConstraint()
-        ).onMouseClick {
-            closeScreen()
-        }.apply {
-            UIText("X").constrain {
-                x = CenterConstraint()
-                y = CenterConstraint()
-                color = UIScheme.primaryTextColor.toConstraint()
-            } childOf this
-        } childOf header
     }
 
     private fun createEditorArea(parent: UIComponent) {
@@ -119,5 +101,9 @@ object SeaCreatureEditWindow : BaseWindow(true) {
         currentSc = sc
         sidebar.setSelected(sc)
         editor.loadSc(sc)
+    }
+
+    override fun onWindowClose() {
+        displayScreen(settingsScreen)
     }
 }
