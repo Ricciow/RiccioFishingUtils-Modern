@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.gui.components.partyfinder
 
+import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.FishingIslands
 import cloud.glitchdev.rfu.constants.LiquidTypes
 import cloud.glitchdev.rfu.gui.components.UIButton
@@ -9,6 +10,7 @@ import cloud.glitchdev.rfu.gui.components.dropdown.UIDropdown
 import cloud.glitchdev.rfu.gui.components.textinput.UIWrappedDecoratedTextInput
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.model.party.Requisite
+import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.network.PartyWebSocket
 import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerMyPartyChangedEvent
@@ -305,8 +307,21 @@ class UICreateParty : UIContainer() {
                 return@UIButton
             }
 
-            updatePartyModel()
-            PartyWebSocket.submitParty(party)
+            if (DevSettings.devMode && DevSettings.isInSkyblock) {
+                updatePartyModel()
+                PartyWebSocket.submitParty(party)
+                return@UIButton
+            } else {
+                Party.requestPartyInfo {
+                    if (Party.inParty && !Party.isLeader) {
+                        popup.show("You must be the party leader to do this!")
+                    } else {
+                        updatePartyModel()
+                        PartyWebSocket.submitParty(party)
+                    }
+                }
+            }
+
         }.constrain {
             x = CenterConstraint()
             y = SiblingConstraint(12f)

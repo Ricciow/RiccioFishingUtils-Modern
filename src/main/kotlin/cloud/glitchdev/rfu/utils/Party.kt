@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.utils
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
+import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.constants.text.TextStyle
@@ -46,6 +47,7 @@ object Party : RegisteredEvent {
     private const val PLAYER_REGEX = "(?:\\[[A-Z]+\\+*\\] )?[0-9a-zA-Z_]{3,16}"
     private var wasInServer = false
     private val uuidToNameCache = mutableMapOf<UUID, String>()
+    private val partyInfoCallbacks = mutableListOf<() -> Unit>()
 
     override fun register() {
         hypixelModAPI.createHandler(ClientboundPartyInfoPacket::class.java) { event ->
@@ -59,6 +61,10 @@ object Party : RegisteredEvent {
                 }
             }
             executePartyChange()
+
+            val callbacks = partyInfoCallbacks.toList()
+            partyInfoCallbacks.clear()
+            callbacks.forEach { it() }
         }
 
         registerLocationEvent {
@@ -161,7 +167,7 @@ object Party : RegisteredEvent {
         registerOnPartyChangeEvent { inParty, isLeader, _, members ->
             val currentParty: FishingParty? = PartyWebSocket.myParty
             if (currentParty != null) {
-                if (inParty && isLeader) {
+                if (isLeader) {
                     currentParty.players.current = members.size
                     PartyWebSocket.editParty(currentParty)
                 } else {
@@ -170,11 +176,22 @@ object Party : RegisteredEvent {
             }
         }
 
+        PartyFinderEvents.MyPartyChanged.register { party ->
+            if (party != null && inParty && !isLeader) {
+                PartyWebSocket.deleteParty(User.getUsername())
+            }
+        }
+
         registerShutdownEvent {
             if (PartyWebSocket.myParty != null) {
                 PartyWebSocket.deleteParty(User.getUsername())
             }
         }
+    }
+
+    fun requestPartyInfo(callback: (() -> Unit)? = null) {
+        callback?.let { partyInfoCallbacks.add(it) }
+        hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
     }
 
     private fun getUsernameFromUUID(uuid: UUID): String? {
