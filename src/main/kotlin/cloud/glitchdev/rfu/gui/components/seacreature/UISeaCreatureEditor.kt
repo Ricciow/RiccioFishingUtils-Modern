@@ -249,7 +249,7 @@ class UISeaCreatureEditor : UIContainer() {
         val displayColor = scDisplayColorInput.getText().toMcCodes().ifEmpty { WHITE }
 
         val normalTemplate = SeaCreatureConfig.catchMessageTemplate
-        val doubleTemplate = SeaCreatureConfig.doubleHookCatchMessageTemplate
+        val doubleHookTemplate = SeaCreatureConfig.doubleHookCatchMessageTemplate
 
         fun style(template: String): String {
             return template
@@ -264,7 +264,7 @@ class UISeaCreatureEditor : UIContainer() {
         }
 
         previewNormal.setText("Preview: ${style(normalTemplate)}")
-        previewDouble.setText("Preview: ${style(doubleTemplate)}")
+        previewDouble.setText("Preview: ${style(doubleHookTemplate)}")
 
         val dataOrder = SeaCreatureConfig.rareScDisplayDataOrder
         val displayPreviewLine = buildString {
@@ -284,7 +284,7 @@ class UISeaCreatureEditor : UIContainer() {
     private fun saveCurrent() {
         val sc = currentSc ?: return
         
-        SeaCreatureSettingsManager.updateCreature(sc.scName) { current ->
+        val changed = SeaCreatureSettingsManager.updateCreature(sc.scName) { current ->
             current.copy(
                 name = nameInput.getText(),
                 plural = pluralInput.getText(),
@@ -300,6 +300,10 @@ class UISeaCreatureEditor : UIContainer() {
         }
         
         updatePreviews()
-        SeaCreatureSettingsManager.save()
+        if (changed) {
+            SeaCreatureSettingsManager.save()
+        }
     }
 }
+
+

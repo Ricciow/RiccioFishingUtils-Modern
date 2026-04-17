@@ -99,9 +99,9 @@ class UIDecoratedTextInput(
         super.draw(matrixStack)
     }
 
-    fun setText(text : String) {
+    fun setText(text : String, triggerOnChange: Boolean = false) {
         textInput.setText(text)
-        textChanged = true
+        textChanged = triggerOnChange
         updateTextColor()
     }
 

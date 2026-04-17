@@ -60,10 +60,10 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
         seaCreatureConfigFile.save()
     }
 
-    fun updateCreature(scName: String, update: (SeaCreatureSetting) -> SeaCreatureSetting) {
+    fun updateCreature(scName: String, update: (SeaCreatureSetting) -> SeaCreatureSetting): Boolean {
         val current = scConfig.creatures[scName] ?: defaultConfig.creatures[scName] ?: run {
             RFULogger.error("Attempted to update unknown Sea Creature: $scName")
-            return
+            return false
         }
         var updated = update(current)
         
@@ -76,7 +76,7 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
             )
         }
 
-        if (updated == current) return
+        if (updated == current) return false
 
         RFULogger.info("Updating local Sea Creature setting: $scName")
         val creatures = scConfig.creatures.toMutableMap()
@@ -90,9 +90,11 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
             field.set(seaCreatureConfigFile, newSettings)
         } catch (e: Exception) {
             RFULogger.error("Failed to update Sea Creature $scName in config file", e)
+            return false
         }
 
         registerCreature(scName)
+        return true
     }
 
     private fun registerCreature(scName: String) {
