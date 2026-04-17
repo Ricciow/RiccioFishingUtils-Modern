@@ -23,7 +23,13 @@ data class SeaCreatureSetting(
     val gdragAlert: Boolean?,
     val rareSCAlert: Boolean?,
     val scDisplayColor: String?
-)
+) {
+    companion object {
+        fun empty(): SeaCreatureSetting = SeaCreatureSetting(
+            null, null, null, null, null, null, null, null, null, null, null, null, null, null
+        )
+    }
+}
 
 data class SeaCreatureConditions(
     val isFestival: Boolean? = null,

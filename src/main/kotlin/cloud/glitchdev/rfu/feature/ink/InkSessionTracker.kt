@@ -18,6 +18,7 @@ import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.feature.fishing.FishingXpTracker
 import cloud.glitchdev.rfu.utils.Chat
+import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.World
 import cloud.glitchdev.rfu.utils.command.Command
@@ -53,8 +54,8 @@ object InkSessionTracker : Feature {
     private var squidStart: Long = 0L
     private var nightSquidStart: Long = 0L
 
-    val squidGain: Long get() = catchHistory.getOrAdd(SeaCreatures.get("Squid")!!).total - squidStart
-    val nightSquidGain: Long get() = catchHistory.getOrAdd(SeaCreatures.get("Night Squid")!!).total - nightSquidStart
+    val squidGain: Long get() = SeaCreatures.get("Squid")?.let { catchHistory.getOrAdd(it).total - squidStart } ?: 0L
+    val nightSquidGain: Long get() = SeaCreatures.get("Night Squid")?.let { catchHistory.getOrAdd(it).total - nightSquidStart } ?: 0L
 
     // Goal tracking
     val percentageToGoal: Double
@@ -78,8 +79,16 @@ object InkSessionTracker : Feature {
 
     override fun onInitialize() {
         // Initialize start counts
-        squidStart = catchHistory.getOrAdd(SeaCreatures.get("Squid")!!).total.toLong()
-        nightSquidStart = catchHistory.getOrAdd(SeaCreatures.get("Night Squid")!!).total.toLong()
+        val squid = SeaCreatures.get("Squid")
+        val nightSquid = SeaCreatures.get("Night Squid")
+
+        if (squid == null || nightSquid == null) {
+            RFULogger.error("Squid or Night Squid not found in registry during InkSessionTracker initialization!")
+            return
+        }
+
+        squidStart = catchHistory.getOrAdd(squid).total.toLong()
+        nightSquidStart = catchHistory.getOrAdd(nightSquid).total.toLong()
 
         registerCollectionUpdateEvent { item, amount, _, isSync ->
             if (item == CollectionItem.INK_SAC && amount > 0 && !isSync) {
@@ -181,8 +190,8 @@ object InkSessionTracker : Feature {
         currentInkPerHour = 0.0
         
         // Reset squid tracking to current values
-        squidStart = catchHistory.getOrAdd(SeaCreatures.get("Squid")!!).total.toLong()
-        nightSquidStart = catchHistory.getOrAdd(SeaCreatures.get("Night Squid")!!).total.toLong()
+        SeaCreatures.get("Squid")?.let { squidStart = catchHistory.getOrAdd(it).total.toLong() }
+        SeaCreatures.get("Night Squid")?.let { nightSquidStart = catchHistory.getOrAdd(it).total.toLong() }
     }
 
 }

@@ -25,7 +25,7 @@ object NuclearResonanceAchievement : NumericAchievement() {
     override val category: AchievementCategory = AchievementCategory.ISLE
     override val targetCount: Long = 2L
 
-    private val SEA_CREATURE = SeaCreatures.get("Lord Jawbus")!!
+    private val SEA_CREATURE by lazy { SeaCreatures.get("Lord Jawbus") }
     private val DROP = RareDrops.RADIOACTIVE_VIAL
     private val foundJawbusses: MutableSet<SkyblockEntity> = mutableSetOf()
 
@@ -35,7 +35,7 @@ object NuclearResonanceAchievement : NumericAchievement() {
     override fun setupListeners() {
         activeListeners.add(registerMobDetectEvent { entities ->
             entities.forEach { entity ->
-                if (entity.sbName == SEA_CREATURE.scName) {
+                if (entity.sbName == SEA_CREATURE?.scName) {
                     foundJawbusses.add(entity)
                 }
             }

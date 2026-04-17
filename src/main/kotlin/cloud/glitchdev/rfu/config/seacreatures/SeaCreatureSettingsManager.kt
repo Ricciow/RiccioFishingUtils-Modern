@@ -1,6 +1,8 @@
 package cloud.glitchdev.rfu.config.seacreatures
 
 import cloud.glitchdev.rfu.events.AutoRegister
+import cloud.glitchdev.rfu.events.InstantRegister
+import cloud.glitchdev.rfu.events.InstantRegisteredEvent
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.utils.JsonFile
 import cloud.glitchdev.rfu.constants.Bait
@@ -16,8 +18,9 @@ import cloud.glitchdev.rfu.utils.network.Network
 import com.google.gson.Gson
 import java.lang.reflect.Field
 
+@InstantRegister
 @AutoRegister
-object SeaCreatureSettingsManager : RegisteredEvent {
+object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
     val seaCreatureConfigFile = JsonFile(
         directory = "repo",
         filename = "sc-config.json",
@@ -58,7 +61,10 @@ object SeaCreatureSettingsManager : RegisteredEvent {
     }
 
     fun updateCreature(scName: String, update: (SeaCreatureSetting) -> SeaCreatureSetting) {
-        val current = scConfig.creatures[scName] ?: defaultConfig.creatures[scName]!!
+        val current = scConfig.creatures[scName] ?: defaultConfig.creatures[scName] ?: run {
+            RFULogger.error("Attempted to update unknown Sea Creature: $scName")
+            return
+        }
         var updated = update(current)
         
         if (updated.special == false) {
@@ -112,8 +118,11 @@ object SeaCreatureSettingsManager : RegisteredEvent {
     ): T {
         val configured = scConfig.creatures[scName]?.let { extractor(it) }
         if (configured != null) return configured
-        val default = defaultConfig.creatures[scName]
-        return extractor(default!!)!!
+        val default = defaultConfig.creatures[scName] ?: run {
+            RFULogger.error("Sea Creature $scName not found in defaults!")
+            return extractor(SeaCreatureSetting.empty())!!
+        }
+        return extractor(default)!!
     }
 
     fun updateFromBackend() {
@@ -186,11 +195,13 @@ object SeaCreatureSettingsManager : RegisteredEvent {
         }
     }
 
-    override fun register() {
+    override fun instantRegister() {
         seaCreatureConfigFile.data.creatures.keys.forEach { scName ->
             registerCreature(scName)
         }
+    }
 
+    override fun register() {
         updateFromBackend()
     }
 

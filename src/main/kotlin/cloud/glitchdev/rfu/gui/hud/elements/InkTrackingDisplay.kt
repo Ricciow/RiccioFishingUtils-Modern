@@ -84,27 +84,25 @@ object InkTrackingDisplay : AbstractTextHudElement("inktrackingdisplay") {
         }
 
         if(items.contains(InkTrackingType.SQUIDS)) {
-
-            val squidNow = catchHistory.getOrAdd(sc=SeaCreatures.get("Squid")!!).total
+            val squid = SeaCreatures.get("Squid")
+            val squidNow = squid?.let { catchHistory.getOrAdd(it).total } ?: 0
             val squidGain = InkSessionTracker.squidGain
 
             val line = buildString {
                 append("$CYAN${BOLD}Squids: $YELLOW${squidGain} $CYAN($LIGHT_GREEN${squidNow}$CYAN)")
             }
             lines.add(line)
-
         }
 
         if(items.contains(InkTrackingType.N_SQUID)) {
-
-            val nightSquidNow = catchHistory.getOrAdd(SeaCreatures.get("Night Squid")!!).total
+            val nightSquid = SeaCreatures.get("Night Squid")
+            val nightSquidNow = nightSquid?.let { catchHistory.getOrAdd(it).total } ?: 0
             val nSquidGain = InkSessionTracker.nightSquidGain
 
             val line = buildString {
                 append("$CYAN${BOLD}Night Squids: $YELLOW${nSquidGain} $CYAN($LIGHT_GREEN${nightSquidNow}$CYAN)")
             }
             lines.add(line)
-
         }
 
         val inkGoal = InkFishing.goalInk
