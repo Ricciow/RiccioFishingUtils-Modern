@@ -73,5 +73,16 @@ enum class SeaCreatureCategory(val islands: List<FishingIslands>, val partyTypes
     BAYOU(
         listOf(FishingIslands.BAYOU),
         listOf(PartyTypes.REGULAR, PartyTypes.HOTSPOT, PartyTypes.BARN)
-    )
+    );
+
+    val displayName: String
+        get() = when (this) {
+            GENERAL_WATER -> "General Water"
+            HOTSPOT_WATER -> "Hotspot Water"
+            HOTSPOT_LAVA -> "Hotspot Lava"
+            SPOOKY -> "Spooky"
+            SHARK -> "Shark"
+            OASIS -> "Oasis (The Farming Islands)"
+            else -> if (islands.size == 1) islands.first().island else name.lowercase().split("_").joinToString(" ") { it.replaceFirstChar { char -> char.uppercase() } }
+        }
 }

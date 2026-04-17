@@ -63,10 +63,30 @@ class UISeaCreatureList(val onSelect: (SeaCreatures) -> Unit) : UIRoundedRectang
         scrollArea.clearChildren()
         listButtons.clear()
 
-        SeaCreatures.entries
-            .filter { it.scName.contains(query, ignoreCase = true) }
-            .sortedBy { it.scName }
-            .forEach { sc ->
+        val grouped = SeaCreatures.entries
+            .filter { sc ->
+                sc.scName.contains(query, ignoreCase = true) || 
+                sc.category.displayName.contains(query, ignoreCase = true)
+            }
+            .groupBy { it.category }
+            .toSortedMap(compareBy { it.displayName })
+
+        grouped.forEach { (category, creatures) ->
+            val headerContainer = UIContainer().constrain {
+                x = 0.pixels()
+                y = SiblingConstraint()
+                width = 100.percent()
+                height = 15.pixels()
+            } childOf scrollArea
+
+            UIText(category.displayName).constrain {
+                x = 3.pixels()
+                y = CenterConstraint()
+                color = UIScheme.secondaryTextColor.toConstraint()
+                textScale = 0.8.pixels()
+            } childOf headerContainer
+
+            creatures.sortedBy { it.scName }.forEach { sc ->
                 val container = UIContainer().constrain {
                     x = 0.pixels()
                     y = SiblingConstraint()
@@ -77,7 +97,7 @@ class UISeaCreatureList(val onSelect: (SeaCreatures) -> Unit) : UIRoundedRectang
                 } childOf scrollArea
 
                 val text = UIText(sc.scName).constrain {
-                    x = 5.pixels()
+                    x = 10.pixels()
                     y = CenterConstraint()
                     color = (if (sc == currentSc) UIScheme.selectedTextColor else UIScheme.primaryTextColor).toConstraint()
                 } childOf container
@@ -94,6 +114,7 @@ class UISeaCreatureList(val onSelect: (SeaCreatures) -> Unit) : UIRoundedRectang
 
                 listButtons[sc.scName] = text
             }
+        }
     }
 
     fun setSelected(sc: SeaCreatures?) {
