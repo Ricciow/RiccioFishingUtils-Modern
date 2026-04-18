@@ -16,9 +16,7 @@ import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.network.VersionHttp.isOutdated
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 import com.teamresourceful.resourcefulconfigkt.api.ConfigKt
-//~ if <1.21.11 'net.minecraft.util.Util' -> 'net.minecraft.Util' {
 import net.minecraft.util.Util
-//~}
 
 object RFUSettings : ConfigKt("rfu/settings") {
     override val name: TranslatableValue

@@ -3,12 +3,7 @@ package cloud.glitchdev.rfu.utils.rendering
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import net.minecraft.client.Camera
 import net.minecraft.client.renderer.culling.Frustum
-//? if <1.21.11 {
-/*import net.minecraft.client.renderer.RenderType as RenderTypes
-import com.mojang.blaze3d.systems.RenderSystem
-*///?} else {
 import net.minecraft.client.renderer.rendertype.RenderTypes
-//?}
 import com.mojang.blaze3d.vertex.VertexConsumer
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
@@ -102,9 +97,7 @@ object Render3D {
 
         if (borderColor != null) {
             val buffer = consumers.getBuffer(
-                //~ if >=1.21.11 'lines()' -> 'LINES' {
                 RenderTypes.LINES
-                //~}
             )
 
             for (i in 0 until stacks) {
@@ -203,9 +196,7 @@ object Render3D {
 
             if (borderColor != null) {
                 val lineBuffer = consumers.getBuffer(
-                    //~ if >=1.21.11 'lines()' -> 'LINES' {
                     RenderTypes.LINES
-                    //~}
                 )
 
                 for (i in 0 until slices) {
@@ -241,11 +232,7 @@ object Render3D {
         buffer.addVertex(matrix, x, y, z)
             .setColor(color.red, color.green, color.blue, color.alpha)
             .setNormal(1f, 0f, 0f)
-        //? if <1.21.11 {
-        /*RenderSystem.lineWidth(lineWidth)
-        *///?} else {
         buffer.setLineWidth(lineWidth)
-        //?}
     }
 
     private fun isVisible(bounds: AABB): Boolean {
