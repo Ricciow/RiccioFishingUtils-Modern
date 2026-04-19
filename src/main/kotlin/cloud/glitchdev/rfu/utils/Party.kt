@@ -134,6 +134,10 @@ object Party : RegisteredEvent {
             hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
         }
 
+        registerGameEvent("""Created a public party! Players can join with /party join .+""".toExactRegex()) { _, _, _ ->
+            hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
+        }
+
         registerGameEvent("""The party was transferred to ($PLAYER_REGEX) by ($PLAYER_REGEX)""".toExactRegex()) { _, _, _ ->
             hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
         }

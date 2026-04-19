@@ -8,6 +8,7 @@
 ### Changes: 
 
 ### Fixes:
+- Made party tracking also work with /stream command
 
 ### Back-end:
 - Added line rendering
