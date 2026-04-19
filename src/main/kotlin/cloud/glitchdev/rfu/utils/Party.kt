@@ -138,6 +138,10 @@ object Party : RegisteredEvent {
             hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
         }
 
+        registerGameEvent("""$PLAYER_REGEX invited $PLAYER_REGEX to the party! They have 60 seconds to accept.""".toExactRegex()) { _, _, _ ->
+            hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
+        }
+
         registerGameEvent("""The party was transferred to ($PLAYER_REGEX) by ($PLAYER_REGEX)""".toExactRegex()) { _, _, _ ->
             hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
         }

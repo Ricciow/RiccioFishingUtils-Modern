@@ -2,26 +2,44 @@ package cloud.glitchdev.rfu.utils
 
 import net.minecraft.network.chat.Component
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
+import cloud.glitchdev.rfu.events.AutoRegister
+import cloud.glitchdev.rfu.events.RegisteredEvent
+import cloud.glitchdev.rfu.events.managers.ChatEvents.registerSendCommandEvent
 import kotlinx.coroutines.delay
+import kotlin.time.Clock
+import kotlin.time.Instant
 
-object Chat {
+@AutoRegister
+object Chat : RegisteredEvent {
     private val queue: ArrayDeque<String> = ArrayDeque()
     private var isRunning = false
+    private var lastMessage = Instant.DISTANT_PAST
     var isSendingModMessage = false
-    
+
+    override fun register() {
+        registerSendCommandEvent { message ->
+            if(message.startsWith("pc ")) {
+                lastMessage = Clock.System.now()
+            }
+            true
+        }
+    }
+
     private fun sendPartyMessages() {
         if (isRunning) return
         isRunning = true
 
         Coroutines.launch {
             while (queue.isNotEmpty()) {
+                val timeSince = (Clock.System.now() - lastMessage).inWholeMilliseconds
+                delay(maxOf(500 - timeSince, 0))
+
                 if(Party.inParty) {
                     sendCommand("pc ${queue.removeFirst()}")
                 } else {
                     queue.removeFirst()
                     continue
                 }
-                delay(500)
             }
             isRunning = false
         }
@@ -38,7 +56,14 @@ object Chat {
     }
 
     fun sendPartyMessage(message : String) {
-        queue.add(message)
+        if (message.length > 240) {
+            val chunks = message.chunked(230)
+            chunks.forEachIndexed { index, chunk ->
+                queue.add("(${index + 1}/${chunks.size}) $chunk")
+            }
+        } else {
+            queue.add(message)
+        }
         sendPartyMessages()
     }
 
@@ -57,5 +82,4 @@ object Chat {
             }
         }
     }
-
 }
