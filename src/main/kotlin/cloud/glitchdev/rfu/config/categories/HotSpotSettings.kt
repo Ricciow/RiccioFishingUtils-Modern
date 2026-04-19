@@ -20,7 +20,7 @@ object HotSpotSettings : Category("Hot Spots") {
         name = Literal("Hotspot Pointer")
         description = Literal(
             "Points a line to the best hotspot when hotspot fishing.\n" +
-                "Only points to hotspots that have had their HOTSPOT text previously seen on screen or hotspots who have had their coordinates shared.\n" +
+                "Only points to hotspots that have had their HOTSPOT text previously seen on screen or had their coordinates shared.\n" +
                 "Should be fine, but §cuse at your own risk!")
     }) { _, _ -> reloadScreen() }
 
@@ -71,7 +71,7 @@ object HotSpotSettings : Category("Hot Spots") {
         }
     }
 
-    var shareHotspotAlert by observable(boolean(false) {
+    var shareHotspotAlert by observable(boolean(true) {
         name = Literal("Share Hotspot Alert")
         description = Literal("Sends a clickable chat message to share the hotspot with your party!")
     }) { _, _ ->

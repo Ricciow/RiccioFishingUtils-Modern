@@ -10,6 +10,7 @@ import cloud.glitchdev.rfu.config.categories.InkFishing
 import cloud.glitchdev.rfu.config.categories.JerryFishing
 import cloud.glitchdev.rfu.config.categories.LavaFishing
 import cloud.glitchdev.rfu.config.categories.OtherSettings
+import cloud.glitchdev.rfu.config.categories.PartySettings
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
 import cloud.glitchdev.rfu.config.migration.ConfigMigration
 import cloud.glitchdev.rfu.utils.Chat
@@ -130,6 +131,7 @@ object RFUSettings : ConfigKt("rfu/settings") {
         category(JerryFishing)
         category(SeaCreatureConfig)
         category(DropsSettings)
+        category(PartySettings)
         category(OtherSettings)
         category(BackendSettings)
         category(DevSettings)
