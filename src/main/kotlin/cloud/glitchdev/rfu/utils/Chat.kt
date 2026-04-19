@@ -11,34 +11,41 @@ import kotlin.time.Instant
 
 @AutoRegister
 object Chat : RegisteredEvent {
-    private val queue: ArrayDeque<String> = ArrayDeque()
+    private val commandQueue: ArrayDeque<String> = ArrayDeque()
     private var isRunning = false
     private var lastMessage = Instant.DISTANT_PAST
     var isSendingModMessage = false
 
     override fun register() {
-        registerSendCommandEvent { message ->
-            if(message.startsWith("pc ")) {
-                lastMessage = Clock.System.now()
-            }
+        registerSendCommandEvent { _ ->
+            lastMessage = Clock.System.now()
             true
         }
     }
 
-    private fun sendPartyMessages() {
+    private fun processQueue() {
         if (isRunning) return
         isRunning = true
 
         Coroutines.launch {
-            while (queue.isNotEmpty()) {
+            while (commandQueue.isNotEmpty()) {
+                val nextCommand = commandQueue.first()
                 val timeSince = (Clock.System.now() - lastMessage).inWholeMilliseconds
-                delay(maxOf(500 - timeSince, 0))
+                val waitTime = 500 - timeSince
 
-                if(Party.inParty) {
-                    sendCommand("pc ${queue.removeFirst()}")
-                } else {
-                    queue.removeFirst()
+                if (waitTime > 0) {
+                    delay(waitTime)
+                }
+
+                val command = commandQueue.removeFirst()
+
+                if (nextCommand.startsWith("pc ") && !Party.inParty) {
                     continue
+                }
+
+                mc.execute {
+                    mc.connection?.sendCommand(command)
+                    lastMessage = Clock.System.now()
                 }
             }
             isRunning = false
@@ -50,21 +57,19 @@ object Chat : RegisteredEvent {
     }
 
     fun sendCommand(command : String) {
-        mc.execute {
-            mc.connection?.sendCommand(command)
-        }
+        commandQueue.add(command)
+        processQueue()
     }
 
     fun sendPartyMessage(message : String) {
         if (message.length > 240) {
             val chunks = message.chunked(230)
             chunks.forEachIndexed { index, chunk ->
-                queue.add("(${index + 1}/${chunks.size}) $chunk")
+                sendCommand("pc (${index + 1}/${chunks.size}) $chunk")
             }
         } else {
-            queue.add(message)
+            sendCommand("pc $message")
         }
-        sendPartyMessages()
     }
 
     fun sendMessage(message : Component) {
