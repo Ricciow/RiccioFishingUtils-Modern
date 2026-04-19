@@ -6,6 +6,7 @@
   - Use at your own risk! Off by default
 - Added hotspot sharing
 - Added party commands
+- Added /rfuscedit command to open the Sea Creature Edit window
 
 ### Changes: 
 - Made the report/delete button in rfupf last a little bit so it is easier to click
