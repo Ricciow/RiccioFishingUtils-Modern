@@ -51,10 +51,6 @@ object Chat : RegisteredEvent {
             isRunning = false
         }
     }
-    
-    fun sendServerMessage(message : String) {
-        mc.connection?.sendChat(message)
-    }
 
     fun sendCommand(command : String) {
         commandQueue.add(command)

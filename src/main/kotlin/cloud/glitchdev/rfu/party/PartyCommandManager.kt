@@ -13,10 +13,8 @@ import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.dsl.escapeForRegex
 import cloud.glitchdev.rfu.utils.dsl.removeRankTag
-import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import gg.essential.universal.utils.toUnformattedString
 import kotlinx.coroutines.delay
-import net.minecraft.network.chat.Component
 
 @AutoRegister
 object PartyCommandManager : RegisteredEvent {

@@ -1,7 +1,6 @@
 package cloud.glitchdev.rfu.utils
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
-import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.constants.text.TextStyle
