@@ -7,6 +7,7 @@ import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.core.component.DataComponents
+import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.entity.projectile.FireworkRocketEntity
@@ -112,7 +113,7 @@ object DeployableManager : RegisteredEvent {
         return result.groupValues.getOrNull(1)?.toDoubleOrNull()?.minus(entity.tickCount % 10 * 0.05)
     }
 
-    private fun checkFlare(entity: net.minecraft.world.entity.Entity): Boolean {
+    private fun checkFlare(entity: Entity): Boolean {
         if (entity !is ArmorStand) {
             if (entity is FireworkRocketEntity) {
                 activeDeployables[DeployableType.FLARE] = Deployable(

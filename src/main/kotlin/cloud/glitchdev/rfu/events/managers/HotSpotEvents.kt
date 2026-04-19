@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.RiccioFishingUtils
 import cloud.glitchdev.rfu.config.categories.HotSpotSettings
+import cloud.glitchdev.rfu.constants.FishingIslands
 import cloud.glitchdev.rfu.constants.HotSpotConstants
 import cloud.glitchdev.rfu.constants.HotspotType
 import cloud.glitchdev.rfu.constants.LiquidTypes
@@ -33,6 +34,7 @@ import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 import java.awt.Color
 import java.util.UUID
@@ -358,7 +360,7 @@ object HotSpotEvents : RegisteredEvent {
     }
 
     private fun findBuffNearby(pos: Vec3, world: ClientLevel): String {
-        val searchBox = net.minecraft.world.phys.AABB(
+        val searchBox = AABB(
             pos.x - HotSpotConstants.BUFF_SEARCH_HORIZONTAL, pos.y - HotSpotConstants.BUFF_SEARCH_VERTICAL, pos.z - HotSpotConstants.BUFF_SEARCH_HORIZONTAL, 
             pos.x + HotSpotConstants.BUFF_SEARCH_HORIZONTAL, pos.y + HotSpotConstants.BUFF_SEARCH_VERTICAL, pos.z + HotSpotConstants.BUFF_SEARCH_HORIZONTAL
         )
@@ -391,7 +393,7 @@ object HotSpotEvents : RegisteredEvent {
         return sqrt((this.x - pos.x).pow(2.0) + (this.z - pos.z).pow(2.0))
     }
 
-    private fun findCachedBuff(pos: BlockPos, island: cloud.glitchdev.rfu.constants.FishingIslands?): String? {
+    private fun findCachedBuff(pos: BlockPos, island: FishingIslands?): String? {
         val cached = HotspotCache.getCachedEntries(island).find { it.first == pos }
         val data = cached?.second ?: return null
         val now = System.currentTimeMillis()
