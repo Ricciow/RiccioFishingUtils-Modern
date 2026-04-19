@@ -16,11 +16,15 @@ import cloud.glitchdev.rfu.events.managers.EntityRenderEvents.registerEntityRend
 import cloud.glitchdev.rfu.utils.World
 import gg.essential.universal.utils.toUnformattedString
 import cloud.glitchdev.rfu.constants.text.TextColor
+import cloud.glitchdev.rfu.data.other.OtherManager
+import cloud.glitchdev.rfu.data.other.data.StringSetEntry
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
+import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.HoverEvent
 import net.minecraft.network.chat.Style
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.core.BlockPos
@@ -51,6 +55,9 @@ object HotSpotEvents : RegisteredEvent {
             val sender = groups[1]
             if (sender.equals(RiccioFishingUtils.mc.player?.name?.string, ignoreCase = true)) return@registerGameEvent
 
+            val ignoredEntry = OtherManager.getField("ignored_users") { StringSetEntry() } as StringSetEntry
+            if (ignoredEntry.contains(sender)) return@registerGameEvent
+
             val stat = groups[2]
             val x = groups[3].toDouble()
             val y = groups[4].toDouble()
@@ -62,12 +69,16 @@ object HotSpotEvents : RegisteredEvent {
             } ?: HotspotType.UNKNOWN
 
             Chat.sendMessage(
-                TextUtils.rfuLiteral("${TextColor.YELLOW}Received a")
+                TextUtils.rfuLiteral("${TextColor.YELLOW}Received a ")
                     .append(
                         Component.literal(type.displayName)
                             .withStyle(Style.EMPTY.withColor(type.color.rgb))
                     ).append(
                         " ${TextColor.YELLOW}hotspot's coordinates from ${TextColor.GOLD}$sender"
+                    ).setStyle(
+                        Style.EMPTY
+                            .withHoverEvent(HoverEvent.ShowText(Component.literal("${TextColor.YELLOW}Click to ignore this user's hotspots in the future!\n${TextColor.GRAY}Command: /rfuignore add $sender")))
+                            .withClickEvent(ClickEvent.RunCommand("/rfuignore add $sender"))
                     )
             )
             addExternalHotspot(pos, type)
