@@ -21,7 +21,8 @@ class SeaCreatures(
     val bossbar: Boolean = false,
     val gdragAlert: Boolean = false,
     val rareSCAlert: Boolean = false,
-    val scDisplayColor: String = "§f"
+    val scDisplayColor: String = "§f",
+    val weight: Int = 0
 ) {
     val special: Boolean
         get() = SeaCreatureSettingsManager.isSpecial(scName)
