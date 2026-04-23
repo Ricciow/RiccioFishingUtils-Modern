@@ -15,7 +15,7 @@ object HelpCommand : AbstractPartyCommand(
 ) {
     override fun execute(sender: String, args: List<String>) {
         if (args.isEmpty()) {
-            val commandNames = PartyCommandManager.getCommands().map { it.name }.joinToString(", ")
+            val commandNames = PartyCommandManager.getCommands().joinToString(", ") { "!${it.name}" }
             val response = formatResponse(responseTemplates[0].first, "commands" to commandNames)
             sendPartyMessage(response)
         } else {
