@@ -88,14 +88,14 @@ object PartyCommandManager : RegisteredEvent {
         
         val myName = mc.player?.gameProfile?.name ?: return false
         val isMe = sender == myName
+        
+        val permissions = command.permission
 
-        return when (command.permission) {
-            PartyCommandPermission.SELF_TRIGGER -> isMe
-            PartyCommandPermission.OTHER_ONLY -> !isMe
-            PartyCommandPermission.LEADER_ONLY -> Party.isLeader
-            PartyCommandPermission.MEMBER_ONLY -> !Party.isLeader && Party.inParty
-            PartyCommandPermission.ANY -> true
-        }
+        if (isMe && PartyCommandPermission.SELF_TRIGGER !in permissions) return false
+        if (PartyCommandPermission.LEADER_ONLY in permissions && !Party.isLeader) return false
+        if (PartyCommandPermission.MEMBER_ONLY in permissions && (Party.isLeader || !Party.inParty)) return false
+
+        return true
     }
     
     fun getCommands(): Collection<IPartyCommand> {

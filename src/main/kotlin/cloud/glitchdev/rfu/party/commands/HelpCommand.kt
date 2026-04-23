@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.party.commands
 import cloud.glitchdev.rfu.party.AbstractPartyCommand
 import cloud.glitchdev.rfu.party.PartyCommand
 import cloud.glitchdev.rfu.party.PartyCommandManager
+import cloud.glitchdev.rfu.party.PartyCommandPermission
 
 @PartyCommand
 object HelpCommand : AbstractPartyCommand(
@@ -12,7 +13,8 @@ object HelpCommand : AbstractPartyCommand(
     responseTemplates = listOf(
         "Available commands: {commands}" to "&bAvailable commands: &f{1}",
         "Command {name}: {description} (Aliases: {aliases})" to "&bCommand &6{1}&b: &e{2} &7(Aliases: {3})"
-    )
+    ),
+    permission = listOf(PartyCommandPermission.SELF_TRIGGER)
 ) {
     override fun execute(sender: String, args: List<String>) {
         if (args.isEmpty()) {

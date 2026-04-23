@@ -17,7 +17,7 @@ object ToggleWarpCommand : AbstractPartyCommand(
         "You will no longer be warped." to "&aYou will no longer be warped.",
         "You will be warped now." to "&aYou will be warped now."
     ),
-    permission = PartyCommandPermission.OTHER_ONLY
+    permission = listOf(PartyCommandPermission.LEADER_ONLY)
 ) {
     override fun execute(sender: String, args: List<String>) {
         val added = WarpKickManager.toggleUser(sender)

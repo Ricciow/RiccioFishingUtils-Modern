@@ -5,16 +5,14 @@ import net.minecraft.network.chat.Component
 enum class PartyCommandPermission {
     LEADER_ONLY,
     MEMBER_ONLY,
-    SELF_TRIGGER,
-    OTHER_ONLY,
-    ANY
+    SELF_TRIGGER
 }
 
 interface IPartyCommand {
     val name: String
     val aliases: List<String>
     val description: String
-    val permission: PartyCommandPermission
+    val permission: List<PartyCommandPermission>
     val responseTemplates: List<Pair<String, String>>
 
     fun execute(sender: String, args: List<String>)
