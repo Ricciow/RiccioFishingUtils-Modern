@@ -8,6 +8,7 @@ import cloud.glitchdev.rfu.party.PartyCommandManager
 object HelpCommand : AbstractPartyCommand(
     name = "help",
     description = "Shows all available party commands.",
+    aliases = listOf("h"),
     responseTemplates = listOf(
         "Available commands: {commands}" to "&bAvailable commands: &f{1}",
         "Command {name}: {description} (Aliases: {aliases}, Permission: {permission})" to "&bCommand &6{1}&b: &e{2} &7(Aliases: {3}, Permission: {4})"
