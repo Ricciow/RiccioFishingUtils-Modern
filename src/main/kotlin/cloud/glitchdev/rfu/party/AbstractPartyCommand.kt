@@ -1,8 +1,6 @@
-package cloud.glitchdev.rfu.party.commands
+package cloud.glitchdev.rfu.party
 
 import cloud.glitchdev.rfu.constants.text.TextColor
-import cloud.glitchdev.rfu.constants.text.TextEffects
-import cloud.glitchdev.rfu.party.PartyCommandManager
 import cloud.glitchdev.rfu.utils.Chat
 import net.minecraft.network.chat.Component
 
@@ -32,7 +30,7 @@ abstract class AbstractPartyCommand(
 
     override fun getRichResponse(sender: String, message: String, templateIndex: Int, match: MatchResult): Component {
         val component = Component.literal("${TextColor.LIGHT_BLUE}Party ${TextColor.DARK_GRAY}> ")
-        
+
         val format = responseTemplates[templateIndex].second
         var formatted = format
 
@@ -41,7 +39,7 @@ abstract class AbstractPartyCommand(
                 formatted = formatted.replace("{$index}", value)
             }
         }
-        
+
         return component.append(Component.literal(formatted.replace("&", "§")))
     }
 }

@@ -6,8 +6,6 @@ import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerAllowGameEvent
 import cloud.glitchdev.rfu.config.categories.PartySettings
 import cloud.glitchdev.rfu.party.commands.HelpCommand
-import cloud.glitchdev.rfu.party.commands.IPartyCommand
-import cloud.glitchdev.rfu.party.commands.PartyCommandPermission
 import cloud.glitchdev.rfu.utils.Coroutines
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.Party

@@ -1,4 +1,4 @@
-package cloud.glitchdev.rfu.party.commands
+package cloud.glitchdev.rfu.party
 
 import net.minecraft.network.chat.Component
 

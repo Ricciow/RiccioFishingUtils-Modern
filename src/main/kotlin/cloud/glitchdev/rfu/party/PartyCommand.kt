@@ -1,4 +1,4 @@
-package cloud.glitchdev.rfu.party.commands
+package cloud.glitchdev.rfu.party
 
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.SOURCE)
