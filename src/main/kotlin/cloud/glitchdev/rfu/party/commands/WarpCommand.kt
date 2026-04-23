@@ -2,15 +2,23 @@ package cloud.glitchdev.rfu.party.commands
 
 import cloud.glitchdev.rfu.party.AbstractPartyCommand
 import cloud.glitchdev.rfu.party.PartyCommand
-import cloud.glitchdev.rfu.utils.Chat
+import cloud.glitchdev.rfu.party.WarpKickManager
+import cloud.glitchdev.rfu.utils.Party
 
 @PartyCommand
 object WarpCommand : AbstractPartyCommand(
     name = "warp",
     description = "Warps the party.",
-    aliases = listOf("w")
+    aliases = listOf("w"),
+    responseTemplates = listOf(
+        "No need to warp. (Togglewarp ON)" to "&cNo need to warp. (Togglewarp ON)"
+    )
 ) {
     override fun execute(sender: String, args: List<String>) {
-        Chat.sendCommand("p warp")
+        if (Party.members.size == 2 && Party.members.keys.any { WarpKickManager.isUserOnList(it) }) {
+            sendPartyMessage("No need to warp. (Togglewarp ON)")
+            return
+        }
+        WarpKickManager.executeWarpWithKicks()
     }
 }

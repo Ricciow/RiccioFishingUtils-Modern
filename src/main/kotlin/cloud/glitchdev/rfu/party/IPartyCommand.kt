@@ -6,6 +6,7 @@ enum class PartyCommandPermission {
     LEADER_ONLY,
     MEMBER_ONLY,
     SELF_TRIGGER,
+    OTHER_ONLY,
     ANY
 }
 

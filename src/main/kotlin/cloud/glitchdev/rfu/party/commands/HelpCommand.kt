@@ -11,7 +11,7 @@ object HelpCommand : AbstractPartyCommand(
     aliases = listOf("h"),
     responseTemplates = listOf(
         "Available commands: {commands}" to "&bAvailable commands: &f{1}",
-        "Command {name}: {description} (Aliases: {aliases}, Permission: {permission})" to "&bCommand &6{1}&b: &e{2} &7(Aliases: {3}, Permission: {4})"
+        "Command {name}: {description} (Aliases: {aliases})" to "&bCommand &6{1}&b: &e{2} &7(Aliases: {3})"
     )
 ) {
     override fun execute(sender: String, args: List<String>) {
@@ -30,8 +30,7 @@ object HelpCommand : AbstractPartyCommand(
                     responseTemplates[1].first,
                     "name" to command.name,
                     "description" to command.description,
-                    "aliases" to if (command.aliases.isEmpty()) "None" else command.aliases.joinToString(", "),
-                    "permission" to command.permission.name
+                    "aliases" to if (command.aliases.isEmpty()) "None" else command.aliases.joinToString(", ")
                 )
                 sendPartyMessage(response)
             } else {

@@ -15,6 +15,7 @@ object Chat : RegisteredEvent {
     private var isRunning = false
     private var lastMessage = Instant.DISTANT_PAST
     var isSendingModMessage = false
+    private val commandCooldown = 1000
 
     override fun register() {
         registerSendCommandEvent { _ ->
@@ -24,36 +25,47 @@ object Chat : RegisteredEvent {
     }
 
     private fun processQueue() {
-        if (isRunning) return
-        isRunning = true
+        synchronized(this) {
+            if (isRunning) return
+            isRunning = true
+        }
 
         Coroutines.launch {
-            while (commandQueue.isNotEmpty()) {
-                val nextCommand = commandQueue.first()
-                val timeSince = (Clock.System.now() - lastMessage).inWholeMilliseconds
-                val waitTime = 500 - timeSince
+            try {
+                while (true) {
+                    val command = synchronized(commandQueue) {
+                        commandQueue.removeFirstOrNull()
+                    } ?: break
 
-                if (waitTime > 0) {
-                    delay(waitTime)
-                }
+                    if (command.startsWith("pc ") && !Party.inParty) {
+                        continue
+                    }
 
-                val command = commandQueue.removeFirst()
+                    val timeSince = (Clock.System.now() - lastMessage).inWholeMilliseconds
+                    val waitTime = commandCooldown - timeSince
+                    println("${command}: ${waitTime}ms")
 
-                if (nextCommand.startsWith("pc ") && !Party.inParty) {
-                    continue
-                }
+                    if (waitTime > 0) {
+                        delay(waitTime)
+                    }
 
-                mc.execute {
-                    mc.connection?.sendCommand(command)
                     lastMessage = Clock.System.now()
+                    mc.execute {
+                        mc.connection?.sendCommand(command)
+                    }
+                }
+            } finally {
+                synchronized(this@Chat) {
+                    isRunning = false
                 }
             }
-            isRunning = false
         }
     }
 
     fun sendCommand(command : String) {
-        commandQueue.add(command)
+        synchronized(commandQueue) {
+            commandQueue.add(command)
+        }
         processQueue()
     }
 

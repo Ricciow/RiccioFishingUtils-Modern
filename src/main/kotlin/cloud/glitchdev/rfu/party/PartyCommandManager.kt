@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.party
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
+import cloud.glitchdev.rfu.constants.RegexConstants.PLAYER_REGEX
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerAllowGameEvent
@@ -17,7 +18,6 @@ import kotlinx.coroutines.delay
 @AutoRegister
 object PartyCommandManager : RegisteredEvent {
     private val commands = mutableMapOf<String, IPartyCommand>()
-    private val PLAYER_REGEX = "(?:\\[[A-Z]+\\+*\\] )?[0-9a-zA-Z_]{3,16}"
     
     private val recentlyExecuted = mutableSetOf<String>()
 
@@ -91,6 +91,7 @@ object PartyCommandManager : RegisteredEvent {
 
         return when (command.permission) {
             PartyCommandPermission.SELF_TRIGGER -> isMe
+            PartyCommandPermission.OTHER_ONLY -> !isMe
             PartyCommandPermission.LEADER_ONLY -> Party.isLeader
             PartyCommandPermission.MEMBER_ONLY -> !Party.isLeader && Party.inParty
             PartyCommandPermission.ANY -> true

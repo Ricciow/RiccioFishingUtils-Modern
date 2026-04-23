@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.utils
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
+import cloud.glitchdev.rfu.constants.RegexConstants.PLAYER_REGEX
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.constants.text.TextStyle
@@ -43,7 +44,6 @@ object Party : RegisteredEvent {
     var requestedUser: String? = null
     private val joinedCooldowns: MutableMap<String, Long> = mutableMapOf()
     private val pendingPFInvites: MutableSet<String> = mutableSetOf()
-    private const val PLAYER_REGEX = "(?:\\[[A-Z]+\\+*\\] )?[0-9a-zA-Z_]{3,16}"
     private var wasInServer = false
     private val uuidToNameCache = mutableMapOf<UUID, String>()
     private val partyInfoCallbacks = mutableListOf<() -> Unit>()
