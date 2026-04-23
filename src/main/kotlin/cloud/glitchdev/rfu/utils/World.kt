@@ -16,7 +16,7 @@ import kotlin.jvm.optionals.getOrElse
 import kotlin.jvm.optionals.getOrNull
 
 @AutoRegister
-object World : RegisteredEvent {
+object  World : RegisteredEvent {
     var isInSkyblock = false
         get() {
             return field || (DevSettings.devMode && DevSettings.isInSkyblock)
