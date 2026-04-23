@@ -1,14 +1,9 @@
 package cloud.glitchdev.rfu.data.hud
 
-import cloud.glitchdev.rfu.events.AutoRegister
-import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.gui.hud.AbstractHudElement
 import cloud.glitchdev.rfu.utils.JsonFile
 
-@AutoRegister
-object HudManager : RegisteredEvent {
+object HudManager {
     val hudFile = JsonFile(
         filename = "hud.json",
         type = HudConfig::class.java,
@@ -16,16 +11,6 @@ object HudManager : RegisteredEvent {
     )
 
     val hudData = hudFile.data
-
-    override fun register() {
-        registerJoinEvent {
-            hudFile.save()
-        }
-
-        registerShutdownEvent(1000) {
-            hudFile.save()
-        }
-    }
 
     fun getElementConfig(element : AbstractHudElement) : HudConfig.HudElement {
         return hudData.getOrAdd(element.id, element.defaultX, element.defaultY, element.scale)

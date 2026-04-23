@@ -19,14 +19,20 @@ import gg.essential.elementa.dsl.min
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.toConstraint
+import cloud.glitchdev.rfu.gui.components.Colorable
 
 /**
  * Simple Checkbox Component
  */
-class UICheckbox(val text: String, defaultState : Boolean = false, val allowDisabling : Boolean = true, var onChange : (Boolean) -> Unit = {}) : UIContainer() {
-    val primaryColor = UIScheme.secondaryColorOpaque.toConstraint()
-    val hoverColor = UIScheme.secondaryColor.toConstraint()
-    val textColor = UIScheme.primaryTextColor.toConstraint()
+class UICheckbox(
+    val text: String,
+    defaultState: Boolean = false,
+    val allowDisabling: Boolean = true,
+    var onChange: (Boolean) -> Unit = {}
+) : UIContainer(), Colorable {
+    var primaryColor = UIScheme.secondaryColorOpaque.toConstraint()
+    var hoverColor = UIScheme.secondaryColor.toConstraint()
+    var textColor = UIScheme.primaryTextColor.toConstraint()
     val animationDuration = UIScheme.HOVER_EFFECT_DURATION
     val padding = 2f
 
@@ -35,19 +41,31 @@ class UICheckbox(val text: String, defaultState : Boolean = false, val allowDisa
             checkmark.setHidden(!value)
             field = value
         }
+    var isEnabled = true
+        set(value) {
+            field = value
+            checkbox.constrain {
+                color = (if (value) primaryColor else UIScheme.disabledColor.toConstraint())
+            }
+            textComponent.constrain {
+                color = (if (value) textColor else UIScheme.disabledTextColor.toConstraint())
+            }
+        }
     lateinit var checkmark : UIText
+    lateinit var checkbox : UIRoundedRectangle
+    lateinit var textComponent : UIText
 
     init {
         create()
     }
 
     fun create() {
-        val checkbox = UIRoundedRectangle(2f).constrain {
+        checkbox = UIRoundedRectangle(2f).constrain {
             x = SiblingConstraint(padding)
             y = CenterConstraint()
             width = AspectConstraint(1f)
             height = min(80.percent(), 10.pixels())
-            color = primaryColor
+            color = if (isEnabled) primaryColor else UIScheme.disabledColor.toConstraint()
         } childOf this
 
         checkmark = UIText("✔").constrain {
@@ -61,25 +79,34 @@ class UICheckbox(val text: String, defaultState : Boolean = false, val allowDisa
         checkmark.setHidden(!state)
 
         this.onMouseClick {
+            if (!isEnabled) return@onMouseClick
             if(!allowDisabling && state) return@onMouseClick
             state = !state
             onChange(state)
         }.onMouseEnter {
+            if (!isEnabled) return@onMouseEnter
             checkbox.animate {
                 setColorAnimation(Animations.IN_EXP, animationDuration, hoverColor)
             }
         }.onMouseLeave {
+            if (!isEnabled) return@onMouseLeave
             checkbox.animate {
                 setColorAnimation(Animations.IN_EXP, animationDuration, primaryColor)
             }
         }
 
-        UIText(text).constrain {
+        textComponent = UIText(text).constrain {
             x = SiblingConstraint(padding)
             y = CenterConstraint()
             width = TextAspectConstraint()
             height = ScaledTextConstraint(1f)
-            color = textColor
+            color = if (isEnabled) textColor else UIScheme.disabledTextColor.toConstraint()
         } childOf this
+    }
+
+    override fun refreshColors() {
+        if (::checkbox.isInitialized) checkbox.constrain { color = primaryColor }
+        if (::checkmark.isInitialized) checkmark.constrain { color = textColor }
+        if (::textComponent.isInitialized) textComponent.constrain { color = textColor }
     }
 }

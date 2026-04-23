@@ -16,7 +16,7 @@ data class Dyes(
     val sbYear : Long? = null
 ) {
     fun isOutdated() : Boolean {
-        return isEmpty() || sbYear != World.getCurrentSkyBlockYear()
+        return isEmpty() || sbYear != World.SBYear
     }
 
     fun isEmpty() : Boolean {

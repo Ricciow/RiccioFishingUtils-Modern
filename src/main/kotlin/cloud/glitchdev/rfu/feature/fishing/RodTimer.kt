@@ -34,7 +34,7 @@ object RodTimer : Feature {
             RodTimerDisplay.updateState()
         }
 
-        registerEntityRenderEvent { entity, event ->
+        registerEntityRenderEvent { entity, _, event ->
             if(!GeneralFishing.rodTimerDisplay) return@registerEntityRenderEvent
             if(!isHoldingRod) return@registerEntityRenderEvent
 

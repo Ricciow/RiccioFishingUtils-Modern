@@ -5,14 +5,11 @@ import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.events.managers.SetSlotEvents.registerSetSlotEvent
+import cloud.glitchdev.rfu.utils.Coroutines
 import gg.essential.universal.utils.toFormattedString
 import gg.essential.universal.utils.toUnformattedString
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import net.minecraft.client.Minecraft
 import net.minecraft.world.item.ItemStack
 import kotlin.math.abs
@@ -28,7 +25,6 @@ object LootshareEvents : AbstractEventManager<(contributors: List<String>, items
     private val recentMessages = mutableListOf<PendingMessage>()
     private val recentItems = mutableListOf<PendingSlot>()
 
-    private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private var processingJob: Job? = null
 
     override fun register() {
@@ -40,7 +36,7 @@ object LootshareEvents : AbstractEventManager<(contributors: List<String>, items
             cleanOldEntries(nowMs)
 
             if (processingJob?.isActive != true) {
-                processingJob = scope.launch {
+                processingJob = Coroutines.launch {
                     delay(CORRELATION_WINDOW_MS + 20L)
                     safeExecution { processBatch() }
                 }

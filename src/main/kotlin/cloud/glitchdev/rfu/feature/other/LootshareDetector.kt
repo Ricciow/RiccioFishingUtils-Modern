@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.feature.other
 
-import cloud.glitchdev.rfu.config.categories.GeneralFishing
+import cloud.glitchdev.rfu.config.categories.DropsSettings
 import cloud.glitchdev.rfu.events.managers.LootshareEvents.registerLootshareEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
@@ -8,12 +8,15 @@ import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.dsl.toMcCodes
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
+//? if >= 26.1 {
+import net.minecraft.world.item.ItemStackTemplate
+//?}
 
 @RFUFeature
 object LootshareDetector : Feature {
     override fun onInitialize() {
         registerLootshareEvent { contributors, items ->
-            if (!GeneralFishing.lootshareMessage) return@registerLootshareEvent
+            if (!DropsSettings.lootshareMessage) return@registerLootshareEvent
 
             val contributorStr = contributors.joinToString("&r, ").toMcCodes()
             val hoverComponent = Component.literal(contributorStr)
@@ -26,7 +29,9 @@ object LootshareDetector : Feature {
 
             items.forEachIndexed { index, lootItem ->
                 val itemComponent = lootItem.itemStack.hoverName.copy().withStyle { style ->
-                    style.withHoverEvent(HoverEvent.ShowItem(lootItem.itemStack))
+                    //~ if >=26.1 'lootItem.itemStack' -> 'ItemStackTemplate.fromNonEmptyStack(lootItem.itemStack)'{
+                    style.withHoverEvent(HoverEvent.ShowItem(ItemStackTemplate.fromNonEmptyStack(lootItem.itemStack)))
+                    //~}
                 }
 
                 val amountSuffix = if (lootItem.diffCount > 1) {

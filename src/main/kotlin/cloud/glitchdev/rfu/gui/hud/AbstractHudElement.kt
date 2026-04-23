@@ -34,18 +34,15 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
 
     //Prevent overlapping on default positions
     open val defaultX = currentDefaultX
-    open val defaultY = run {
-        val y = currentDefaultY
-
-        if(currentYCount < Y_LIMIT) {
+    open val defaultY = currentDefaultY.also {
+        if (currentYCount < Y_LIMIT - 1) {
             currentDefaultY += Y_INCREMENT
+            currentYCount += 1
         } else {
-            currentDefaultY = Y_INITIAL_VALUE
             currentDefaultX += X_INCREMENT
+            currentDefaultY = Y_INITIAL_VALUE + Y_INCREMENT
+            currentYCount = 0
         }
-
-        currentYCount += 1
-        y
     }
 
     var currentX = defaultX
@@ -290,6 +287,7 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
 
     fun closeEdit() {
         isEditing = false
+        scaleTextEnabled = false
         updateState()
         onCloseEdit()
     }
@@ -301,9 +299,9 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
     open fun onCloseEdit() {}
 
     companion object {
-        private const val Y_LIMIT = 20
-        private const val Y_INCREMENT = 9f
-        private const val X_INCREMENT = 30f
+        private const val Y_LIMIT = 8
+        private const val Y_INCREMENT = 35f
+        private const val X_INCREMENT = 150f
         private const val X_INITIAL_VALUE = 10f
         private const val Y_INITIAL_VALUE = 10f
 

@@ -1,238 +1,362 @@
 package cloud.glitchdev.rfu.gui.window
 
+import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.gui.UIScheme
+import cloud.glitchdev.rfu.gui.components.UIPopup
+import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyListChangedEvent
+import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyCreatedEvent
+import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyUpdatedEvent
+import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
+import cloud.glitchdev.rfu.events.managers.PartyFinderEvents
 import cloud.glitchdev.rfu.gui.components.UIButton
+import cloud.glitchdev.rfu.gui.components.colors
+import cloud.glitchdev.rfu.gui.components.elementa.BoundingBoxConstraint
+import cloud.glitchdev.rfu.gui.components.elementa.CopyComponentSizeConstraint
+import cloud.glitchdev.rfu.gui.components.elementa.JustifiedCramSiblingConstraint
 import cloud.glitchdev.rfu.gui.components.partyfinder.UICreateParty
 import cloud.glitchdev.rfu.gui.components.partyfinder.UIFilterArea
 import cloud.glitchdev.rfu.gui.components.partyfinder.UIPartyCard
 import cloud.glitchdev.rfu.model.party.FishingParty
-import cloud.glitchdev.rfu.utils.gui.setHidden
-import cloud.glitchdev.rfu.utils.network.PartyHttp
+import cloud.glitchdev.rfu.utils.Coroutines
+import cloud.glitchdev.rfu.utils.User
+import cloud.glitchdev.rfu.utils.network.PartyWebSocket
+import gg.essential.elementa.UIComponent
 import gg.essential.elementa.components.ScrollComponent
+import gg.essential.elementa.components.UIBlock
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIImage
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
-import gg.essential.elementa.components.Window
+import gg.essential.elementa.components.inspector.Inspector
 import gg.essential.elementa.constraints.AspectConstraint
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
 import gg.essential.elementa.constraints.FillConstraint
-import gg.essential.elementa.constraints.RelativeWindowConstraint
+import gg.essential.elementa.constraints.ScaledTextConstraint
 import gg.essential.elementa.constraints.SiblingConstraint
 import gg.essential.elementa.constraints.TextAspectConstraint
+import gg.essential.elementa.constraints.animation.Animations
+import gg.essential.elementa.dsl.animate
 import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
-import gg.essential.elementa.dsl.max
+import gg.essential.elementa.dsl.effect
 import gg.essential.elementa.dsl.minus
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
+import gg.essential.elementa.dsl.plus
 import gg.essential.elementa.dsl.toConstraint
+import gg.essential.elementa.effects.ScissorEffect
+import kotlinx.coroutines.delay
 
 object PartyFinderWindow : BaseWindow(false) {
-    val primaryColor = UIScheme.primaryColorOpaque.toConstraint()
-    val secondaryColor = UIScheme.secondaryColorOpaque.toConstraint()
-    val textColor = UIScheme.primaryTextColor.toConstraint()
-    val radius = 5f
-    val windowSize = 0.8f
-    var displayParties : MutableList<FishingParty> = mutableListOf()
-    val partyCards : MutableList<UIPartyCard> = mutableListOf()
-    var filterOpen = false
-    var partyCreationOpen = false
+    private val primaryColor = UIScheme.pfWindowBackground.toConstraint()
+    private val headerHeight = 30.pixels
+    private val filterHeight = 50.pixels
+    private val spacing = UIScheme.pfSpacing
+    private val smallSpacing = UIScheme.pfSmallSpacing
+    private var filtersOpen = false
+    private var wasFilterOpen = false
+    private var creationOpen = false
+    private var reloadOnCooldown = false
+    private var parties : List<FishingParty> = PartyFinderEvents.parties
+    private var partyCards : MutableList<UIPartyCard> = mutableListOf()
 
-    lateinit var background : UIRoundedRectangle
-    lateinit var filterArea : UIFilterArea
-    lateinit var partyCreationArea : UICreateParty
-    lateinit var partyArea : UIContainer
-    lateinit var scrollArea : ScrollComponent
+    val popup: UIPopup = UIPopup(5f, "", isBordered = true).childOf(window).colors {
+        primaryColor = UIScheme.pfCardBorder.toConstraint()
+        innerColor = UIScheme.pfCardBg.toConstraint()
+        textColor = UIScheme.errorPopupColor.toConstraint()
+        buttonPrimaryColor = UIScheme.pfCardBorder.toConstraint()
+        buttonHoverColor = UIScheme.pfCardBorderHovered.toConstraint()
+        buttonHoverTextColor = UIScheme.pfCardTitleHoverColor.toConstraint()
+    }
+
     lateinit var filterButton : UIButton
-    lateinit var reloadButton : UIButton
-    lateinit var partyCreationButton : UIButton
-    lateinit var errorText : UIText
+    lateinit var refreshButton : UIButton
+    lateinit var filterArea : UIContainer
+    lateinit var filterContainer : UIFilterArea
+    lateinit var contentWrapper : UIContainer
+    lateinit var creationArea : UICreateParty
+    lateinit var scrollArea : ScrollComponent
+    lateinit var partiesContainer : UIContainer
 
     init {
         create()
-        updatePartyCreation()
-        getParties()
-    }
+        onUpdate()
 
-    fun getParties() {
-        reloadButton.disabled = true
-        updateFiltering()
-        if (::errorText.isInitialized) errorText.setHidden(true)
-        PartyHttp.getParties { parties ->
-            if (parties != null) {
-                updateFiltering()
-            } else {
-                errorText.setHidden(false)
-            }
-            if(!partyCreationOpen) reloadButton.disabled = false
+        registerPartyListChangedEvent { parties ->
+            this.parties = parties
+            println(parties)
+            onUpdate()
         }
-    }
 
-    fun updateFiltering() {
-        if(::scrollArea.isInitialized) {
-            displayParties = if (filterOpen) filterArea.applyFilter(PartyHttp.parties) else PartyHttp.parties.toMutableList()
-            for (partyCard in partyCards) {
-                scrollArea.removeChild(partyCard)
+        registerPartyCreatedEvent { party ->
+            if (party.user == User.getUsername()) {
+                creationOpen = false
+                onUpdate()
             }
+        }
 
-            partyCards.clear()
+        registerPartyUpdatedEvent { party ->
+            if (party.user == User.getUsername()) {
+                creationOpen = false
+                onUpdate()
+            }
+        }
 
-            for(party in displayParties) {
-                val partyCard = UIPartyCard(party, 5f) {
-                    getParties()
-                }.constrain {
-                    x = 0.pixels()
-                    y = SiblingConstraint(2f)
-                    width = 100.percent()
-                    height = 80.pixels()
-                } childOf scrollArea
-
-                partyCards.add(partyCard)
+        registerErrorMessageEvent { message, origin ->
+            if (mc.screen == this && (origin == "/app/party/join" || origin == "/app/party/report" || origin == "/app/party/delete")) {
+                if (message == "Target user is not currently connected to the WebSocket.") return@registerErrorMessageEvent
+                popup.show(message)
             }
         }
     }
 
     fun create() {
-        background = UIRoundedRectangle(radius).constrain {
+        val radius = 5f
+
+        val background = UIRoundedRectangle(radius).constrain {
             x = CenterConstraint()
             y = CenterConstraint()
-            width = RelativeWindowConstraint(windowSize)
-            height = max(RelativeWindowConstraint(windowSize), 220.pixels())
+            width = 80.percent
+            height = 80.percent
             color = primaryColor
         } childOf window
 
-        createHeader()
-
-        partyCreationArea = UICreateParty(5f) { success ->
-            if(success) {
-                partyCreationOpen = false
-                updatePartyCreation()
-                getParties()
-            }
-        }.constrain {
+        val useableArea = UIContainer().constrain {
             x = CenterConstraint()
-            y = SiblingConstraint(2f)
-            width = 100.percent()
-            height = FillConstraint() - 2f.pixels()
-            color = primaryColor
+            y = (radius/2).pixels
+            width = 100.percent
+            height = 100.percent - radius.pixels
         } childOf background
 
-        filterArea = UIFilterArea(radius).constrain {
-            x = CenterConstraint()
-            y = SiblingConstraint(2f)
-            width = 100.percent()
-            height = max(20.percent(), 40.pixels())
-            color = primaryColor
-        } childOf background
+        createHeader(useableArea)
+        createFilterArea(useableArea)
 
-        filterArea.onFilterChange = {
-            updateFiltering()
-        }
-
-        createPartyArea()
-    }
-
-    fun createPartyArea() {
-        partyArea = UIContainer().constrain {
-            x = CenterConstraint()
-            y = SiblingConstraint(2f)
-            width = 96.percent()
-            height = FillConstraint() - 6.pixels()
-        } childOf background
-
-        val scrollbar = UIRoundedRectangle(5f).constrain {
-            x = 0.pixels(true)
-            width = 5.pixels()
-            color = secondaryColor
-        } childOf partyArea
-
-        scrollArea = ScrollComponent().constrain {
-            x = 0.pixels()
-            y = CenterConstraint()
-            width = 100.percent() - 7.pixels()
-            height = 100.percent()
-        } childOf partyArea
-
-        scrollArea.setScrollBarComponent(scrollbar, false, false)
-
-        errorText = UIText("Unable to load parties").constrain {
-            x = CenterConstraint()
-            y = CenterConstraint()
-            color = UIScheme.denyColor.toConstraint()
-        } childOf partyArea
-        errorText.setHidden(true)
-    }
-
-    fun createHeader() {
-        val header = UIRoundedRectangle(radius).constrain {
+        contentWrapper = UIContainer().constrain {
             x = CenterConstraint()
             y = SiblingConstraint()
-            width = 100.percent()
-            height = max(10.percent(), 20.pixels())
-            color = primaryColor
-        } childOf background
+            width = 100.percent - (2 * spacing).pixels
+            height = FillConstraint()
+        } childOf useableArea effect ScissorEffect()
+
+        createPartyCreationArea(contentWrapper)
+        createPartyArea(contentWrapper)
+    }
+
+    fun createHeader(background: UIComponent) {
+        val header = UIContainer().constrain {
+            x = CenterConstraint()
+            y = SiblingConstraint()
+            width = 100.percent
+            height = headerHeight
+        } childOf background effect ScissorEffect()
+
+        val textScale = 1.5f
 
         UIText("RFU Party Finder").constrain {
-            x = 2.percent()
+            x = spacing.pixels
             y = CenterConstraint()
-            width = TextAspectConstraint()
-            height = 50.percent()
-            color = textColor
+            width = ScaledTextConstraint(textScale)
+            height = TextAspectConstraint()
+            color = UIScheme.pfTitleText.toConstraint()
         } childOf header
 
-        val rightContainer = UIContainer().constrain {
-            x = 98.percent()
+        val rightArea = UIContainer().constrain {
+            x = spacing.pixels(true)
             y = CenterConstraint()
-            width = ChildBasedSizeConstraint()
-            height = 80.percent()
+            width = 30.percent
+            height = 100.percent - 5.pixels
         } childOf header
 
-        partyCreationButton = UIButton("New Party", 3f) {
-            partyCreationOpen = !partyCreationOpen
-            updatePartyCreation()
+        val createImage = UIImage.ofResource("/assets/rfu/ui/edit.png")
+        UIButton.withImage(createImage, 5f) {
+            creationOpen = !creationOpen
+            onUpdate()
         }.constrain {
-            x = SiblingConstraint(2f, true)
+            x = SiblingConstraint(5f, alignOpposite = true)
             y = CenterConstraint()
-            width = 70.pixels()
-            height = 100.percent()
-        } childOf rightContainer
-
-        filterButton = UIButton("Filters", 3f) {
-            filterOpen = !filterOpen
-            updatePartyCreation()
-            updateFiltering()
-        }.constrain {
-            x = SiblingConstraint(2f, true)
-            y = CenterConstraint()
-            width = 50.pixels()
-            height = 100.percent()
-        } childOf rightContainer
-
-        reloadButton = UIButton.withImage(UIImage.ofResourceCached("/assets/rfu/ui/refresh.png"), 3f) {
-            getParties()
-        }.constrain {
-            x = SiblingConstraint(2f, true)
-            y = CenterConstraint()
+            height = 100.percent
             width = AspectConstraint(1f)
-            height = 100.percent()
-        } childOf rightContainer
+        }.colors {
+            primaryColor = UIScheme.pfInputBg.toConstraint()
+            hoverColor = UIScheme.pfInputBgHovered.toConstraint()
+        } childOf rightArea
 
-        rightContainer.constrain {
-            x = 98.percent() - rightContainer.getWidth().pixels()
+        val filterImage = UIImage.ofResource("/assets/rfu/ui/filter.png")
+        filterButton = UIButton.withImage(filterImage, 5f) {
+            filtersOpen = !filtersOpen
+            onUpdate()
+        }.constrain {
+            x = SiblingConstraint(2f, alignOpposite = true)
+            y = CenterConstraint()
+            height = 100.percent
+            width = AspectConstraint(1f)
+        }.colors {
+            primaryColor = UIScheme.pfInputBg.toConstraint()
+            hoverColor = UIScheme.pfInputBgHovered.toConstraint()
+        } childOf rightArea
+
+        val refreshImage = UIImage.ofResource("/assets/rfu/ui/refresh.png")
+        refreshButton = UIButton.withImage(refreshImage, 5f) {
+            PartyWebSocket.syncParties()
+            refreshButton.disabled = true
+            reloadOnCooldown = true
+            Coroutines.launch {
+                delay(1000)
+                reloadOnCooldown = false
+                if(!creationOpen) {
+                    refreshButton.disabled = false
+                }
+            }
+        }.constrain {
+            x = SiblingConstraint(2f, alignOpposite = true)
+            y = CenterConstraint()
+            height = 100.percent
+            width = AspectConstraint(1f)
+        }.colors {
+            primaryColor = UIScheme.pfInputBg.toConstraint()
+            hoverColor = UIScheme.pfInputBgHovered.toConstraint()
+        } childOf rightArea
+    }
+
+    fun createFilterArea(background: UIComponent) {
+        filterArea = UIContainer().constrain {
+            x = CenterConstraint()
+            y = SiblingConstraint()
+            width = 100.percent
+            height = 1.pixels
+        } childOf background effect ScissorEffect()
+
+        filterContainer = UIFilterArea(filterHeight) {
+            onUpdate()
+        }.constrain {
+            x = CenterConstraint()
+            y = 0.pixels
+            width = 100.percent
+            height = ChildBasedSizeConstraint() + smallSpacing.pixels
+        } childOf filterArea
+
+        //Separator
+        UIBlock().constrain {
+            x = CenterConstraint()
+            y = 0.pixels(true)
+            width = 100.percent - spacing.pixels
+            height = 1.pixels
+            color = UIScheme.pfWindowSeparator.toConstraint()
+        } childOf filterArea
+    }
+
+    fun createPartyArea(background: UIComponent) {
+        partiesContainer = UIContainer().constrain {
+            x = CenterConstraint()
+            y = SiblingConstraint()
+            width = 100.percent
+            height = 100.percent
+        } childOf background
+
+        scrollArea = ScrollComponent().constrain {
+            x = CenterConstraint()
+            y = smallSpacing.pixels
+            width = 100.percent
+            height = 100.percent - smallSpacing.pixels
+        } childOf partiesContainer
+
+        val scrollBar = UIRoundedRectangle(5f).constrain {
+            x = 0.pixels(true)
+            width = 3.pixels
+        } childOf partiesContainer
+
+        scrollArea.setScrollBarComponent(scrollBar, hideWhenUseless = true, isHorizontal = false)
+
+        updateFiltering()
+    }
+
+    fun createPartyCreationArea(background: UIComponent) {
+        creationArea = UICreateParty().constrain {
+            x = CenterConstraint()
+            y = SiblingConstraint()
+            width = 100.percent
+            height = 0.pixels
+        } childOf background
+    }
+
+    fun updateFiltering() {
+        if (!::scrollArea.isInitialized) return
+
+        val currentFilteredParties = if (filtersOpen) filterContainer.applyFilter(parties) else parties
+        val existingCardsMap = partyCards.associateBy { it.party.user }
+
+        val newCards = currentFilteredParties.map { party ->
+            val existingCard = existingCardsMap[party.user]
+            if (existingCard?.party === party) {
+                existingCard
+            } else {
+                UIPartyCard(party, 5f).constrain {
+                    x = JustifiedCramSiblingConstraint(2f)
+                    y = JustifiedCramSiblingConstraint(2f)
+                    width = 33.percent
+                }
+            }
+        }
+
+        if (newCards != partyCards) {
+            scrollArea.clearChildren()
+            newCards.forEach { it childOf scrollArea }
+
+            partyCards.clear()
+            partyCards.addAll(newCards)
         }
     }
 
-    fun updatePartyCreation() {
-        Window.enqueueRenderOperation {
-            partyCreationArea.setHidden(!partyCreationOpen)
-            partyCreationArea.onOpen()
-            partyArea.setHidden(partyCreationOpen)
-            filterArea.setHidden(partyCreationOpen || !filterOpen)
-            partyCreationButton.setText(if (partyCreationOpen) "Close" else "New Party")
-            filterButton.disabled = partyCreationOpen
-            reloadButton.disabled = partyCreationOpen
+    fun onUpdate() {
+        if(creationOpen) {
+            if(filtersOpen) {
+                filtersOpen = false
+                wasFilterOpen = true
+            }
+            creationArea.animate {
+                setHeightAnimation(Animations.OUT_EXP, 0.5f, 100.percent)
+                onComplete {
+                    partiesContainer.hide()
+                }
+            }
+        } else {
+            if(wasFilterOpen) {
+                filtersOpen = true
+                wasFilterOpen = false
+            }
+            partiesContainer.unhide()
+            creationArea.animate {
+                setHeightAnimation(Animations.OUT_EXP, 0.5f, 0.pixels)
+            }
         }
+
+        filterButton.disabled = creationOpen
+        if(!reloadOnCooldown) {
+            refreshButton.disabled = creationOpen
+        }
+
+        if(filtersOpen) {
+            filterButton.colors {
+                textColor = UIScheme.pfFilterButtonSelected.toConstraint()
+                hoverTextColor = UIScheme.pfFilterButtonSelected.toConstraint()
+                primaryColor = UIScheme.pfFilterButtonSelectedBg.toConstraint()
+                hoverColor = UIScheme.pfInputBgHovered.toConstraint()
+            }
+            filterArea.animate {
+                setHeightAnimation(Animations.OUT_EXP, 0.5f, ChildBasedSizeConstraint())
+            }
+        } else {
+            filterButton.colors {
+                textColor = UIScheme.primaryTextColor.toConstraint()
+                hoverTextColor = UIScheme.primaryTextColor.toConstraint()
+                primaryColor = UIScheme.pfInputBg.toConstraint()
+                hoverColor = UIScheme.pfInputBgHovered.toConstraint()
+            }
+            filterArea.animate {
+                setHeightAnimation(Animations.OUT_EXP, 0.5f, 1.pixels)
+            }
+        }
+        updateFiltering()
     }
 }

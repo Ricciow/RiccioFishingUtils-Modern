@@ -26,4 +26,13 @@ object TextUtils {
     fun rfupfLiteral(string: String, textColor: TextColor = TextColor.WHITE) : MutableComponent {
         return Component.literal("§b§l[§f§lRFU§9§lPF§b§l] $textColor$string")
     }
+
+    fun backendAcceptMessage() : MutableComponent {
+        return rfuLiteral(
+            "Must accept the backend features to use this feature!",
+            TextStyle(TextColor.LIGHT_RED, TextEffects.UNDERLINE)
+        ).append(
+            Component.literal("\n\n${TextColor.LIGHT_RED}/rfu -> Backend Settings -> Connect to Backend")
+        )
+    }
 }

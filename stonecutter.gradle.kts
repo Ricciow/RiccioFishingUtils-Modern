@@ -1,13 +1,44 @@
 plugins {
     id("dev.kikugie.stonecutter")
-    id("fabric-loom") apply false
 }
 
-stonecutter active "1.21.11"
+fun getProp(p: Project, name: String): String {
+    if (p.hasProperty(name)) return p.property(name).toString()
+
+    val redirect = p.findProperty("stonecutter.redirect")?.toString()
+    if (redirect != null) {
+        val redirectedName = "$redirect.$name"
+        if (p.hasProperty(redirectedName)) return p.property(redirectedName).toString()
+        if (p.rootProject.hasProperty(redirectedName)) return p.rootProject.property(redirectedName).toString()
+    }
+    return p.property(name).toString()
+}
+
+stonecutter active "26.1.2"
 
 stonecutter parameters {
-    swaps["mod_version"] = "\"" + property("mod.version") + "\";"
+    swaps["mod_version"] = "\"" + getProp(project, "mod.version") + "\";"
     swaps["minecraft"] = "\"" + node.metadata.version + "\";"
-    constants["release"] = property("mod.id") != "rfu"
-    dependencies["fapi"] = node.project.property("deps.fabric_api") as String
+    constants["release"] = getProp(project, "mod.id") != "rfu"
+    dependencies["fapi"] = getProp(node.project, "deps.fabric_api")
+}
+
+tasks.register("publishModrinth") {
+    group = "publishing"
+    description = "Uploads all primary versions to Modrinth"
+    subprojects.forEach { sub ->
+        if (sub.name != "processor" && sub.findProperty("stonecutter.redirect") == null) {
+            dependsOn(sub.tasks.named("modrinth"))
+        }
+    }
+}
+
+tasks.register("buildPrimary") {
+    group = "build"
+    description = "Builds all primary versions"
+    subprojects.forEach { sub ->
+        if (sub.name != "processor" && sub.findProperty("stonecutter.redirect") == null) {
+            dependsOn(sub.tasks.named("build"))
+        }
+    }
 }

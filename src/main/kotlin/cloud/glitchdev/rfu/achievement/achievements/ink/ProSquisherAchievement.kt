@@ -5,9 +5,10 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
-import cloud.glitchdev.rfu.config.categories.InkFishing
+import cloud.glitchdev.rfu.data.collections.CollectionItem
 import cloud.glitchdev.rfu.data.collections.CollectionsHandler
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.CollectionEvents.registerCollectionUpdateEvent
+import cloud.glitchdev.rfu.utils.dsl.compact
 
 
 @Achievement
@@ -31,15 +32,13 @@ object ProSquisherAchievement: NumericStageAchievement() {
         "Intermediate Squisher", "Advanced Squisher", "Proficient Squisher", "Pro Squisher"
     )
 
-
-
     init {
         MILESTONES.forEachIndexed { index, milestone ->
-            var stage = index + 1
-            val formatted = formatXp(milestone)
+            val stage = index + 1
+            val formatted = milestone.compact()
 
 
-            var stageDifficulty = when {
+            val stageDifficulty = when {
                 milestone >= 5_000_000L -> AchievementDifficulty.IMPOSSIBLE
                 milestone >= 1_000_000L -> AchievementDifficulty.VERY_HARD
                 milestone >= 500_000L -> AchievementDifficulty.HARD
@@ -54,11 +53,18 @@ object ProSquisherAchievement: NumericStageAchievement() {
     }
 
     override fun setupListeners() {
-        activeListeners.add(registerTickEvent(interval = 20) {
-            val inkTotal = CollectionsHandler.totalInkSac
-            currentCount = inkTotal
+        currentCount = CollectionsHandler.get(CollectionItem.INK_SAC)
+        while (!isCompleted && currentCount >= targetCount) {
+            advanceStage()
+        }
 
-
+        activeListeners.add(registerCollectionUpdateEvent { item, _, total, _ ->
+            if (item == CollectionItem.INK_SAC) {
+                currentCount = total
+                while (!isCompleted && currentCount >= targetCount) {
+                    advanceStage()
+                }
+            }
         })
     }
 
@@ -67,15 +73,4 @@ object ProSquisherAchievement: NumericStageAchievement() {
     override fun getTargetCountForStage(stage: Int): Long {
         return MILESTONES.getOrNull(stage - 1) ?: MILESTONES.last()
     }
-
-    private fun formatXp(xp: Long): String {
-        return when {
-            xp >= 1_000_000_000L -> "${xp / 1_000_000_000.0}B"
-            xp >= 1_000_000L -> "${xp / 1_000_000.0}M"
-            xp >= 1_000L -> "${xp / 1_000.0}k"
-            else -> xp.toString()
-        }.replace(".0", "")
-    }
-
-
 }

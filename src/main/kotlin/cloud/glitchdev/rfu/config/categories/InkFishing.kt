@@ -1,14 +1,19 @@
 package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
-import cloud.glitchdev.rfu.data.fishing.InkTrackingType
+import cloud.glitchdev.rfu.constants.InkTrackingType
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 
 object InkFishing : Category("Ink Fishing") {
     override val description: TranslatableValue
         get() = Literal("Settings for everything with ink fishing!")
 
-
+    init {
+        dualSeparator {
+            title = "Tracking"
+            description = "Track your ink fishing stats!"
+        }
+    }
 
     var inkTrackingDisplay by observable(boolean(true) {
         name = Literal("Toggle")
@@ -45,30 +50,33 @@ object InkFishing : Category("Ink Fishing") {
         slider = true
     }
 
-    var rainAlert by boolean(true) {
-        name = Literal("Rain Alert")
-        description = Literal("Show an alert+sound when rain expires in the park")
+    init {
+        dualSeparator {
+            title = "Alerts"
+            description = "Be notified about ink fishing events"
+        }
     }
 
+    var rainAlert by observable(boolean(true) {
+        name = Literal("Rain Alert")
+        description = Literal("Show an alert when rain expires in the park")
+    }) { _, _ ->
+        reloadScreen()
+    }
 
+    var rainAlertSound by observable(boolean(true) {
+        name = Literal("Rain Alert Sound")
+        description = Literal("Plays a sound when rain expires in the park")
+        condition = { rainAlert }
+    }) { _, _ ->
+        reloadScreen()
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    var rainAlertVolume by float(1f) {
+        name = Literal("Sound Volume")
+        description = Literal("The volume for the rain alert sound")
+        range = 0f..1f
+        slider = true
+        condition = { rainAlert && rainAlertSound }
+    }
 }

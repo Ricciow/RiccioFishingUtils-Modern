@@ -4,7 +4,7 @@ import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.constants.text.TextColor.CYAN
 import cloud.glitchdev.rfu.constants.text.TextColor.YELLOW
 import cloud.glitchdev.rfu.constants.text.TextEffects.BOLD
-import cloud.glitchdev.rfu.data.fishing.FishTrackingType
+import cloud.glitchdev.rfu.constants.FishTrackingType
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.feature.fishing.FishingXpTracker
 import cloud.glitchdev.rfu.feature.mob.SeaCreatureHour

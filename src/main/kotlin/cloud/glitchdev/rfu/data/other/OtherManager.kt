@@ -1,12 +1,9 @@
 package cloud.glitchdev.rfu.data.other
 
-import cloud.glitchdev.rfu.events.AutoRegister
-import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
-import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
 import cloud.glitchdev.rfu.data.other.data.CakesEntry
 import cloud.glitchdev.rfu.data.other.data.Entry
 import cloud.glitchdev.rfu.data.other.data.StringEntry
+import cloud.glitchdev.rfu.data.other.data.StringSetEntry
 import cloud.glitchdev.rfu.utils.JsonFile
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
@@ -15,8 +12,7 @@ import com.google.gson.JsonParseException
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
 
-@AutoRegister
-object OtherManager : RegisteredEvent {
+object OtherManager {
     val file = JsonFile(
         filename = "other.json",
         type = OtherData::class.java,
@@ -34,6 +30,7 @@ object OtherManager : RegisteredEvent {
                     return when (val type = json.asJsonObject["type"].asString) {
                         "StringEntry" -> context.deserialize(json, StringEntry::class.java)
                         "CakesEntry" -> context.deserialize(json, CakesEntry::class.java)
+                        "StringSetEntry" -> context.deserialize(json, StringSetEntry::class.java)
                         else -> throw JsonParseException("Unknown Entry type: $type")
                     }
                 }
@@ -44,16 +41,6 @@ object OtherManager : RegisteredEvent {
 
     val data
         get() = file.data
-
-    override fun register() {
-        registerJoinEvent {
-            file.save()
-        }
-
-        registerShutdownEvent(1000) {
-            file.save()
-        }
-    }
 
     fun getField(key : String) : Entry? {
         return data.savedStuff[key]

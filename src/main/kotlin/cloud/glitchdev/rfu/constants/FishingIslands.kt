@@ -2,43 +2,44 @@ package cloud.glitchdev.rfu.constants
 
 import cloud.glitchdev.rfu.model.data.DataOption
 import com.google.gson.annotations.SerializedName
+import java.awt.Color
 
-enum class FishingIslands(val island: String, val availableLiquids : List<LiquidTypes>) {
+enum class FishingIslands(val island: String, val availableLiquids : List<LiquidTypes>, val color: Color) {
     @SerializedName("Crimson Isle")
-    ISLE("Crimson Isle", listOf(LiquidTypes.LAVA)),
+    ISLE("Crimson Isle", listOf(LiquidTypes.LAVA), Color(255, 85, 85)),
 
     @SerializedName("Crystal Hollows")
-    HOLLOWS("Crystal Hollows", listOf(LiquidTypes.LAVA, LiquidTypes.WATER)),
+    HOLLOWS("Crystal Hollows", listOf(LiquidTypes.LAVA, LiquidTypes.WATER), Color(255, 85, 255)),
 
     @SerializedName("Backwater Bayou")
-    BAYOU("Backwater Bayou", listOf(LiquidTypes.WATER)),
+    BAYOU("Backwater Bayou", listOf(LiquidTypes.WATER), Color(85, 255, 85)),
 
     @SerializedName("The Park")
-    PARK("The Park", listOf(LiquidTypes.WATER)),
+    PARK("The Park", listOf(LiquidTypes.WATER), Color(170, 255, 170)),
 
     @SerializedName("Galatea")
-    GALATEA("Galatea", listOf(LiquidTypes.WATER, LiquidTypes.LAVA)),
+    GALATEA("Galatea", listOf(LiquidTypes.WATER, LiquidTypes.LAVA), Color(10, 100, 0)),
 
     @SerializedName("The Farming Islands")
-    DESERT("The Farming Islands", listOf(LiquidTypes.WATER)),
+    DESERT("The Farming Islands", listOf(LiquidTypes.WATER), Color(255, 255, 85)),
 
     @SerializedName("Spider's Den")
-    SPIDER("Spider's Den", listOf(LiquidTypes.WATER)),
+    SPIDER("Spider's Den", listOf(LiquidTypes.WATER), Color(170, 170, 170)),
 
     @SerializedName("Jerry's Workshop")
-    JERRY("Jerry's Workshop", listOf(LiquidTypes.WATER)),
+    JERRY("Jerry's Workshop", listOf(LiquidTypes.WATER), Color(255, 255, 255)),
 
     @SerializedName("Dwarven Mines")
-    DWARVEN("Dwarven Mines", listOf(LiquidTypes.WATER)),
+    DWARVEN("Dwarven Mines", listOf(LiquidTypes.WATER), Color(85, 255, 255)),
 
     @SerializedName("Hub")
-    HUB("Hub", listOf(LiquidTypes.WATER)),
+    HUB("Hub", listOf(LiquidTypes.WATER), Color(45, 75, 200)),
 
     @SerializedName("Other")
-    OTHER("Other", listOf()),
+    OTHER("Other", listOf(), Color(100, 100, 100)),
 
     @SerializedName("Not Skyblock")
-    NOT_SB("Not Skyblock", listOf());
+    NOT_SB("Not Skyblock", listOf(), Color(100, 100, 100));
 
     fun toDataOption(): DataOption {
         return DataOption(this, this.island)

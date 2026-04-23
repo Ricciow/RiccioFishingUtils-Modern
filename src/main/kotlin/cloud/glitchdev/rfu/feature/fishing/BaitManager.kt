@@ -1,7 +1,7 @@
 package cloud.glitchdev.rfu.feature.fishing
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
-import cloud.glitchdev.rfu.data.fishing.Bait
+import cloud.glitchdev.rfu.constants.Bait
 import cloud.glitchdev.rfu.events.managers.BobberLiquidEvents.registerBobberLiquidEvent
 import cloud.glitchdev.rfu.events.managers.EntityAddedEvents.registerEntityAddedEvent
 import cloud.glitchdev.rfu.events.managers.EntityDataEvents.registerEntityDataEvent

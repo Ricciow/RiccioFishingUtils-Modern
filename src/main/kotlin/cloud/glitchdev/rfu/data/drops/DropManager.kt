@@ -2,8 +2,6 @@ package cloud.glitchdev.rfu.data.drops
 
 import cloud.glitchdev.rfu.constants.RareDrops
 import cloud.glitchdev.rfu.events.managers.DropEvents
-import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.utils.JsonFile
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
@@ -45,14 +43,6 @@ object DropManager : RegisteredEvent {
 
         DropEvents.registerDyeDropEvent(0) { dyeDrop, magicFind ->
             dropHistory.registerDrop(dyeDrop, magicFind)
-        }
-
-        registerJoinEvent {
-            dropsFile.save()
-        }
-
-        registerShutdownEvent {
-            dropsFile.save()
         }
     }
 }

@@ -1,16 +1,16 @@
 package cloud.glitchdev.rfu.constants
 
-enum class Dyes(val dyeName: String, val hex: String, val relatedScs : List<SeaCreatures> = listOf()) {
-    AQUAMARINE("Aquamarine Dye", "7FFFD4", SeaCreatures.entries.filter { it.liquidType == LiquidTypes.WATER }),
+enum class Dyes(val dyeName: String, val hex: String, val relatedScNames : List<String> = listOf(), val rarity: Rarity = Rarity.LEGENDARY) {
+    AQUAMARINE("Aquamarine Dye", "7FFFD4", listOf("WATER_LIQUID")), // Special case for filter
     ARCHFIEND("Archfiend Dye", "B80036"),
     BINGO_BLUE("Bingo Blue Dye", "002FA7"),
     BONE("Bone Dye", "E3DAC9"),
     BRICK_RED("Brick Red Dye", "CB4154"),
     BYZANTIUM("Byzantium Dye", "702963"),
-    CARMINE("Carmine Dye", "960018", SeaCreatures.entries.filter { it.liquidType == LiquidTypes.LAVA }),
+    CARMINE("Carmine Dye", "960018", listOf("LAVA_LIQUID")), // Special case for filter
     CELADON("Celadon Dye", "ACE1AF"),
     CELESTE("Celeste Dye", "B2FFFF"),
-    CHOCOLATE("Chocolate Dye", "7B3F00"),
+    CHOCOLATE("Chocolate Dye", "7B3F00", rarity = Rarity.EPIC),
     COPPER("Copper Dye", "B87333"),
     CYCLAMEN("Cyclamen Dye", "F56FA1"),
     DARK_PURPLE("Dark Purple Dye", "301934"),
@@ -19,8 +19,8 @@ enum class Dyes(val dyeName: String, val hex: String, val relatedScs : List<SeaC
     FLAME("Flame Dye", "E25822"),
     FOSSIL("Fossil Dye", "866F12"),
     FROSTBITTEN("Frostbitten Dye", "09D8EB"),
-    HOLLY("Holly Dye", "3C6746"),
-    ICEBERG("Iceberg Dye", "71A6D2", SeaCreatures.entries.filter { it.category == SeaCreatureCategory.WINTER }),
+    HOLLY("Holly Dye", "3C6746", rarity = Rarity.EPIC),
+    ICEBERG("Iceberg Dye", "71A6D2", listOf("WINTER_CATEGORY")), // Special case for filter
     JADE("Jade Dye", "00A86B"),
     LIVID("Livid Dye", "CEB7AA"),
     MANGO("Mango Dye", "FDBE02"),
@@ -29,20 +29,28 @@ enum class Dyes(val dyeName: String, val hex: String, val relatedScs : List<SeaC
     MOCHA("Mocha Dye", "967969"),
     MYTHOLOGICAL("Mythological Dye", "6F6F0C"),
     NADESHIKO("Nadeshiko Dye", "F6ADC6"),
-    NECRON("Necron Dye", "E7413C"),
+    NECRON("Necron Dye", "E7413C", rarity = Rarity.EPIC),
     NYANZA("Nyanza Dye", "E9FFDB"),
     PEARLESCENT("Pearlescent Dye", "115555"),
     PELT("Pelt Dye", "50414C"),
     PERIWINKLE("Periwinkle Dye", "CCCCFF"),
-    PURE_BLACK("Pure Black Dye", "000000"),
+    PURE_BLACK("Pure Black Dye", "000000", rarity = Rarity.EPIC),
     PURE_BLUE("Pure Blue Dye", "0013FF"),
-    PURE_WHITE("Pure White Dye", "FFFFFF"),
+    PURE_WHITE("Pure White Dye", "FFFFFF", rarity = Rarity.EPIC),
     PURE_YELLOW("Pure Yellow Dye", "FFF700"),
     SANGRIA("Sangria Dye", "D40808"),
     SECRET("Secret Dye", "7D7D7D"),
     TENTACLE("Tentacle Dye", "324D6C"),
     TREASURE("Treasure Dye", "FCD12A"),
     WILD_STRAWBERRY("Wild Strawberry Dye", "FF43A4");
+
+    val relatedScs: List<SeaCreatures>
+        get() = when {
+            relatedScNames.contains("WATER_LIQUID") -> SeaCreatures.entries.filter { it.liquidType == LiquidTypes.WATER }
+            relatedScNames.contains("LAVA_LIQUID") -> SeaCreatures.entries.filter { it.liquidType == LiquidTypes.LAVA }
+            relatedScNames.contains("WINTER_CATEGORY") -> SeaCreatures.entries.filter { it.category == SeaCreatureCategory.WINTER }
+            else -> relatedScNames.mapNotNull { SeaCreatures.get(it) }
+        }
 
     override fun toString(): String {
         return dyeName

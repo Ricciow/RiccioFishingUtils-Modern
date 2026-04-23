@@ -17,7 +17,7 @@ object Title {
         if (isRunning) return
         isRunning = true
 
-        CoroutineScope(Dispatchers.Default).launch {
+        Coroutines.launch {
             while (queue.isNotEmpty()) {
                 val title = queue.removeFirst()
 

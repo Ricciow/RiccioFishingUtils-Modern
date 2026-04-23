@@ -8,7 +8,7 @@ import com.teamresourceful.resourcefulconfigkt.api.builders.SeparatorBuilder
 /**
  * Extends CategoryKt to add dualSeparator and reloadScreen functionality
  */
-open class Category(id : String) : CategoryKt(id) {
+open class Category(id: String) : CategoryKt(id) {
     fun dualSeparator(builder: SeparatorBuilder.() -> Unit) {
         separator {}
         separator(builder)
@@ -18,4 +18,44 @@ open class Category(id : String) : CategoryKt(id) {
         val screen = mc.screen as? ConfigScreenInvoker
         screen?.`rfu$ReloadAndScroll`()
     }
-}
+
+    fun previewButton(
+        previewAction: () -> Unit,
+        title: String = "Preview",
+        description: String = "Shows a preview of the setting.",
+        condition: () -> Boolean = { true }
+    ) {
+        button {
+            this.title = title
+            this.description = description
+            text = "Preview"
+            onClick {
+                mc.schedule {
+                    mc.setScreen(null)
+                    previewAction()
+                }
+            }
+            this.condition = condition
+        }
+    }
+
+    fun customButton(
+        onClickAction: () -> Unit,
+        title: String,
+        description: String = "",
+        buttonText: String = "Open",
+        condition: () -> Boolean = { true }
+    ) {
+        button {
+            this.title = title
+            this.description = description
+            text = buttonText
+            onClick {
+                mc.schedule {
+                    onClickAction()
+                }
+            }
+            this.condition = condition
+        }
+    }
+    }

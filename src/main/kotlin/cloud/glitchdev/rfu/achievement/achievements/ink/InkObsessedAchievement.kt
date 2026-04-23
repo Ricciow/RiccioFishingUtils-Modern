@@ -5,16 +5,9 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
-import cloud.glitchdev.rfu.config.categories.InkFishing
-import cloud.glitchdev.rfu.constants.RareDrops
-import cloud.glitchdev.rfu.data.collections.CollectionsHandler
-import cloud.glitchdev.rfu.data.drops.DropManager
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
-import cloud.glitchdev.rfu.feature.ink.CollectionHour
-import cloud.glitchdev.rfu.utils.Chat
-import net.minecraft.network.chat.Component
-
+import cloud.glitchdev.rfu.feature.ink.InkSessionTracker
+import cloud.glitchdev.rfu.utils.dsl.compact
 
 @Achievement
 object InkObsessedAchievement: NumericStageAchievement() {
@@ -28,7 +21,6 @@ object InkObsessedAchievement: NumericStageAchievement() {
     override val targetStage: Int = 4
     override val resetCountOnStageAdvance: Boolean = false
 
-
     private val MILESTONES = listOf(
         25_000L, 50_000L, 100_000L, 250_000L
     )
@@ -37,11 +29,10 @@ object InkObsessedAchievement: NumericStageAchievement() {
         "Locked In", "Need More Ink!", "Time for a Break..?", "Ink Obsessed"
     )
 
-
     init {
         MILESTONES.forEachIndexed { index, milestone ->
             var stage = index + 1
-            var formatted = formatXp(milestone)
+            var formatted = milestone.compact()
 
             var stageDifficulty = when {
                 milestone >= 250_000L -> AchievementDifficulty.VERY_HARD
@@ -58,26 +49,13 @@ object InkObsessedAchievement: NumericStageAchievement() {
 
     override fun setupListeners() {
         activeListeners.add(registerTickEvent(interval = 20) {
-            val inkSession = CollectionHour.totalInk
+            val inkSession = InkSessionTracker.totalInk
             currentCount = inkSession.toLong()
 
         })
     }
 
-
-
     override fun getTargetCountForStage(stage: Int): Long {
         return MILESTONES.getOrNull(stage - 1) ?: MILESTONES.last()
     }
-
-    private fun formatXp(xp: Long): String {
-        return when {
-            xp >= 1_000_000_000L -> "${xp / 1_000_000_000.0}B"
-            xp >= 1_000_000L -> "${xp / 1_000_000.0}M"
-            xp >= 1_000L -> "${xp / 1_000.0}k"
-            else -> xp.toString()
-        }.replace(".0", "")
-    }
-
-
 }

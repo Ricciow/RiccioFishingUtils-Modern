@@ -44,10 +44,7 @@ object SeaCreatureHour : Feature {
         override val description: String = "Resets your current SC/h tracker."
 
         override fun execute(context: CommandContext<FabricClientCommandSource>): Int {
-            currentScPerHour = 0.0
-            lastSC = Instant.DISTANT_PAST
-            total = 0
-            catchHistory.clear()
+            resetSession()
             updateRate()
 
             context.source.sendFeedback(TextUtils.rfuLiteral("The SC/h tracker has been reset!", TextStyle(TextColor.LIGHT_GREEN)))
@@ -71,7 +68,7 @@ object SeaCreatureHour : Feature {
         updateRate()
     }
 
-    private fun updateRate() {
+    fun updateRate() {
         val now = Clock.System.now()
         val limit = GeneralFishing.fishingTime.minutes
 
@@ -99,7 +96,7 @@ object SeaCreatureHour : Feature {
         currentScPerHour = (catchHistory.size.toDouble() / calculationWindow.inWholeSeconds) * 3600
     }
 
-    private fun resetSession() {
+    fun resetSession() {
         lastSC = Instant.DISTANT_PAST
         total = 0
         catchHistory.clear()

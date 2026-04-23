@@ -10,10 +10,14 @@ import cloud.glitchdev.rfu.utils.command.Command
 import cloud.glitchdev.rfu.utils.command.AbstractCommand
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextStyle
+import cloud.glitchdev.rfu.utils.World.SBDay
+import cloud.glitchdev.rfu.utils.World.SBHour
+import cloud.glitchdev.rfu.utils.World.SBMonth
+import cloud.glitchdev.rfu.utils.World.SBYear
 import com.google.gson.JsonParser
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
+import net.minecraft.network.chat.Component
 
 @AutoRegister
 object MayorTracker : RegisteredEvent {
@@ -25,21 +29,19 @@ object MayorTracker : RegisteredEvent {
 
     override fun register() {
         registerJoinEvent {
-            val year = World.getCurrentSkyBlockYear()
-            if (lastFetchedYear != year) {
-                fetchMayor()
-            }
+            checkAndFetch()
         }
 
-        registerTickEvent(interval = 1200L) {
-            val year = World.getCurrentSkyBlockYear()
-            val month = World.getCurrentSkyBlockMonth()
-            val day = World.getCurrentSkyBlockDay()
+        registerTickEvent(interval = 200L) {
+            checkAndFetch()
+        }
+    }
 
-            if (month == 3 && day == 27 && lastFetchedYear != year) {
-                lastFetchedYear = year
-                fetchMayor()
-            }
+    private fun checkAndFetch() {
+        val isPastElection = SBMonth >= 3 && SBDay >= 27 && SBHour >= 1
+
+        if (lastFetchedYear < SBYear && !isPastElection) {
+            fetchMayor()
         }
     }
 
@@ -52,10 +54,10 @@ object MayorTracker : RegisteredEvent {
                 .executes { context ->
                     val mayor = currentMayor.mayorName
                     context.source.sendFeedback(TextUtils.rfuLiteral("Current Mayor: ", TextStyle(TextColor.GOLD))
-                        .append(TextUtils.rfuLiteral(mayor, TextStyle(TextColor.YELLOW))))
+                        .append(Component.literal("${TextColor.YELLOW}$mayor")))
                     1
                 }
-                .then(literal("refresh").executes { context ->
+                .then(lit("refresh").executes { context ->
                     fetchMayor()
                     context.source.sendFeedback(TextUtils.rfuLiteral("Refreshing mayor data...", TextStyle(TextColor.GRAY)))
                     1
@@ -73,7 +75,7 @@ object MayorTracker : RegisteredEvent {
                         val mayorJson = json.getAsJsonObject("mayor")
                         val name = mayorJson.get("name").asString
                         currentMayor = Mayors.fromName(name)
-                        lastFetchedYear = World.getCurrentSkyBlockYear()
+                        lastFetchedYear = SBYear
                         RFULogger.dev("Fetched current Mayor: ${currentMayor.mayorName}")
                     }
                 } catch (e: Exception) {

@@ -12,7 +12,7 @@ import kotlin.io.path.readText
 import kotlin.io.path.writeText
 
 object ConfigMigration {
-    const val CURRENT_VERSION = 2
+    const val CURRENT_VERSION = 4
     const val VERSION_KEY = "rfuConfigVersion"
 
     private val logger = LoggerFactory.getLogger(ConfigMigration::class.java)
@@ -45,6 +45,8 @@ object ConfigMigration {
             when (version) {
                 0 -> migrateV0toV1(json)
                 1 -> migrateV1toV2(json)
+                2 -> migrateV2toV3(json)
+                3 -> migrateV3toV4(json)
             }
         }
     }
@@ -114,11 +116,46 @@ object ConfigMigration {
         }
     }
 
+    private fun migrateV2toV3(json: JsonObject) {
+        val newCat = getOrCreateCategory(json, "Drops")
+        val rareDropKeys = listOf(
+            "rareDrops", "dyeDrops", "customRareDropMessage", "rareDropMessageFormat",
+            "rareDropPartyChat", "lootshareMessage", "rareDropTitleAlert",
+            "rareDropTitleFormat", "rareDropSubtitleFormat"
+        )
+        rareDropKeys.forEach { key ->
+            val value = deleteKey(json, "General Fishing", key)
+            if (value != null && !newCat.has(key)) newCat.add(key, value)
+        }
+    }
+
+    private fun migrateV3toV4(json: JsonObject) {
+        val oldScCat = deleteCategory(json, "Rare SCs")
+        val newScCat = getOrCreateCategory(json, "Sea Creatures")
+        if (oldScCat != null) {
+            oldScCat.entrySet().forEach { (key, value) ->
+                if (!newScCat.has(key)) newScCat.add(key, value)
+            }
+        }
+
+        val catchMsgKeys = listOf("replaceCatchMessages", "catchMessageTemplate", "doubleHookCatchMessageTemplate")
+        catchMsgKeys.forEach { key ->
+            val value = deleteKey(json, "General Fishing", key)
+            if (value != null && !newScCat.has(key)) newScCat.add(key, value)
+        }
+    }
+
     private fun deleteKey(json: JsonObject, category: String, key: String): JsonElement? {
         val cat = json[category]?.asJsonObject ?: return null
         val value = cat[key]
         cat.remove(key)
         return value
+    }
+
+    private fun deleteCategory(json: JsonObject, category: String): JsonObject? {
+        val cat = json[category]?.asJsonObject ?: return null
+        json.remove(category)
+        return cat
     }
 
     private fun getCategory(json: JsonObject, name: String): JsonObject? {

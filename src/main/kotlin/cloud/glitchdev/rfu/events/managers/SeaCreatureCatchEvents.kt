@@ -11,7 +11,7 @@ import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.world.phys.Vec3
 
-import cloud.glitchdev.rfu.data.fishing.Bait
+import cloud.glitchdev.rfu.constants.Bait
 import cloud.glitchdev.rfu.feature.fishing.BaitManager
 import cloud.glitchdev.rfu.data.fishing.Hotspot
 

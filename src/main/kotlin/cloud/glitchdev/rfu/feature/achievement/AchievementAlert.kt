@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.feature.achievement
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.interfaces.IAchievement
 import cloud.glitchdev.rfu.achievement.interfaces.IStageAchievement
+import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.events.managers.AchievementStageUnlockedEvents.registerAchievementStageUnlockedEvent
@@ -36,7 +37,9 @@ object AchievementAlert : Feature {
     private fun playSound() {
         val now = Clock.System.now()
         if (now - lastSoundPlayTime >= 1.seconds) {
-            Sounds.playSound("rfu:achievement")
+            if (OtherSettings.achievementSound) {
+                Sounds.playSound("rfu:achievement", 1f, OtherSettings.achievementVolume)
+            }
             lastSoundPlayTime = now
         }
     }

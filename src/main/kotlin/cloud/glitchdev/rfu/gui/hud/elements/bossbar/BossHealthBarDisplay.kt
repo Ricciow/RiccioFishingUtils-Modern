@@ -1,6 +1,6 @@
     package cloud.glitchdev.rfu.gui.hud.elements.bossbar
 
-    import cloud.glitchdev.rfu.config.categories.RareScSettings
+    import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
     import cloud.glitchdev.rfu.gui.hud.AbstractHudElement
     import cloud.glitchdev.rfu.gui.hud.HudElement
     import cloud.glitchdev.rfu.data.mob.SkyblockEntity
@@ -19,7 +19,7 @@
         val bars : MutableList<BossHealthBar> = mutableListOf()
 
         override val enabled: Boolean
-            get() = (super.enabled || entities.isNotEmpty()) && RareScSettings.bossHealthBars
+            get() = (super.enabled || entities.isNotEmpty()) && SeaCreatureConfig.bossHealthBars
 
         val barsContainer = UIContainer().constrain {
             width = (400 * scale).pixels()

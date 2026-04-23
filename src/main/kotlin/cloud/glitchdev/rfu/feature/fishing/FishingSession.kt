@@ -1,11 +1,16 @@
 package cloud.glitchdev.rfu.feature.fishing
 
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
+import cloud.glitchdev.rfu.constants.text.TextColor
+import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
+import cloud.glitchdev.rfu.feature.ink.InkSessionTracker
+import cloud.glitchdev.rfu.feature.mob.SeaCreatureHour
+import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.command.Command
 import cloud.glitchdev.rfu.utils.command.SimpleCommand
 import com.mojang.brigadier.context.CommandContext
@@ -57,6 +62,15 @@ object FishingSession : Feature {
     fun resetSession() {
         startFishing = Instant.DISTANT_PAST
         lastFishingEvent = Instant.DISTANT_PAST
+
+        SeaCreatureHour.resetSession()
+        SeaCreatureHour.updateRate()
+
+        InkSessionTracker.resetSession()
+        InkSessionTracker.updateRate()
+
+        FishingXpTracker.resetSession()
+        FishingXpTracker.updateRate()
     }
 
     @Command
@@ -65,6 +79,9 @@ object FishingSession : Feature {
 
         override fun execute(context: CommandContext<FabricClientCommandSource>): Int {
             resetSession()
+            context.source.sendFeedback(
+                TextUtils.rfuLiteral("Your fishing session has been reset!", TextStyle(TextColor.LIGHT_GREEN))
+            )
             return 1
         }
     }

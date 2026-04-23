@@ -21,7 +21,7 @@ object VersionHttp : RegisteredEvent{
         private set
 
     override fun register() {
-        registerJoinEvent { wasConnected ->
+        registerJoinEvent(delayMillis = 3000) { wasConnected ->
             if(!wasConnected) {
                 verifyVersion()
             }

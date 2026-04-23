@@ -15,7 +15,7 @@ Minecraft Mod for Hypixel SkyBlock
 
 ## What it does
 
-RiccioFishingUtils is a Fabric Mod for Minecraft 1.21.10-1.21.11 that adds many useful features to [Hypixel SkyBlock](https://wiki.hypixel.net/Fishing) focused mostly on fishing.
+RiccioFishingUtils is a Fabric Mod for Minecraft 1.21.11 / 26.1.x that adds many useful features to [Hypixel SkyBlock](https://wiki.hypixel.net/Fishing) focused mostly on fishing.
 
 * **Party Finder:** Get parties for your fishing duties!
 * **Lootshare Range** See the range of lootshare on your mobs!

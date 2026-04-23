@@ -1,11 +1,9 @@
 package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
-import cloud.glitchdev.rfu.config.categories.RareScSettings.detectionAlert
-import cloud.glitchdev.rfu.constants.Dyes
-import cloud.glitchdev.rfu.constants.RareDrops
-import cloud.glitchdev.rfu.data.fishing.FishTrackingType
+import cloud.glitchdev.rfu.constants.FishTrackingType
 import cloud.glitchdev.rfu.data.mob.DeployableType
+import cloud.glitchdev.rfu.feature.fishing.DoubleHookMessages
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 
 object GeneralFishing : Category("General Fishing") {
@@ -46,48 +44,6 @@ object GeneralFishing : Category("General Fishing") {
         slider = true
     }
 
-
-    init {
-        dualSeparator {
-            title = "Rare Drops Tracking"
-            description = "Track your rare drops when you fish!"
-        }
-    }
-
-    var rareDrops by draggable(*RareDrops.entries.toTypedArray()) {
-        name = Literal("Rare Drops")
-        description = Literal("Select which drops are considered rare for the mod.")
-    }
-
-    var dyeDrops by draggable(*Dyes.entries.toTypedArray()) {
-        name = Literal("Dye drops")
-        description = Literal("Select which dyes are considered rare for the mod.")
-    }
-
-    var customRareDropMessage by observable(boolean(false) {
-        name = Literal("Enable Custom Rare Drop Message")
-        description = Literal("Shows a custom message when you get a rare drop")
-    }) { _, _ ->
-        reloadScreen()
-    }
-
-    var rareDropMessageFormat by string("&6&lRARE DROP! &e{drop} &b(+{magic_find}% ✯ Magic Find) &7(Took {count} catches, {time} since last)") {
-        name = Literal("Custom Message Format")
-        description = Literal("Variables: {drop}, {magic_find}, {count}, {time}")
-        condition = { customRareDropMessage }
-    }
-
-    var rareDropPartyChat by boolean(true) {
-        name = Literal("Send in party chat")
-        description = Literal("Sends the drop message in party chat, uses the same message as above but removes the colors")
-        condition = { customRareDropMessage }
-    }
-
-    var lootshareMessage by boolean(true) {
-        name = Literal("Lootshare Message")
-        description = Literal("Sends a message when lootshare gives you an item.")
-    }
-
     init {
         dualSeparator {
             title = "Deployables"
@@ -109,8 +65,8 @@ object GeneralFishing : Category("General Fishing") {
     }
 
     var deployableExpiredAlert by observable(boolean(true) {
-        name = Literal("Deployable Display")
-        description = Literal("Toggles the deployable display")
+        name = Literal("Deployable Expired Alert")
+        description = Literal("Toggles the alert for expired deployables")
     }) { _, _ ->
         reloadScreen()
     }
@@ -124,7 +80,7 @@ object GeneralFishing : Category("General Fishing") {
     var deployableExpiredSound by observable(boolean(true) {
         name = Literal("Expired Sound")
         description = Literal("Plays a sound whenever a deployable expires.")
-        condition = { detectionAlert }
+        condition = { deployableExpiredAlert }
     }) { _, _ ->
         reloadScreen()
     }
@@ -162,9 +118,17 @@ object GeneralFishing : Category("General Fishing") {
         "( ^_^) &b[ &3<>< &b]",
         "( >_<) &b[ &3RFU &b]"
     ) {
-        name = Literal("Double Hook messages")
-        description = Literal("Select what words will be sent when you get a double hook. Each line is one phrase.")
+        name = Literal("Double Hook Messages")
+        description = Literal("The messages sent to chat when you get a double hook. It will pick one at random.")
         condition = { toggleDoubleHookMessages }
+    }
+
+    init {
+        previewButton(
+            DoubleHookMessages::preview,
+            "Preview Message",
+            "Shows a preview of one of the double hook messages in chat."
+        ) { toggleDoubleHookMessages }
     }
 
     var randomDoubleHookMessages by boolean(false) {
@@ -200,7 +164,7 @@ object GeneralFishing : Category("General Fishing") {
 
     var failCastVolume by float(1f) {
         name = Literal("Sound Volume")
-        description = Literal("The volume for the expired sound")
+        description = Literal("The volume for the failed cast sound")
         range = 0f..1f
         slider = true
         condition = { failCastAlert && failCastSound }

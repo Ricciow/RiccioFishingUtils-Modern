@@ -1,8 +1,8 @@
 package cloud.glitchdev.rfu.data.catches
 
-import cloud.glitchdev.rfu.config.categories.RareScSettings
 import cloud.glitchdev.rfu.constants.SeaCreatures
-import cloud.glitchdev.rfu.data.fishing.Bait
+import cloud.glitchdev.rfu.constants.Bait
+import cloud.glitchdev.rfu.constants.LiquidTypes
 import cloud.glitchdev.rfu.data.fishing.Hotspot
 import net.minecraft.world.phys.Vec3
 import kotlin.time.Clock
@@ -17,6 +17,8 @@ class CatchHistory {
     var lastPos: Vec3 = Vec3.ZERO
     @Transient
     var lastBait: Bait? = null
+    @Transient
+    var lastLiquid: LiquidTypes? = null
 
     /**
      * Finds the record for a specific SeaCreature.
@@ -48,6 +50,7 @@ class CatchHistory {
         lastHotspot = hotspot
         lastPos = pos
         lastBait = bait
+        lastLiquid = sc.liquidType
 
         val currentRecord = getOrAdd(sc)
 
@@ -62,15 +65,13 @@ class CatchHistory {
             }
         }
 
-        if(RareScSettings.rareSC.contains(sc)) {
+        if(sc.special) {
             currentRecord.history.add(currentRecord.count)
         }
         currentRecord.time = Clock.System.now()
 
-        if (sc.condition(hotspot, pos, bait)) {
-            currentRecord.count = 0
-            currentRecord.total += 1
-        }
+        currentRecord.count = 0
+        currentRecord.total += 1
     }
 
     /**

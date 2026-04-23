@@ -30,7 +30,7 @@ object SurvivalistAchievement : StageAchievement() {
     private var hadHardMode = false
 
     private val DEATH_REGEX = """ ☠ You """.toRegex()
-    private val SEA_CREATURE = SeaCreatures.JAWBUS
+    private val SEA_CREATURE = SeaCreatures.get("Lord Jawbus")!!
 
     init {
         addStageInfo(1, "Survivalist-", "Solo your own Jawbus without dying.\nNo player must be nearby for this.", AchievementDifficulty.HARD)

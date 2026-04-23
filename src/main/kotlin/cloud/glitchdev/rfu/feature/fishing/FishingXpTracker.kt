@@ -70,7 +70,7 @@ object FishingXpTracker : Feature {
         updateRate()
     }
 
-    private fun updateRate() {
+    fun updateRate() {
         val now = Clock.System.now()
         val limit = GeneralFishing.fishingTime.minutes
 
@@ -99,7 +99,7 @@ object FishingXpTracker : Feature {
         currentXpPerHour = (windowXp / calculationWindow.inWholeSeconds) * 3600
     }
 
-    private fun resetSession() {
+    fun resetSession() {
         lastXpEvent = Instant.DISTANT_PAST
         lastSeenXp = ""
         xpHistory.clear()

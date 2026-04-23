@@ -1,15 +1,19 @@
 package cloud.glitchdev.rfu.data.mob
 
+import cloud.glitchdev.rfu.access.EntityAccess
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
-import cloud.glitchdev.rfu.config.categories.RareScSettings
-import cloud.glitchdev.rfu.config.categories.RareScSettings.RARE_SC_REGEX
+import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
+import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig.RARE_SC_REGEX
+import cloud.glitchdev.rfu.constants.SeaCreatures
 import cloud.glitchdev.rfu.events.managers.RenderEvents
 import cloud.glitchdev.rfu.events.managers.RenderEvents.registerRenderEvent
 import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.utils.rendering.Render3D
 import cloud.glitchdev.rfu.utils.rendering.Render3DBuilder.Companion.sphere
 import gg.essential.universal.utils.toUnformattedString
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext
+//~if >=26.1 'world.World' -> 'level.Level' {
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext
+//~}
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.decoration.ArmorStand
 import java.awt.Color
@@ -41,6 +45,15 @@ class SkyblockEntity(
 
     fun isRemoved(): Boolean = nameTagEntity.isRemoved && modelEntity.isRemoved
 
+    fun setGlowing(state: Boolean, color: Color = Color.WHITE) {
+        (modelEntity as EntityAccess).`rfu$setGlowing`(state)
+        (modelEntity as EntityAccess).`rfu$setGlowColor`(color)
+    }
+
+    fun isGlowing(): Boolean {
+        return (modelEntity as EntityAccess).`rfu$isGlowing`()
+    }
+
     fun outdatedNametag() : Boolean = nameTagEntity.isRemoved
 
     /**
@@ -68,7 +81,9 @@ class SkyblockEntity(
         }
     }
 
-    fun registerRenderer(renderer: (WorldRenderContext, LivingEntity) -> Unit) {
+    //~if >=26.1 'World' -> 'Level' {
+    fun registerRenderer(renderer: (LevelRenderContext, LivingEntity) -> Unit) {
+    //~}
         if (renderEvent != null) return
 
         renderEvent = registerRenderEvent { context ->
@@ -78,7 +93,8 @@ class SkyblockEntity(
 
     fun registerLsRange() {
         registerRenderer { context, entity ->
-            if (RareScSettings.lootshareRange && RARE_SC_REGEX.matches(sbName)) {
+            val sc = SeaCreatures.entries.find { it.scName == sbName }
+            if (SeaCreatureConfig.lootshareRange && RARE_SC_REGEX.matches(sbName) && sc?.lsRangeEnabled == true) {
                 val bColor = if ((mc.player?.distanceTo(modelEntity) ?: 0f) < 30f) {
                     Color(85, 255, 85)
                 } else {
@@ -92,8 +108,8 @@ class SkyblockEntity(
                         borderColor = bColor
                         stacks = 32
                         slices = 32
-                        filled = RareScSettings.filledLsRange
-                        if (RareScSettings.filledLsRange) {
+                        filled = SeaCreatureConfig.filledLsRange
+                        if (SeaCreatureConfig.filledLsRange) {
                             color = Color(255, 255, 255, 50)
                         }
                     }

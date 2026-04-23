@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.gui.hud.elements
 
+import cloud.glitchdev.rfu.config.categories.BackendSettings
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.Dyes as ConstDyes
 import cloud.glitchdev.rfu.constants.text.TextColor
@@ -8,7 +9,8 @@ import cloud.glitchdev.rfu.constants.text.TextEffects.RESET
 import cloud.glitchdev.rfu.gui.hud.AbstractHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 import cloud.glitchdev.rfu.model.dye.Dyes
-import cloud.glitchdev.rfu.utils.network.DyeHttp
+import cloud.glitchdev.rfu.utils.network.DyeWebSocket
+import cloud.glitchdev.rfu.events.managers.DyeEvents.registerDyeUpdateEvent
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIText
 import gg.essential.elementa.constraints.ChildBasedMaxSizeConstraint
@@ -24,10 +26,17 @@ import java.awt.Color
 @HudElement
 object DyeDisplay : AbstractHudElement("dyeDisplay") {
     override val enabled: Boolean
-        get() = OtherSettings.dyeDisplay && !currentDyes.isOutdated()
+        get() = BackendSettings.backendAccepted && OtherSettings.dyeDisplay && !currentDyes.isOutdated()
+
+    override fun onInitialize() {
+        super.onInitialize()
+        registerDyeUpdateEvent {
+            updateState()
+        }
+    }
 
     private val currentDyes : Dyes
-        get() = DyeHttp.currentDyes ?: Dyes()
+        get() = DyeWebSocket.currentDyes ?: Dyes()
 
     private val container = UIContainer().constrain {
         width = ChildBasedMaxSizeConstraint()

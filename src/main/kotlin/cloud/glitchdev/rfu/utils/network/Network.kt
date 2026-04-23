@@ -11,7 +11,10 @@ import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.config.categories.BackendSettings
+import cloud.glitchdev.rfu.config.categories.DevSettings
+import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
+import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.HoverEvent
 import net.minecraft.network.chat.Component
@@ -23,7 +26,6 @@ import cloud.glitchdev.rfu.utils.command.SimpleCommand
 import com.google.gson.JsonParser
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import java.net.URI
 import java.net.http.HttpClient
@@ -48,9 +50,24 @@ object Network : RegisteredEvent {
     private var expiresAt : Long? = null
     private val client = HttpClient.newHttpClient()
 
+    val isOnHypixel: Boolean
+        get() = DevSettings.bypassHypixelCheck || mc.currentServer?.ip?.lowercase()?.endsWith("hypixel.net") == true
+
     override fun register() {
         registerJoinEvent {
             authenticateUser()
+        }
+
+        registerDisconnectEvent {
+            WebSocketClient.disconnect()
+        }
+
+        registerLocationEvent {
+            if (isOnHypixel) {
+                authenticateUser()
+            } else {
+                WebSocketClient.disconnect()
+            }
         }
     }
 
@@ -194,12 +211,17 @@ object Network : RegisteredEvent {
      * and rfu back-end if the token has expired or is invalid
      */
     fun authenticateUser() {
+        RFULogger.dev("Authenticating user...")
+
         if (!BackendSettings.decisionMade) {
+            RFULogger.warn("Decision isn't made")
             sendAcknowledgementMessage()
             return
         }
 
-        if (!BackendSettings.backendAccepted) {
+        if (!BackendSettings.backendAccepted || !isOnHypixel) {
+            RFULogger.warn("Backend not accepted or not on hypixel")
+            WebSocketClient.disconnect()
             return
         }
 
@@ -218,7 +240,10 @@ object Network : RegisteredEvent {
                 postRequest("${API_URL}/auth/login?user=${User.getUsername()}&server=$serverId") { response ->
                     if(response.isSuccessful()) {
                         token = response.body
-                        RFULogger.dev("Token Renewed")
+                        if (isOnHypixel) {
+                            WebSocketClient.connect(token!!)
+                            RFULogger.dev("Token Renewed")
+                        }
                     }
                     else {
                         RFULogger.warn("Failed to log into RFU Back-end\n${response.body}")
@@ -228,11 +253,23 @@ object Network : RegisteredEvent {
             } catch (e: Exception) {
                 RFULogger.error("Verification failed: ${e.message}")
             }
+        } else {
+            if (isOnHypixel) {
+                RFULogger.dev("Renewing Token")
+                WebSocketClient.connect(token!!)
+            } else {
+                RFULogger.debug("Not on hypixel, not renewing")
+            }
         }
     }
 
     private fun sendAcknowledgementMessage() {
-        val message = TextUtils.rfuLiteral("This mod utilizes a separate back-end for features like party finder. Do you want to enable it? ", TextStyle(YELLOW))
+        val message = TextUtils.rfuLiteral("This mod utilizes a separate back-end for some features. Do you want to enable it? ", TextStyle(YELLOW))
+
+        message.append(Component.literal("\n${YELLOW}Includes:"))
+        message.append(Component.literal("\n${GRAY} - ${AQUAMARINE}Party Finder: ${WHITE}Find fishing parties with ease."))
+        message.append(Component.literal("\n${GRAY} - ${AQUAMARINE}Dye Tracking: ${WHITE}See currently boosted dyes in rotation."))
+        message.append(Component.literal("\n${GRAY} - ${AQUAMARINE}Announcements: ${WHITE}Get notified of updates instantly.\n"))
 
         val accept = Component.literal("$LIGHT_GREEN$BOLD[ACCEPT]")
             .withStyle { it.withClickEvent(ClickEvent.RunCommand("/rfubackend accept"))
@@ -252,7 +289,7 @@ object Network : RegisteredEvent {
 
         override fun build(builder: LiteralArgumentBuilder<FabricClientCommandSource>) {
             builder
-                .then(literal("accept").executes {
+                .then(lit("accept").executes {
                     BackendSettings.backendAccepted = true
                     BackendSettings.decisionMade = true
                     authenticateUser()
@@ -260,7 +297,7 @@ object Network : RegisteredEvent {
                     it.source.sendFeedback(TextUtils.rfuLiteral("Backend connection accepted. If you wish to disable it head to Backend Settings on /rfu", TextStyle(LIGHT_GREEN)))
                     return@executes 1
                 })
-                .then(literal("deny").executes {
+                .then(lit("deny").executes {
                     BackendSettings.backendAccepted = false
                     BackendSettings.decisionMade = true
                     RiccioFishingUtils.saveConfig()

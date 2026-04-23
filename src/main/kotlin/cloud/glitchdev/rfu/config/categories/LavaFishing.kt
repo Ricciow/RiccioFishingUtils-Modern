@@ -3,6 +3,13 @@ package cloud.glitchdev.rfu.config.categories
 import cloud.glitchdev.rfu.config.Category
 
 object LavaFishing : Category("Lava Fishing") {
+    init {
+        dualSeparator {
+            title = "Jawbus"
+            description = "Settings for the final boss."
+        }
+    }
+
     var jawbus_hard_mode by boolean(false) {
         name = Literal("Jawbus hard mode")
         description = Literal("Pro hint: Don't die")
@@ -27,6 +34,13 @@ object LavaFishing : Category("Lava Fishing") {
         range = 0f..1f
         slider = true
         condition = { diedJawbusAlert && diedJawbusSound }
+    }
+
+    init {
+        dualSeparator {
+            title = "Plhlegblast"
+            description = "Settings for the ellusive Plhlegblast"
+        }
     }
 
     var plhlegblastGlow by boolean(true) {

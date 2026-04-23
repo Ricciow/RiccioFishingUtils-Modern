@@ -13,40 +13,47 @@ import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.animate
 import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
+import gg.essential.elementa.dsl.minus
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
+import gg.essential.elementa.dsl.times
 import gg.essential.elementa.dsl.toConstraint
 import gg.essential.universal.UMatrixStack
+import java.awt.Color
 
 /**
  * Simple Button Component
  */
-class UIButton(val text: String, radius: Float = 0f, val image : UIImage? = null, val baseTextScale: Float = 1.0f, var onClick : () -> Unit = {}) : UIRoundedRectangle(radius) {
-    val primaryColor = UIScheme.secondaryColorOpaque.toConstraint()
-    val hoverColor = UIScheme.secondaryColor.toConstraint()
-    val textColor = UIScheme.primaryTextColor.toConstraint()
-    val secondaryTextColor = UIScheme.secondaryTextColor.toConstraint()
-    val disabledColor = UIScheme.secondaryColorDisabledOpaque.toConstraint()
+class UIButton(
+    var text: String,
+    val radiusProps: Float = 0f,
+    val image: UIImage? = null,
+    val baseTextScale: Float = 1.0f,
+    val isBordered: Boolean = false,
+    var onClick: () -> Unit = {}
+) : UIRoundedRectangle(radiusProps), Colorable {
+    var primaryColor = UIScheme.secondaryColorOpaque.toConstraint()
+    var hoverColor = UIScheme.secondaryColor.toConstraint()
+    var textColor = UIScheme.primaryTextColor.toConstraint()
+    var hoverTextColor = UIScheme.primaryTextColor.toConstraint()
+    var secondaryTextColor = UIScheme.secondaryTextColor.toConstraint()
+    var disabledColor = UIScheme.secondaryColorDisabledOpaque.toConstraint()
+    var innerColor = UIScheme.pfCardBg.toConstraint()
+    var borderWidth = UIScheme.pfCardBorderWidth
     val hoverDuration = UIScheme.HOVER_EFFECT_DURATION
     val clickDuration = 0.1f
 
     var disabled = false
         set(value) {
             field = value
-            this.constrain {
-                color = if (disabled) disabledColor else primaryColor
-            }
-            textArea.constrain {
-                color = if (disabled) secondaryTextColor else textColor
-            }
-            if(image != null) {
-                image.constrain {
-                    color = if (disabled) secondaryTextColor else textColor
-                }
-            }
+            refreshColors()
         }
 
     lateinit var textArea : UIText
+    lateinit var innerBg : UIRoundedRectangle
+    private var isButtonHovered = false
+    private var isTextHovered = false
+    private var isImageHovered = false
     private var lastWidth = -1f
     private var lastHeight = -1f
 
@@ -54,14 +61,30 @@ class UIButton(val text: String, radius: Float = 0f, val image : UIImage? = null
         create()
     }
 
-    fun setText(text : String) {
-        textArea.setText(text)
-        updateFontSize()
+    fun updateText(text : String) {
+        this.text = text
+        if (::textArea.isInitialized) {
+            textArea.setText(text)
+            updateFontSize()
+        }
     }
 
     fun create() {
         this.constrain {
             color = primaryColor
+        }
+
+        val contentParent = if (isBordered) {
+            innerBg = UIRoundedRectangle(radiusProps).constrain {
+                x = CenterConstraint()
+                y = CenterConstraint()
+                width = 100.percent - (borderWidth * 2).pixels
+                height = 100.percent - (borderWidth * 2).pixels
+                color = innerColor
+            } childOf this
+            innerBg
+        } else {
+            this
         }
 
         val initialHeight = 9f * baseTextScale
@@ -72,7 +95,23 @@ class UIButton(val text: String, radius: Float = 0f, val image : UIImage? = null
             height = initialHeight.pixels()
             width = TextAspectConstraint()
             color = textColor
-        } childOf this
+        } childOf contentParent
+
+        textArea.onMouseEnter {
+            if (!disabled) {
+                isTextHovered = true
+                textArea.animate {
+                    setColorAnimation(Animations.IN_EXP, hoverDuration, hoverTextColor)
+                }
+            }
+        }.onMouseLeave {
+            if (!disabled) {
+                isTextHovered = false
+                textArea.animate {
+                    setColorAnimation(Animations.IN_EXP, hoverDuration, textColor)
+                }
+            }
+        }
 
         if(image != null) {
             textArea.setHidden(true)
@@ -82,10 +121,27 @@ class UIButton(val text: String, radius: Float = 0f, val image : UIImage? = null
                 width = 70.percent()
                 height = 70.percent()
                 color = textColor
-            } childOf this
+            } childOf contentParent
+
+            image.onMouseEnter {
+                if (!disabled) {
+                    isImageHovered = true
+                    image.animate {
+                        setColorAnimation(Animations.IN_EXP, hoverDuration, hoverTextColor)
+                    }
+                }
+            }.onMouseLeave {
+                if (!disabled) {
+                    isImageHovered = false
+                    image.animate {
+                        setColorAnimation(Animations.IN_EXP, hoverDuration, textColor)
+                    }
+                }
+            }
         }
 
-        this.onMouseClick {
+        this.onMouseClick { event ->
+            event.stopPropagation()
             if(!disabled) {
                 onClick()
                 textArea.animate {
@@ -98,15 +154,20 @@ class UIButton(val text: String, radius: Float = 0f, val image : UIImage? = null
         }
         .onMouseRelease {
             if(!disabled) {
+                val targetTextColor = if (isTextHovered) hoverTextColor else textColor
                 textArea.animate {
-                    setColorAnimation(Animations.IN_EXP, clickDuration, textColor)
+                    setColorAnimation(Animations.IN_EXP, clickDuration, targetTextColor)
                 }
-                image?.animate {
-                    setColorAnimation(Animations.IN_EXP, clickDuration, textColor)
+                image?.let {
+                    val targetImageColor = if (isImageHovered) hoverTextColor else textColor
+                    it.animate {
+                        setColorAnimation(Animations.IN_EXP, clickDuration, targetImageColor)
+                    }
                 }
             }
         }
         .onMouseEnter {
+            isButtonHovered = true
             if(!disabled) {
                 this.animate {
                     setColorAnimation(Animations.IN_EXP, hoverDuration, hoverColor)
@@ -114,6 +175,7 @@ class UIButton(val text: String, radius: Float = 0f, val image : UIImage? = null
             }
         }
         .onMouseLeave {
+            isButtonHovered = false
             if(!disabled) {
                 this.animate {
                     setColorAnimation(Animations.IN_EXP, hoverDuration, primaryColor)
@@ -151,10 +213,23 @@ class UIButton(val text: String, radius: Float = 0f, val image : UIImage? = null
             height = newHeight.pixels()
         }
     }
-    
+
+    override fun refreshColors() {
+        this.constrain { color = if (disabled) disabledColor else if (isButtonHovered) hoverColor else primaryColor }
+        if (::textArea.isInitialized) {
+            textArea.constrain { color = if (disabled) secondaryTextColor else if (isTextHovered) hoverTextColor else textColor }
+        }
+        if (image != null) {
+            image.constrain { color = if (disabled) secondaryTextColor else if (isImageHovered) hoverTextColor else textColor }
+        }
+        if (isBordered && ::innerBg.isInitialized) {
+            innerBg.constrain { color = innerColor }
+        }
+    }
+
     companion object {
-        fun withImage(image: UIImage, radius: Float = 0f, onClick: () -> Unit = {}) : UIButton {
-            return UIButton("", radius, image, 1.0f, onClick)
+        fun withImage(image: UIImage, radius: Float = 0f, isBordered: Boolean = false, onClick: () -> Unit = {}) : UIButton {
+            return UIButton("", radius, image, 1.0f, isBordered, onClick)
         }
     }
 }

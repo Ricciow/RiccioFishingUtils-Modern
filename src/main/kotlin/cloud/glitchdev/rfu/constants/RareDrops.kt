@@ -1,13 +1,16 @@
 package cloud.glitchdev.rfu.constants
 
-enum class RareDrops(val dropName : String, val relatedScs : List<SeaCreatures> = listOf(), val overrideRegex : String? = null) {
+enum class RareDrops(val dropName : String, val rarity: Rarity, val relatedScNames : List<String> = listOf(), val overrideRegex : String? = null) {
     //Drops
-    BURNT_TEXTS("Burnt Texts", listOf(SeaCreatures.RAGNAROK)),
-    RADIOACTIVE_VIAL("Radioactive Vial", listOf(SeaCreatures.JAWBUS)),
-    TIKI_MASK("Tiki Mask", listOf(SeaCreatures.WIKI_TIKI)),
-    TITANOBOA_SHED("Titanoboa Shed", listOf(SeaCreatures.TITANOBOA)),
-    LUCKY_CLOVER_CORE("Lucky Clover Core", listOf(SeaCreatures.CARROT_KING)),
-    FLASH_BOOK("Enchanted Book (Flash I)", listOf(SeaCreatures.THUNDER), """Enchanted Book \(Flash (?:1|I)\)""");
+    BURNT_TEXTS("Burnt Texts", Rarity.LEGENDARY, listOf("Ragnarok")),
+    RADIOACTIVE_VIAL("Radioactive Vial", Rarity.MYTHIC, listOf("Lord Jawbus")),
+    TIKI_MASK("Tiki Mask", Rarity.LEGENDARY, listOf("Wiki Tiki")),
+    TITANOBOA_SHED("Titanoboa Shed", Rarity.LEGENDARY, listOf("Titanoboa")),
+    LUCKY_CLOVER_CORE("Lucky Clover Core", Rarity.EPIC, listOf("Carrot King")),
+    FLASH_BOOK("Enchanted Book (Flash I)", Rarity.COMMON, listOf("Thunder"), """Enchanted Book \(Flash (?:1|I)\)""");
+
+    val relatedScs: List<SeaCreatures>
+        get() = relatedScNames.mapNotNull { SeaCreatures.get(it) }
 
     override fun toString(): String {
         return dropName

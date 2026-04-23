@@ -56,6 +56,12 @@ class FeatureProcessor(
                 loaderFuncName = "registerInstantEvents",
                 methodToCall = "instantRegister",
                 requiredSuperType = "cloud.glitchdev.rfu.events.InstantRegisteredEvent"
+            ),
+            GeneratorSpec(
+                annotation = "cloud.glitchdev.rfu.party.commands.PartyCommand",
+                loaderFuncName = "registerPartyCommands",
+                methodToCall = "init",
+                requiredSuperType = "cloud.glitchdev.rfu.party.commands.IPartyCommand"
             )
         )
 

@@ -1,6 +1,8 @@
 package cloud.glitchdev.rfu.gui.components.dropdown
 
+import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.model.data.DataOption
+import java.awt.Color
 
 class UIDropdown(
     values: ArrayList<DataOption>,

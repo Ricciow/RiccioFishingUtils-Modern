@@ -7,7 +7,7 @@ import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.command.Command
 import cloud.glitchdev.rfu.utils.command.SimpleCommand
-import cloud.glitchdev.rfu.utils.network.DyeHttp
+import cloud.glitchdev.rfu.utils.network.DyeWebSocket
 import com.mojang.brigadier.context.CommandContext
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.minecraft.network.chat.Component
@@ -20,9 +20,14 @@ object DyeTracking {
         override val description: String = "Sends the current dyes in rotation in chat:"
 
         override fun execute(context: CommandContext<FabricClientCommandSource>): Int {
+            if (!BackendSettings.backendAccepted) {
+                context.source.sendFeedback(TextUtils.backendAcceptMessage())
+                return 1
+            }
+
             val text = Component.literal("")
 
-            val currentDyes = DyeHttp.currentDyes
+            val currentDyes = DyeWebSocket.currentDyes
 
             if(currentDyes != null && !currentDyes.isOutdated()) {
                 text.append(TextUtils.rfuLiteral("Dyes (Year ${currentDyes.sbYear}): ", TextStyle(YELLOW)))
@@ -31,7 +36,7 @@ object DyeTracking {
                     text.append(Component.literal("\n$YELLOW - ").append(dyeComponent(dye)).append(Component.literal(" $YELLOW(2x)")))
                 }
             } else {
-                if(BackendSettings.backendAccepted && BackendSettings.shareDyeData) {
+                if(BackendSettings.shareDyeData) {
                     text.append(TextUtils.rfuLiteral("No one has checked the dyes yet! ${GOLD}Go be the first!", TextStyle(LIGHT_RED)))
                 } else {
                     text.append(TextUtils.rfuLiteral("Current dyes are not available :(", TextStyle(LIGHT_RED)))

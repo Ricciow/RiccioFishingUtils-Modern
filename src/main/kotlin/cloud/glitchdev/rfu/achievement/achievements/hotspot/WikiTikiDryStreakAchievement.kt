@@ -29,7 +29,7 @@ object WikiTikiDryStreakAchievement : NumericStageAchievement() {
         addStageInfo(5, "Silent Tiki", "Don't catch a Wiki Tiki for 2500 catches.\nMust've caught atleast one Wiki Tiki before.", AchievementDifficulty.HARD)
     }
 
-    val creature = SeaCreatures.WIKI_TIKI
+    val creature = SeaCreatures.get("Wiki Tiki")!!
 
     override fun setupListeners() {
         val history = catchHistory.getOrAdd(creature)

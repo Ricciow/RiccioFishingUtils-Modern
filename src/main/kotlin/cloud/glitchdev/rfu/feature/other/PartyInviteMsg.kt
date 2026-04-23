@@ -8,12 +8,10 @@ import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat
+import cloud.glitchdev.rfu.utils.Coroutines
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.dsl.isUser
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
@@ -53,7 +51,7 @@ object PartyInviteMsg : Feature {
                         .withClickEvent(ClickEvent.RunCommand("/p $playerName"))
                 )
 
-            CoroutineScope(Dispatchers.Default).launch {
+            Coroutines.launch {
                 delay(10)
                 mc.execute {
                     Chat.sendMessage(message)
