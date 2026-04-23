@@ -60,4 +60,10 @@ object PartySettings : Category("Party") {
         description = Literal("Enables or disables the !togglewarp party command.")
         condition = { togglePartyCommands }
     }
+
+    var toggleSinceCommand by boolean(true) {
+        name = Literal("Enable Since Command")
+        description = Literal("Enables or disables the !since party command.")
+        condition = { togglePartyCommands }
+    }
 }
