@@ -15,8 +15,8 @@ object SinceCommand : AbstractPartyCommand(
     description = "Shows the count and time since the last catch of a specific sea creature.",
     aliases = listOf("s"),
     responseTemplates = listOf(
-        "Since {name}: {count} catches | Last catch: {time} ago" to "&bSince &6{1}&b: &e{2} catches &7| &bLast catch: &e{3} ago",
-        "Sea creature '{name}' not found." to "&cSea creature '&6{1}&c' not found.",
+        "Since {name}: {count} catches | Last catch: {time} ago" to "&6{sender} - {1}&b: &f{2} &ecatches &7| &f{3} &eago",
+        "Sea creature '{name}' not found." to "&cSea creature &6'{1}' &cnot found.",
         "Usage: !since <sea creature>" to "&cUsage: &f!since &e<sea creature>"
     ),
     permission = listOf(PartyCommandPermission.SELF_TRIGGER)

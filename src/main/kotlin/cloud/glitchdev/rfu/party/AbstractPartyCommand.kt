@@ -41,6 +41,8 @@ abstract class AbstractPartyCommand(
             }
         }
 
+        formatted = formatted.replace("{sender}", sender)
+
         return component.append(Component.literal(formatted.replace("&", "§")))
     }
 }
