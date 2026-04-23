@@ -4,6 +4,7 @@ import cloud.glitchdev.rfu.party.AbstractPartyCommand
 import cloud.glitchdev.rfu.party.PartyCommand
 import cloud.glitchdev.rfu.party.PartyCommandManager
 import cloud.glitchdev.rfu.party.PartyCommandPermission
+import cloud.glitchdev.rfu.config.categories.PartySettings
 
 @PartyCommand
 object HelpCommand : AbstractPartyCommand(
@@ -16,6 +17,8 @@ object HelpCommand : AbstractPartyCommand(
     ),
     permission = listOf(PartyCommandPermission.SELF_TRIGGER)
 ) {
+    override fun isEnabled() = PartySettings.toggleHelpCommand
+
     override fun execute(sender: String, args: List<String>) {
         if (args.isEmpty()) {
             val commandNames = PartyCommandManager.getCommands().joinToString(", ") { "!${it.name}" }

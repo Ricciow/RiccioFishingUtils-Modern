@@ -3,8 +3,8 @@ package cloud.glitchdev.rfu.party.commands
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.party.AbstractPartyCommand
 import cloud.glitchdev.rfu.party.PartyCommand
-import cloud.glitchdev.rfu.party.PartyCommandPermission
 import cloud.glitchdev.rfu.party.WarpKickManager
+import cloud.glitchdev.rfu.config.categories.PartySettings
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.TextUtils
 
@@ -17,8 +17,10 @@ object ToggleWarpCommand : AbstractPartyCommand(
         "You will no longer be warped." to "&aYou will no longer be warped.",
         "You will be warped now." to "&aYou will be warped now."
     ),
-    permission = listOf(PartyCommandPermission.LEADER_ONLY)
+    permission = emptyList()
 ) {
+    override fun isEnabled() = PartySettings.toggleToggleWarpCommand
+
     override fun execute(sender: String, args: List<String>) {
         val added = WarpKickManager.toggleUser(sender)
         val message = if (added) {

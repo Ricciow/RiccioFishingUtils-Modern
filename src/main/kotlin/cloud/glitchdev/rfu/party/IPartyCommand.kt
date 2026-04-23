@@ -15,6 +15,7 @@ interface IPartyCommand {
     val permission: List<PartyCommandPermission>
     val responseTemplates: List<Pair<String, String>>
 
+    fun isEnabled(): Boolean
     fun execute(sender: String, args: List<String>)
     fun getRichResponse(sender: String, message: String, templateIndex: Int, match: MatchResult): Component
     fun init()

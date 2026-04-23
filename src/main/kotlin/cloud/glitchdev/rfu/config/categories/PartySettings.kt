@@ -39,12 +39,25 @@ object PartySettings : Category("Party") {
         dualSeparator {
             title = "Commands"
             description = "Select which commands are enabled"
+            condition = { togglePartyCommands }
         }
     }
 
     var toggleHelpCommand by boolean(true) {
         name = Literal("Enable Help Command")
         description = Literal("Enables or disables the !help party command.")
+        condition = { togglePartyCommands }
+    }
+
+    var toggleWarpCommand by boolean(true) {
+        name = Literal("Enable Warp Command")
+        description = Literal("Enables or disables the !warp party command.")
+        condition = { togglePartyCommands }
+    }
+
+    var toggleToggleWarpCommand by boolean(true) {
+        name = Literal("Enable Togglewarp Command")
+        description = Literal("Enables or disables the !togglewarp party command.")
         condition = { togglePartyCommands }
     }
 }

@@ -84,7 +84,7 @@ object PartyCommandManager : RegisteredEvent {
     }
 
     private fun shouldExecute(command: IPartyCommand, sender: String): Boolean {
-        if (command is HelpCommand && !PartySettings.toggleHelpCommand) return false
+        if (!command.isEnabled()) return false
         
         val myName = mc.player?.gameProfile?.name ?: return false
         val isMe = sender == myName
@@ -99,10 +99,6 @@ object PartyCommandManager : RegisteredEvent {
     }
     
     fun getCommands(): Collection<IPartyCommand> {
-        val allCommands = commands.values.distinct()
-        if (!PartySettings.toggleHelpCommand) {
-            return allCommands.filter { it !is HelpCommand }
-        }
-        return allCommands
+        return commands.values.distinct().filter { it.isEnabled() }
     }
 }

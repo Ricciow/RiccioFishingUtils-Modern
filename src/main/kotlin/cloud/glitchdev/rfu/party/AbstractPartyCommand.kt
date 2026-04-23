@@ -11,6 +11,7 @@ abstract class AbstractPartyCommand(
     override val permission: List<PartyCommandPermission> = listOf(PartyCommandPermission.SELF_TRIGGER),
     override val responseTemplates: List<Pair<String, String>> = emptyList()
 ) : IPartyCommand {
+    override fun isEnabled(): Boolean = true
 
     override fun init() {
         PartyCommandManager.register(this)
