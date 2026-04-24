@@ -7,7 +7,7 @@ import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 
 @Command
 object HotspotIgnoreCommand : SimpleCommand("rfuignore") {
-    override val description: String = "Manage ignored users for hotspot sharing"
+    override val description: String = "Manage ignored users for hotspots and parties"
 
     init {
         append(AddIgnoreSubCommand)

@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.feature.other.ignore
 
 import cloud.glitchdev.rfu.constants.text.TextColor
+import cloud.glitchdev.rfu.events.managers.PartyFinderEvents
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.command.SimpleCommand
 import com.mojang.brigadier.context.CommandContext
@@ -13,6 +14,7 @@ object RemoveAllIgnoreSubCommand : SimpleCommand("removeall") {
         val entry = IgnoreUtils.getIgnoredEntry()
         entry.clear()
         IgnoreUtils.saveIgnoredEntry(entry)
+        PartyFinderEvents.refreshParties()
         context.source.sendFeedback(TextUtils.rfuLiteral("Cleared all users from the ignore list.", TextColor.LIGHT_GREEN))
         return 1
     }

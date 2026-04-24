@@ -17,7 +17,7 @@ object IgnoreUtils {
     }
 
     fun showHelp(source: FabricClientCommandSource) {
-        source.sendFeedback(TextUtils.rfuLiteral("--- Hotspot Ignore Help ---", TextColor.YELLOW))
+        source.sendFeedback(TextUtils.rfuLiteral("--- RFU Ignore Help ---", TextColor.YELLOW))
         source.sendFeedback(TextUtils.rfuLiteral("${TextColor.GOLD}/rfuignore add <username>${TextColor.GRAY} - Add a user to the ignore list"))
         source.sendFeedback(TextUtils.rfuLiteral("${TextColor.GOLD}/rfuignore remove <username>${TextColor.GRAY} - Remove a user from the ignore list"))
         source.sendFeedback(TextUtils.rfuLiteral("${TextColor.GOLD}/rfuignore removeall${TextColor.GRAY} - Clear the entire ignore list"))

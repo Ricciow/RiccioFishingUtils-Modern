@@ -5,6 +5,7 @@
 - Added Hotspot Pointer with customizable priority.
   - Use at your own risk! Off by default
 - Added hotspot sharing
+- Added /rfuignore to block from rfupf parties, hotspot sharing and party commands
 - Added party commands
 - Added /rfuscedit command to open the Sea Creature Edit window
 - Added Dog Emoji :dog: (I'm not addicted, okay?!)
