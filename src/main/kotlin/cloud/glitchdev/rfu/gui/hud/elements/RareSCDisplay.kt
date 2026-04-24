@@ -113,7 +113,7 @@ object RareSCDisplay : AbstractTextHudElement("rareSCDisplay") {
                 // Building the customized line
                 val line = buildString {
                     val color = sc.scDisplayColor.ifEmpty { WHITE }
-                    append("$color${BOLD}${sc.scName}:")
+                    append("$color${BOLD}${sc.scDisplayName}:")
 
                     dataOrder.forEach { dataType ->
                         when (dataType) {
@@ -149,7 +149,7 @@ object RareSCDisplay : AbstractTextHudElement("rareSCDisplay") {
                     val record = catchHistory.getOrAdd(sc)
                     val line = buildString {
                         val color = sc.scDisplayColor
-                        append("$color${BOLD}${sc.scName}:")
+                        append("$color${BOLD}${sc.scDisplayName}:")
                         dataOrder.forEach { dataType ->
                             when (dataType) {
                                 RareScDisplayDataType.STREAK -> {

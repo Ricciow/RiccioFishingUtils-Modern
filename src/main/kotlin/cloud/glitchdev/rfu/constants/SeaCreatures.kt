@@ -12,7 +12,12 @@ import net.minecraft.world.phys.Vec3
 
 @JsonAdapter(SeaCreaturesAdapter::class)
 class SeaCreatures(
-    val scName: String,
+    internal val scName: String,
+    val scDisplayName: String,
+    val article: String,
+    val plural: String,
+    val style: String,
+    val special: Boolean,
     val catchMessage: String,
     val liquidType: LiquidTypes,
     val category: SeaCreatureCategory,
@@ -23,17 +28,11 @@ class SeaCreatures(
     val rareSCAlert: Boolean = false,
     val scDisplayColor: String = "§f"
 ) {
-    val special: Boolean
-        get() = SeaCreatureSettingsManager.isSpecial(scName)
-    fun toDataOption(): DataOption = DataOption(this, this.scName)
-    fun getSingularNameWithArticle(): String = "${getArticle()} ${getNameWithoutArticle()}"
-    fun getArticle(): String = SeaCreatureSettingsManager.getArticle(scName)
-    fun getNameWithoutArticle(): String = SeaCreatureSettingsManager.getName(scName)
-    fun getPluralName(): String = SeaCreatureSettingsManager.getPlural(scName)
-    fun getStyleCode(): String = SeaCreatureSettingsManager.getStyle(scName)
+    fun toDataOption(): DataOption = DataOption(this, this.scDisplayName)
+    fun getSingularNameWithArticle(): String = "$article $scDisplayName"
 
     override fun toString(): String {
-        return scName
+        return scDisplayName
     }
 
     override fun equals(other: Any?): Boolean {
@@ -48,6 +47,7 @@ class SeaCreatures(
 
     companion object {
         private val registry = mutableMapOf<String, SeaCreatures>()
+        private val displayNameRegistry = mutableMapOf<String, SeaCreatures>()
 
         val entries: Collection<SeaCreatures>
             get() = registry.values
@@ -56,39 +56,11 @@ class SeaCreatures(
 
         fun register(sc: SeaCreatures) {
             registry[sc.scName] = sc
-        }
-
-        fun toDataOptions(
-            liquidType: LiquidTypes,
-            island: FishingIslands,
-            partyType: PartyTypes
-        ): ArrayList<DataOption> {
-            if (partyType.noMobs) return arrayListOf()
-
-            val seaCreatures = entries.filter { sc ->
-                if (sc.liquidType != liquidType) return@filter false
-                if (!sc.category.islands.contains(island)) return@filter false
-                if (!sc.category.partyTypes.contains(partyType)) return@filter false
-
-                return@filter true
-            }
-                .sortedWith(
-                    compareByDescending<SeaCreatures> { it.special }
-                        .thenBy { it.category.islands.size }
-                )
-
-            return seaCreatures.map { sc ->
-                sc.toDataOption()
-            } as ArrayList<DataOption>
+            displayNameRegistry[sc.scDisplayName.lowercase()] = sc
         }
 
         fun isInIslands(sc: SeaCreatures, category: SeaCreatureCategory): Boolean {
             return category.islands.any { it in sc.category.islands }
-        }
-
-        fun isInIslands(sc : String, category: SeaCreatureCategory) : Boolean {
-            val scObj = get(sc) ?: return false
-            return isInIslands(scObj, category)
         }
     }
 }
@@ -108,6 +80,6 @@ class SeaCreaturesAdapter : TypeAdapter<SeaCreatures>() {
             return null
         }
         val name = `in`.nextString()
-        return SeaCreatures.get(name) ?: SeaCreatures(name, "", LiquidTypes.WATER, SeaCreatureCategory.GENERAL_WATER)
+        return SeaCreatures.get(name) ?: SeaCreatures(name, name, "", "", "", false, "", LiquidTypes.WATER, SeaCreatureCategory.GENERAL_WATER)
     }
 }

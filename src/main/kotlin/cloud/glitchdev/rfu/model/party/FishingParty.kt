@@ -27,24 +27,6 @@ data class FishingParty(
     var seaCreatures: List<SeaCreatures>,
     var players: Players
 ) {
-    fun getCountString(): String {
-        return "${players.getString()} ${island.island} ${liquid.liquid}"
-    }
-
-    fun getSeaCreatureString(): String {
-        return seaCreatures.joinToString { it.scName }
-    }
-
-    fun getTitleString(): String {
-        return listOf(title, user)
-            .filter { it.isNotEmpty() }
-            .joinToString(" - ") + " - LVL $level"
-    }
-
-    fun toJson(): String {
-        return gson.toJson(this)
-    }
-
     fun getRequisite(id: String, name: String): Requisite {
         for (req in requisites) {
             if (req.id == id) return req
@@ -63,12 +45,6 @@ data class FishingParty(
     }
 
     companion object {
-        private val gson = Gson()
-
-        fun fromJson(json: String): FishingParty {
-            return gson.fromJson(json, FishingParty::class.java)
-        }
-
         fun blankParty(): FishingParty {
             val island = World.island ?: FishingIslands.ISLE
             return FishingParty(

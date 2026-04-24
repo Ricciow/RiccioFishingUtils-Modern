@@ -26,7 +26,7 @@ object RareScPartyMessage : Feature {
                     "First Catch"
                 }
 
-                val scName = seaCreature.scName
+                val scName = seaCreature.scDisplayName
                 val article = if (scName.take(1).lowercase() in "aeiou") "n" else ""
                 val startsWithThe = scName.startsWith("The ", ignoreCase = true)
 

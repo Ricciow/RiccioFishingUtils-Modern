@@ -100,6 +100,11 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
     private fun registerCreature(scName: String) {
         val sc = SeaCreatures(
             scName = scName,
+            scDisplayName = resolve(scName) { it.name },
+            article = resolve(scName) { it.article },
+            plural = resolve(scName) { it.plural },
+            style = resolve(scName) { it.style },
+            special = resolve(scName) { it.special },
             catchMessage = resolve(scName) { it.catchMessage },
             liquidType = LiquidTypes.valueOf(resolve(scName) { it.liquidType }),
             category = SeaCreatureCategory.valueOf(resolve(scName) { it.category }),
@@ -152,6 +157,11 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
                         RFULogger.dev("New Sea Creature from backend: $scName")
                     } else {
                         val updatedSc = currentSc.copy(
+                            name = currentSc.name ?: backendSc.name,
+                            plural = currentSc.plural ?: backendSc.plural,
+                            article = currentSc.article ?: backendSc.article,
+                            style = currentSc.style ?: backendSc.style,
+                            scDisplayColor = currentSc.scDisplayColor ?: backendSc.scDisplayColor,
                             catchMessage = backendSc.catchMessage,
                             liquidType = backendSc.liquidType,
                             category = backendSc.category,

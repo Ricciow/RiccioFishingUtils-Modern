@@ -11,11 +11,13 @@
 
 ### Changes: 
 - Made the report/delete button in rfupf last a little bit so it is easier to click
+- Made the "name" field inside the sea creature settings be used in more places.
 
 ### Fixes:
 - Made party tracking also work with /stream command and upon inviting someone
 - Moved party api requests to a different thread to prevent lag spikes
 - Fixed pet level up title triggering on normal chat messages
 
-### Back-end:
+### Back-end
+- Updated Sea Creature system to separate internal IDs from display names, fixing validation bugs and allowing for better back-end synchronization.
 - Added line rendering

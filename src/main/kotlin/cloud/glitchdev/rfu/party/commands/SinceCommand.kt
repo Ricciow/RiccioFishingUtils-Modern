@@ -15,7 +15,7 @@ object SinceCommand : AbstractPartyCommand(
     description = "Shows the count and time since the last catch of a specific sea creature.",
     aliases = listOf("s"),
     responseTemplates = listOf(
-        "Since {name}: {count} catches | Last catch: {time} ago" to "&6{sender} - {1}&b: &f{2} &ecatches &7| &f{3} &eago",
+        "Since {name}: {count} catches | Last catch: {time} ago" to "&9&l{sender} &b- &6{1}&b:\n &f{2} &ecatches &7| &f{3} &eago",
         "Sea creature '{name}' not found." to "&cSea creature &6'{1}' &cnot found.",
         "Usage: !since <sea creature>" to "&cUsage: &f!since &e<sea creature>"
     ),
@@ -31,7 +31,8 @@ object SinceCommand : AbstractPartyCommand(
 
         val input = args.joinToString(" ").lowercase()
         val sc = SeaCreatures.entries.find { 
-            it.scName.lowercase().contains(input)
+            it.scName.contains(input, ignoreCase = true) ||
+            it.scDisplayName.contains(input, ignoreCase = true)
         }
 
         if (sc != null) {
@@ -39,7 +40,7 @@ object SinceCommand : AbstractPartyCommand(
             val duration = Clock.System.now() - record.time
             val response = formatResponse(
                 responseTemplates[0].first,
-                "name" to sc.getNameWithoutArticle(),
+                "name" to sc.scDisplayName,
                 "count" to record.count,
                 "time" to duration.toReadableString()
             )
