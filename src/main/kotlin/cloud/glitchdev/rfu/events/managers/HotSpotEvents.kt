@@ -404,12 +404,12 @@ object HotSpotEvents : RegisteredEvent {
         val type = HotspotType.fromBuff(stat)
 
         Chat.sendMessage(
-            TextUtils.rfuLiteral("${TextColor.YELLOW}Received a ")
+            TextUtils.rfuLiteral("${TextColor.WHITE}Received a ")
                 .append(
                     Component.literal(type.displayName)
                         .withStyle(Style.EMPTY.withColor(type.color.rgb))
                 ).append(
-                    " ${TextColor.YELLOW}hotspot's coordinates from ${TextColor.GOLD}$sender"
+                    " ${TextColor.WHITE}hotspot's coordinates from ${TextColor.GOLD}$sender"
                 ).setStyle(
                     Style.EMPTY
                         .withHoverEvent(HoverEvent.ShowText(Component.literal("${TextColor.YELLOW}Click to ignore this user in the future!\n${TextColor.GRAY}(Will also block them from party finder and party commands)")))
