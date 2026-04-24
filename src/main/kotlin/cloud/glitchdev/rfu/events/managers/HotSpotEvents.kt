@@ -64,7 +64,7 @@ object HotSpotEvents : RegisteredEvent {
         }
 
         //Feesh
-        registerGameEvent("""(?:\[[A-Z]+\+*] )?([0-9a-zA-Z_]{3,16}): x: (-?\d+), y: (-?\d+), z: (-?\d+) | .{3} (.*?) Hotspot at .+""".toRegex()) { _, _, matches ->
+        registerGameEvent("""(?:\[[A-Z]+\+*] )?([0-9a-zA-Z_]{3,16}): x: (-?\d+), y: (-?\d+), z: (-?\d+) \| .{3} (.*?) Hotspot at .+""".toRegex()) { _, _, matches ->
             val groups = matches?.groupValues ?: return@registerGameEvent
             handleHotspotMessage(
                 sender = groups[1],
