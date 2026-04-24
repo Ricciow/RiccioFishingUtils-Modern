@@ -16,8 +16,12 @@ object HotspotCache {
     private val cache: MutableMap<String, HotspotData>
         get() = storage.data.hotspots
 
+    private fun getKey(pos: BlockPos, island: FishingIslands?): String {
+        return "${island?.island}_${pos.x},${pos.y},${pos.z}"
+    }
+
     fun addMeasurement(pos: BlockPos, distance: Double, liquid: LiquidTypes, buff: String, island: FishingIslands?) {
-        val key = "${island?.island}_${pos.x},${pos.y},${pos.z}"
+        val key = getKey(pos, island)
         val data = synchronized(cache) {
             cache.getOrPut(key) { HotspotData(liquid, island) }
         }
@@ -44,7 +48,7 @@ object HotspotCache {
     }
 
     fun getMedian(pos: BlockPos, island: FishingIslands?): Float? {
-        val key = "${island?.island}_${pos.x},${pos.y},${pos.z}"
+        val key = getKey(pos, island)
         val data = synchronized(cache) { cache[key] } ?: return null
         
         val distances = data.sessionDistances
@@ -56,14 +60,14 @@ object HotspotCache {
     }
 
     fun getRadius(pos: BlockPos, island: FishingIslands?): Float? {
-        val key = "${island?.island}_${pos.x},${pos.y},${pos.z}"
+        val key = getKey(pos, island)
         return synchronized(cache) {
             cache[key]?.radius
         }
     }
 
     fun updateRadius(pos: BlockPos, radius: Float, island: FishingIslands?) {
-        val key = "${island?.island}_${pos.x},${pos.y},${pos.z}"
+        val key = getKey(pos, island)
         synchronized(cache) {
             val data = cache[key] ?: return@synchronized
             data.radius = radius

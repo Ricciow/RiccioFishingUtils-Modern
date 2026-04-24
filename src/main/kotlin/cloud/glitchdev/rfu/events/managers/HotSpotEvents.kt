@@ -54,72 +54,25 @@ object HotSpotEvents : RegisteredEvent {
         //Rfu
         registerGameEvent("""Party > (?:\[[A-Z]+\+*] )?([0-9a-zA-Z_]{3,16}): (.*?) Hotspot - (-?\d+), (-?\d+), (-?\d+)""".toExactRegex()) { _, _, matches ->
             val groups = matches?.groupValues ?: return@registerGameEvent
-            val sender = groups[1]
-            if (sender.equals(RiccioFishingUtils.mc.player?.name?.string, ignoreCase = true)) return@registerGameEvent
-
-            val ignoredEntry = OtherManager.getField("ignored_users") { StringSetEntry() } as StringSetEntry
-            if (ignoredEntry.contains(sender)) return@registerGameEvent
-
-            val stat = groups[2]
-            val x = groups[3].toDouble()
-            val y = groups[4].toDouble()
-            val z = groups[5].toDouble()
-
-            val pos = Vec3(x, y, z)
-            val type = HotspotType.entries.find {
-                it.displayName.equals(stat, ignoreCase = true) || (it.buffMatch != null && (stat.contains(it.buffMatch, ignoreCase = true) || it.buffMatch.contains(stat, ignoreCase = true)))
-            } ?: HotspotType.UNKNOWN
-
-            Chat.sendMessage(
-                TextUtils.rfuLiteral("${TextColor.YELLOW}Received a ")
-                    .append(
-                        Component.literal(type.displayName)
-                            .withStyle(Style.EMPTY.withColor(type.color.rgb))
-                    ).append(
-                        " ${TextColor.YELLOW}hotspot's coordinates from ${TextColor.GOLD}$sender"
-                    ).setStyle(
-                        Style.EMPTY
-                            .withHoverEvent(HoverEvent.ShowText(Component.literal("${TextColor.YELLOW}Click to ignore this user in the future!\n${TextColor.GRAY}(Will also block them from party finder and party commands)")))
-                            .withClickEvent(ClickEvent.RunCommand("/rfuignore add $sender"))
-                    )
+            handleHotspotMessage(
+                sender = groups[1],
+                stat = groups[2],
+                x = groups[3].toDouble(),
+                y = groups[4].toDouble(),
+                z = groups[5].toDouble()
             )
-            addExternalHotspot(pos, type)
         }
 
         //Feesh
         registerGameEvent("""(?:\[[A-Z]+\+*] )?([0-9a-zA-Z_]{3,16}): x: (-?\d+), y: (-?\d+), z: (-?\d+) | .{3} (.*?) Hotspot at .+""".toRegex()) { _, _, matches ->
             val groups = matches?.groupValues ?: return@registerGameEvent
-            val sender = groups[1]
-            if (sender.equals(RiccioFishingUtils.mc.player?.name?.string, ignoreCase = true)) return@registerGameEvent
-
-            val ignoredEntry = OtherManager.getField("ignored_users") { StringSetEntry() } as StringSetEntry
-            if (ignoredEntry.contains(sender)) return@registerGameEvent
-
-            val stat = groups[5]
-            val x = groups[2].toDouble()
-            val y = groups[3].toDouble()
-            val z = groups[4].toDouble()
-
-            val pos = Vec3(x, y, z)
-            val type = HotspotType.entries.find {
-                it.displayName.equals(stat, ignoreCase = true) || (it.buffMatch != null && (stat.contains(it.buffMatch, ignoreCase = true) || it.buffMatch.contains(stat, ignoreCase = true)))
-            } ?: HotspotType.UNKNOWN
-
-            Chat.sendMessage(
-                TextUtils.rfuLiteral("${TextColor.YELLOW}Received a ")
-                    .append(
-                        Component.literal(type.displayName)
-                            .withStyle(Style.EMPTY.withColor(type.color.rgb))
-                    ).append(
-                        " ${TextColor.YELLOW}hotspot's coordinates from ${TextColor.GOLD}$sender"
-                    ).setStyle(
-                        Style.EMPTY
-                            .withHoverEvent(HoverEvent.ShowText(Component.literal("${TextColor.YELLOW}Click to ignore this user in the future!\n${TextColor.GRAY}(Will also block them from party finder and party commands)")))
-                            .withClickEvent(ClickEvent.RunCommand("/rfuignore add $sender"))
-                    )
+            handleHotspotMessage(
+                sender = groups[1],
+                stat = groups[5],
+                x = groups[2].toDouble(),
+                y = groups[3].toDouble(),
+                z = groups[4].toDouble()
             )
-
-            addExternalHotspot(pos, type)
         }
 
         registerTickEvent(interval = 2) { client ->
@@ -439,5 +392,30 @@ object HotSpotEvents : RegisteredEvent {
     fun clearHotspots() {
         hotspots.clear()
         virtualUuids.clear()
+    }
+
+    private fun handleHotspotMessage(sender: String, stat: String, x: Double, y: Double, z: Double) {
+        if (sender.equals(RiccioFishingUtils.mc.player?.name?.string, ignoreCase = true)) return
+
+        val ignoredEntry = OtherManager.getField("ignored_users") { StringSetEntry() } as StringSetEntry
+        if (ignoredEntry.contains(sender)) return
+
+        val pos = Vec3(x, y, z)
+        val type = HotspotType.fromBuff(stat)
+
+        Chat.sendMessage(
+            TextUtils.rfuLiteral("${TextColor.YELLOW}Received a ")
+                .append(
+                    Component.literal(type.displayName)
+                        .withStyle(Style.EMPTY.withColor(type.color.rgb))
+                ).append(
+                    " ${TextColor.YELLOW}hotspot's coordinates from ${TextColor.GOLD}$sender"
+                ).setStyle(
+                    Style.EMPTY
+                        .withHoverEvent(HoverEvent.ShowText(Component.literal("${TextColor.YELLOW}Click to ignore this user in the future!\n${TextColor.GRAY}(Will also block them from party finder and party commands)")))
+                        .withClickEvent(ClickEvent.RunCommand("/rfuignore add $sender"))
+                )
+        )
+        addExternalHotspot(pos, type)
     }
 }

@@ -14,7 +14,7 @@ enum class HotspotType(val displayName: String, val buffMatch: String?, val colo
 
     companion object {
         fun fromBuff(buff: String): HotspotType {
-            return entries.find { it.buffMatch != null && buff.contains(it.buffMatch) } ?: UNKNOWN
+            return entries.find { it.buffMatch != null && buff.contains(it.buffMatch, true) } ?: UNKNOWN
         }
     }
 }
