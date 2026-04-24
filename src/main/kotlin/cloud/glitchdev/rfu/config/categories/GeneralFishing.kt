@@ -44,6 +44,18 @@ object GeneralFishing : Category("General Fishing") {
         slider = true
     }
 
+    var pauseSessionOnWindowReached by boolean(false) {
+        name = Literal("Pause Session on Downtime")
+        description = Literal("Makes the fishing display pause instead of resetting when the downtime limit is reached. You need to use /rfuresetsession or restart the game to reset it.")
+        condition = { fishTrackingDisplay }
+    }
+
+    var pauseKeybind by key(0) {
+        name = Literal("Pause Keybind")
+        description = Literal("Keybind to manually pause the fishing session.")
+        condition = { fishTrackingDisplay }
+    }
+
     init {
         dualSeparator {
             title = "Deployables"

@@ -6,7 +6,7 @@ import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
-import cloud.glitchdev.rfu.feature.mob.SeaCreatureHour
+import cloud.glitchdev.rfu.feature.fishing.FishingSession
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
@@ -36,7 +36,7 @@ object EfficiencyKingAchievement : NumericStageAchievement() {
 
     override fun setupListeners() {
         activeListeners.add(registerTickEvent(interval = 20) {
-            val sch = SeaCreatureHour.currentScPerHour.toInt()
+            val sch = FishingSession.scTracker.currentRatePerHour.toInt()
 
             if(sch >= getTargetSchForStage(currentStage)) {
                 if(startTime == Instant.DISTANT_PAST) {

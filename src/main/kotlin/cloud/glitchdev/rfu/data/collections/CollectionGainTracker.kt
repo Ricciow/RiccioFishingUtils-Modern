@@ -5,7 +5,7 @@ import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.events.managers.SetSlotEvents.registerSetSlotEvent
-import cloud.glitchdev.rfu.feature.fishing.FishingXpTracker
+import cloud.glitchdev.rfu.feature.fishing.FishingSession
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.client.Minecraft
 import net.minecraft.network.chat.HoverEvent
@@ -19,7 +19,7 @@ object CollectionGainTracker : RegisteredEvent {
     private var lastFishingTime = 0L
 
     override fun register() {
-        registerGameEvent(FishingXpTracker.FISHING_XP_REGEX, isOverlay = true) { _, _, _ ->
+        registerGameEvent(FishingSession.FISHING_XP_REGEX, isOverlay = true) { _, _, _ ->
             lastFishingTime = System.currentTimeMillis()
         }
 

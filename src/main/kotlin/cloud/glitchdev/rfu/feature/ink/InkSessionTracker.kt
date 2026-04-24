@@ -16,7 +16,7 @@ import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCre
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
-import cloud.glitchdev.rfu.feature.fishing.FishingXpTracker
+import cloud.glitchdev.rfu.feature.fishing.FishingSession
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.utils.TextUtils
@@ -96,7 +96,7 @@ object InkSessionTracker : Feature {
             }
         }
 
-        registerGameEvent(FishingXpTracker.FISHING_XP_REGEX, isOverlay = true) { _, _, _ ->
+        registerGameEvent(FishingSession.FISHING_XP_REGEX, isOverlay = true) { _, _, _ ->
             updateActivity()
         }
 
