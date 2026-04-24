@@ -24,3 +24,4 @@
 ### Back-end
 - Updated Sea Creature system to separate internal IDs from display names, fixing validation bugs and allowing for better back-end synchronization.
 - Added line rendering
+- Refactored rare drop title and chat messages to unify them

@@ -3,8 +3,7 @@ package cloud.glitchdev.rfu.config.categories
 import cloud.glitchdev.rfu.config.Category
 import cloud.glitchdev.rfu.constants.Dyes
 import cloud.glitchdev.rfu.constants.RareDrops
-import cloud.glitchdev.rfu.feature.drops.CustomRareDropMessage
-import cloud.glitchdev.rfu.feature.drops.RareDropTitleAlert
+import cloud.glitchdev.rfu.feature.drops.RareDropAlert
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 
 object DropsSettings : Category("Drops") {
@@ -50,7 +49,7 @@ object DropsSettings : Category("Drops") {
 
     init {
         previewButton(
-            CustomRareDropMessage::preview,
+            RareDropAlert::previewMessage,
             "Preview Message",
             "Shows a preview of the rare drop message in chat."
         ) { customRareDropMessage }
@@ -95,7 +94,7 @@ object DropsSettings : Category("Drops") {
 
     init {
         previewButton(
-            RareDropTitleAlert::preview,
+            RareDropAlert::previewTitle,
             "Preview Title",
             "Shows a preview of the rare drop title on screen."
         ) { rareDropTitleAlert }
