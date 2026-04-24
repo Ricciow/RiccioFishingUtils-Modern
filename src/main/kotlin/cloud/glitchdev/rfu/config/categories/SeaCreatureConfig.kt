@@ -87,7 +87,7 @@ object SeaCreatureConfig : Category("Sea Creatures") {
         }
     }
 
-    var detectionAlert by observable(boolean(false) {
+    var detectionAlert by observable(boolean(true) {
         name = Literal("Rare Sc Alert")
         description = Literal("Sends an alert whenever a rare SC is found.")
     }) { _, _ ->
@@ -172,7 +172,7 @@ object SeaCreatureConfig : Category("Sea Creatures") {
         }
     }
 
-    var rarePartyMessages by observable(boolean(false) {
+    var rarePartyMessages by observable(boolean(true) {
         name = Literal("Party SC messages")
         description = Literal("Sends a party message whenever you catch a rare sea creature.")
     }) { _, _ ->

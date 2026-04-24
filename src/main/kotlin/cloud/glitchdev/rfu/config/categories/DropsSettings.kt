@@ -35,7 +35,7 @@ object DropsSettings : Category("Drops") {
         }
     }
 
-    var customRareDropMessage by observable(boolean(false) {
+    var customRareDropMessage by observable(boolean(true) {
         name = Literal("Enable Custom Rare Drop Message")
         description = Literal("Shows a custom message when you get a rare drop")
     }) { _, _ ->

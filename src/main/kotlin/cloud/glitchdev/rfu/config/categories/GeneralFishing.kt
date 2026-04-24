@@ -26,7 +26,7 @@ object GeneralFishing : Category("General Fishing") {
 
     var fishTrackingItems by enums(*FishTrackingType.entries.toTypedArray()) {
         name = Literal("Tracking Items")
-        description = Literal("Select which items to track in the display.")
+        description = Literal("Select which items to track in the display. The display is read like this: Window Rate [Overall Rate] (Total)")
         condition = { fishTrackingDisplay }
     }
 
@@ -154,7 +154,7 @@ object GeneralFishing : Category("General Fishing") {
         description = Literal("Sends an alert whenever a rod cast fails.")
     }
 
-    var failCastSound by observable(boolean(false) {
+    var failCastSound by observable(boolean(true) {
         name = Literal("Failed Cast Sound")
         description = Literal("Plays a sound whenever a cast fails.")
         condition = { failCastAlert }

@@ -13,6 +13,7 @@
 ### Changes: 
 - Made the report/delete button in rfupf last a little bit so it is easier to click
 - Made the "name" field inside the sea creature settings be used in more places.
+- Fixed some descriptions and changed the default settings a bit
 
 ### Fixes:
 - Made party tracking also work with /stream command and upon inviting someone

@@ -39,12 +39,11 @@ object InkFishing : Category("Ink Fishing") {
         name = Literal("Goal Ink Collection")
         description = Literal("Set an ink collection goal here!")
         condition = {inkTrackingDisplay}
-
     }
 
     var fishingTimeAFK by int(5) {
         name = Literal("Fishing Downtime Limit (Inking)")
-        description = Literal("The max ammount of downtime for the trackers to pause in minutes")
+        description = Literal("The max amount of downtime for the trackers to pause in minutes")
         condition = { inkTrackingDisplay }
         range = 0..30
         slider = true
