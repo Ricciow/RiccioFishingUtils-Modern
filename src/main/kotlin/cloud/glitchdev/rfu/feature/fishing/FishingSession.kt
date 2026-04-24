@@ -46,6 +46,9 @@ object FishingSession : Feature {
     val isPaused: Boolean
         get() = pausedAt != null
 
+    val pausedDuration: Duration
+        get() = pausedAt?.let { Clock.System.now() - it } ?: Duration.ZERO
+
     val duration: Duration
         get() {
             if (!isFishing) return Duration.ZERO

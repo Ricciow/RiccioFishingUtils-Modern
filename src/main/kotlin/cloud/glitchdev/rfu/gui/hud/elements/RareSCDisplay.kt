@@ -17,6 +17,7 @@ import cloud.glitchdev.rfu.utils.dsl.toReadableString
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
 import net.minecraft.world.phys.Vec3
 import kotlin.math.ceil
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Clock
 
 import cloud.glitchdev.rfu.feature.fishing.FishingSession
@@ -32,7 +33,7 @@ object RareSCDisplay : AbstractTextHudElement("rareSCDisplay") {
         get() = FishingSession.isFishing
 
     override val enabled: Boolean
-        get() = SeaCreatureConfig.rareScDisplay && (super.enabled || !SeaCreatureConfig.rareScOnlyWhenFishing || isFishing)
+        get() = SeaCreatureConfig.rareScDisplay && (super.enabled || !SeaCreatureConfig.rareScOnlyWhenFishing || (isFishing && FishingSession.pausedDuration < 1.minutes))
 
     override fun onInitialize() {
         super.onInitialize()

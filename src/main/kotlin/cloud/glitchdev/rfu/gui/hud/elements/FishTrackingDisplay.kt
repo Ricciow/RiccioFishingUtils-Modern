@@ -24,7 +24,7 @@ object FishTrackingDisplay : AbstractTextHudElement("fishTrackingDisplay") {
         get() = FishingSession.isFishing
 
     override val enabled: Boolean
-        get() = GeneralFishing.fishTrackingDisplay && (super.enabled || !GeneralFishing.fishTrackingOnlyWhenFishing || isFishing)
+        get() = GeneralFishing.fishTrackingDisplay && (super.enabled || !GeneralFishing.fishTrackingOnlyWhenFishing || (isFishing && FishingSession.pausedDuration < 1.minutes))
 
     override fun onInitialize() {
         super.onInitialize()
@@ -88,6 +88,7 @@ object FishTrackingDisplay : AbstractTextHudElement("fishTrackingDisplay") {
     private fun formatXp(value: Long): String {
         return when {
             value >= 1_000_000 -> "%.1fM".format(value / 1_000_000.0)
+
             value >= 1_000 -> "%.1fk".format(value / 1_000.0)
             else -> value.toString()
         }

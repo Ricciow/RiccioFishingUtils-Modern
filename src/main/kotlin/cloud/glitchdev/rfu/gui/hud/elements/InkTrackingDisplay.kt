@@ -21,6 +21,7 @@ import cloud.glitchdev.rfu.constants.InkTrackingType
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.utils.dsl.compact
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
 
 @HudElement
 object InkTrackingDisplay : AbstractTextHudElement("inktrackingdisplay") {
@@ -29,7 +30,7 @@ object InkTrackingDisplay : AbstractTextHudElement("inktrackingdisplay") {
         get() = FishingSession.isFishing
 
     override val enabled: Boolean
-        get() = InkFishing.inkTrackingDisplay && (World.island == FishingIslands.PARK) && (super.enabled || !InkFishing.fishTrackingOnlyWhenFishing|| isFishing)
+        get() = InkFishing.inkTrackingDisplay && (World.island == FishingIslands.PARK) && (super.enabled || !InkFishing.fishTrackingOnlyWhenFishing || (isFishing && FishingSession.pausedDuration < 1.minutes))
 
 
     override fun onInitialize() {
