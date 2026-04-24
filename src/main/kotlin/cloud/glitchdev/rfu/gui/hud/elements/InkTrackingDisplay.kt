@@ -57,6 +57,10 @@ object InkTrackingDisplay : AbstractTextHudElement("inktrackingdisplay") {
                 val line = buildString {
                     append("${CYAN}${BOLD}Ink/hr:")
                     append(" $YELLOW${formatInk(inkRate.toLong())}")
+                    if (items.contains(InkTrackingType.OVERALL)) {
+                        val overall = getOverallInkRate(time)
+                        append(" $CYAN[$YELLOW${formatInk(overall)}$CYAN]")
+                    }
                     append(" $CYAN($YELLOW${inkSession.toLong().compact()}$CYAN)")
                 }
                 lines.add(line)
@@ -139,6 +143,11 @@ object InkTrackingDisplay : AbstractTextHudElement("inktrackingdisplay") {
         text.setText(if (lines.isEmpty()) {
             if (isEditing) "inktrackingdisplay" else ""
         } else lines.joinToString("\n"))
+    }
+
+    private fun getOverallInkRate(time: Duration): Long {
+        val hoursElapsed = time.inWholeMilliseconds / 3600000.0
+        return if (hoursElapsed > 0) (FishingSession.inkTracker.total / hoursElapsed).toLong() else 0L
     }
 
     private fun formatInk(value: Long): String {
