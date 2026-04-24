@@ -79,4 +79,31 @@ object InkFishing : Category("Ink Fishing") {
         slider = true
         condition = { rainAlert && rainAlertSound }
     }
+
+
+
+    var baitAlert by observable(boolean(false) {
+        name = Literal("Bait Alert")
+        description = Literal("Show an alert when you should switch to dark/carrot bait in the park")
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var baitAlertSound by observable(boolean(true) {
+        name = Literal("Bait Alert Sound")
+        description = Literal("Plays a sound when you should swap bait in the park")
+        condition = { baitAlert }
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var baitAlertVolume by float(1f) {
+        name = Literal("Sound Volume")
+        description = Literal("The volume for the bait alert sound")
+        range = 0f..1f
+        slider = true
+        condition = { baitAlert && baitAlertSound }
+    }
+
+
 }
