@@ -27,6 +27,7 @@ object FishingSession : Feature {
 
     val xpTracker = SlidingRateTracker()
     val scTracker = SlidingRateTracker()
+    val inkTracker = SlidingRateTracker()
 
     private var lastSeenXp: String = ""
 
@@ -84,6 +85,7 @@ object FishingSession : Feature {
             
             xpTracker.update()
             scTracker.update()
+            inkTracker.update()
         }
     }
 
@@ -92,7 +94,7 @@ object FishingSession : Feature {
         if (isPaused) handleActivity() else pausedAt = Clock.System.now()
     }
 
-    private fun handleActivity() {
+    fun handleActivity() {
         val now = Clock.System.now()
         if (startFishing == Instant.DISTANT_PAST) {
             startFishing = now
@@ -102,6 +104,7 @@ object FishingSession : Feature {
                 startFishing += pausedDuration
                 scTracker.shiftHistory(pausedDuration)
                 xpTracker.shiftHistory(pausedDuration)
+                inkTracker.shiftHistory(pausedDuration)
             }
             pausedAt = null
         }
@@ -118,7 +121,8 @@ object FishingSession : Feature {
         scTracker.update()
 
         InkSessionTracker.resetSession()
-        InkSessionTracker.updateRate()
+        inkTracker.reset()
+        inkTracker.update()
 
         xpTracker.reset()
         xpTracker.update()

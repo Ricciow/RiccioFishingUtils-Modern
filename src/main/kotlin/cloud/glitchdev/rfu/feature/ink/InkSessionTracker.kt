@@ -10,10 +10,7 @@ import cloud.glitchdev.rfu.constants.text.TextEffects.BOLD
 import cloud.glitchdev.rfu.data.catches.CatchTracker.catchHistory
 import cloud.glitchdev.rfu.data.collections.CollectionItem
 import cloud.glitchdev.rfu.data.collections.CollectionsHandler
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.events.managers.CollectionEvents.registerCollectionUpdateEvent
-import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.feature.fishing.FishingSession
@@ -25,27 +22,14 @@ import cloud.glitchdev.rfu.utils.command.Command
 import cloud.glitchdev.rfu.utils.command.SimpleCommand
 import com.mojang.brigadier.context.CommandContext
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
-import kotlin.time.Clock
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.Instant
 
 
 @RFUFeature
 object InkSessionTracker : Feature {
-    private var lastActivityEvent: Instant = Instant.DISTANT_PAST
-    
-    var totalInk: Double = 0.0
-        private set
-    var currentInkPerHour: Double = 0.0
-        private set
-    var pausedAt: Instant? = null
-        private set
-    var totalActiveTime: Duration = Duration.ZERO
-        private set
-    var effectiveElapsed: Duration = Duration.ZERO
-        private set
+    val totalInk: Double get() = FishingSession.inkTracker.total
+    val currentInkPerHour: Double get() = FishingSession.inkTracker.currentRatePerHour
     
     var sentWarning = false
         private set
@@ -95,18 +79,6 @@ object InkSessionTracker : Feature {
                 handleInk(amount.toDouble())
             }
         }
-
-        registerGameEvent(FishingSession.FISHING_XP_REGEX, isOverlay = true) { _, _, _ ->
-            updateActivity()
-        }
-
-        registerSeaCreatureCatchEvent { _, _, _, _, _ ->
-            updateActivity()
-        }
-
-        registerTickEvent(interval = 20) {
-            updateRate()
-        }
     }
 
     @Command
@@ -115,7 +87,8 @@ object InkSessionTracker : Feature {
 
         override fun execute(context: CommandContext<FabricClientCommandSource>): Int {
             resetSession()
-            updateRate()
+            FishingSession.inkTracker.reset()
+            FishingSession.inkTracker.update()
             context.source.sendFeedback(
                 TextUtils.rfuLiteral("The Ink session data has been reset!", LIGHT_GREEN)
             )
@@ -123,71 +96,20 @@ object InkSessionTracker : Feature {
         }
     }
 
-    private fun updateActivity() {
-        if (World.island != FishingIslands.PARK) return
-        val now = Clock.System.now()
-
-        if (lastActivityEvent == Instant.DISTANT_PAST) {
-            lastActivityEvent = now
-            updateRate()
-            return
-        }
-
-        if (pausedAt == null) {
-            totalActiveTime += now - lastActivityEvent
-        }
-
-        pausedAt = null
-        lastActivityEvent = now
-        updateRate()
-    }
-
     private fun handleInk(ink: Double) {
-        updateActivity()
+        if (World.island != FishingIslands.PARK) return
+        FishingSession.handleActivity()
 
         if(CollectionsHandler.get(CollectionItem.INK_SAC) < 1000 && !sentWarning) {
             Chat.sendMessage(TextUtils.rfuLiteral("HINT: ${GOLD}Set your total ink collection by checking your ink ranking in collections menu!", YELLOW, BOLD))
             sentWarning = true
         }
 
-        totalInk += ink
-        updateRate()
-    }
-
-    fun updateRate() {
-        val now = Clock.System.now()
-        val limit = InkFishing.fishingTimeAFK.minutes
-
-        if (lastActivityEvent != Instant.DISTANT_PAST && (now - lastActivityEvent) > limit) {
-            pausedAt = lastActivityEvent
-        }
-
-        if (lastActivityEvent == Instant.DISTANT_PAST) {
-            effectiveElapsed = Duration.ZERO
-            currentInkPerHour = 0.0
-            return
-        }
-
-        effectiveElapsed = totalActiveTime + if (pausedAt == null) {
-            now - lastActivityEvent
-        } else {
-            Duration.ZERO
-        }
-
-        val seconds = effectiveElapsed.inWholeSeconds
-        if (seconds > 0) {
-            currentInkPerHour = (totalInk / seconds) * 3600
-        } else {
-            currentInkPerHour = 0.0
-        }
+        FishingSession.inkTracker.addEvent(ink)
     }
 
     fun resetSession() {
-        lastActivityEvent = Instant.DISTANT_PAST
-        totalActiveTime = Duration.ZERO
-        pausedAt = null
-        totalInk = 0.0
-        currentInkPerHour = 0.0
+        sentWarning = false
         
         // Reset squid tracking to current values
         SeaCreatures.get("Squid")?.let { squidStart = catchHistory.getOrAdd(it).total.toLong() }

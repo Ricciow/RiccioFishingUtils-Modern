@@ -9,6 +9,7 @@
 - Added party commands
 - Added /rfuscedit command to open the Sea Creature Edit window
 - Added Dog Emoji :dog: (I'm not addicted, okay?!)
+- Added manual pause keybind and optional auto-pause on downtime.
 
 ### Changes: 
 - Made the report/delete button in rfupf last a little bit so it is easier to click
@@ -22,6 +23,7 @@
 - Delayed rare drop messages / dye achievements by 100ms so they appear below dye messages
 
 ### Back-end
+- Unified pausing and downtime logic across all fishing trackers (XP, SC, and Ink).
 - Updated Sea Creature system to separate internal IDs from display names, fixing validation bugs and allowing for better back-end synchronization.
 - Added line rendering
 - Refactored rare drop title and chat messages to unify them

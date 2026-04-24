@@ -17,6 +17,23 @@ object GeneralFishing : Category("General Fishing") {
         }
     }
 
+    var fishingTime by int(5) {
+        name = Literal("Fishing Downtime Limit")
+        description = Literal("The max ammount of downtime for the trackers to reset in minutes, also used as the window (e.g. 5 -> sc/h during last 5 minutes)")
+        range = 0..60
+        slider = true
+    }
+
+    var pauseSessionOnWindowReached by boolean(false) {
+        name = Literal("Pause Session on Downtime")
+        description = Literal("Makes the fishing display pause instead of resetting when the downtime limit is reached. You need to use /rfuresetsession or restart the game to reset it.")
+    }
+
+    var pauseKeybind by key(0) {
+        name = Literal("Pause Keybind")
+        description = Literal("Keybind to manually pause the fishing session.")
+    }
+
     var fishTrackingDisplay by observable(boolean(true) {
         name = Literal("Toggle")
         description = Literal("Enables the Fish Tracking display")
@@ -33,26 +50,6 @@ object GeneralFishing : Category("General Fishing") {
     var fishTrackingOnlyWhenFishing by boolean(true) {
         name = Literal("Only display when fishing")
         description = Literal("Only show the display when you're fishing")
-        condition = { fishTrackingDisplay }
-    }
-
-    var fishingTime by int(5) {
-        name = Literal("Fishing Downtime Limit")
-        description = Literal("The max ammount of downtime for the trackers to reset in minutes, also used as the window (e.g. 5 -> sc/h during last 5 minutes)")
-        condition = { fishTrackingDisplay }
-        range = 0..60
-        slider = true
-    }
-
-    var pauseSessionOnWindowReached by boolean(false) {
-        name = Literal("Pause Session on Downtime")
-        description = Literal("Makes the fishing display pause instead of resetting when the downtime limit is reached. You need to use /rfuresetsession or restart the game to reset it.")
-        condition = { fishTrackingDisplay }
-    }
-
-    var pauseKeybind by key(0) {
-        name = Literal("Pause Keybind")
-        description = Literal("Keybind to manually pause the fishing session.")
         condition = { fishTrackingDisplay }
     }
 

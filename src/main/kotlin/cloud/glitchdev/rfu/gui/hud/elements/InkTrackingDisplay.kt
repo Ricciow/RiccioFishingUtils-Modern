@@ -4,7 +4,6 @@ import cloud.glitchdev.rfu.constants.text.TextColor.CYAN
 import cloud.glitchdev.rfu.constants.text.TextColor.YELLOW
 import cloud.glitchdev.rfu.constants.text.TextColor.LIGHT_GREEN
 import cloud.glitchdev.rfu.constants.text.TextEffects.BOLD
-import cloud.glitchdev.rfu.constants.text.TextColor.RED
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
@@ -19,6 +18,7 @@ import cloud.glitchdev.rfu.data.collections.CollectionItem
 import cloud.glitchdev.rfu.data.collections.CollectionsHandler
 import cloud.glitchdev.rfu.utils.World
 import cloud.glitchdev.rfu.constants.InkTrackingType
+import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.utils.dsl.compact
 import kotlin.time.Duration
 
@@ -45,7 +45,7 @@ object InkTrackingDisplay : AbstractTextHudElement("inktrackingdisplay") {
         val lines = mutableListOf<String>()
         val items = InkFishing.inkTrackingItems
 
-        val time = InkSessionTracker.effectiveElapsed
+        val time = FishingSession.duration
         val totalInk = CollectionsHandler.get(CollectionItem.INK_SAC)
         val inkRate = InkSessionTracker.currentInkPerHour.toInt()
 
@@ -67,7 +67,7 @@ object InkTrackingDisplay : AbstractTextHudElement("inktrackingdisplay") {
 
             val line = buildString {
                 append("$CYAN${BOLD}Uptime: $YELLOW${time.toReadableString()}")
-                if(InkSessionTracker.pausedAt != null) append(" $CYAN(${RED}Paused$CYAN)")
+                if(FishingSession.isPaused) append(" $CYAN(${TextColor.LIGHT_RED}Paused$CYAN)")
             }
             lines.add(line)
         }

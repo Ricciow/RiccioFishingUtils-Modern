@@ -30,7 +30,9 @@ class SlidingRateTracker(
         val now = Clock.System.now()
         val limit = limitProvider()
 
-        if (lastEvent != Instant.DISTANT_PAST && (now - lastEvent) > limit) {
+        val isDowntimeReached = lastEvent != Instant.DISTANT_PAST && (now - lastEvent) > limit
+
+        if (isDowntimeReached) {
             if (!GeneralFishing.pauseSessionOnWindowReached) {
                 reset()
                 return
@@ -42,7 +44,7 @@ class SlidingRateTracker(
             return
         }
 
-        if (FishingSession.isPaused) return
+        if (FishingSession.isPaused || (isDowntimeReached && GeneralFishing.pauseSessionOnWindowReached)) return
 
         while (history.isNotEmpty() && (now - history.first().first) > limit) {
             history.removeFirst()

@@ -41,12 +41,11 @@ object InkFishing : Category("Ink Fishing") {
         condition = {inkTrackingDisplay}
     }
 
-    var fishingTimeAFK by int(5) {
-        name = Literal("Fishing Downtime Limit (Inking)")
-        description = Literal("The max amount of downtime for the trackers to pause in minutes")
-        condition = { inkTrackingDisplay }
-        range = 0..30
-        slider = true
+    init {
+        separator {
+            title = "Notice"
+            description = "The pausing behaviour for this is now defined by the settings inside General Fishing"
+        }
     }
 
     init {
