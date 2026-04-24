@@ -8,9 +8,11 @@ import cloud.glitchdev.rfu.data.drops.DropManager
 import cloud.glitchdev.rfu.data.drops.DropRecord
 import cloud.glitchdev.rfu.utils.Chat.sendMessage
 import cloud.glitchdev.rfu.utils.Chat.sendPartyMessage
+import cloud.glitchdev.rfu.utils.Coroutines
 import cloud.glitchdev.rfu.utils.dsl.formatTemplate
 import cloud.glitchdev.rfu.utils.dsl.toReadableString
 import gg.essential.universal.utils.toUnformattedString
+import kotlinx.coroutines.delay
 import net.minecraft.network.chat.Component
 
 @RFUFeature
@@ -50,7 +52,10 @@ object CustomRareDropMessage : Feature {
         
         val message = Component.literal(messageString)
 
-        sendMessage(message)
+        Coroutines.launch {
+            delay(100)
+            sendMessage(message)
+        }
 
         if (DropsSettings.rareDropPartyChat) {
             sendPartyMessage(message.toUnformattedString())

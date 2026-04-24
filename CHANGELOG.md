@@ -19,6 +19,7 @@
 - Made party tracking also work with /stream command and upon inviting someone
 - Moved party api requests to a different thread to prevent lag spikes
 - Fixed pet level up title triggering on normal chat messages
+- Delayed rare drop messages / dye achievements by 100ms so they appear below dye messages
 
 ### Back-end
 - Updated Sea Creature system to separate internal IDs from display names, fixing validation bugs and allowing for better back-end synchronization.
