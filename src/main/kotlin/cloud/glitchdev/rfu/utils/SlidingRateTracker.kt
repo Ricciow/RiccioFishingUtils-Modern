@@ -15,6 +15,11 @@ class SlidingRateTracker(
         private set
     var currentRatePerHour: Double = 0.0
         private set
+    val overallRatePerHour: Double
+        get() {
+            val hoursElapsed = FishingSession.duration.inWholeMilliseconds / 3600000.0
+            return if (hoursElapsed > 0) total / hoursElapsed else 0.0
+        }
     var lastEvent: Instant = Instant.DISTANT_PAST
         private set
 

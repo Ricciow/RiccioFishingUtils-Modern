@@ -47,7 +47,7 @@ object FishTrackingDisplay : AbstractTextHudElement("fishTrackingDisplay") {
                 append("$CYAN${BOLD}SC/h:")
                 append(" $YELLOW$rate")
                 if (items.contains(FishTrackingType.OVERALL)) {
-                    val overall = getOverallScRate(time)
+                    val overall = FishingSession.scTracker.overallRatePerHour.toInt()
                     append(" $CYAN[$YELLOW${overall}$CYAN]")
                 }
                 append(" $CYAN($YELLOW$total$CYAN)")
@@ -62,7 +62,7 @@ object FishTrackingDisplay : AbstractTextHudElement("fishTrackingDisplay") {
                 append("$CYAN${BOLD}XP/h:")
                 append(" $YELLOW${formatXp(rate)}")
                 if (items.contains(FishTrackingType.OVERALL)) {
-                    val overall = getOverallXpRate(time)
+                    val overall = FishingSession.xpTracker.overallRatePerHour.toLong()
                     append(" $CYAN[$YELLOW${formatXp(overall)}$CYAN]")
                 }
                 append(" $CYAN($YELLOW${formatXp(total)}$CYAN)")
@@ -83,16 +83,6 @@ object FishTrackingDisplay : AbstractTextHudElement("fishTrackingDisplay") {
         text.setText(if (lines.isEmpty()) {
             if (isEditing) "fishTrackingDisplay" else ""
         } else lines.joinToString("\n"))
-    }
-
-    private fun getOverallScRate(time: Duration): Int {
-        val hoursElapsed = time.inWholeMilliseconds / 3600000.0
-        return if (hoursElapsed > 0) (FishingSession.scTracker.total / hoursElapsed).toInt() else 0
-    }
-
-    private fun getOverallXpRate(time: Duration): Long {
-        val hoursElapsed = time.inWholeMilliseconds / 3600000.0
-        return if (hoursElapsed > 0) (FishingSession.xpTracker.total / hoursElapsed).toLong() else 0L
     }
 
     private fun formatXp(value: Long): String {
