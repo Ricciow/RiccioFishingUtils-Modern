@@ -1,4 +1,4 @@
-# v1.10.0 - ???
+# v1.10.0 - Dog Edition
 
 ### Features:
 - Removed 1.21.10 support
@@ -8,7 +8,7 @@
 - Added /rfuignore to block from rfupf parties, hotspot sharing and party commands
 - Added party commands
 - Added /rfuscedit command to open the Sea Creature Edit window
-- Added Dog Emoji :dog: (I'm not addicted, okay?!)
+- **Added Dog Emoji :dog: (I'm not addicted, okay?!)**
 - Added manual pause keybind and optional auto-pause on downtime.
 - Made it so rfupf accepts the invite automatically (when accepted into a party)
 
