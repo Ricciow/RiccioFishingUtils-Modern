@@ -1,5 +1,8 @@
 # v1.10.0 - Dog Edition
 
+### Note:
+- This is a re-release of the 1.10 version, I fixed the 1.21.11 crash with mixins.
+
 ### Features:
 - Removed 1.21.10 support
 - Added Hotspot Pointer with customizable priority.

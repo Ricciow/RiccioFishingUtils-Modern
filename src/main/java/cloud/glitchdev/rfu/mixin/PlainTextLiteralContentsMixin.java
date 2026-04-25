@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(PlainTextContents.LiteralContents.class)
 public class PlainTextLiteralContentsMixin {
-    @ModifyVariable(method = "<init>(Ljava/lang/String;)V", at = @At("HEAD"), argsOnly = true, name = "text")
+    @ModifyVariable(method = "<init>(Ljava/lang/String;)V", at = @At("HEAD"), argsOnly = true, ordinal = 0)
     private static String rfu$modifyText(String text) {
         return EmojiFeature.INSTANCE.replaceEmojis(text);
     }

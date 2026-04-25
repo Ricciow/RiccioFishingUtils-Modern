@@ -13,7 +13,7 @@ jobs:
     outputs:
       version: ${{ steps.version.outputs.version }}
       title: ${{ steps.changelog.outputs.title }}
-      body: ${{ steps.changelog.outputs.body }}
+      body_b64: ${{ steps.changelog.outputs.body_b64 }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -49,10 +49,14 @@ jobs:
           BODY=$(tail -n +2 CHANGELOG.md)
           echo "title=$TITLE" >> $GITHUB_OUTPUT
           
+          # Maintain standard multi-line for the current job
           DELIMITER=$(openssl rand -hex 8)
           echo "body<<$DELIMITER" >> $GITHUB_OUTPUT
           echo "$BODY" >> $GITHUB_OUTPUT
           echo "$DELIMITER" >> $GITHUB_OUTPUT
+
+          # Encode body to base64 to preserve newlines for the announce job
+          echo "body_b64=$(echo "$BODY" | base64 -w 0)" >> $GITHUB_OUTPUT
 
       - name: Build and Publish
         run: |
@@ -86,8 +90,11 @@ jobs:
           RFU_API_TOKEN: ${{ secrets.RFU_API_TOKEN }}
           VERSION: ${{ needs.build_and_publish.outputs.version }}
           TITLE: ${{ needs.build_and_publish.outputs.title }}
-          BODY: ${{ needs.build_and_publish.outputs.body }}
+          BODY_B64: ${{ needs.build_and_publish.outputs.body_b64 }}
         run: |
+          # Decode the base64 string back into a standard multi-line string
+          BODY=$(echo "$BODY_B64" | base64 --decode)
+
           # Calculate expiresAt (2 days from now) in milliseconds
           EXPIRES_AT=$(date -d "+2 days" +%s%3N)
           
@@ -109,8 +116,11 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
           DISCORD_ROLE_ID: ${{ secrets.DISCORD_ROLE_ID }}
           TITLE: ${{ needs.build_and_publish.outputs.title }}
-          BODY: ${{ needs.build_and_publish.outputs.body }}
+          BODY_B64: ${{ needs.build_and_publish.outputs.body_b64 }}
         run: |
+          # Decode the base64 string back into a standard multi-line string
+          BODY=$(echo "$BODY_B64" | base64 --decode)
+
           # Combine role ping, title, and body
           MESSAGE="<@&$DISCORD_ROLE_ID>
           # $TITLE

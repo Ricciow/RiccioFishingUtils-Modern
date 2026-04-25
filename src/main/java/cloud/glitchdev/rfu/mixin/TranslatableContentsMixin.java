@@ -10,12 +10,12 @@ import java.util.Objects;
 
 @Mixin(TranslatableContents.class)
 public class TranslatableContentsMixin {
-    @ModifyVariable(method = "<init>(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Object;)V", at = @At("HEAD"), argsOnly = true, name = "key")
+    @ModifyVariable(method = "<init>(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Object;)V", at = @At("HEAD"), argsOnly = true, ordinal = 0)
     private static String rfu$modifyKey(String key) {
         return EmojiFeature.INSTANCE.replaceEmojis(key);
     }
 
-    @ModifyVariable(method = "<init>(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Object;)V", at = @At("HEAD"), argsOnly = true, name = "args")
+    @ModifyVariable(method = "<init>(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Object;)V", at = @At("HEAD"), argsOnly = true, ordinal = 0)
     private static Object[] rfu$modifyArgs(Object[] args) {
         if (args == null) return null;
         boolean changed = false;
