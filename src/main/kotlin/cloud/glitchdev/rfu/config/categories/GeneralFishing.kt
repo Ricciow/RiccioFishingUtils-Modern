@@ -34,9 +34,16 @@ object GeneralFishing : Category("General Fishing") {
         description = Literal("Keybind to manually pause the fishing session.")
     }
 
+    init {
+        dualSeparator {
+            title = "Fishing Display"
+            description = "Track your xp and scs!"
+        }
+    }
+
     var fishTrackingDisplay by observable(boolean(true) {
         name = Literal("Toggle")
-        description = Literal("Enables the Fish Tracking display")
+        description = Literal("Enables the Fishing display")
     }) { _, _ ->
         reloadScreen()
     }
