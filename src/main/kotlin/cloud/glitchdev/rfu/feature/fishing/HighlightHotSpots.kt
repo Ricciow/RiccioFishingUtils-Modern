@@ -9,6 +9,7 @@ import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.rendering.Render3D
 import cloud.glitchdev.rfu.utils.rendering.Render3DBuilder.Companion.cylinder
 import net.minecraft.client.multiplayer.ClientLevel
+import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.phys.Vec3
 
@@ -43,7 +44,7 @@ object HighlightHotSpots : Feature {
 
     private fun findSurfaceY(pos: Vec3, world: ClientLevel, isLava: Boolean): Double {
         val blockType = if (isLava) Blocks.LAVA else Blocks.WATER
-        val centerPos = net.minecraft.core.BlockPos.containing(pos)
+        val centerPos = BlockPos.containing(pos)
 
         for (dy in 5 downTo -10) {
             val current = centerPos.offset(0, dy, 0)

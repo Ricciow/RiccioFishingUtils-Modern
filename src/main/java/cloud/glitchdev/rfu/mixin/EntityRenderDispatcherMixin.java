@@ -25,7 +25,8 @@ public class EntityRenderDispatcherMixin {
             double z,
             CallbackInfoReturnable<Boolean> cir
     ) {
+        boolean isVisible = frustum.isVisible(entity.getBoundingBox());
         Cancelable<Boolean> cancelWrapper = new Cancelable<>(cir, false);
-        EntityRenderEvents.INSTANCE.getRunTasks().invoke(entity, cancelWrapper);
+        EntityRenderEvents.INSTANCE.getRunTasks().invoke(entity, isVisible, cancelWrapper);
     }
 }

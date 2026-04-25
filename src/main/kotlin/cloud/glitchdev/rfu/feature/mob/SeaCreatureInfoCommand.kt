@@ -22,16 +22,23 @@ object SeaCreatureInfoCommand : AbstractCommand("rfusc") {
 
     override fun build(builder: LiteralArgumentBuilder<FabricClientCommandSource>) {
         builder.then(
-            arg("creature", StringListArgumentType(SeaCreatures.entries.map { it.scName }, greedy = true))
-                .executes { context ->
-                    execute(context)
-                }
+            arg(
+                "creature",
+                StringListArgumentType(
+                    SeaCreatures.entries.flatMap { listOf(it.scName, it.scDisplayName) }.distinct(),
+                    greedy = true
+                )
+            ).executes { context ->
+                execute(context)
+            }
         )
     }
 
     private fun execute(context: CommandContext<FabricClientCommandSource>): Int {
         val scName = StringArgumentType.getString(context, "creature")
-        val sc = SeaCreatures.entries.find { it.scName.equals(scName, ignoreCase = true) }
+        val sc = SeaCreatures.entries.find {
+            it.scName.equals(scName, ignoreCase = true) || it.scDisplayName.equals(scName, ignoreCase = true)
+        }
 
         if (sc == null) {
             Chat.sendMessage(rfuLiteral("Sea creature not found: $scName", TextColor.RED))
@@ -41,10 +48,10 @@ object SeaCreatureInfoCommand : AbstractCommand("rfusc") {
         val record = CatchTracker.catchHistory.getOrAdd(sc)
 
         val text = rfuLiteral("Catch Data: ", TextStyle(TextColor.GOLD))
-            .append("${TextColor.WHITE}${sc.scName}")
+            .append("${TextColor.WHITE}${sc.scDisplayName}")
             .append("\n${TextColor.YELLOW}Total Catches: ${TextColor.WHITE}${record.total}")
             .append("\n${TextColor.YELLOW}Current Dry Streak: ${TextColor.WHITE}${record.count}")
-        
+
         if (record.total > 0) {
             val ago = Clock.System.now() - record.time
             text.append("\n${TextColor.YELLOW}Last Caught: ${TextColor.WHITE}${ago.toReadableString()} ago")
@@ -61,7 +68,7 @@ object SeaCreatureInfoCommand : AbstractCommand("rfusc") {
             text.append("\n${TextColor.YELLOW}Average Gap: ${TextColor.WHITE}${String.format("%.1f", avg)}")
             text.append("\n${TextColor.YELLOW}Median Gap: ${TextColor.WHITE}${String.format("%.1f", median)}")
             text.append("\n${TextColor.YELLOW}Est. Chance: ${TextColor.WHITE}${String.format("%.2f%%", chance)}")
-            
+
             val historyStr = record.history.takeLast(10).joinToString(", ")
             text.append("\n${TextColor.YELLOW}Recent History (last 10): ${TextColor.WHITE}$historyStr")
         }

@@ -93,8 +93,8 @@ class SkyblockEntity(
 
     fun registerLsRange() {
         registerRenderer { context, entity ->
-            val sc = SeaCreatures.entries.find { it.scName == sbName }
-            if (SeaCreatureConfig.lootshareRange && RARE_SC_REGEX.matches(sbName) && sc?.lsRangeEnabled == true) {
+            val sc = SeaCreatures.get(sbName)
+            if (sc != null && SeaCreatureConfig.lootshareRange && RARE_SC_REGEX.matches(sc.scName) && sc.lsRangeEnabled) {
                 val bColor = if ((mc.player?.distanceTo(modelEntity) ?: 0f) < 30f) {
                     Color(85, 255, 85)
                 } else {

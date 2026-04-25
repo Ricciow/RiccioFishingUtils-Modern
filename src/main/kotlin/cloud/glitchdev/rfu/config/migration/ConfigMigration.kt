@@ -12,7 +12,7 @@ import kotlin.io.path.readText
 import kotlin.io.path.writeText
 
 object ConfigMigration {
-    const val CURRENT_VERSION = 4
+    const val CURRENT_VERSION = 5
     const val VERSION_KEY = "rfuConfigVersion"
 
     private val logger = LoggerFactory.getLogger(ConfigMigration::class.java)
@@ -47,6 +47,7 @@ object ConfigMigration {
                 1 -> migrateV1toV2(json)
                 2 -> migrateV2toV3(json)
                 3 -> migrateV3toV4(json)
+                4 -> migrateV4toV5(json)
             }
         }
     }
@@ -142,6 +143,23 @@ object ConfigMigration {
         catchMsgKeys.forEach { key ->
             val value = deleteKey(json, "General Fishing", key)
             if (value != null && !newScCat.has(key)) newScCat.add(key, value)
+        }
+    }
+
+    private fun migrateV4toV5(json: JsonObject) {
+        val cat = getCategory(json, "Ink Fishing") ?: return
+        val items = cat["inkTrackingItems"]?.asJsonArray ?: return
+        
+        var hasOverall = false
+        for (item in items) {
+            if (item.asString == "OVERALL") {
+                hasOverall = true
+                break
+            }
+        }
+        
+        if (!hasOverall) {
+            items.add("OVERALL")
         }
     }
 

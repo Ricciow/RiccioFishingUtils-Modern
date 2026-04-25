@@ -7,5 +7,10 @@ enum class InkTrackingType(val displayName: String) {
     N_SQUID("Night Squids"),
     SQUIDS("Squids"),
     INK_GOAL("Ink Goal"),
-    ETA("Goal ETA")
+    ETA("Goal ETA"),
+    OVERALL("Overall");
+
+    override fun toString(): String {
+        return displayName
+    }
 }

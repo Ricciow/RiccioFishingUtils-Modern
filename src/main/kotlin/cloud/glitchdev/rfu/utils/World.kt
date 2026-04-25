@@ -4,8 +4,10 @@ import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.FishingIslands
 import cloud.glitchdev.rfu.constants.Mayors
 import cloud.glitchdev.rfu.constants.SeaCreatureCategory
+import cloud.glitchdev.rfu.data.fishing.HotspotCache
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
+import cloud.glitchdev.rfu.events.managers.HotSpotEvents
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import net.hypixel.data.type.GameType
@@ -14,7 +16,7 @@ import kotlin.jvm.optionals.getOrElse
 import kotlin.jvm.optionals.getOrNull
 
 @AutoRegister
-object World : RegisteredEvent {
+object  World : RegisteredEvent {
     var isInSkyblock = false
         get() {
             return field || (DevSettings.devMode && DevSettings.isInSkyblock)
@@ -82,11 +84,20 @@ object World : RegisteredEvent {
             isInSkyblock = event.serverType.getOrNull() == GameType.SKYBLOCK
             lobby = event.serverName
             val islandName = event.map.getOrElse {
+                if (island != null) {
+                    HotSpotEvents.clearHotspots()
+                    HotspotCache.clearSessionBuffs()
+                }
                 island = null
                 return@registerLocationEvent
             }
 
-            island = FishingIslands.findIslandObject(islandName)
+            val newIsland = FishingIslands.findIslandObject(islandName)
+            if (newIsland != island) {
+                HotSpotEvents.clearHotspots()
+                HotspotCache.clearSessionBuffs()
+            }
+            island = newIsland
         }
 
         registerSeaCreatureCatchEvent { sc, _, _, _, _ ->

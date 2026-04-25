@@ -65,7 +65,8 @@ class UISeaCreatureList(val onSelect: (SeaCreatures) -> Unit) : UIRoundedRectang
 
         val grouped = SeaCreatures.entries
             .filter { sc ->
-                sc.scName.contains(query, ignoreCase = true) || 
+                sc.scName.contains(query, ignoreCase = true) ||
+                sc.scDisplayName.contains(query, ignoreCase = true) ||
                 sc.category.displayName.contains(query, ignoreCase = true)
             }
             .groupBy { it.category }

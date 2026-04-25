@@ -17,6 +17,7 @@ import cloud.glitchdev.rfu.utils.dsl.toReadableString
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
 import net.minecraft.world.phys.Vec3
 import kotlin.math.ceil
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Clock
 
 import cloud.glitchdev.rfu.feature.fishing.FishingSession
@@ -32,7 +33,7 @@ object RareSCDisplay : AbstractTextHudElement("rareSCDisplay") {
         get() = FishingSession.isFishing
 
     override val enabled: Boolean
-        get() = SeaCreatureConfig.rareScDisplay && (super.enabled || !SeaCreatureConfig.rareScOnlyWhenFishing || isFishing)
+        get() = SeaCreatureConfig.rareScDisplay && (super.enabled || !SeaCreatureConfig.rareScOnlyWhenFishing || (isFishing && FishingSession.pausedDuration < 1.minutes))
 
     override fun onInitialize() {
         super.onInitialize()
@@ -113,7 +114,7 @@ object RareSCDisplay : AbstractTextHudElement("rareSCDisplay") {
                 // Building the customized line
                 val line = buildString {
                     val color = sc.scDisplayColor.ifEmpty { WHITE }
-                    append("$color${BOLD}${sc.scName}:")
+                    append("$color${BOLD}${sc.scDisplayName}:")
 
                     dataOrder.forEach { dataType ->
                         when (dataType) {
@@ -149,7 +150,7 @@ object RareSCDisplay : AbstractTextHudElement("rareSCDisplay") {
                     val record = catchHistory.getOrAdd(sc)
                     val line = buildString {
                         val color = sc.scDisplayColor
-                        append("$color${BOLD}${sc.scName}:")
+                        append("$color${BOLD}${sc.scDisplayName}:")
                         dataOrder.forEach { dataType ->
                             when (dataType) {
                                 RareScDisplayDataType.STREAK -> {

@@ -2,11 +2,7 @@ package cloud.glitchdev.rfu.mixin;
 
 import cloud.glitchdev.rfu.utils.MobUtils;
 import net.minecraft.core.particles.ParticleTypes;
-//? if >=1.21.11 {
 import net.minecraft.world.entity.animal.squid.Squid;
-//?} else {
-/*import net.minecraft.world.entity.animal.Squid;
-*///?}
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

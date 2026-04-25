@@ -56,6 +56,19 @@ class UIPartyCard(
     lateinit var memberBadge : UIPartyBadge
     lateinit var descriptionSeparator : UIBlock
     lateinit var overlayButton : UIButton
+    var hiddenOverlay = true
+        set(value) {
+            field = value
+            if(value) {
+                delay(500) {
+                    if(::overlayButton.isInitialized &&
+                        hiddenOverlay
+                    ) {
+                        overlayButton.hide(true)
+                    }
+                }
+            }
+        }
 
     init {
         create()
@@ -79,6 +92,7 @@ class UIPartyCard(
             descriptionSeparator.animate {
                 setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, UIScheme.pfCardSeparatorHover.toConstraint())
             }
+            hiddenOverlay = false
             overlayButton.unhide()
         }.onMouseLeave {
             animate {
@@ -92,7 +106,9 @@ class UIPartyCard(
             descriptionSeparator.animate {
                 setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, UIScheme.pfCardSeparator.toConstraint())
             }
-            overlayButton.hide()
+            if(!overlayButton.isHovered()) {
+                hiddenOverlay = true
+            }
         }.onMouseClick {
             if (!WebSocketClient.isConnected) {
                 joinErrorPopup.show("Not connected to RFU Backend!")
@@ -284,7 +300,7 @@ class UIPartyCard(
 
         overlayButton.onMouseLeave {
             if(!this@UIPartyCard.isHovered()) {
-                hide()
+                hiddenOverlay = true
             }
         }
     }

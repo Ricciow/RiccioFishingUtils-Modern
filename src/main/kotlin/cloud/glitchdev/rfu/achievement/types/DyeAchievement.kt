@@ -5,7 +5,9 @@ import cloud.glitchdev.rfu.achievement.BaseAchievement
 import cloud.glitchdev.rfu.constants.Dyes
 import cloud.glitchdev.rfu.events.managers.ContainerEvents
 import cloud.glitchdev.rfu.events.managers.DropEvents
+import cloud.glitchdev.rfu.utils.Coroutines
 import gg.essential.universal.utils.toUnformattedString
+import kotlinx.coroutines.delay
 import net.minecraft.core.component.DataComponents
 
 abstract class DyeAchievement(val dye: Dyes) : BaseAchievement() {
@@ -14,7 +16,10 @@ abstract class DyeAchievement(val dye: Dyes) : BaseAchievement() {
     override fun setupListeners() {
         activeListeners.add(DropEvents.registerDyeDropEvent { dyeDrop, _ ->
             if (dyeDrop == dye) {
-                complete()
+                Coroutines.launch {
+                    delay(100)
+                    complete()
+                }
             }
         })
 

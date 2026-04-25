@@ -17,16 +17,40 @@ object GeneralFishing : Category("General Fishing") {
         }
     }
 
+    var fishingTime by int(5) {
+        name = Literal("Fishing Downtime Limit")
+        description = Literal("The max ammount of downtime for the trackers to reset in minutes, also used as the window (e.g. 5 -> sc/h during last 5 minutes)")
+        range = 0..60
+        slider = true
+    }
+
+    var pauseSessionOnWindowReached by boolean(false) {
+        name = Literal("Pause Session on Downtime")
+        description = Literal("Makes the fishing display pause instead of resetting when the downtime limit is reached. You need to use /rfuresetsession or restart the game to reset it.")
+    }
+
+    var pauseKeybind by key(0) {
+        name = Literal("Pause Keybind")
+        description = Literal("Keybind to manually pause the fishing session.")
+    }
+
+    init {
+        dualSeparator {
+            title = "Fishing Display"
+            description = "Track your xp and scs!"
+        }
+    }
+
     var fishTrackingDisplay by observable(boolean(true) {
         name = Literal("Toggle")
-        description = Literal("Enables the Fish Tracking display")
+        description = Literal("Enables the Fishing display")
     }) { _, _ ->
         reloadScreen()
     }
 
     var fishTrackingItems by enums(*FishTrackingType.entries.toTypedArray()) {
         name = Literal("Tracking Items")
-        description = Literal("Select which items to track in the display.")
+        description = Literal("Select which items to track in the display. The display is read like this: Window Rate [Overall Rate] (Total)")
         condition = { fishTrackingDisplay }
     }
 
@@ -34,14 +58,6 @@ object GeneralFishing : Category("General Fishing") {
         name = Literal("Only display when fishing")
         description = Literal("Only show the display when you're fishing")
         condition = { fishTrackingDisplay }
-    }
-
-    var fishingTime by int(5) {
-        name = Literal("Fishing Downtime Limit")
-        description = Literal("The max ammount of downtime for the trackers to reset in minutes, also used as the window (e.g. 5 -> sc/h during last 5 minutes)")
-        condition = { fishTrackingDisplay }
-        range = 0..60
-        slider = true
     }
 
     init {
@@ -154,7 +170,7 @@ object GeneralFishing : Category("General Fishing") {
         description = Literal("Sends an alert whenever a rod cast fails.")
     }
 
-    var failCastSound by observable(boolean(false) {
+    var failCastSound by observable(boolean(true) {
         name = Literal("Failed Cast Sound")
         description = Literal("Plays a sound whenever a cast fails.")
         condition = { failCastAlert }

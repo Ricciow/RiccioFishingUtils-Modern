@@ -214,10 +214,10 @@ class UISeaCreatureEditor : UIContainer() {
         currentSc = current
         
         // Load data
-        nameInput.setText(current.getNameWithoutArticle())
-        pluralInput.setText(current.getPluralName())
-        articleInput.setText(current.getArticle())
-        styleInput.setText(current.getStyleCode().replace("§", "&"))
+        nameInput.setText(current.scDisplayName)
+        pluralInput.setText(current.plural)
+        articleInput.setText(current.article)
+        styleInput.setText(current.style.replace("§", "&"))
         
         specialCheckbox.state = current.special
         lsRangeCheckbox.state = current.lsRangeEnabled

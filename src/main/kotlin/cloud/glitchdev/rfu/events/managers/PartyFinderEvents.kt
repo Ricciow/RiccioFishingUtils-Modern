@@ -1,18 +1,21 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.feature.other.ignore.IgnoreUtils
 import cloud.glitchdev.rfu.model.party.FishingParty
 import java.util.concurrent.CopyOnWriteArrayList
 
 object PartyFinderEvents {
     private val _parties = CopyOnWriteArrayList<FishingParty>()
-    val parties: List<FishingParty> get() = _parties
+    val parties: List<FishingParty> get() = _parties.filter { !IgnoreUtils.getIgnoredEntry().contains(it.user) }
 
     object PartyCreated : AbstractEventManager<(FishingParty) -> Unit, PartyCreated.PartyCreatedEvent>() {
         override val runTasks: (FishingParty) -> Unit = { party ->
-            safeExecution {
-                tasks.forEach { task ->
-                    task.callback(party)
+            if (!IgnoreUtils.getIgnoredEntry().contains(party.user)) {
+                safeExecution {
+                    tasks.forEach { task ->
+                        task.callback(party)
+                    }
                 }
             }
         }
@@ -32,9 +35,11 @@ object PartyFinderEvents {
 
     object PartyUpdated : AbstractEventManager<(FishingParty) -> Unit, PartyUpdated.PartyUpdatedEvent>() {
         override val runTasks: (FishingParty) -> Unit = { party ->
-            safeExecution {
-                tasks.forEach { task ->
-                    task.callback(party)
+            if (!IgnoreUtils.getIgnoredEntry().contains(party.user)) {
+                safeExecution {
+                    tasks.forEach { task ->
+                        task.callback(party)
+                    }
                 }
             }
         }
@@ -93,8 +98,10 @@ object PartyFinderEvents {
 
     object JoinRequest : AbstractEventManager<(String) -> Unit, JoinRequest.JoinRequestEvent>() {
         override val runTasks: (String) -> Unit = { applicant ->
-            safeExecution {
-                tasks.forEach { it.callback(applicant) }
+            if (!IgnoreUtils.getIgnoredEntry().contains(applicant)) {
+                safeExecution {
+                    tasks.forEach { it.callback(applicant) }
+                }
             }
         }
 
@@ -128,26 +135,32 @@ object PartyFinderEvents {
     fun handleSync(newParties: List<FishingParty>) {
         _parties.clear()
         _parties.addAll(newParties)
-        PartyListChanged.runTasks(_parties.toList())
+        refreshParties()
     }
 
     fun handleUpdate(party: FishingParty) {
         _parties.removeIf { it.user == party.user }
         _parties.add(party)
-        PartyListChanged.runTasks(_parties.toList())
+        refreshParties()
         PartyUpdated.runTasks(party)
     }
 
     fun handleDelete(user: String) {
         _parties.removeIf { it.user == user }
-        PartyListChanged.runTasks(_parties.toList())
+        refreshParties()
     }
 
     fun handleCreated(party: FishingParty) {
         _parties.removeIf { it.user == party.user }
         _parties.add(party)
-        PartyListChanged.runTasks(_parties.toList())
+        refreshParties()
         PartyCreated.runTasks(party)
+    }
+
+    fun refreshParties() {
+        val ignored = IgnoreUtils.getIgnoredEntry()
+        val filteredParties = _parties.filter { !ignored.contains(it.user) }
+        PartyListChanged.runTasks(filteredParties)
     }
 
     fun registerPartyCreatedEvent(priority: Int = 20, callback: (FishingParty) -> Unit): PartyCreated.PartyCreatedEvent {

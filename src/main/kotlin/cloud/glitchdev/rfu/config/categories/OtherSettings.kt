@@ -12,6 +12,11 @@ object OtherSettings : Category("Other") {
         }
     }
 
+    var emojis by boolean(true) {
+        name = Literal("Emojis")
+        description = Literal("Replaces triggers like :dog: with the respective emoji. Currently only :dog:")
+    }
+
     var lobbyTracking by boolean(true) {
         name = Literal("Enable lobby tracking")
         description = Literal("Sends a message whenever you're in a lobby you've been in before.")
@@ -21,6 +26,22 @@ object OtherSettings : Category("Other") {
         name = Literal("Achievement Tracker Display")
         description = Literal("Shows the currently tracked achievements.")
     }
+
+    var achievementSound by observable(boolean(true) {
+        name = Literal("Achievement Sound")
+        description = Literal("Plays a sound when you unlock an achievement.")
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var achievementVolume by float(1f) {
+        name = Literal("Achievement Volume")
+        description = Literal("The volume for the achievement unlock sound")
+        range = 0f..1f
+        slider = true
+        condition = { achievementSound }
+    }
+
 
     var littlefootAlert by observable(boolean(false) {
         name = Literal("Littlefoot Alert")
@@ -43,21 +64,6 @@ object OtherSettings : Category("Other") {
         range = 0f..1f
         slider = true
         condition = { littlefootAlert && littlefootSound }
-    }
-
-    var achievementSound by observable(boolean(true) {
-        name = Literal("Achievement Sound")
-        description = Literal("Plays a sound when you unlock an achievement.")
-    }) { _, _ ->
-        reloadScreen()
-    }
-
-    var achievementVolume by float(1f) {
-        name = Literal("Achievement Volume")
-        description = Literal("The volume for the achievement unlock sound")
-        range = 0f..1f
-        slider = true
-        condition = { achievementSound }
     }
 
     var zoomEtherwarp by boolean(false) {

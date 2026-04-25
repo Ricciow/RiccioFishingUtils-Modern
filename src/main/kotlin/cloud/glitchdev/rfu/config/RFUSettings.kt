@@ -10,15 +10,14 @@ import cloud.glitchdev.rfu.config.categories.InkFishing
 import cloud.glitchdev.rfu.config.categories.JerryFishing
 import cloud.glitchdev.rfu.config.categories.LavaFishing
 import cloud.glitchdev.rfu.config.categories.OtherSettings
+import cloud.glitchdev.rfu.config.categories.PartySettings
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
 import cloud.glitchdev.rfu.config.migration.ConfigMigration
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.network.VersionHttp.isOutdated
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 import com.teamresourceful.resourcefulconfigkt.api.ConfigKt
-//~ if <1.21.11 'net.minecraft.util.Util' -> 'net.minecraft.Util' {
 import net.minecraft.util.Util
-//~}
 
 object RFUSettings : ConfigKt("rfu/settings") {
     override val name: TranslatableValue
@@ -132,6 +131,7 @@ object RFUSettings : ConfigKt("rfu/settings") {
         category(JerryFishing)
         category(SeaCreatureConfig)
         category(DropsSettings)
+        category(PartySettings)
         category(OtherSettings)
         category(BackendSettings)
         category(DevSettings)

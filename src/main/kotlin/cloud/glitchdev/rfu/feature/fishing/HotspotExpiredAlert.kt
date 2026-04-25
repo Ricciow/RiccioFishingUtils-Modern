@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.feature.fishing
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.HotSpotSettings
+import cloud.glitchdev.rfu.constants.HotspotType
 import cloud.glitchdev.rfu.events.managers.HotSpotEvents
 import cloud.glitchdev.rfu.events.managers.HotSpotEvents.registerHotSpotDisposeEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent

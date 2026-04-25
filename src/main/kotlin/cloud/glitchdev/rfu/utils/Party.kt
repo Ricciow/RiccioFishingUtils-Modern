@@ -1,7 +1,7 @@
 package cloud.glitchdev.rfu.utils
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
-import cloud.glitchdev.rfu.config.categories.DevSettings
+import cloud.glitchdev.rfu.constants.RegexConstants.PLAYER_REGEX
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.constants.text.TextStyle
@@ -17,6 +17,7 @@ import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerJoinRequest
 import cloud.glitchdev.rfu.events.managers.PartyEvents
 import cloud.glitchdev.rfu.events.managers.PartyEvents.registerOnPartyChangeEvent
 import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
+import cloud.glitchdev.rfu.feature.other.ignore.IgnoreUtils
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.utils.command.AbstractCommand
 import cloud.glitchdev.rfu.utils.command.Command
@@ -44,7 +45,6 @@ object Party : RegisteredEvent {
     var requestedUser: String? = null
     private val joinedCooldowns: MutableMap<String, Long> = mutableMapOf()
     private val pendingPFInvites: MutableSet<String> = mutableSetOf()
-    private const val PLAYER_REGEX = "(?:\\[[A-Z]+\\+*\\] )?[0-9a-zA-Z_]{3,16}"
     private var wasInServer = false
     private val uuidToNameCache = mutableMapOf<UUID, String>()
     private val partyInfoCallbacks = mutableListOf<() -> Unit>()
@@ -70,7 +70,9 @@ object Party : RegisteredEvent {
         registerLocationEvent {
             if(!wasInServer) {
                 wasInServer = true
-                hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
+                Coroutines.launch { 
+                    hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
+                }
             }
         }
 
@@ -95,7 +97,9 @@ object Party : RegisteredEvent {
                 }
             }
             requestedUser = null
-            hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
+            Coroutines.launch { 
+                hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
+            }
         }
 
         registerGameEvent("""($PLAYER_REGEX) joined the party\.""".toExactRegex()) { _, _, matches ->
@@ -111,7 +115,9 @@ object Party : RegisteredEvent {
                 }
                 pendingPFInvites.remove(player)
             }
-            hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
+            Coroutines.launch { 
+                hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
+            }
         }
 
         registerGameEvent("""Party > ($PLAYER_REGEX): .*""".toExactRegex()) { _, _, matches ->
@@ -131,15 +137,35 @@ object Party : RegisteredEvent {
                     "|You're not in a party right now\\.")
                 .toExactRegex()
         ) { _, _, _ ->
-            hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
+            Coroutines.launch { 
+                hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
+            }
+        }
+
+        registerGameEvent("""Created a public party! Players can join with /party join .+""".toExactRegex()) { _, _, _ ->
+            Coroutines.launch { 
+                hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
+            }
+        }
+
+        registerGameEvent("""$PLAYER_REGEX invited $PLAYER_REGEX to the party! They have 60 seconds to accept.""".toExactRegex()) { _, _, _ ->
+            if(!inParty) {
+                Coroutines.launch {
+                    hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
+                }
+            }
         }
 
         registerGameEvent("""The party was transferred to ($PLAYER_REGEX) by ($PLAYER_REGEX)""".toExactRegex()) { _, _, _ ->
-            hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
+            Coroutines.launch { 
+                hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
+            }
         }
 
         registerGameEvent("""The party was transferred to ($PLAYER_REGEX) because ($PLAYER_REGEX) left""".toExactRegex()) { _, _, _ ->
-            hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
+            Coroutines.launch { 
+                hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
+            }
         }
 
         registerGameEvent(
@@ -148,7 +174,9 @@ object Party : RegisteredEvent {
                     "|has been removed from the party\\.)"
                     ).toExactRegex()
         ) { _, _, _ ->
-            hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
+            Coroutines.launch { 
+                hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
+            }
         }
 
         registerGameEvent("$PLAYER_REGEX enabled All Invite".toExactRegex()) { _, _, _ ->
@@ -164,6 +192,7 @@ object Party : RegisteredEvent {
         registerAllowGameEvent("From ($PLAYER_REGEX): \\[RFUPF\\] I would like to join your party!".toExactRegex()) { _, _, matches ->
             val matchGroups = matches?.groupValues ?: return@registerAllowGameEvent true
             val player = matchGroups[1].removeRankTag()
+            if (IgnoreUtils.getIgnoredEntry().contains(player)) return@registerAllowGameEvent false
             promptInvite(player)
             return@registerAllowGameEvent false
         }
@@ -199,7 +228,9 @@ object Party : RegisteredEvent {
 
     fun requestPartyInfo(callback: (() -> Unit)? = null) {
         callback?.let { partyInfoCallbacks.add(it) }
-        hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
+        Coroutines.launch { 
+            hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
+        }
     }
 
     private fun getUsernameFromUUID(uuid: UUID): String? {

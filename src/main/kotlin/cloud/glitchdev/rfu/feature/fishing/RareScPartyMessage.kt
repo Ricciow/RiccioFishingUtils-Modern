@@ -9,6 +9,7 @@ import cloud.glitchdev.rfu.data.catches.CatchTracker
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.dsl.formatTemplate
 import cloud.glitchdev.rfu.utils.dsl.toReadableString
+import net.minecraft.network.chat.Component
 import kotlin.time.Clock
 
 @RFUFeature
@@ -25,7 +26,7 @@ object RareScPartyMessage : Feature {
                     "First Catch"
                 }
 
-                val scName = seaCreature.scName
+                val scName = seaCreature.scDisplayName
                 val article = if (scName.take(1).lowercase() in "aeiou") "n" else ""
                 val startsWithThe = scName.startsWith("The ", ignoreCase = true)
 
@@ -56,6 +57,6 @@ object RareScPartyMessage : Feature {
             "dh" to SeaCreatureConfig.dhText
         )
 
-        Chat.sendMessage(net.minecraft.network.chat.Component.literal(preview))
+        Chat.sendMessage(Component.literal(preview))
     }
 }

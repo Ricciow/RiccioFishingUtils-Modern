@@ -6,10 +6,14 @@ on:
       - prod
 
 jobs:
-  release:
+  build_and_publish:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      title: ${{ steps.changelog.outputs.title }}
+      body: ${{ steps.changelog.outputs.body }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -22,6 +26,8 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-disabled: true
 
       - name: Read version
         id: version
@@ -29,16 +35,24 @@ jobs:
           VERSION=$(grep 'mod.version' stonecutter.properties.toml | head -n 1 | cut -d'=' -f2 | tr -d '" ' )
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
+      - name: Check Tag Exists
+        run: |
+          if git ls-remote --tags origin "refs/tags/v${{ steps.version.outputs.version }}" | grep -q "refs/tags/"; then
+            echo "Error: Tag v${{ steps.version.outputs.version }} already exists. Did you forget to bump the version in stonecutter.properties.toml?"
+            exit 1
+          fi
+
       - name: Parse Changelog
         id: changelog
         run: |
           TITLE=$(head -n 1 CHANGELOG.md | sed 's/^# //')
           BODY=$(tail -n +2 CHANGELOG.md)
           echo "title=$TITLE" >> $GITHUB_OUTPUT
-          # Use a delimiter for multi-line body
-          echo "body<<EOF" >> $GITHUB_OUTPUT
+          
+          DELIMITER=$(openssl rand -hex 8)
+          echo "body<<$DELIMITER" >> $GITHUB_OUTPUT
           echo "$BODY" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          echo "$DELIMITER" >> $GITHUB_OUTPUT
 
       - name: Build and Publish
         run: |
@@ -63,12 +77,16 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  announce:
+    needs: build_and_publish
+    runs-on: ubuntu-latest
+    steps:
       - name: Post Announcement
         env:
           RFU_API_TOKEN: ${{ secrets.RFU_API_TOKEN }}
-          VERSION: ${{ steps.version.outputs.version }}
-          TITLE: ${{ steps.changelog.outputs.title }}
-          BODY: ${{ steps.changelog.outputs.body }}
+          VERSION: ${{ needs.build_and_publish.outputs.version }}
+          TITLE: ${{ needs.build_and_publish.outputs.title }}
+          BODY: ${{ needs.build_and_publish.outputs.body }}
         run: |
           # Calculate expiresAt (2 days from now) in milliseconds
           EXPIRES_AT=$(date -d "+2 days" +%s%3N)
@@ -81,7 +99,7 @@ jobs:
             --arg title "$TITLE" \
             '{content: $content, expiresAt: ($expiresAt | tonumber), message: $message, title: $title}')
 
-          curl -X POST https://rfu.glitchdev.cloud/api/announcement \
+          curl --fail -X POST https://rfu.glitchdev.cloud/api/announcement \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer $RFU_API_TOKEN" \
             -d "$JSON_PAYLOAD"
@@ -90,8 +108,8 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
           DISCORD_ROLE_ID: ${{ secrets.DISCORD_ROLE_ID }}
-          TITLE: ${{ steps.changelog.outputs.title }}
-          BODY: ${{ steps.changelog.outputs.body }}
+          TITLE: ${{ needs.build_and_publish.outputs.title }}
+          BODY: ${{ needs.build_and_publish.outputs.body }}
         run: |
           # Combine role ping, title, and body
           MESSAGE="<@&$DISCORD_ROLE_ID>
@@ -101,6 +119,6 @@ jobs:
           # Prepare the payload using jq
           JSON_PAYLOAD=$(jq -n --arg content "$MESSAGE" '{content: $content}')
 
-          curl -X POST "$DISCORD_WEBHOOK" \
+          curl --fail -X POST "$DISCORD_WEBHOOK" \
             -H "Content-Type: application/json" \
             -d "$JSON_PAYLOAD"

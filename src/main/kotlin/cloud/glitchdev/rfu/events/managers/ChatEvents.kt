@@ -35,6 +35,7 @@ object ChatEvents : RegisteredEvent {
         }
 
         ClientSendMessageEvents.ALLOW_COMMAND.register { command ->
+            if (Chat.isSendingModCommand) return@register true
             val result = SendCommandEventManager.runTasks(command)
             if(!result) RFULogger.dev("Sent commnad was cancelled: $command")
             result

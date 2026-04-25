@@ -2,7 +2,9 @@ package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.RiccioFishingUtils
 import cloud.glitchdev.rfu.config.categories.HotSpotSettings
+import cloud.glitchdev.rfu.constants.FishingIslands
 import cloud.glitchdev.rfu.constants.HotSpotConstants
+import cloud.glitchdev.rfu.constants.HotspotType
 import cloud.glitchdev.rfu.constants.LiquidTypes
 import cloud.glitchdev.rfu.data.fishing.Hotspot
 import cloud.glitchdev.rfu.data.fishing.HotspotCache
@@ -11,15 +13,28 @@ import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ParticleEvents.registerParticleEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.EntityRenderEvents.registerEntityRenderEvent
 import cloud.glitchdev.rfu.utils.World
 import gg.essential.universal.utils.toUnformattedString
+import cloud.glitchdev.rfu.constants.text.TextColor
+import cloud.glitchdev.rfu.data.other.OtherManager
+import cloud.glitchdev.rfu.data.other.data.StringSetEntry
+import cloud.glitchdev.rfu.utils.Chat
+import cloud.glitchdev.rfu.utils.TextUtils
+import cloud.glitchdev.rfu.utils.dsl.toExactRegex
+import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
+import net.minecraft.network.chat.ClickEvent
+import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.HoverEvent
+import net.minecraft.network.chat.Style
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.DustParticleOptions
 import net.minecraft.core.particles.ParticleTypes
+import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.decoration.ArmorStand
-import net.minecraft.world.entity.Display.TextDisplay
 import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 import java.awt.Color
 import java.util.UUID
@@ -35,6 +50,30 @@ object HotSpotEvents : RegisteredEvent {
 
     override fun register() {
         HotspotCache.getCachedEntries(null)
+
+        //Rfu
+        registerGameEvent("""Party > (?:\[[A-Z]+\+*] )?([0-9a-zA-Z_]{3,16}): (.*?) Hotspot - (-?\d+), (-?\d+), (-?\d+)""".toExactRegex()) { _, _, matches ->
+            val groups = matches?.groupValues ?: return@registerGameEvent
+            handleHotspotMessage(
+                sender = groups[1],
+                stat = groups[2],
+                x = groups[3].toDouble(),
+                y = groups[4].toDouble(),
+                z = groups[5].toDouble()
+            )
+        }
+
+        //Feesh
+        registerGameEvent("""(?:\[[A-Z]+\+*] )?([0-9a-zA-Z_]{3,16}): x: (-?\d+), y: (-?\d+), z: (-?\d+) \| .{3} (.*?) Hotspot at .+""".toRegex()) { _, _, matches ->
+            val groups = matches?.groupValues ?: return@registerGameEvent
+            handleHotspotMessage(
+                sender = groups[1],
+                stat = groups[5],
+                x = groups[2].toDouble(),
+                y = groups[3].toDouble(),
+                z = groups[4].toDouble()
+            )
+        }
 
         registerTickEvent(interval = 2) { client ->
             val world = client.level ?: return@registerTickEvent
@@ -63,10 +102,11 @@ object HotSpotEvents : RegisteredEvent {
                             }
                         }
 
-                        val buff = findBuffNearby(pos, world)
-                        val color = getColorForBuff(buff)
+                        // Try to find cached buff first, otherwise start as UNKNOWN
+                        val cachedBuff = findCachedBuff(blockPos, World.island)
+                        val buff = cachedBuff ?: ""
                         val liquid = getLiquidType(pos, world)
-                        val hotspot = Hotspot(uuid, pos, buff, 0f, color, liquid)
+                        val hotspot = Hotspot(uuid, pos, buff, 0f, liquid)
                         hotspot.isNotified = true
                         hotspots[uuid] = hotspot
                         HotSpotDetectedEventManager.runTasks(hotspot)
@@ -98,7 +138,7 @@ object HotSpotEvents : RegisteredEvent {
                             hotspot.rangeEntryTime = now
                         }
 
-                        if (now - (hotspot.rangeEntryTime ?: now) > HotSpotConstants.RANGE_ENTRY_TIMEOUT_MS) {
+                        if (now - (hotspot.rangeEntryTime ?: now) > HotSpotConstants.RANGE_ENTRY_TIMEOUT_MS && now - hotspot.lastUpdate > HotSpotConstants.RANGE_ENTRY_TIMEOUT_MS) {
                             iterator.remove()
                             virtualUuids.remove(uuid)
                             if (hotspot.isNotified) {
@@ -112,13 +152,30 @@ object HotSpotEvents : RegisteredEvent {
 
                     virtualUuids.add(uuid)
 
-                    if (now - hotspot.lastUpdate > HotSpotConstants.INACTIVITY_TIMEOUT_MS) {
+                    val timeout = if (hotspot.isExternal) HotSpotConstants.EXTERNAL_TIMEOUT_MS else HotSpotConstants.INACTIVITY_TIMEOUT_MS
+                    if (now - hotspot.lastUpdate > timeout) {
                         iterator.remove()
                         virtualUuids.remove(uuid)
                         if (hotspot.isNotified) {
                             HotSpotDisposedEventManager.runTasks(hotspot)
                         }
                     }
+                }
+            }
+        }
+
+        registerEntityRenderEvent { entity, isVisible, _ ->
+            if (!isVisible) return@registerEntityRenderEvent
+            val name = entity.customName?.toUnformattedString() ?: return@registerEntityRenderEvent
+            if (HotspotType.entries.any { it.buffMatch != null && name.contains(it.buffMatch) }) {
+                val pos = entity.position()
+                val unknownHotspot = hotspots.values
+                    .filter { it.type == HotspotType.UNKNOWN }
+                    .minByOrNull { it.center.distanceTo(pos) }
+
+                if (unknownHotspot != null && unknownHotspot.center.distanceTo(pos) < 5.0) {
+                    unknownHotspot.buff = name
+                    HotspotCache.addMeasurement(unknownHotspot.blockPos, 0.0, unknownHotspot.liquid, name, unknownHotspot.island)
                 }
             }
         }
@@ -168,11 +225,10 @@ object HotSpotEvents : RegisteredEvent {
 
                     val now = System.currentTimeMillis()
                     val buff = if (now - data.lastMetadataUpdate < HotSpotConstants.METADATA_EXPIRY_MS) data.sessionBuff else ""
-                    val color = getColorForBuff(buff)
 
                     closestHotspot = hotspots.getOrPut(uuid) {
                         virtualUuids.add(uuid)
-                        Hotspot(uuid, center, buff, 0f, color, data.liquid)
+                        Hotspot(uuid, center, buff, 0f, data.liquid)
                     }
                 }
             }
@@ -229,6 +285,29 @@ object HotSpotEvents : RegisteredEvent {
 
     fun getAllHotspots(): Collection<Hotspot> = hotspots.values
 
+    fun addExternalHotspot(pos: Vec3, type: HotspotType) {
+        val existing = getHotspotAt(pos)
+        if (existing != null) {
+            if (existing.type == HotspotType.UNKNOWN && type != HotspotType.UNKNOWN) {
+                existing.buff = type.displayName
+            }
+            return
+        }
+
+        val blockPos = BlockPos.containing(pos.x, pos.y, pos.z)
+        val uuid = UUID.nameUUIDFromBytes("virtual_${blockPos}".toByteArray())
+        if (hotspots.containsKey(uuid)) return
+
+        val hotspot = Hotspot(uuid, pos, type.displayName, 0f, LiquidTypes.WATER).apply {
+            isNotified = true
+            isExternal = true
+        }
+
+        hotspots[uuid] = hotspot
+        virtualUuids.add(uuid)
+        HotSpotDetectedEventManager.runTasks(hotspot)
+    }
+
     object HotSpotDetectedEventManager : AbstractEventManager<(Hotspot) -> Unit, HotSpotDetectedEventManager.HotSpotDetectedEvent>() {
         override val runTasks: (Hotspot) -> Unit = { hotspot ->
             safeExecution {
@@ -270,7 +349,7 @@ object HotSpotEvents : RegisteredEvent {
     }
 
     private fun findBuffNearby(pos: Vec3, world: ClientLevel): String {
-        val searchBox = net.minecraft.world.phys.AABB(
+        val searchBox = AABB(
             pos.x - HotSpotConstants.BUFF_SEARCH_HORIZONTAL, pos.y - HotSpotConstants.BUFF_SEARCH_VERTICAL, pos.z - HotSpotConstants.BUFF_SEARCH_HORIZONTAL, 
             pos.x + HotSpotConstants.BUFF_SEARCH_HORIZONTAL, pos.y + HotSpotConstants.BUFF_SEARCH_VERTICAL, pos.z + HotSpotConstants.BUFF_SEARCH_HORIZONTAL
         )
@@ -279,25 +358,11 @@ object HotSpotEvents : RegisteredEvent {
         
         for (entity in entities) {
             val name = entity.customName?.toUnformattedString() ?: continue
-            
-            if (name.contains("Chance") ||
-                name.contains("Speed") ||
-                name.contains("Double Hook")) {
+            if (HotspotType.entries.any { it.buffMatch != null && name.contains(it.buffMatch) }) {
                 return name
             }
         }
         return ""
-    }
-
-    private fun getColorForBuff(buff: String?): Color {
-        return when {
-            buff?.contains("Treasure Chance") ?: false -> Color(255, 255, 85, 100) // &f
-            buff?.contains("Fishing Speed") ?: false -> Color(85, 255, 255, 100) // &b
-            buff?.contains("Sea Creature Chance") ?: false -> Color(0, 170, 170, 100) // &3
-            buff?.contains("Double Hook Chance") ?: false -> Color(85, 85, 255, 100) // &9
-            buff?.contains("Trophy Fish Chance") ?: false -> Color(255, 170, 0, 100) // &6
-            else -> Color(255, 255, 255, 100) // &f
-        }
     }
 
     private fun getLiquidType(pos: Vec3, world: ClientLevel): LiquidTypes {
@@ -315,5 +380,42 @@ object HotSpotEvents : RegisteredEvent {
 
     private fun Vec3.horizontalDistance(pos: Vec3): Double {
         return sqrt((this.x - pos.x).pow(2.0) + (this.z - pos.z).pow(2.0))
+    }
+
+    private fun findCachedBuff(pos: BlockPos, island: FishingIslands?): String? {
+        val cached = HotspotCache.getCachedEntries(island).find { it.first == pos }
+        val data = cached?.second ?: return null
+        val now = System.currentTimeMillis()
+        return if (now - data.lastMetadataUpdate < HotSpotConstants.METADATA_EXPIRY_MS) data.sessionBuff else null
+    }
+
+    fun clearHotspots() {
+        hotspots.clear()
+        virtualUuids.clear()
+    }
+
+    private fun handleHotspotMessage(sender: String, stat: String, x: Double, y: Double, z: Double) {
+        if (sender.equals(RiccioFishingUtils.mc.player?.name?.string, ignoreCase = true)) return
+
+        val ignoredEntry = OtherManager.getField("ignored_users") { StringSetEntry() } as StringSetEntry
+        if (ignoredEntry.contains(sender)) return
+
+        val pos = Vec3(x, y, z)
+        val type = HotspotType.fromBuff(stat)
+
+        Chat.sendMessage(
+            TextUtils.rfuLiteral("${TextColor.WHITE}Received a ")
+                .append(
+                    Component.literal(type.displayName)
+                        .withStyle(Style.EMPTY.withColor(type.color.rgb))
+                ).append(
+                    " ${TextColor.WHITE}hotspot's coordinates from ${TextColor.GOLD}$sender"
+                ).setStyle(
+                    Style.EMPTY
+                        .withHoverEvent(HoverEvent.ShowText(Component.literal("${TextColor.YELLOW}Click to ignore this user in the future!\n${TextColor.GRAY}(Will also block them from party finder and party commands)")))
+                        .withClickEvent(ClickEvent.RunCommand("/rfuignore add $sender"))
+                )
+        )
+        addExternalHotspot(pos, type)
     }
 }

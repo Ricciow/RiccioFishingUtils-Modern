@@ -85,7 +85,6 @@ object PartyFinderWindow : BaseWindow(false) {
 
         registerPartyListChangedEvent { parties ->
             this.parties = parties
-            println(parties)
             onUpdate()
         }
 

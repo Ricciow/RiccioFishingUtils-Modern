@@ -1,24 +1,31 @@
-# v1.9.0 - Partying Visuals
+# v1.10.0 - Dog Edition
 
 ### Features:
-- Added 26.1.2 support
-- Added a littlefoot alert (Haven't tested it, thats Narga's job)
-- Added volume sliders to all sounds that were missing it
-- Added the ability to more deeply customize each sea creature
-- Redesigned the party finder UI
+- Removed 1.21.10 support
+- Added Hotspot Pointer with customizable priority.
+  - Use at your own risk! Off by default
+- Added hotspot sharing
+- Added /rfuignore to block from rfupf parties, hotspot sharing and party commands
+- Added party commands
+- Added /rfuscedit command to open the Sea Creature Edit window
+- **Added Dog Emoji :dog: (I'm not addicted, okay?!)**
+- Added manual pause keybind and optional auto-pause on downtime.
+- Made it so rfupf accepts the invite automatically (when accepted into a party)
 
-### Changes:
-- Added a stability check before resizing hotspots
-- Updated flare radius and alerts logic (Timer only shows while in radius, alerts only on expiration while in radius)
-- Made the rare sc display use the custom sc colors
+### Changes: 
+- Made the report/delete button in rfupf last a little bit so it is easier to click
+- Made the "name" field inside the sea creature settings be used in more places.
+- Fixed some descriptions and changed the default settings a bit
+- Changed "What is Mf" achievement to require 200 mf or less instead of 150 or less
 
 ### Fixes:
-- Actually fixed hotspot particles being hid while highlight hotspot is off
-- Fixed pet display not saving in between sessions
-- Made mod sent messages not trigger event (Could cause an infinite loop that crashes game)
-- Made deployable alert not trigger upon swapping islands
-- Fixed the generated custom sound json not having the replace flag
+- Made party tracking also work with /stream command and upon inviting someone
+- Moved party api requests to a different thread to prevent lag spikes
+- Fixed pet level up title triggering on normal chat messages
+- Delayed rare drop messages / dye achievements by 100ms so they appear below dye messages
 
-### Back-end:
-- Refactored sea creatures system to be data-driven via `sc-config.json`
-- Refactored party system to use Hypixel Mod Api for party tracking
+### Back-end
+- Unified pausing and downtime logic across all fishing trackers (XP, SC, and Ink).
+- Updated Sea Creature system to separate internal IDs from display names, fixing validation bugs and allowing for better back-end synchronization.
+- Added line rendering
+- Refactored rare drop title and chat messages to unify them

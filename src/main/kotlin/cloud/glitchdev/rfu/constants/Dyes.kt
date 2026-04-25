@@ -1,13 +1,13 @@
 package cloud.glitchdev.rfu.constants
 
-enum class Dyes(val dyeName: String, val hex: String, val relatedScNames : List<String> = listOf(), val rarity: Rarity = Rarity.LEGENDARY) {
-    AQUAMARINE("Aquamarine Dye", "7FFFD4", listOf("WATER_LIQUID")), // Special case for filter
+enum class Dyes(val dyeName: String, val hex: String, val relatedScNames : List<String> = listOf(), override val rarity: Rarity = Rarity.LEGENDARY) : IRareDrop {
+    AQUAMARINE("Aquamarine Dye", "7FFFD4", listOf("WATER_LIQUID")),
     ARCHFIEND("Archfiend Dye", "B80036"),
     BINGO_BLUE("Bingo Blue Dye", "002FA7"),
     BONE("Bone Dye", "E3DAC9"),
     BRICK_RED("Brick Red Dye", "CB4154"),
     BYZANTIUM("Byzantium Dye", "702963"),
-    CARMINE("Carmine Dye", "960018", listOf("LAVA_LIQUID")), // Special case for filter
+    CARMINE("Carmine Dye", "960018", listOf("LAVA_LIQUID")),
     CELADON("Celadon Dye", "ACE1AF"),
     CELESTE("Celeste Dye", "B2FFFF"),
     CHOCOLATE("Chocolate Dye", "7B3F00", rarity = Rarity.EPIC),
@@ -20,7 +20,7 @@ enum class Dyes(val dyeName: String, val hex: String, val relatedScNames : List<
     FOSSIL("Fossil Dye", "866F12"),
     FROSTBITTEN("Frostbitten Dye", "09D8EB"),
     HOLLY("Holly Dye", "3C6746", rarity = Rarity.EPIC),
-    ICEBERG("Iceberg Dye", "71A6D2", listOf("WINTER_CATEGORY")), // Special case for filter
+    ICEBERG("Iceberg Dye", "71A6D2", listOf("WINTER_CATEGORY")),
     JADE("Jade Dye", "00A86B"),
     LIVID("Livid Dye", "CEB7AA"),
     MANGO("Mango Dye", "FDBE02"),
@@ -43,6 +43,8 @@ enum class Dyes(val dyeName: String, val hex: String, val relatedScNames : List<
     TENTACLE("Tentacle Dye", "324D6C"),
     TREASURE("Treasure Dye", "FCD12A"),
     WILD_STRAWBERRY("Wild Strawberry Dye", "FF43A4");
+
+    override val displayName: String get() = dyeName
 
     val relatedScs: List<SeaCreatures>
         get() = when {

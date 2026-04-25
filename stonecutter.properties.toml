@@ -4,7 +4,7 @@
 #ksp_version = "2.3.6"
 
 #RFU
-mod.version = "1.9.0"
+mod.version = "1.10.0"
 mod.group = "cloud.glitchdev.rfu"
 mod.id = "rfu"
 mod.name = "RiccioFishingUtils"
@@ -22,23 +22,6 @@ universalcraft_version = "475"
 #Faric_language_kotlin
 fabric_language_kotlin = "1.13.10+kotlin.2.3.20"
 modrinth.kotlin_version = "1.13.10+kotlin.2.3.20"
-
-["1.21.10"]
-#Fabric
-deps.fabric_api = "0.138.4+1.21.10"
-modrinth.fapi_version = "0.138.4+1.21.10"
-#Minecraft
-mod.mc_dep = ">=1.21.10 <=1.21.10"
-#Essential
-universalcraft_mc_version = "1.21.9"
-#ResourcefulConfig
-resourceful_mc_version = "1.21.9"
-resourceful_version = "3.9.2"
-resourcefulkt_mc_version = "1.21.5"
-resourcefulkt_version = "3.5.16"
-#Hypixel Mod API
-hypixel_mod_api_version = "1.0.1"
-modrinth.hypixel_version = "1.0.1+build.1+mc1.21"
 
 ["1.21.11"]
 #Fabric

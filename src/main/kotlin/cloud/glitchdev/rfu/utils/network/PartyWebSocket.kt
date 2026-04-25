@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.utils.network
 
+import cloud.glitchdev.rfu.constants.RegexConstants.PLAYER_REGEX
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents
@@ -14,13 +15,18 @@ import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.Coroutines
 import cloud.glitchdev.rfu.constants.text.TextColor
+import cloud.glitchdev.rfu.events.managers.ChatEvents.registerAllowGameEvent
 import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
 import cloud.glitchdev.rfu.events.managers.WebSocketEvents.registerConnectionStatusChangedEvent
+import cloud.glitchdev.rfu.utils.dsl.removeRankTag
+import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 
 @AutoRegister
 object PartyWebSocket : RegisteredEvent {
@@ -34,6 +40,7 @@ object PartyWebSocket : RegisteredEvent {
         }
 
     private var lastJoinTarget: String? = null
+    private var lastJoinTime: Instant? = null
 
     override fun register() {
         RFULogger.dev("Registering PartyWebSocket")
@@ -67,6 +74,19 @@ object PartyWebSocket : RegisteredEvent {
                     lastJoinTarget = null
                 }
             }
+        }
+
+        registerAllowGameEvent("""-----------------------------------------------------\n($PLAYER_REGEX) has invited you to join their party!\nYou have 60 seconds to accept\. Click here to join!\n-----------------------------------------------------""".toExactRegex()) { _, _, matches ->
+            val inviter = matches?.groupValues?.getOrNull(1)?.removeRankTag() ?: return@registerAllowGameEvent true
+            val now = Clock.System.now()
+
+            if (inviter == lastJoinTarget && now - lastJoinTime!! < 30.seconds) {
+                Chat.sendCommand("p join $inviter")
+                lastJoinTarget = null
+                return@registerAllowGameEvent false
+            }
+
+            true
         }
 
         val listCallback: (String) -> Unit = { msg ->
@@ -166,6 +186,7 @@ object PartyWebSocket : RegisteredEvent {
 
     fun joinParty(targetUser: String) {
         lastJoinTarget = targetUser
+        lastJoinTime = Clock.System.now()
         Party.requestedUser = targetUser
         WebSocketClient.send("/app/party/join", mapOf("targetUser" to targetUser))
         Chat.sendMessage(TextUtils.rfupfLiteral("Sent a join request to $targetUser", TextColor.YELLOW))

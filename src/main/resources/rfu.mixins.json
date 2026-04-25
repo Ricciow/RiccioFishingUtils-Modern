@@ -10,10 +10,13 @@
     "EntityRenderDispatcherMixin",
     "EntityMixin",
     "GameRendererMixin",
+    "FontMixin",
     "CameraMixin",
     "SquidRendererMixin",
     "SquidMixin",
     "SquidRenderStateMixin",
+    "PlainTextLiteralContentsMixin",
+    "TranslatableContentsMixin",
     "screen.PackSelectionScreenMixin"
   ],
   "injectors": {

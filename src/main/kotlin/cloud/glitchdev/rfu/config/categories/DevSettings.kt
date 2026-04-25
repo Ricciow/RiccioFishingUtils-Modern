@@ -22,7 +22,7 @@ object DevSettings : Category("Developer") {
         reloadScreen()
     }
 
-    var isInSkyblock by boolean(true) {
+    var isInSkyblock by boolean(false) {
         name = Literal("Force In Skyblock")
         description = Literal("Forces the mod to consider you're inside skyblock.")
         condition = { devMode }

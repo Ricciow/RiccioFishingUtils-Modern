@@ -21,6 +21,12 @@ data class HotspotData(
         _sessionBuff = buff
     }
 
+    fun clearSession() {
+        _sessionBuff = ""
+        _lastMetadataUpdate = 0L
+        _sessionDistances?.clear()
+    }
+
     @Transient
     private var _lastMetadataUpdate: Long? = 0L
     var lastMetadataUpdate: Long

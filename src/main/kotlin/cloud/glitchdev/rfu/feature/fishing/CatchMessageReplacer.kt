@@ -24,16 +24,7 @@ object CatchMessageReplacer : Feature {
 
         registerSeaCreatureCatchEvent { sc, isDoubleHook, _, _, _ ->
             if (SeaCreatureConfig.replaceCatchMessages) {
-
-                val formattedMessage = getTemplate(isDoubleHook)
-                    .replace("{article}", sc.getArticle())
-                    .replace("{article_upper}", sc.getArticle().replaceFirstChar { it.uppercaseChar() })
-                    .replace("{name}", sc.getNameWithoutArticle())
-                    .replace("{style}", sc.getStyleCode())
-                    .replace("{plural}", sc.getPluralName())
-                    .replace("{mob}", sc.getSingularNameWithArticle())
-                    .replace("{mobs}", sc.getPluralName())
-                    .toMcCodes()
+                val formattedMessage = getTemplate(isDoubleHook).replaceTags(sc)
 
                 Chat.sendMessage(Component.literal(formattedMessage))
             }
@@ -44,15 +35,7 @@ object CatchMessageReplacer : Feature {
         val sc = SeaCreatures.entries.random()
         val isDoubleHook = (0..1).random() == 1
 
-        val formattedMessage = getTemplate(isDoubleHook)
-            .replace("{article}", sc.getArticle())
-            .replace("{article_upper}", sc.getArticle().replaceFirstChar { it.uppercaseChar() })
-            .replace("{name}", sc.getNameWithoutArticle())
-            .replace("{style}", sc.getStyleCode())
-            .replace("{plural}", sc.getPluralName())
-            .replace("{mob}", sc.getSingularNameWithArticle())
-            .replace("{mobs}", sc.getPluralName())
-            .toMcCodes()
+        val formattedMessage = getTemplate(isDoubleHook).replaceTags(sc)
 
         Chat.sendMessage(Component.literal(formattedMessage))
     }
@@ -63,5 +46,17 @@ object CatchMessageReplacer : Feature {
         } else {
             SeaCreatureConfig.catchMessageTemplate
         }
+    }
+
+    private fun String.replaceTags(sc : SeaCreatures) : String {
+        return this
+            .replace("{article}", sc.article)
+            .replace("{article_upper}", sc.article.replaceFirstChar { it.uppercaseChar() })
+            .replace("{name}", sc.scDisplayName)
+            .replace("{style}", sc.style)
+            .replace("{plural}", sc.plural)
+            .replace("{mob}", sc.getSingularNameWithArticle())
+            .replace("{mobs}", sc.plural)
+            .toMcCodes()
     }
 }

@@ -9,12 +9,6 @@ import cloud.glitchdev.rfu.generated.RFULoader
 import com.teamresourceful.resourcefulconfig.api.loader.Configurator
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents
 import net.fabricmc.loader.impl.FabricLoaderImpl
-//? if = 1.21.10 {
-/*import cloud.glitchdev.rfu.constants.text.TextColor
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
-import cloud.glitchdev.rfu.utils.Chat
-import cloud.glitchdev.rfu.utils.TextUtils
-*///?}
 
 object RiccioFishingUtils : ClientModInitializer {
     const val MOD_ID = "rfu"
@@ -43,17 +37,10 @@ object RiccioFishingUtils : ClientModInitializer {
         ClientLifecycleEvents.CLIENT_STARTED.register {
             RFULoader.loadFeatures()
             RFULoader.registerCommands()
+            RFULoader.registerPartyCommands()
             RFULoader.registerEvents()
             RFULoader.registerHud()
             RFULoader.registerAchievements()
-            //? if = 1.21.10 {
-            /*registerJoinEvent { wasConnected ->
-                if(!wasConnected) {
-                    Chat.sendMessage(TextUtils.rfuLiteral("This version is no longer supported! Update to 1.21.11 or newer for the latest content!",
-                        TextColor.LIGHT_RED))
-                }
-            }
-            *///?}
         }
 
     }

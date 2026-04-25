@@ -34,6 +34,14 @@ object DebugHotspots : Feature {
                         lineWidth = 2.0f
                         filled = true
                     }
+                    sphere {
+                        location = hotspot.center
+                        radius = 10f
+                        color = Color(255, 255, 255, 30)
+                        borderColor = Color.WHITE
+                        lineWidth = 2.0f
+                        filled = true
+                    }
                 }
             }
         }
