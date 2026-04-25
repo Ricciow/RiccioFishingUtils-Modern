@@ -82,7 +82,7 @@ object WarpKickManager : RegisteredEvent {
             lastKickTime = System.currentTimeMillis()
         }
 
-        registerGameEvent("""($PLAYER_REGEX) has invited you to join their party!""".toExactRegex()) { _, _, matches ->
+        registerGameEvent("""-----------------------------------------------------\n($PLAYER_REGEX) has invited you to join their party!\nYou have 60 seconds to accept\. Click here to join!\n-----------------------------------------------------""".toExactRegex()) { _, _, matches ->
             val inviter = matches?.groupValues?.getOrNull(1)?.removeRankTag() ?: return@registerGameEvent
             val now = System.currentTimeMillis()
 

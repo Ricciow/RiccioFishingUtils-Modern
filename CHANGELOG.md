@@ -10,6 +10,7 @@
 - Added /rfuscedit command to open the Sea Creature Edit window
 - Added Dog Emoji :dog: (I'm not addicted, okay?!)
 - Added manual pause keybind and optional auto-pause on downtime.
+- Made it so rfupf accepts the invite automatically (when accepted into a party)
 
 ### Changes: 
 - Made the report/delete button in rfupf last a little bit so it is easier to click
