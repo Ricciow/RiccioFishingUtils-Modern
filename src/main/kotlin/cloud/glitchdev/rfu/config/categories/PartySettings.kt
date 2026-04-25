@@ -66,4 +66,16 @@ object PartySettings : Category("Party") {
         description = Literal("Enables or disables the !since party command.")
         condition = { togglePartyCommands }
     }
+
+    var toggleAllInviteCommand by boolean(true) {
+        name = Literal("Enable AllInvite Command")
+        description = Literal("Enables or disables the !allinv party command.")
+        condition = { togglePartyCommands }
+    }
+
+    var toggleTransferCommand by boolean(true) {
+        name = Literal("Enable Transfer Command")
+        description = Literal("Enables or disables the !pt party command.")
+        condition = { togglePartyCommands }
+    }
 }
