@@ -15,6 +15,7 @@
 - Made the report/delete button in rfupf last a little bit so it is easier to click
 - Made the "name" field inside the sea creature settings be used in more places.
 - Fixed some descriptions and changed the default settings a bit
+- Changed "What is Mf" achievement to require 200 mf or less instead of 150 or less
 
 ### Fixes:
 - Made party tracking also work with /stream command and upon inviting someone

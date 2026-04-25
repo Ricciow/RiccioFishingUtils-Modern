@@ -12,7 +12,7 @@ import cloud.glitchdev.rfu.events.managers.DropEvents.registerRareDropEvent
 object WhatIsMfAchievement : BaseAchievement() {
     override val id: String = "what_is_mf"
     override val name: String = "What is Magic Find?"
-    override val description: String = "Drop a Radioactive Vial with 150 Magic Find or less"
+    override val description: String = "Drop a Radioactive Vial with 200 Magic Find or less"
     override val type: AchievementType = AchievementType.NORMAL
     override val difficulty: AchievementDifficulty = AchievementDifficulty.HARD
     override val category: AchievementCategory = AchievementCategory.ISLE
@@ -21,7 +21,7 @@ object WhatIsMfAchievement : BaseAchievement() {
 
     override fun setupListeners() {
         activeListeners.add(registerRareDropEvent { drop, mf ->
-            if(drop == DROP && (mf ?: 0) <= 150) {
+            if(drop == DROP && (mf ?: 0) <= 200) {
                 complete()
             }
             true
