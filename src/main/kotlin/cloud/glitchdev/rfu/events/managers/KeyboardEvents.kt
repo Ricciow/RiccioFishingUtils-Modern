@@ -6,11 +6,11 @@ import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import gg.essential.universal.UKeyboard
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
+import java.util.WeakHashMap
 
 @AutoRegister
 object KeyboardEvents : AbstractEventManager<() -> Unit, KeyboardEvents.KeyboardEvent>(), RegisteredEvent {
-    private val keyStates = mutableMapOf<Int, Boolean>()
+    private val keyStates = WeakHashMap<KeyboardEvent, Boolean>()
 
     override fun register() {
         registerTickEvent {
@@ -23,25 +23,24 @@ object KeyboardEvents : AbstractEventManager<() -> Unit, KeyboardEvents.Keyboard
             tasks.forEach { task ->
                 val key = task.key
                 if (key == 0) return@forEach
-                
+
                 val isDown = UKeyboard.isKeyDown(key) && mc.screen == null
-                val wasDown = keyStates.getOrDefault(key, false)
+                val wasDown = keyStates.getOrDefault(task, false)
 
                 if (isDown && !wasDown) {
                     task.onPress?.invoke()
                 } else if (!isDown && wasDown) {
                     task.onRelease?.invoke()
                 }
-                
+
                 if (isDown) {
                     task.onHeld?.invoke()
                 }
 
-                keyStates[key] = isDown
+                keyStates[task] = isDown
             }
         }
     }
-
     fun registerKeyboardEvent(
         key: () -> Int,
         priority: Int = 20,
