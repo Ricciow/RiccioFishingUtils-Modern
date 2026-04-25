@@ -105,9 +105,9 @@ object FishingSession : Feature {
             pausedAt?.let {
                 val pausedDuration = now - it
                 startFishing += pausedDuration
-                scTracker.shiftHistory(pausedDuration)
-                xpTracker.shiftHistory(pausedDuration)
-                inkTracker.shiftHistory(pausedDuration)
+                scTracker.updateLastEvent(now)
+                xpTracker.updateLastEvent(now)
+                inkTracker.updateLastEvent(now)
             }
             pausedAt = null
         }

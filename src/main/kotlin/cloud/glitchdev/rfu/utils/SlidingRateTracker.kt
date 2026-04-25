@@ -22,20 +22,27 @@ class SlidingRateTracker(
         }
     var lastEvent: Instant = Instant.DISTANT_PAST
         private set
+    var trackingStart: Instant = Instant.DISTANT_PAST
+        private set
 
     fun addEvent(value: Double) {
         val now = Clock.System.now()
+        if (trackingStart == Instant.DISTANT_PAST) trackingStart = now
         lastEvent = now
         total += value
         history.add(Pair(now, value))
         update()
     }
 
+    fun updateLastEvent(now: Instant) {
+        if (lastEvent != Instant.DISTANT_PAST) lastEvent = now
+    }
+
     fun update() {
         val now = Clock.System.now()
         val limit = limitProvider()
 
-        val isDowntimeReached = lastEvent != Instant.DISTANT_PAST && (now - lastEvent) > limit
+        val isDowntimeReached = !FishingSession.isPaused && lastEvent != Instant.DISTANT_PAST && (now - lastEvent) > limit
 
         if (isDowntimeReached) {
             if (!GeneralFishing.pauseSessionOnWindowReached) {
@@ -49,14 +56,12 @@ class SlidingRateTracker(
             return
         }
 
-        if (FishingSession.isPaused || (isDowntimeReached && GeneralFishing.pauseSessionOnWindowReached)) return
-
         while (history.isNotEmpty() && (now - history.first().first) > limit) {
             history.removeFirst()
         }
 
-        val timeElapsed = FishingSession.duration
-        val calculationWindow = if (timeElapsed < limit) timeElapsed else limit
+        val wallClockElapsed = if (trackingStart == Instant.DISTANT_PAST) Duration.ZERO else now - trackingStart
+        val calculationWindow = if (wallClockElapsed < limit) wallClockElapsed else limit
 
         if (calculationWindow.inWholeSeconds == 0L) {
             currentRatePerHour = 0.0
@@ -67,15 +72,9 @@ class SlidingRateTracker(
         currentRatePerHour = (windowSum / calculationWindow.inWholeSeconds) * 3600
     }
 
-    fun shiftHistory(duration: Duration) {
-        val newHistory = history.map { (instant, value) -> Pair(instant + duration, value) }
-        history.clear()
-        history.addAll(newHistory)
-        if (lastEvent != Instant.DISTANT_PAST) lastEvent += duration
-    }
-
     fun reset() {
         lastEvent = Instant.DISTANT_PAST
+        trackingStart = Instant.DISTANT_PAST
         history.clear()
         total = 0.0
         currentRatePerHour = 0.0
