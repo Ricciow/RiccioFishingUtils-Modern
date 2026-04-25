@@ -20,10 +20,6 @@ object WarpCommand : AbstractPartyCommand(
     override fun isEnabled() = PartySettings.toggleWarpCommand
 
     override fun execute(sender: String, args: List<String>) {
-        if (Party.members.size == 2 && Party.members.keys.any { WarpKickManager.isUserOnList(it) }) {
-            sendPartyMessage("No need to warp. (Togglewarp ON)")
-            return
-        }
         WarpKickManager.executeWarpWithKicks()
     }
 }

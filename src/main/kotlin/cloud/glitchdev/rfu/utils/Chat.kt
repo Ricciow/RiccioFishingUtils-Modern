@@ -15,6 +15,7 @@ object Chat : RegisteredEvent {
     private var isRunning = false
     private var lastMessage = Instant.DISTANT_PAST
     var isSendingModMessage = false
+    var isSendingModCommand = false
     private val commandCooldown = 1000
 
     override fun register() {
@@ -51,7 +52,12 @@ object Chat : RegisteredEvent {
 
                     lastMessage = Clock.System.now()
                     mc.execute {
-                        mc.connection?.sendCommand(command)
+                        isSendingModCommand = true
+                        try {
+                            mc.connection?.sendCommand(command)
+                        } finally {
+                            isSendingModCommand = false
+                        }
                     }
                 }
             } finally {

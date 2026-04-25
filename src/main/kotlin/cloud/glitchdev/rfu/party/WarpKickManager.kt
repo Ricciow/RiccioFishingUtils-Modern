@@ -4,7 +4,9 @@ import cloud.glitchdev.rfu.constants.RegexConstants.PLAYER_REGEX
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.ChatEvents.registerSendCommandEvent
 import cloud.glitchdev.rfu.events.managers.PartyEvents.registerOnPartyChangeEvent
+import cloud.glitchdev.rfu.config.categories.PartySettings
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.Coroutines
@@ -40,6 +42,11 @@ object WarpKickManager : RegisteredEvent {
     fun executeWarpWithKicks() {
         if (!Party.isLeader) {
             Chat.sendCommand("p warp")
+            return
+        }
+
+        if (Party.members.size == 2 && Party.members.keys.any { isUserOnList(it) }) {
+            Chat.sendPartyMessage("No need to warp. (Togglewarp ON)")
             return
         }
 
@@ -101,6 +108,17 @@ object WarpKickManager : RegisteredEvent {
                     lastKicker = null
                 }
             }
+        }
+
+        registerSendCommandEvent { command ->
+            val cmd = command.lowercase().trim()
+            if (cmd == "p warp" || cmd == "party warp" || cmd == "p w" || cmd == "party w") {
+                if (Party.isLeader && PartySettings.toggleWarpCommand) {
+                    executeWarpWithKicks()
+                    return@registerSendCommandEvent false
+                }
+            }
+            true
         }
     }
 }
