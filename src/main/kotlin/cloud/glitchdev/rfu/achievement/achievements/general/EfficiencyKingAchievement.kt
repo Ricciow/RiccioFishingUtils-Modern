@@ -8,6 +8,7 @@ import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.feature.fishing.FishingSession
 import kotlin.time.Clock
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
 
@@ -15,7 +16,7 @@ import kotlin.time.Instant
 object EfficiencyKingAchievement : NumericStageAchievement() {
     override val id: String = "efficiency_king"
     override val name: String = "Efficiency King"
-    override val description: String = "Reach 800/900/1000/1100/1200 sc/h and maintain it for 5/10/15/20/30 minutes"
+    override val description: String = "Reach 800/900/1000/1100/1200 sc/h and maintain it for 5/10/15/20/30 minutes (Cannot be paused!)"
     override val type: AchievementType = AchievementType.NORMAL
     override val difficulty: AchievementDifficulty = AchievementDifficulty.HARD
     override val category: AchievementCategory = AchievementCategory.GENERAL
@@ -24,23 +25,32 @@ object EfficiencyKingAchievement : NumericStageAchievement() {
     override val resetCountOnStageAdvance: Boolean = false
 
     init {
-        addStageInfo(1, "Efficiency Rookie", "Reach 800 sc/h for 5 minutes", AchievementDifficulty.EASY)
-        addStageInfo(2, "Efficiency Contender", "Reach 900 sc/h for 10 minutes", AchievementDifficulty.EASY)
-        addStageInfo(3, "Efficiency Adept", "Reach 1000 sc/h for 15 minutes", AchievementDifficulty.MEDIUM)
-        addStageInfo(4, "Efficiency Veteran", "Reach 1100 sc/h 20 minutes", AchievementDifficulty.HARD)
-        addStageInfo(5, "Efficiency King", "Reach 1200 sc/h 30 minutes", AchievementDifficulty.HARD)
+        addStageInfo(1, "Efficiency Rookie", "Reach 800 sc/h for 5 minutes (Cannot be paused!)", AchievementDifficulty.EASY)
+        addStageInfo(2, "Efficiency Contender", "Reach 900 sc/h for 10 minutes (Cannot be paused!)", AchievementDifficulty.EASY)
+        addStageInfo(3, "Efficiency Adept", "Reach 1000 sc/h for 15 minutes (Cannot be paused!)", AchievementDifficulty.MEDIUM)
+        addStageInfo(4, "Efficiency Veteran", "Reach 1100 sc/h 20 minutes (Cannot be paused!)", AchievementDifficulty.HARD)
+        addStageInfo(5, "Efficiency King", "Reach 1200 sc/h 30 minutes (Cannot be paused!)", AchievementDifficulty.HARD)
     }
 
-    var startTime : Instant = Instant.DISTANT_PAST
+    var startSessionDuration: Duration? = null
     var minSch : Int = Int.MAX_VALUE
 
     override fun setupListeners() {
         activeListeners.add(registerTickEvent(interval = 20) {
-            val sch = FishingSession.scTracker.currentRatePerHour.toInt()
+            if (FishingSession.isPaused) {
+                startSessionDuration = null
+                currentCount = 0L
+                minSch = Int.MAX_VALUE
+                return@registerTickEvent
+            }
 
-            if(sch >= getTargetSchForStage(currentStage)) {
-                if(startTime == Instant.DISTANT_PAST) {
-                    startTime = Clock.System.now()
+            val sch = FishingSession.scTracker.currentRatePerHour.toInt()
+            val targetSch = getTargetSchForStage(currentStage)
+
+            if(sch >= targetSch) {
+                val currentSessionDuration = FishingSession.duration
+                if(startSessionDuration == null) {
+                    startSessionDuration = currentSessionDuration
                     minSch = sch
                     return@registerTickEvent
                 }
@@ -49,23 +59,23 @@ object EfficiencyKingAchievement : NumericStageAchievement() {
                     minSch = sch
                 }
 
-                val currentDuration = Clock.System.now() - startTime
+                val activeDuration = currentSessionDuration - startSessionDuration!!
+                val minutes = activeDuration.inWholeMinutes
 
-                if(currentDuration >= getTargetCountForStage(currentStage).minutes) {
-                    advanceStage()
-                    if (minSch >= getTargetSchForStage(currentStage)) {
-                        currentCount = currentDuration.inWholeMinutes
-                    } else {
-                        startTime = Instant.DISTANT_PAST
+                if(minutes >= getTargetCountForStage(currentStage)) {
+                    currentCount = minutes
+                    
+                    if (minSch < getTargetSchForStage(currentStage)) {
+                        startSessionDuration = null
                         currentCount = 0L
                         minSch = Int.MAX_VALUE
                     }
                 } else {
-                    currentCount = currentDuration.inWholeMinutes
+                    currentCount = minutes
                 }
 
             } else {
-                startTime = Instant.DISTANT_PAST
+                startSessionDuration = null
                 currentCount = 0L
                 minSch = Int.MAX_VALUE
             }
