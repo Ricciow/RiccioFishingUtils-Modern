@@ -109,7 +109,6 @@ object FishingGodAchievement : NumericStageAchievement() {
                 val loreText = loreLines.joinToString(" ")
 
                 if (!loreText.contains("Visit your local pond to fish and earn Fishing XP!")) continue
-                println(loreText)
 
                 var parsedTotalXp = 0L
                 

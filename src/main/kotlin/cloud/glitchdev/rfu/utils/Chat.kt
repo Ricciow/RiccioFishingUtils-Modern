@@ -44,7 +44,6 @@ object Chat : RegisteredEvent {
 
                     val timeSince = (Clock.System.now() - lastMessage).inWholeMilliseconds
                     val waitTime = commandCooldown - timeSince
-                    println("${command}: ${waitTime}ms")
 
                     if (waitTime > 0) {
                         delay(waitTime)
