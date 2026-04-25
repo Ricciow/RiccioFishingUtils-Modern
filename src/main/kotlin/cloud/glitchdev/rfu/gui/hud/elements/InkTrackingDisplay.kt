@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.gui.hud.elements
 
+import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.constants.text.TextColor.CYAN
 import cloud.glitchdev.rfu.constants.text.TextColor.YELLOW
 import cloud.glitchdev.rfu.constants.text.TextColor.LIGHT_GREEN
@@ -30,7 +31,7 @@ object InkTrackingDisplay : AbstractTextHudElement("inktrackingdisplay") {
         get() = FishingSession.isFishing
 
     override val enabled: Boolean
-        get() = InkFishing.inkTrackingDisplay && (World.island == FishingIslands.PARK) && (super.enabled || !InkFishing.fishTrackingOnlyWhenFishing || (isFishing && FishingSession.pausedDuration < 1.minutes))
+        get() = InkFishing.inkTrackingDisplay && (World.island == FishingIslands.PARK) && (super.enabled || !InkFishing.fishTrackingOnlyWhenFishing || (isFishing && FishingSession.pausedDuration < (1.minutes + GeneralFishing.fishingTime.minutes)))
 
 
     override fun onInitialize() {

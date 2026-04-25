@@ -24,7 +24,7 @@ object FishTrackingDisplay : AbstractTextHudElement("fishTrackingDisplay") {
         get() = FishingSession.isFishing
 
     override val enabled: Boolean
-        get() = GeneralFishing.fishTrackingDisplay && (super.enabled || !GeneralFishing.fishTrackingOnlyWhenFishing || (isFishing && FishingSession.pausedDuration < 1.minutes))
+        get() = GeneralFishing.fishTrackingDisplay && (super.enabled || !GeneralFishing.fishTrackingOnlyWhenFishing || (isFishing && FishingSession.pausedDuration < (1.minutes + GeneralFishing.fishingTime.minutes)))
 
     override fun onInitialize() {
         super.onInitialize()
