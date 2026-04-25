@@ -8,12 +8,12 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(Font.class)
 public class FontMixin {
-    @ModifyVariable(method = "prepareText(Ljava/lang/String;FFIZI)Lnet/minecraft/client/gui/Font$PreparedText;", at = @At("HEAD"), argsOnly = true, name = "text")
+    @ModifyVariable(method = "prepareText(Ljava/lang/String;FFIZI)Lnet/minecraft/client/gui/Font$PreparedText;", at = @At("HEAD"), argsOnly = true, ordinal = 0)
     private String rfu$replaceEmojisInPrepareText(String text) {
         return EmojiFeature.INSTANCE.replaceEmojis(text);
     }
 
-    @ModifyVariable(method = "width(Ljava/lang/String;)I", at = @At("HEAD"), argsOnly = true, name = "str")
+    @ModifyVariable(method = "width(Ljava/lang/String;)I", at = @At("HEAD"), argsOnly = true, ordinal = 0)
     private String rfu$replaceEmojisInWidth(String str) {
         return EmojiFeature.INSTANCE.replaceEmojis(str);
     }
