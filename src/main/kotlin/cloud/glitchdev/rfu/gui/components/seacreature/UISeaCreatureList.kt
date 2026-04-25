@@ -65,7 +65,8 @@ class UISeaCreatureList(val onSelect: (SeaCreatures) -> Unit) : UIRoundedRectang
 
         val grouped = SeaCreatures.entries
             .filter { sc ->
-                sc.scDisplayName.contains(query, ignoreCase = true) || 
+                sc.scName.contains(query, ignoreCase = true) ||
+                sc.scDisplayName.contains(query, ignoreCase = true) ||
                 sc.category.displayName.contains(query, ignoreCase = true)
             }
             .groupBy { it.category }
@@ -86,7 +87,7 @@ class UISeaCreatureList(val onSelect: (SeaCreatures) -> Unit) : UIRoundedRectang
                 textScale = 0.8.pixels()
             } childOf headerContainer
 
-            creatures.sortedBy { it.scDisplayName }.forEach { sc ->
+            creatures.sortedBy { it.scName }.forEach { sc ->
                 val container = UIContainer().constrain {
                     x = 0.pixels()
                     y = SiblingConstraint()
@@ -96,7 +97,7 @@ class UISeaCreatureList(val onSelect: (SeaCreatures) -> Unit) : UIRoundedRectang
                     onSelect(sc)
                 } childOf scrollArea
 
-                val text = UIText(sc.scDisplayName).constrain {
+                val text = UIText(sc.scName).constrain {
                     x = 10.pixels()
                     y = CenterConstraint()
                     color = (if (sc == currentSc) UIScheme.selectedTextColor else UIScheme.primaryTextColor).toConstraint()
