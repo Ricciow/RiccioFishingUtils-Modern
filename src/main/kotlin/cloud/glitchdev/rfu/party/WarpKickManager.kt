@@ -7,14 +7,11 @@ import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerSendCommandEvent
 import cloud.glitchdev.rfu.events.managers.PartyEvents.registerOnPartyChangeEvent
 import cloud.glitchdev.rfu.config.categories.PartySettings
-import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.Coroutines
 import cloud.glitchdev.rfu.utils.Party
-import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.dsl.removeRankTag
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
-import cloud.glitchdev.rfu.utils.network.PartyWebSocket
 import kotlinx.coroutines.delay
 
 @AutoRegister

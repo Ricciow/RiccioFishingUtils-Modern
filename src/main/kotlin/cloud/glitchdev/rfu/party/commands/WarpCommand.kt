@@ -5,7 +5,6 @@ import cloud.glitchdev.rfu.party.PartyCommand
 import cloud.glitchdev.rfu.party.PartyCommandPermission
 import cloud.glitchdev.rfu.party.WarpKickManager
 import cloud.glitchdev.rfu.config.categories.PartySettings
-import cloud.glitchdev.rfu.utils.Party
 
 @PartyCommand
 object WarpCommand : AbstractPartyCommand(
