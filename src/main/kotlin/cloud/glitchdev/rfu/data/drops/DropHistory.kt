@@ -67,10 +67,14 @@ class DropHistory {
         dropEntry.addDrop(count, magicFind)
     }
 
+    interface IDropEntry {
+        val history: MutableList<DropRecord>
+    }
+
     class DropEntry(
         var type : RareDrops,
-    ) {
-        var history: MutableList<DropRecord> = mutableListOf()
+    ) : IDropEntry {
+        override var history: MutableList<DropRecord> = mutableListOf()
 
         fun addDrop(count : Int?, magicFind : Int? = null) {
             val lastCount = history.lastOrNull()?.totalCount ?: 0
@@ -82,8 +86,8 @@ class DropHistory {
 
     class DyeDropEntry(
         var type : Dyes,
-    ) {
-        var history: MutableList<DropRecord> = mutableListOf()
+    ) : IDropEntry {
+        override var history: MutableList<DropRecord> = mutableListOf()
 
         fun addDrop(count : Int?, magicFind : Int? = null) {
             val lastCount = history.lastOrNull()?.totalCount ?: 0
