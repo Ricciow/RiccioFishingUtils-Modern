@@ -12,7 +12,7 @@
 - 
 
 ### Fixes:
-- 
+- Made party commands not trigger on copied messages (e.g: Party > ricciow: Party > ricciow: !since vial)
 
 ### Back-end
 - 
