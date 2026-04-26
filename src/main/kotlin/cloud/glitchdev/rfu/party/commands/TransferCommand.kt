@@ -10,7 +10,7 @@ import cloud.glitchdev.rfu.utils.Chat
 object TransferCommand : AbstractPartyCommand(
     name = "transfer",
     description = "Transfers the party to another user.",
-    aliases = listOf("pt"),
+    aliases = listOf("pt", "ptme"),
     permission = listOf(PartyCommandPermission.LEADER_ONLY, PartyCommandPermission.SELF_TRIGGER)
 ) {
     override fun isEnabled() = PartySettings.toggleTransferCommand
