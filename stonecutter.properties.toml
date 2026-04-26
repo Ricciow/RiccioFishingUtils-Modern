@@ -4,7 +4,7 @@
 #ksp_version = "2.3.6"
 
 #RFU
-mod.version = "1.10.0"
+mod.version = "1.11.0"
 mod.group = "cloud.glitchdev.rfu"
 mod.id = "rfu"
 mod.name = "RiccioFishingUtils"
