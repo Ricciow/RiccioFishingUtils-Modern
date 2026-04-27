@@ -17,10 +17,10 @@ import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerJoinRequest
 import cloud.glitchdev.rfu.events.managers.PartyEvents
 import cloud.glitchdev.rfu.events.managers.PartyEvents.registerOnPartyChangeEvent
 import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
-import cloud.glitchdev.rfu.feature.other.ignore.IgnoreUtils
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.utils.command.AbstractCommand
 import cloud.glitchdev.rfu.utils.command.Command
+import cloud.glitchdev.rfu.utils.dsl.isIgnored
 import cloud.glitchdev.rfu.utils.dsl.removeRankTag
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import cloud.glitchdev.rfu.utils.network.PartyWebSocket
@@ -192,7 +192,7 @@ object Party : RegisteredEvent {
         registerAllowGameEvent("From ($PLAYER_REGEX): \\[RFUPF\\] I would like to join your party!".toExactRegex()) { _, _, matches ->
             val matchGroups = matches?.groupValues ?: return@registerAllowGameEvent true
             val player = matchGroups[1].removeRankTag()
-            if (IgnoreUtils.getIgnoredEntry().contains(player)) return@registerAllowGameEvent false
+            if (player.isIgnored()) return@registerAllowGameEvent false
             promptInvite(player)
             return@registerAllowGameEvent false
         }

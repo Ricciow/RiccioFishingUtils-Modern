@@ -18,6 +18,7 @@ import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerAllowGameEvent
 import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
 import cloud.glitchdev.rfu.events.managers.WebSocketEvents.registerConnectionStatusChangedEvent
+import cloud.glitchdev.rfu.utils.dsl.isIgnored
 import cloud.glitchdev.rfu.utils.dsl.removeRankTag
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import com.google.gson.Gson
@@ -78,6 +79,7 @@ object PartyWebSocket : RegisteredEvent {
 
         registerAllowGameEvent("""-----------------------------------------------------\n($PLAYER_REGEX) has invited you to join their party!\nYou have 60 seconds to accept\. Click here to join!\n-----------------------------------------------------""".toExactRegex()) { _, _, matches ->
             val inviter = matches?.groupValues?.getOrNull(1)?.removeRankTag() ?: return@registerAllowGameEvent true
+            if (inviter.isIgnored()) return@registerAllowGameEvent false
             val now = Clock.System.now()
 
             if (inviter == lastJoinTarget && now - lastJoinTime!! < 30.seconds) {

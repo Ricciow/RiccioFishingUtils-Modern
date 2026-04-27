@@ -3,15 +3,16 @@ package cloud.glitchdev.rfu.events.managers
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.feature.other.ignore.IgnoreUtils
 import cloud.glitchdev.rfu.model.party.FishingParty
+import cloud.glitchdev.rfu.utils.dsl.isIgnored
 import java.util.concurrent.CopyOnWriteArrayList
 
 object PartyFinderEvents {
     private val _parties = CopyOnWriteArrayList<FishingParty>()
-    val parties: List<FishingParty> get() = _parties.filter { !IgnoreUtils.getIgnoredEntry().contains(it.user) }
+    val parties: List<FishingParty> get() = _parties.filter { !it.user.isIgnored() }
 
     object PartyCreated : AbstractEventManager<(FishingParty) -> Unit, PartyCreated.PartyCreatedEvent>() {
         override val runTasks: (FishingParty) -> Unit = { party ->
-            if (!IgnoreUtils.getIgnoredEntry().contains(party.user)) {
+            if (!party.user.isIgnored()) {
                 safeExecution {
                     tasks.forEach { task ->
                         task.callback(party)
@@ -35,7 +36,7 @@ object PartyFinderEvents {
 
     object PartyUpdated : AbstractEventManager<(FishingParty) -> Unit, PartyUpdated.PartyUpdatedEvent>() {
         override val runTasks: (FishingParty) -> Unit = { party ->
-            if (!IgnoreUtils.getIgnoredEntry().contains(party.user)) {
+            if (!party.user.isIgnored()) {
                 safeExecution {
                     tasks.forEach { task ->
                         task.callback(party)
@@ -98,7 +99,7 @@ object PartyFinderEvents {
 
     object JoinRequest : AbstractEventManager<(String) -> Unit, JoinRequest.JoinRequestEvent>() {
         override val runTasks: (String) -> Unit = { applicant ->
-            if (!IgnoreUtils.getIgnoredEntry().contains(applicant)) {
+            if (!applicant.isIgnored()) {
                 safeExecution {
                     tasks.forEach { it.callback(applicant) }
                 }
@@ -158,8 +159,7 @@ object PartyFinderEvents {
     }
 
     fun refreshParties() {
-        val ignored = IgnoreUtils.getIgnoredEntry()
-        val filteredParties = _parties.filter { !ignored.contains(it.user) }
+        val filteredParties = _parties.filter { !it.user.isIgnored() }
         PartyListChanged.runTasks(filteredParties)
     }
 
