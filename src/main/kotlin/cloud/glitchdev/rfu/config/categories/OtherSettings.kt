@@ -142,6 +142,11 @@ object OtherSettings : Category("Other") {
         condition = { BackendSettings.backendAccepted }
     }
 
+    var bestiaryDisplay by boolean(true) {
+        name = Literal("Bestiary Display")
+        description = Literal("Shows the bestiary progress from the tablist. Requires the Bestiary Tablist to work.")
+    }
+
     var outdatedCake by boolean(true) {
         name = Literal("Outdated cake alert")
         description = Literal("Sends a message when a cake expires")
