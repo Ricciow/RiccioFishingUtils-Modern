@@ -113,7 +113,8 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
             bossbar = isBossbarEnabled(scName),
             gdragAlert = isGdragAlert(scName),
             rareSCAlert = isRareSCAlert(scName),
-            scDisplayColor = resolve(scName) { it.scDisplayColor }
+            scDisplayColor = resolve(scName) { it.scDisplayColor },
+            weight = resolve(scName) { it.weight }
         )
         SeaCreatures.register(sc)
         RFULogger.dev("Registered Sea Creature: $scName")
