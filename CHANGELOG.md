@@ -15,6 +15,9 @@
 ### Fixes:
 - Made party commands not trigger on copied messages (e.g: Party > ricciow: Party > ricciow: !since vial)
 - Fixed /rfuignore not hiding join requests.
+- Made Hotspot pointer accurately point to the best hotspot if there are 2 hotspots nearby
 
 ### Back-end
+- Added HotSpotChangedEvent
+- Optimized hotspot pointer code
 - 

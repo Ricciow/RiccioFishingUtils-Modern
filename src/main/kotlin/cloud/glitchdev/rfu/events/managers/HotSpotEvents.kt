@@ -23,6 +23,7 @@ import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.HotSpotEvents.HotSpotChangedEventManager.HotSpotChangedEvent
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
@@ -264,6 +265,14 @@ object HotSpotEvents : RegisteredEvent {
                 }
             }
         }
+
+        registerHotSpotDetectedEvent {
+            HotSpotChangedEventManager.runTasks(hotspots.values.toList())
+        }
+
+        registerHotSpotDisposeEvent {
+            HotSpotChangedEventManager.runTasks(hotspots.values.toList())
+        }
     }
 
     fun registerHotSpotDetectedEvent(priority: Int = 20, callback: (Hotspot) -> Unit): HotSpotDetectedEventManager.HotSpotDetectedEvent {
@@ -272,6 +281,10 @@ object HotSpotEvents : RegisteredEvent {
 
     fun registerHotSpotDisposeEvent(priority: Int = 20, callback: (Hotspot) -> Unit): HotSpotDisposedEventManager.HotSpotDisposedEvent {
         return HotSpotDisposedEventManager.register(priority, callback)
+    }
+
+    fun registerHotSpotChangedEvent(priority: Int = 20, callback: (List<Hotspot>) -> Unit): HotSpotChangedEvent {
+        return HotSpotChangedEventManager.register(priority, callback)
     }
 
     fun getHotspotAt(pos: Vec3): Hotspot? {
@@ -343,6 +356,26 @@ object HotSpotEvents : RegisteredEvent {
             priority: Int = 20,
             callback: (Hotspot) -> Unit
         ) : ManagedTask<(Hotspot) -> Unit, HotSpotDisposedEvent>(priority, callback) {
+            override fun register() = submitTask(this)
+            override fun unregister() = removeTask(this)
+        }
+    }
+
+    object HotSpotChangedEventManager : AbstractEventManager<(List<Hotspot>) -> Unit, HotSpotChangedEvent>() {
+        override val runTasks: (List<Hotspot>) -> Unit = { hotspots ->
+            safeExecution {
+                tasks.forEach { it.callback(hotspots) }
+            }
+        }
+
+        fun register(priority: Int = 20, callback: (List<Hotspot>) -> Unit): HotSpotChangedEvent {
+            return HotSpotChangedEvent(priority, callback).register()
+        }
+
+        class HotSpotChangedEvent(
+            priority: Int = 20,
+            callback: (List<Hotspot>) -> Unit
+        ) : ManagedTask<(List<Hotspot>) -> Unit, HotSpotChangedEvent>(priority, callback) {
             override fun register() = submitTask(this)
             override fun unregister() = removeTask(this)
         }
