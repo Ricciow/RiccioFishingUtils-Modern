@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.utils.network
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.API_URL
+import cloud.glitchdev.rfu.RiccioFishingUtils.RFU_VERSION
 import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.events.managers.ErrorEvents
 import cloud.glitchdev.rfu.events.managers.WebSocketEvents
@@ -16,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 object WebSocketClient {
     private val client = HttpClient.newHttpClient()
+    private val USER_AGENT = "Java-http-client/${System.getProperty("java.version")} rfu:${RFU_VERSION.friendlyString}"
     private var webSocket: WebSocket? = null
     private val subscriptions = ConcurrentHashMap<String, (String) -> Unit>()
     private val gson = Gson()
@@ -42,6 +44,7 @@ object WebSocketClient {
         RFULogger.dev("Connecting to WebSocket: $wsUrl")
         
         client.newWebSocketBuilder()
+            .header("User-Agent", USER_AGENT)
             .buildAsync(URI.create(wsUrl), object : WebSocket.Listener {
                 override fun onOpen(webSocket: WebSocket) {
                     RFULogger.dev("WebSocket Opened (URL: $wsUrl), sending CONNECT frame...")

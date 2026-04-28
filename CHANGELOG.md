@@ -20,4 +20,4 @@
 ### Back-end
 - Added HotSpotChangedEvent
 - Optimized hotspot pointer code
-- 
+- Added rfu user agent to requests

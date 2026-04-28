@@ -81,6 +81,8 @@ object MayorTracker : RegisteredEvent {
                 } catch (e: Exception) {
                     RFULogger.error("Error parsing mayor API", e)
                 }
+            } else {
+                RFULogger.error("Error getting mayor API: ${response.body}")
             }
         }
     }
