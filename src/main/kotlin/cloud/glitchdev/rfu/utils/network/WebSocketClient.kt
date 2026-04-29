@@ -14,6 +14,7 @@ import kotlin.time.Instant
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionStage
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.math.pow
 
 object WebSocketClient {
     private val client = HttpClient.newHttpClient()
@@ -101,7 +102,9 @@ object WebSocketClient {
         isReconnecting = true
         
         reconnectAttempts++
-        val delay = (minOf(reconnectAttempts * 5, 60)).toLong()
+        val baseDelay = minOf(2.0.pow(reconnectAttempts), 60.0).toLong()
+        val jitter = (Math.random() * 5).toLong()
+        val delay = baseDelay + jitter
         RFULogger.info("Attempting to reconnect WebSocket in $delay seconds (attempt $reconnectAttempts)...")
         
         CompletableFuture.delayedExecutor(delay, java.util.concurrent.TimeUnit.SECONDS).execute {

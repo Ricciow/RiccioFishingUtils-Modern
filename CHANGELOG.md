@@ -21,3 +21,4 @@
 - Added HotSpotChangedEvent
 - Optimized hotspot pointer code
 - Added rfu user agent to requests
+- Added exponential delay and jitter to reconnect to websocket client to prevent crashing the server as the number of users increases
