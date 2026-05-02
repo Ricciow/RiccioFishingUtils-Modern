@@ -5,13 +5,14 @@ import cloud.glitchdev.rfu.RiccioFishingUtils.RFU_VERSION
 import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.events.managers.ErrorEvents
 import cloud.glitchdev.rfu.events.managers.WebSocketEvents
+import cloud.glitchdev.rfu.utils.Coroutines
 import com.google.gson.Gson
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.WebSocket
+import kotlinx.coroutines.delay
 import kotlin.time.Clock
 import kotlin.time.Instant
-import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionStage
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.pow
@@ -51,10 +52,11 @@ object WebSocketClient {
                     RFULogger.dev("WebSocket Opened (URL: $wsUrl), sending CONNECT frame...")
                     reconnectAttempts = 0
                     isReconnecting = false
+                    val tokenWithBearer = if (authToken.startsWith("Bearer ")) authToken else "Bearer $authToken"
                     sendFrame(webSocket, "CONNECT", mapOf(
                         "accept-version" to "1.1,1.2",
                         "heart-beat" to "10000,10000",
-                        "Authorization" to authToken
+                        "Authorization" to tokenWithBearer
                     ))
                     webSocket.request(1)
                 }
@@ -104,12 +106,19 @@ object WebSocketClient {
         reconnectAttempts++
         val baseDelay = minOf(2.0.pow(reconnectAttempts), 60.0).toLong()
         val jitter = (Math.random() * 5).toLong()
-        val delay = baseDelay + jitter
-        RFULogger.info("Attempting to reconnect WebSocket in $delay seconds (attempt $reconnectAttempts)...")
+        val delaySeconds = baseDelay + jitter
+        RFULogger.info("Attempting to reconnect WebSocket in $delaySeconds seconds (attempt $reconnectAttempts)...")
         
-        CompletableFuture.delayedExecutor(delay, java.util.concurrent.TimeUnit.SECONDS).execute {
+        Coroutines.launch {
+            delay(delaySeconds * 1000)
             isReconnecting = false
-            lastAuthToken?.let { connect(it) }
+            
+            if (Network.isTokenExpired()) {
+                RFULogger.dev("Token expired during reconnect, re-authenticating...")
+                Network.authenticateUser()
+            } else {
+                lastAuthToken?.let { connect(it) }
+            }
         }
     }
 
@@ -205,11 +214,11 @@ object WebSocketClient {
 
     private fun sendFrame(ws: WebSocket, command: String, headers: Map<String, String>, body: String = "") {
         val frame = StringBuilder()
-        frame.append(command).append("\n")
+        frame.append(command).append("\r\n")
         headers.forEach { (k, v) ->
-            frame.append(k).append(":").append(v).append("\n")
+            frame.append(k).append(":").append(v).append("\r\n")
         }
-        frame.append("\n")
+        frame.append("\r\n")
         frame.append(body)
         frame.append("\u0000")
         
