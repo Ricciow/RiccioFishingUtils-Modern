@@ -16,6 +16,7 @@
   - Measurements get really inaccurate on smaller numbers
 
 ### Fixes:
+- Fixed Fishing Session XP/h being inaccurate with repeated xp numbers.
 - Made party commands not trigger on copied messages (e.g: Party > ricciow: Party > ricciow: !since vial)
 - Fixed /rfuignore not hiding join requests.
 - Made Hotspot pointer accurately point to the best hotspot if there are 2 hotspots nearby
