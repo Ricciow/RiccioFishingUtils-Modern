@@ -12,6 +12,8 @@
 
 ### Changes: 
 - Made the party finder creation area not reset upon having the party deleted and made it update the island with the current player's island
+- Made the downtime window minimum higher (1 minute -> 5 minutes)
+  - Measurements get really inaccurate on smaller numbers
 
 ### Fixes:
 - Made party commands not trigger on copied messages (e.g: Party > ricciow: Party > ricciow: !since vial)

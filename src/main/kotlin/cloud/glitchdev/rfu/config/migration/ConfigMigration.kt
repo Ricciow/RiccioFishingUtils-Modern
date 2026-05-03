@@ -12,7 +12,7 @@ import kotlin.io.path.readText
 import kotlin.io.path.writeText
 
 object ConfigMigration {
-    const val CURRENT_VERSION = 5
+    const val CURRENT_VERSION = 6
     const val VERSION_KEY = "rfuConfigVersion"
 
     private val logger = LoggerFactory.getLogger(ConfigMigration::class.java)
@@ -48,6 +48,7 @@ object ConfigMigration {
                 2 -> migrateV2toV3(json)
                 3 -> migrateV3toV4(json)
                 4 -> migrateV4toV5(json)
+                5 -> migrateV5toV6(json)
             }
         }
     }
@@ -161,6 +162,17 @@ object ConfigMigration {
         if (!hasOverall) {
             items.add("OVERALL")
         }
+    }
+
+    private fun migrateV5toV6(json: JsonObject) {
+        val cat = getCategory(json, "General Fishing") ?: return
+        val value = cat["fishingTime"]?.asInt ?: return
+
+        if(value < 5) {
+            deleteKey(json, "General Fishing", "fishingTime")
+            cat.addProperty("fishingTime", 5)
+        }
+
     }
 
     private fun deleteKey(json: JsonObject, category: String, key: String): JsonElement? {

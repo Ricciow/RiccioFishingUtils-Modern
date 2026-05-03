@@ -20,7 +20,7 @@ object GeneralFishing : Category("General Fishing") {
     var fishingTime by int(5) {
         name = Literal("Fishing Downtime Limit")
         description = Literal("The max ammount of downtime for the trackers to reset in minutes, also used as the window (e.g. 5 -> sc/h during last 5 minutes)")
-        range = 0..60
+        range = 5..60
         slider = true
     }
 
