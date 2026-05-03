@@ -8,6 +8,7 @@
   - Added support for rare drops and dyes.
   - Added optional <username> parameter to filter who should respond.
   - Now displays related rare drops when checking a sea creature.
+- Added best pets to level (/rfupets)
 
 ### Changes: 
 - 
