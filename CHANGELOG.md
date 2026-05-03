@@ -11,7 +11,7 @@
 - Added best pets to level (/rfupets)
 
 ### Changes: 
-- 
+- Made the party finder creation area not reset upon having the party deleted and made it update the island with the current player's island
 
 ### Fixes:
 - Made party commands not trigger on copied messages (e.g: Party > ricciow: Party > ricciow: !since vial)
