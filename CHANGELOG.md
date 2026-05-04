@@ -9,6 +9,7 @@
   - Added optional <username> parameter to filter who should respond.
   - Now displays related rare drops when checking a sea creature.
 - Added best pets to level (/rfupets)
+  - This is HUGE, i think :dog:
 
 ### Changes: 
 - Made the party finder creation area not reset upon having the party deleted and made it update the island with the current player's island
