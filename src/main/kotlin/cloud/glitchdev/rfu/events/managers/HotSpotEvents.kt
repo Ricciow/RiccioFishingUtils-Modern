@@ -301,18 +301,20 @@ object HotSpotEvents : RegisteredEvent {
 
     fun getAllHotspots(): Collection<Hotspot> = hotspots.values
 
-    fun addExternalHotspot(pos: Vec3, type: HotspotType) {
+    fun addExternalHotspot(pos: Vec3, type: HotspotType) : Boolean {
         val existing = getHotspotAt(pos)
         if (existing != null) {
             if (existing.type == HotspotType.UNKNOWN && type != HotspotType.UNKNOWN) {
                 existing.buff = type.displayName
+                return true
+            } else {
+                return false
             }
-            return
         }
 
         val blockPos = BlockPos.containing(pos.x, pos.y, pos.z)
         val uuid = UUID.nameUUIDFromBytes("virtual_${blockPos}".toByteArray())
-        if (hotspots.containsKey(uuid)) return
+        if (hotspots.containsKey(uuid)) return false
 
         val hotspot = Hotspot(uuid, pos, type.displayName, 0f, LiquidTypes.WATER).apply {
             isNotified = true
@@ -322,6 +324,7 @@ object HotSpotEvents : RegisteredEvent {
         hotspots[uuid] = hotspot
         virtualUuids.add(uuid)
         HotSpotDetectedEventManager.runTasks(hotspot)
+        return true
     }
 
     object HotSpotDetectedEventManager : AbstractEventManager<(Hotspot) -> Unit, HotSpotDetectedEventManager.HotSpotDetectedEvent>() {
@@ -431,9 +434,7 @@ object HotSpotEvents : RegisteredEvent {
     }
 
     private fun handleHotspotMessage(sender: String, stat: String, x: Double, y: Double, z: Double) {
-        println("Message received")
         if (sender.isUser()) return
-        println("Is not user")
 
         val ignoredEntry = OtherManager.getField("ignored_users") { StringSetEntry() } as StringSetEntry
         if (ignoredEntry.contains(sender)) return
@@ -441,8 +442,9 @@ object HotSpotEvents : RegisteredEvent {
         val pos = Vec3(x, y, z)
         val type = HotspotType.fromBuff(stat)
 
-        if(FishingSession.isHotspotFishing) {
-            println("Is hotspotting")
+        val result = addExternalHotspot(pos, type)
+
+        if(FishingSession.isHotspotFishing && result) {
             Chat.sendMessage(
                 TextUtils.rfuLiteral("${TextColor.YELLOW}Received a ")
                     .append(
@@ -457,7 +459,5 @@ object HotSpotEvents : RegisteredEvent {
                     )
             )
         }
-
-        addExternalHotspot(pos, type)
     }
 }
