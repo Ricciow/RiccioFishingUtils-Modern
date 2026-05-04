@@ -1,6 +1,7 @@
 # v1.11.0 - ???
 
 ### Features:
+- Added a keybind to share hotspot coordinates.
 - Added Bestiary Display HUD (Requires the Bestiary Tablist to work).
 - Added !coords party command to send your current coordinates (Aliases: !c, !xyz)
 - Added !ptme alias to the !pt party command

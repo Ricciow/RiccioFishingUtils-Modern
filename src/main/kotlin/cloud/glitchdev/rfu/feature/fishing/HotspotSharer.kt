@@ -5,11 +5,11 @@ import cloud.glitchdev.rfu.config.categories.HotSpotSettings
 import cloud.glitchdev.rfu.constants.HotspotType
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
-import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.data.fishing.Hotspot
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
 import cloud.glitchdev.rfu.events.managers.HotSpotEvents
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.KeyboardEvents.registerKeyboardEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
@@ -54,6 +54,28 @@ object HotspotSharer : Feature {
 
         registerDisconnectEvent {
             notifiedHotspots.clear()
+        }
+
+        registerKeyboardEvent({ HotSpotSettings.shareHotspotKey }, onPress = {
+            shareNearestHotspot()
+        })
+    }
+
+    private fun shareNearestHotspot() {
+        if (!Party.inParty) {
+            Chat.sendMessage(TextUtils.rfuLiteral("You must be in a party to share hotspots!", TextColor.RED))
+            return
+        }
+
+        val player = mc.player ?: return
+        val nearestHotspot = HotSpotEvents.getAllHotspots()
+            .filter { it.type != HotspotType.UNKNOWN }
+            .minByOrNull { player.position().distanceTo(it.center) }
+
+        if (nearestHotspot != null && player.position().distanceTo(nearestHotspot.center) < 10.0) {
+            shareHotspot(nearestHotspot)
+        } else {
+            Chat.sendMessage(TextUtils.rfuLiteral("No hotspots nearby to share!", TextColor.RED))
         }
     }
 
