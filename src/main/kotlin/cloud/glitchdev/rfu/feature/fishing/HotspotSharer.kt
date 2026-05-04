@@ -75,7 +75,7 @@ object HotspotSharer : Feature {
         if (nearestHotspot != null && player.position().distanceTo(nearestHotspot.center) < 10.0) {
             shareHotspot(nearestHotspot)
         } else {
-            Chat.sendMessage(TextUtils.rfuLiteral("No hotspots nearby to share!", TextColor.RED))
+            Chat.sendMessage(TextUtils.rfuLiteral("No hotspots nearby to share!", TextColor.LIGHT_RED))
         }
     }
 
