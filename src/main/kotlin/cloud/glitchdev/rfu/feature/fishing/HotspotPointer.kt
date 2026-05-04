@@ -20,22 +20,20 @@ import java.util.concurrent.atomic.AtomicReference
 
 @RFUFeature
 object HotspotPointer : Feature {
-    var lastHotspot: Hotspot? = null
+    val lastHotspot
+        get() = FishingSession.lastHotspot
     private val bestHotspotRef = AtomicReference<Hotspot?>(null)
     private var currentHotspots: List<Hotspot> = emptyList()
     private var wasNearBest = false
     private var hasFishedSinceArriving = false
 
     override fun onInitialize() {
-        registerSeaCreatureCatchEvent { _, _, hotspot, _, _ ->
-            lastHotspot = hotspot
+        registerSeaCreatureCatchEvent { _, _, _, _, _ ->
             hasFishedSinceArriving = true
         }
 
         registerLocationEvent {
-            lastHotspot = null
             hasFishedSinceArriving = false
-            currentHotspots = emptyList()
         }
 
         registerHotSpotChangedEvent { hotspots ->

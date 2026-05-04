@@ -4,7 +4,9 @@ import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.constants.Skills
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextStyle
+import cloud.glitchdev.rfu.data.fishing.Hotspot
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
 import cloud.glitchdev.rfu.events.managers.KeyboardEvents.registerKeyboardEvent
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
@@ -30,6 +32,10 @@ object FishingSession : Feature {
     val xpTracker = SlidingRateTracker()
     val scTracker = SlidingRateTracker()
     val inkTracker = SlidingRateTracker()
+    var lastHotspot : Hotspot? = null
+
+    val isHotspotFishing : Boolean
+        get() = lastHotspot != null
 
     private var totalFishingXp: Long = 0L
 
@@ -85,9 +91,14 @@ object FishingSession : Feature {
             }
         }
 
-        registerSeaCreatureCatchEvent { _, isDoubleHook, _, _, _ ->
+        registerSeaCreatureCatchEvent { _, isDoubleHook, hotspot, _, _ ->
             handleActivity()
+            lastHotspot = hotspot
             scTracker.addEvent(if (isDoubleHook) 2.0 else 1.0)
+        }
+
+        registerLocationEvent {
+            lastHotspot = null
         }
 
         registerKeyboardEvent({ GeneralFishing.pauseKeybind }, onPress = { togglePause() })

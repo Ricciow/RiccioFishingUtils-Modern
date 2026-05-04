@@ -17,6 +17,7 @@ import cloud.glitchdev.rfu.events.managers.EntityRenderEvents.registerEntityRend
 import cloud.glitchdev.rfu.utils.World
 import gg.essential.universal.utils.toUnformattedString
 import cloud.glitchdev.rfu.constants.text.TextColor
+import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.data.other.OtherManager
 import cloud.glitchdev.rfu.data.other.data.StringSetEntry
 import cloud.glitchdev.rfu.utils.Chat
@@ -24,6 +25,8 @@ import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.events.managers.HotSpotEvents.HotSpotChangedEventManager.HotSpotChangedEvent
+import cloud.glitchdev.rfu.feature.fishing.FishingSession
+import cloud.glitchdev.rfu.utils.dsl.isUser
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
@@ -428,7 +431,7 @@ object HotSpotEvents : RegisteredEvent {
     }
 
     private fun handleHotspotMessage(sender: String, stat: String, x: Double, y: Double, z: Double) {
-        if (sender.equals(RiccioFishingUtils.mc.player?.name?.string, ignoreCase = true)) return
+        if (sender.isUser()) return
 
         val ignoredEntry = OtherManager.getField("ignored_users") { StringSetEntry() } as StringSetEntry
         if (ignoredEntry.contains(sender)) return
@@ -436,19 +439,22 @@ object HotSpotEvents : RegisteredEvent {
         val pos = Vec3(x, y, z)
         val type = HotspotType.fromBuff(stat)
 
-        Chat.sendMessage(
-            TextUtils.rfuLiteral("${TextColor.WHITE}Received a ")
-                .append(
-                    Component.literal(type.displayName)
-                        .withStyle(Style.EMPTY.withColor(type.color.rgb))
-                ).append(
-                    " ${TextColor.WHITE}hotspot's coordinates from ${TextColor.GOLD}$sender"
-                ).setStyle(
-                    Style.EMPTY
-                        .withHoverEvent(HoverEvent.ShowText(Component.literal("${TextColor.YELLOW}Click to ignore this user in the future!\n${TextColor.GRAY}(Will also block them from party finder and party commands)")))
-                        .withClickEvent(ClickEvent.RunCommand("/rfuignore add $sender"))
-                )
-        )
+        if(FishingSession.isHotspotFishing) {
+            Chat.sendMessage(
+                TextUtils.rfuLiteral("${TextColor.YELLOW}Received a ")
+                    .append(
+                        Component.literal("${TextEffects.BOLD}${type.displayName}")
+                            .withStyle(Style.EMPTY.withColor(type.color.rgb))
+                    ).append(
+                        " ${TextColor.YELLOW}hotspot's coordinates from ${TextColor.GOLD}$sender"
+                    ).setStyle(
+                        Style.EMPTY
+                            .withHoverEvent(HoverEvent.ShowText(Component.literal("${TextColor.YELLOW}Click to ignore this user in the future!\n${TextColor.GRAY}(Will also block them from party finder and party commands)")))
+                            .withClickEvent(ClickEvent.RunCommand("/rfuignore add $sender"))
+                    )
+            )
+        }
+
         addExternalHotspot(pos, type)
     }
 }
