@@ -1,4 +1,4 @@
-# v1.11.0 - ???
+# v1.11.0 - Pet Party
 
 ### Features:
 - Added a keybind to share hotspot coordinates.
