@@ -5,6 +5,7 @@ import cloud.glitchdev.rfu.party.PartyCommand
 import cloud.glitchdev.rfu.party.PartyCommandPermission
 import cloud.glitchdev.rfu.config.categories.PartySettings
 import cloud.glitchdev.rfu.utils.Chat
+import cloud.glitchdev.rfu.utils.Party
 
 @PartyCommand
 object TransferCommand : AbstractPartyCommand(
@@ -17,6 +18,9 @@ object TransferCommand : AbstractPartyCommand(
 
     override fun execute(sender: String, args: List<String>) {
         val target = if (args.isNotEmpty()) args[0] else sender
-        Chat.sendCommand("p transfer $target")
+
+        val transfer = Party.members.keys.find { it.contains(target) } ?: target
+
+        Chat.sendCommand("p transfer $transfer")
     }
 }

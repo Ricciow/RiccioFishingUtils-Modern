@@ -17,6 +17,7 @@
 - Made the downtime window minimum higher (1 minute -> 5 minutes)
   - Measurements get really inaccurate on smaller numbers
 - Made the hotspot received messages only appear if player is actively hotspot fishing.
+- Made !pt command transfer to imcomplete player names (e.g. !pt ric -> /p transfer ricciow) 
 
 ### Fixes:
 - Fixed Fishing Session XP/h being inaccurate with repeated xp numbers.
