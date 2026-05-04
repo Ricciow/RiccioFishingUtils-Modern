@@ -442,7 +442,7 @@ object HotSpotEvents : RegisteredEvent {
 
         val result = addExternalHotspot(pos, type)
 
-        if(FishingSession.isHotspotFishing && result) {
+        if(FishingSession.isHotspotFishing && HotSpotSettings.hotspotPointer && result) {
             Chat.sendMessage(
                 TextUtils.rfuLiteral("${TextColor.YELLOW}Received a ")
                     .append(
