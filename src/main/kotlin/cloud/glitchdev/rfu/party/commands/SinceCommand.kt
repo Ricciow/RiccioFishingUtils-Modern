@@ -21,7 +21,7 @@ object SinceCommand : AbstractPartyCommand(
     description = "Shows the count and time since the last catch of a specific sea creature or rare drop.",
     aliases = listOf("s"),
     responseTemplates = listOf(
-        "Since {name}: {count} catches | Last catch: {time} ago{drops}" to "&9&l{sender} &b- &6{1}&b:\n &f{2} &ecatches &7| &f{3} &eago{4}",
+        "Since {name}: {count} catches | Last catch: {time} ago" to "&9&l{sender} &b- &6{1}&b:\n &f{2} &ecatches &7| &f{3} &eago",
         "Target '{name}' not found." to "&cTarget &6'{1}' &cnot found.",
         "Usage: !since <target> [username]" to "&cUsage: &f!since &e<target> [username]",
         "Since {name}: {count} drops | Last drop: {time} ago" to "&9&l{sender} &b- &6{1}&b:\n &f{2} &edrops &7| &f{3} &eago"
@@ -91,29 +91,11 @@ object SinceCommand : AbstractPartyCommand(
                 val record = CatchTracker.catchHistory.getOrAdd(target)
                 val duration = Clock.System.now() - record.time
                 
-                val relatedDrops = RareDrops.entries.filter { it.relatedScs.contains(target) }
-                val relatedDyes = Dyes.entries.filter { it.relatedScs.contains(target) }
-                
-                var dropsString = ""
-                (relatedDrops + relatedDyes).forEach { drop ->
-                    val entry: DropHistory.IDropEntry? = when (drop) {
-                        is RareDrops -> DropManager.dropHistory.getOrAdd(drop)
-                        is Dyes -> DropManager.dropHistory.getOrAdd(drop)
-                        else -> null
-                    }
-                    if (entry != null && entry.history.isNotEmpty()) {
-                        val lastDrop = entry.history.last()
-                        val timeSince = (Clock.System.now() - lastDrop.date).toReadableString()
-                        dropsString += " | ${drop.displayName}: ${entry.history.size} (Last: $timeSince ago)"
-                    }
-                }
-
                 val response = formatResponse(
                     responseTemplates[0].first,
                     "name" to target.scDisplayName,
                     "count" to record.count,
-                    "time" to duration.toReadableString(),
-                    "drops" to dropsString
+                    "time" to duration.toReadableString()
                 )
                 sendPartyMessage(response)
             }
