@@ -68,7 +68,7 @@ object HotSpotEvents : RegisteredEvent {
         }
 
         //Feesh
-        registerGameEvent("""(?:\[[A-Z]+\+*] )?([0-9a-zA-Z_]{3,16}): x: (-?\d+), y: (-?\d+), z: (-?\d+) \| .{3} (.*?) Hotspot at .+""".toRegex()) { _, _, matches ->
+        registerGameEvent("""(?:\[[A-Z]+\+*] )?([0-9a-zA-Z_]{3,16}): x: (-?\d+), y: (-?\d+), z: (-?\d+) \| .\d+. (.*?) Hotspot""".toRegex()) { _, _, matches ->
             val groups = matches?.groupValues ?: return@registerGameEvent
             handleHotspotMessage(
                 sender = groups[1],
@@ -431,7 +431,9 @@ object HotSpotEvents : RegisteredEvent {
     }
 
     private fun handleHotspotMessage(sender: String, stat: String, x: Double, y: Double, z: Double) {
+        println("Message received")
         if (sender.isUser()) return
+        println("Is not user")
 
         val ignoredEntry = OtherManager.getField("ignored_users") { StringSetEntry() } as StringSetEntry
         if (ignoredEntry.contains(sender)) return
@@ -440,6 +442,7 @@ object HotSpotEvents : RegisteredEvent {
         val type = HotspotType.fromBuff(stat)
 
         if(FishingSession.isHotspotFishing) {
+            println("Is hotspotting")
             Chat.sendMessage(
                 TextUtils.rfuLiteral("${TextColor.YELLOW}Received a ")
                     .append(

@@ -23,6 +23,7 @@
 - Made Hotspot pointer accurately point to the best hotspot if there are 2 hotspots nearby
 - Made the party finder re-sync if it receives a duplicated party.
 - Fixed not re-validating auth upon reconnecting to rfu websocket
+- Fixed hotspot messages from feesh not being tracked
 
 ### Back-end
 - Added HotSpotChangedEvent
