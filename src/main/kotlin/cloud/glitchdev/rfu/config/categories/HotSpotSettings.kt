@@ -83,4 +83,9 @@ object HotSpotSettings : Category("Hot Spots") {
         description = Literal("Automatically shares the hotspot with your party when you're nearby!")
         condition = { shareHotspotAlert }
     }
+
+    var shareHotspotKey by key(0) {
+        name = Literal("Share Hotspot Keybind")
+        description = Literal("Keybind to manually share the nearest hotspot with your party.")
+    }
 }

@@ -89,6 +89,8 @@ class UIToggleCard(
                 "brain_food" -> "/assets/rfu/ui/brain_food.png"
                 "can_join" -> "/assets/rfu/ui/can_join.png"
                 "location" -> "/assets/rfu/ui/location.png"
+                "candy" -> "/assets/rfu/ui/candy.png"
+                "unique" -> "/assets/rfu/ui/looting_5.png"
                 else -> "/assets/rfu/ui/unknown.png"
             }
         }

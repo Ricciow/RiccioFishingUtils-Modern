@@ -1,34 +1,36 @@
-# v1.10.0 - Dog Edition
-
-### Note:
-- This is a re-release of the 1.10 version, I fixed the 1.21.11 crash with mixins.
+# v1.11.0 - Pet Party
 
 ### Features:
-- Removed 1.21.10 support
-- Added Hotspot Pointer with customizable priority.
-  - Use at your own risk! Off by default
-- Added hotspot sharing
-- Added /rfuignore to block from rfupf parties, hotspot sharing and party commands
-- Added party commands
-- Added /rfuscedit command to open the Sea Creature Edit window
-- **Added Dog Emoji :dog: (I'm not addicted, okay?!)**
-- Added manual pause keybind and optional auto-pause on downtime.
-- Made it so rfupf accepts the invite automatically (when accepted into a party)
+- Added a keybind to share hotspot coordinates.
+- Added Bestiary Display HUD (Requires the Bestiary Tablist to work).
+- Added !coords party command to send your current coordinates (Aliases: !c, !xyz)
+- Added !ptme alias to the !pt party command
+- Improved !since command:
+  - Added support for rare drops and dyes.
+  - Added optional <username> parameter to filter who should respond.
+  - Now displays related rare drops when checking a sea creature.
+- Added best pets to level (/rfupets)
+  - This is HUGE, i think :dog:
 
 ### Changes: 
-- Made the report/delete button in rfupf last a little bit so it is easier to click
-- Made the "name" field inside the sea creature settings be used in more places.
-- Fixed some descriptions and changed the default settings a bit
-- Changed "What is Mf" achievement to require 200 mf or less instead of 150 or less
+- Made the party finder creation area not reset upon having the party deleted and made it update the island with the current player's island
+- Made the downtime window minimum higher (1 minute -> 5 minutes)
+  - Measurements get really inaccurate on smaller numbers
+- Made the hotspot received messages only appear if player is actively hotspot fishing.
+- Made !pt command transfer to imcomplete player names (e.g. !pt ric -> /p transfer ricciow) 
 
 ### Fixes:
-- Made party tracking also work with /stream command and upon inviting someone
-- Moved party api requests to a different thread to prevent lag spikes
-- Fixed pet level up title triggering on normal chat messages
-- Delayed rare drop messages / dye achievements by 100ms so they appear below dye messages
+- Fixed Fishing Session XP/h being inaccurate with repeated xp numbers.
+- Made party commands not trigger on copied messages (e.g: Party > ricciow: Party > ricciow: !since vial)
+- Fixed /rfuignore not hiding join requests.
+- Made Hotspot pointer accurately point to the best hotspot if there are 2 hotspots nearby
+- Made the party finder re-sync if it receives a duplicated party.
+- Fixed not re-validating auth upon reconnecting to rfu websocket
+- Fixed hotspot messages from feesh not being tracked
+- Made togglewarp command only trigger if the user is leader
 
 ### Back-end
-- Unified pausing and downtime logic across all fishing trackers (XP, SC, and Ink).
-- Updated Sea Creature system to separate internal IDs from display names, fixing validation bugs and allowing for better back-end synchronization.
-- Added line rendering
-- Refactored rare drop title and chat messages to unify them
+- Added HotSpotChangedEvent
+- Optimized hotspot pointer code
+- Added rfu user agent to requests
+- Added exponential delay and jitter to reconnect to websocket client to prevent crashing the server as the number of users increases

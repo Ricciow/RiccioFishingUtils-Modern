@@ -13,7 +13,9 @@ import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.network.PartyWebSocket
 import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
+import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerMyPartyChangedEvent
+import kotlin.jvm.optionals.getOrNull
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.colors
 import cloud.glitchdev.rfu.gui.components.elementa.BoundingBoxConstraint
@@ -71,8 +73,19 @@ class UICreateParty : UIContainer() {
                 party = updatedParty
                 updateFields()
             } else {
-                party = FishingParty.blankParty()
-                updateFields()
+                updateButtonLabel()
+            }
+        }
+
+        registerLocationEvent { event ->
+            val islandName = event.map.getOrNull() ?: return@registerLocationEvent
+            val newIsland = FishingIslands.findIslandObject(islandName)
+            if (newIsland != null && newIsland != FishingIslands.OTHER && newIsland != FishingIslands.NOT_SB) {
+                if (party.island != newIsland) {
+                    party.island = newIsland
+                    islandField.setSelected(newIsland.toDataOption())
+                    updateLiquidVisibility(newIsland)
+                }
             }
         }
 
@@ -346,6 +359,7 @@ class UICreateParty : UIContainer() {
     private fun setupInteractions() {
         islandField.onSelect = { option ->
             val island = option.value as FishingIslands
+            party.island = island
             updateLiquidVisibility(island)
         }
     }

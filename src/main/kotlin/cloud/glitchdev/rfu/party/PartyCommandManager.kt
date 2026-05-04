@@ -12,6 +12,7 @@ import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.dsl.escapeForRegex
 import cloud.glitchdev.rfu.utils.dsl.removeRankTag
+import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import gg.essential.universal.utils.toUnformattedString
 import kotlinx.coroutines.delay
 
@@ -32,7 +33,7 @@ object PartyCommandManager : RegisteredEvent {
             
             val message = text.toUnformattedString()
             val prefix = PartySettings.partyCommandPrefix
-            val regex = """Party > ($PLAYER_REGEX): ${Regex.escape(prefix)}(\w+)(.*)""".toRegex()
+            val regex = """Party > ($PLAYER_REGEX): ${Regex.escape(prefix)}(\w+)(.*)""".toExactRegex()
             
             val match = regex.find(message) ?: return@registerAllowGameEvent true
             val matchGroups = match.groupValues

@@ -47,4 +47,37 @@ object Skills {
         if (level !in 0..MAX_LEVEL) return 0L
         return TOTAL_XP_ACCUMULATED_PREVIOUS_LEVEL[level]
     }
+
+    fun parseXp(str: String): Long {
+        var s = str.replace(",", "").trim()
+        val multiplier = when {
+            s.endsWith("k", ignoreCase = true) -> {
+                s = s.dropLast(1)
+                1_000L
+            }
+            s.endsWith("M", ignoreCase = true) -> {
+                s = s.dropLast(1)
+                1_000_000L
+            }
+            s.endsWith("B", ignoreCase = true) -> {
+                s = s.dropLast(1)
+                1_000_000_000L
+            }
+            else -> 1L
+        }
+        return (s.toDoubleOrNull()?.let { it * multiplier } ?: 0.0).toLong()
+    }
+
+    fun calculateTotalXp(currentXp: Long, requiredXp: Long): Long {
+        return if (requiredXp == 0L) {
+            getTotalXpAtLevel(50) + currentXp
+        } else {
+            val index = XP_REQUIRED_FOR_LEVEL.indexOf(requiredXp)
+            if (index != -1) {
+                getTotalXpAtLevel(index) + currentXp
+            } else {
+                0L
+            }
+        }
+    }
 }

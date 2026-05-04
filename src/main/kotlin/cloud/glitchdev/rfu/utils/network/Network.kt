@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.utils.network
 import cloud.glitchdev.rfu.RiccioFishingUtils
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.RiccioFishingUtils.API_URL
+import cloud.glitchdev.rfu.RiccioFishingUtils.RFU_VERSION
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
@@ -49,6 +50,7 @@ object Network : RegisteredEvent {
     private var token: String? = null
     private var expiresAt : Long? = null
     private val client = HttpClient.newHttpClient()
+    private val USER_AGENT = "Java-http-client/${System.getProperty("java.version")} rfu:${RFU_VERSION.friendlyString}"
 
     val isOnHypixel: Boolean
         get() = DevSettings.bypassHypixelCheck || mc.currentServer?.ip?.lowercase()?.endsWith("hypixel.net") == true
@@ -73,10 +75,16 @@ object Network : RegisteredEvent {
 
     fun getRequest(url : String, useToken : Boolean = false, callback: (Response) -> Unit) {
         try {
-            val request = HttpRequest.newBuilder()
+            val requestBuilder = HttpRequest.newBuilder()
                 .uri(URI.create(url))
+                .header("User-Agent", USER_AGENT)
                 .GET()
-                .build()
+
+            if (useToken) {
+                requestBuilder.header("Authorization", "Bearer $token")
+            }
+
+            val request = requestBuilder.build()
 
             client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .handle { res, ex ->
@@ -99,6 +107,7 @@ object Network : RegisteredEvent {
                 .uri(URI.create(url))
                 .POST(body)
                 .header("Content-Type", "Application/Json")
+                .header("User-Agent", USER_AGENT)
 
             if(useToken) {
                 requestBuilder.header("Authorization", "Bearer $token")
@@ -127,6 +136,7 @@ object Network : RegisteredEvent {
                 .uri(URI.create(url))
                 .PUT(body)
                 .header("Content-Type", "Application/Json")
+                .header("User-Agent", USER_AGENT)
 
             if(useToken) {
                 requestBuilder.header("Authorization", "Bearer $token")
@@ -155,6 +165,7 @@ object Network : RegisteredEvent {
                 .uri(URI.create(url))
                 .DELETE()
                 .header("Content-Type", "Application/Json")
+                .header("User-Agent", USER_AGENT)
 
             if(useToken) {
                 requestBuilder.header("Authorization", "Bearer $token")

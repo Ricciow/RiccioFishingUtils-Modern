@@ -17,12 +17,16 @@ import cloud.glitchdev.rfu.events.managers.EntityRenderEvents.registerEntityRend
 import cloud.glitchdev.rfu.utils.World
 import gg.essential.universal.utils.toUnformattedString
 import cloud.glitchdev.rfu.constants.text.TextColor
+import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.data.other.OtherManager
 import cloud.glitchdev.rfu.data.other.data.StringSetEntry
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.HotSpotEvents.HotSpotChangedEventManager.HotSpotChangedEvent
+import cloud.glitchdev.rfu.feature.fishing.FishingSession
+import cloud.glitchdev.rfu.utils.dsl.isUser
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
@@ -31,12 +35,10 @@ import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.DustParticleOptions
 import net.minecraft.core.particles.ParticleTypes
-import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
-import java.awt.Color
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.abs
@@ -64,7 +66,7 @@ object HotSpotEvents : RegisteredEvent {
         }
 
         //Feesh
-        registerGameEvent("""(?:\[[A-Z]+\+*] )?([0-9a-zA-Z_]{3,16}): x: (-?\d+), y: (-?\d+), z: (-?\d+) \| .{3} (.*?) Hotspot at .+""".toRegex()) { _, _, matches ->
+        registerGameEvent("""(?:\[[A-Z]+\+*] )?([0-9a-zA-Z_]{3,16}): x: (-?\d+), y: (-?\d+), z: (-?\d+) \| .\d+. (.*?) Hotspot""".toRegex()) { _, _, matches ->
             val groups = matches?.groupValues ?: return@registerGameEvent
             handleHotspotMessage(
                 sender = groups[1],
@@ -264,6 +266,14 @@ object HotSpotEvents : RegisteredEvent {
                 }
             }
         }
+
+        registerHotSpotDetectedEvent {
+            HotSpotChangedEventManager.runTasks(hotspots.values.toList())
+        }
+
+        registerHotSpotDisposeEvent {
+            HotSpotChangedEventManager.runTasks(hotspots.values.toList())
+        }
     }
 
     fun registerHotSpotDetectedEvent(priority: Int = 20, callback: (Hotspot) -> Unit): HotSpotDetectedEventManager.HotSpotDetectedEvent {
@@ -272,6 +282,10 @@ object HotSpotEvents : RegisteredEvent {
 
     fun registerHotSpotDisposeEvent(priority: Int = 20, callback: (Hotspot) -> Unit): HotSpotDisposedEventManager.HotSpotDisposedEvent {
         return HotSpotDisposedEventManager.register(priority, callback)
+    }
+
+    fun registerHotSpotChangedEvent(priority: Int = 20, callback: (List<Hotspot>) -> Unit): HotSpotChangedEvent {
+        return HotSpotChangedEventManager.register(priority, callback)
     }
 
     fun getHotspotAt(pos: Vec3): Hotspot? {
@@ -285,18 +299,20 @@ object HotSpotEvents : RegisteredEvent {
 
     fun getAllHotspots(): Collection<Hotspot> = hotspots.values
 
-    fun addExternalHotspot(pos: Vec3, type: HotspotType) {
+    fun addExternalHotspot(pos: Vec3, type: HotspotType) : Boolean {
         val existing = getHotspotAt(pos)
         if (existing != null) {
             if (existing.type == HotspotType.UNKNOWN && type != HotspotType.UNKNOWN) {
                 existing.buff = type.displayName
+                return true
+            } else {
+                return false
             }
-            return
         }
 
         val blockPos = BlockPos.containing(pos.x, pos.y, pos.z)
         val uuid = UUID.nameUUIDFromBytes("virtual_${blockPos}".toByteArray())
-        if (hotspots.containsKey(uuid)) return
+        if (hotspots.containsKey(uuid)) return false
 
         val hotspot = Hotspot(uuid, pos, type.displayName, 0f, LiquidTypes.WATER).apply {
             isNotified = true
@@ -306,6 +322,7 @@ object HotSpotEvents : RegisteredEvent {
         hotspots[uuid] = hotspot
         virtualUuids.add(uuid)
         HotSpotDetectedEventManager.runTasks(hotspot)
+        return true
     }
 
     object HotSpotDetectedEventManager : AbstractEventManager<(Hotspot) -> Unit, HotSpotDetectedEventManager.HotSpotDetectedEvent>() {
@@ -343,6 +360,26 @@ object HotSpotEvents : RegisteredEvent {
             priority: Int = 20,
             callback: (Hotspot) -> Unit
         ) : ManagedTask<(Hotspot) -> Unit, HotSpotDisposedEvent>(priority, callback) {
+            override fun register() = submitTask(this)
+            override fun unregister() = removeTask(this)
+        }
+    }
+
+    object HotSpotChangedEventManager : AbstractEventManager<(List<Hotspot>) -> Unit, HotSpotChangedEvent>() {
+        override val runTasks: (List<Hotspot>) -> Unit = { hotspots ->
+            safeExecution {
+                tasks.forEach { it.callback(hotspots) }
+            }
+        }
+
+        fun register(priority: Int = 20, callback: (List<Hotspot>) -> Unit): HotSpotChangedEvent {
+            return HotSpotChangedEvent(priority, callback).register()
+        }
+
+        class HotSpotChangedEvent(
+            priority: Int = 20,
+            callback: (List<Hotspot>) -> Unit
+        ) : ManagedTask<(List<Hotspot>) -> Unit, HotSpotChangedEvent>(priority, callback) {
             override fun register() = submitTask(this)
             override fun unregister() = removeTask(this)
         }
@@ -395,7 +432,7 @@ object HotSpotEvents : RegisteredEvent {
     }
 
     private fun handleHotspotMessage(sender: String, stat: String, x: Double, y: Double, z: Double) {
-        if (sender.equals(RiccioFishingUtils.mc.player?.name?.string, ignoreCase = true)) return
+        if (sender.isUser()) return
 
         val ignoredEntry = OtherManager.getField("ignored_users") { StringSetEntry() } as StringSetEntry
         if (ignoredEntry.contains(sender)) return
@@ -403,19 +440,22 @@ object HotSpotEvents : RegisteredEvent {
         val pos = Vec3(x, y, z)
         val type = HotspotType.fromBuff(stat)
 
-        Chat.sendMessage(
-            TextUtils.rfuLiteral("${TextColor.WHITE}Received a ")
-                .append(
-                    Component.literal(type.displayName)
-                        .withStyle(Style.EMPTY.withColor(type.color.rgb))
-                ).append(
-                    " ${TextColor.WHITE}hotspot's coordinates from ${TextColor.GOLD}$sender"
-                ).setStyle(
-                    Style.EMPTY
-                        .withHoverEvent(HoverEvent.ShowText(Component.literal("${TextColor.YELLOW}Click to ignore this user in the future!\n${TextColor.GRAY}(Will also block them from party finder and party commands)")))
-                        .withClickEvent(ClickEvent.RunCommand("/rfuignore add $sender"))
-                )
-        )
-        addExternalHotspot(pos, type)
+        val result = addExternalHotspot(pos, type)
+
+        if(FishingSession.isHotspotFishing && HotSpotSettings.hotspotPointer && result) {
+            Chat.sendMessage(
+                TextUtils.rfuLiteral("${TextColor.YELLOW}Received a ")
+                    .append(
+                        Component.literal("${TextEffects.BOLD}${type.displayName}")
+                            .withStyle(Style.EMPTY.withColor(type.color.rgb))
+                    ).append(
+                        " ${TextColor.YELLOW}hotspot's coordinates from ${TextColor.GOLD}$sender"
+                    ).setStyle(
+                        Style.EMPTY
+                            .withHoverEvent(HoverEvent.ShowText(Component.literal("${TextColor.YELLOW}Click to ignore this user in the future!\n${TextColor.GRAY}(Will also block them from party finder and party commands)")))
+                            .withClickEvent(ClickEvent.RunCommand("/rfuignore add $sender"))
+                    )
+            )
+        }
     }
 }

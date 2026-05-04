@@ -17,10 +17,10 @@ import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerJoinRequest
 import cloud.glitchdev.rfu.events.managers.PartyEvents
 import cloud.glitchdev.rfu.events.managers.PartyEvents.registerOnPartyChangeEvent
 import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
-import cloud.glitchdev.rfu.feature.other.ignore.IgnoreUtils
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.utils.command.AbstractCommand
 import cloud.glitchdev.rfu.utils.command.Command
+import cloud.glitchdev.rfu.utils.dsl.isIgnored
 import cloud.glitchdev.rfu.utils.dsl.removeRankTag
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import cloud.glitchdev.rfu.utils.network.PartyWebSocket
@@ -51,28 +51,28 @@ object Party : RegisteredEvent {
 
     override fun register() {
         hypixelModAPI.createHandler(ClientboundPartyInfoPacket::class.java) { event ->
-            inParty = event.isInParty
-            isLeader = event.leader.getOrNull()?.equals(mc.player?.uuid) ?: false
-            
-            members.clear()
-            if (inParty) {
-                event.memberMap.forEach { uuid, member ->
-                    getUsernameFromUUID(uuid)?.let { members[it] = member.role }
-                }
-            }
-            executePartyChange()
+            Coroutines.launch {
+                inParty = event.isInParty
+                isLeader = event.leader.getOrNull()?.equals(mc.player?.uuid) ?: false
 
-            val callbacks = partyInfoCallbacks.toList()
-            partyInfoCallbacks.clear()
-            callbacks.forEach { it() }
+                members.clear()
+                if (inParty) {
+                    event.memberMap.forEach { uuid, member ->
+                        getUsernameFromUUID(uuid)?.let { members[it] = member.role }
+                    }
+                }
+                executePartyChange()
+
+                val callbacks = partyInfoCallbacks.toList()
+                partyInfoCallbacks.clear()
+                callbacks.forEach { it() }
+            }
         }
 
         registerLocationEvent {
             if(!wasInServer) {
                 wasInServer = true
-                Coroutines.launch { 
-                    hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
-                }
+                requestPartyInfo()
             }
         }
 
@@ -97,9 +97,7 @@ object Party : RegisteredEvent {
                 }
             }
             requestedUser = null
-            Coroutines.launch { 
-                hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
-            }
+            requestPartyInfo()
         }
 
         registerGameEvent("""($PLAYER_REGEX) joined the party\.""".toExactRegex()) { _, _, matches ->
@@ -115,9 +113,7 @@ object Party : RegisteredEvent {
                 }
                 pendingPFInvites.remove(player)
             }
-            Coroutines.launch { 
-                hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
-            }
+            requestPartyInfo()
         }
 
         registerGameEvent("""Party > ($PLAYER_REGEX): .*""".toExactRegex()) { _, _, matches ->
@@ -137,35 +133,25 @@ object Party : RegisteredEvent {
                     "|You're not in a party right now\\.")
                 .toExactRegex()
         ) { _, _, _ ->
-            Coroutines.launch { 
-                hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
-            }
+            requestPartyInfo()
         }
 
         registerGameEvent("""Created a public party! Players can join with /party join .+""".toExactRegex()) { _, _, _ ->
-            Coroutines.launch { 
-                hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
-            }
+            requestPartyInfo()
         }
 
         registerGameEvent("""$PLAYER_REGEX invited $PLAYER_REGEX to the party! They have 60 seconds to accept.""".toExactRegex()) { _, _, _ ->
             if(!inParty) {
-                Coroutines.launch {
-                    hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
-                }
+                requestPartyInfo()
             }
         }
 
         registerGameEvent("""The party was transferred to ($PLAYER_REGEX) by ($PLAYER_REGEX)""".toExactRegex()) { _, _, _ ->
-            Coroutines.launch { 
-                hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
-            }
+            requestPartyInfo()
         }
 
         registerGameEvent("""The party was transferred to ($PLAYER_REGEX) because ($PLAYER_REGEX) left""".toExactRegex()) { _, _, _ ->
-            Coroutines.launch { 
-                hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
-            }
+            requestPartyInfo()
         }
 
         registerGameEvent(
@@ -174,9 +160,7 @@ object Party : RegisteredEvent {
                     "|has been removed from the party\\.)"
                     ).toExactRegex()
         ) { _, _, _ ->
-            Coroutines.launch { 
-                hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
-            }
+            requestPartyInfo()
         }
 
         registerGameEvent("$PLAYER_REGEX enabled All Invite".toExactRegex()) { _, _, _ ->
@@ -192,7 +176,7 @@ object Party : RegisteredEvent {
         registerAllowGameEvent("From ($PLAYER_REGEX): \\[RFUPF\\] I would like to join your party!".toExactRegex()) { _, _, matches ->
             val matchGroups = matches?.groupValues ?: return@registerAllowGameEvent true
             val player = matchGroups[1].removeRankTag()
-            if (IgnoreUtils.getIgnoredEntry().contains(player)) return@registerAllowGameEvent false
+            if (player.isIgnored()) return@registerAllowGameEvent false
             promptInvite(player)
             return@registerAllowGameEvent false
         }

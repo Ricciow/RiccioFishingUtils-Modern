@@ -78,4 +78,10 @@ object PartySettings : Category("Party") {
         description = Literal("Enables or disables the !pt party command.")
         condition = { togglePartyCommands }
     }
+
+    var toggleCoordsCommand by boolean(true) {
+        name = Literal("Enable Coords Command")
+        description = Literal("Enables or disables the !coords party command.")
+        condition = { togglePartyCommands }
+    }
 }

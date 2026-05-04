@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.utils.dsl
 
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextStyle
+import cloud.glitchdev.rfu.feature.other.ignore.IgnoreUtils
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.User
 import net.minecraft.network.chat.ClickEvent
@@ -40,6 +41,10 @@ fun String.formatTemplate(vararg vars: Pair<String, Any>) : String {
 
 fun String.isUser() : Boolean {
     return User.isUser(this)
+}
+
+fun String.isIgnored() : Boolean {
+    return IgnoreUtils.getIgnoredEntry().contains(this)
 }
 
 fun String.toInteractiveText(command: String, hoverText: Component = Component.literal("Click to execute: $command")): Component {

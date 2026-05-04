@@ -84,19 +84,10 @@ object FishingGodAchievement : NumericStageAchievement() {
             val currentXpStr = matches?.groupValues?.getOrNull(2) ?: return@registerGameEvent
             val requiredXpStr = matches.groupValues.getOrNull(3) ?: return@registerGameEvent
 
-            val x = parseXp(currentXpStr)
-            val y = parseXp(requiredXpStr)
+            val x = Skills.parseXp(currentXpStr)
+            val y = Skills.parseXp(requiredXpStr)
 
-            val calculatedTotalXp = if (y == 0L) {
-                Skills.getTotalXpAtLevel(50) + x
-            } else {
-                val index = Skills.XP_REQUIRED_FOR_LEVEL.indexOf(y)
-                if (index != -1) {
-                    Skills.getTotalXpAtLevel(index) + x
-                } else {
-                    0L
-                }
-            }
+            val calculatedTotalXp = Skills.calculateTotalXp(x, y)
 
             if (calculatedTotalXp > totalFishingXp) {
                 totalFishingXp = calculatedTotalXp
@@ -115,7 +106,7 @@ object FishingGodAchievement : NumericStageAchievement() {
                 if (loreText.contains("Max Skill level reached!")) {
                     val match = LORE_TOTAL_XP_REGEX.findAll(loreText).lastOrNull()
                     if (match != null) {
-                        parsedTotalXp = parseXp(match.groupValues[1])
+                        parsedTotalXp = Skills.parseXp(match.groupValues[1])
                     }
                 } else {
                     val levelMatch = LORE_LEVEL_REGEX.find(loreText)
@@ -124,7 +115,7 @@ object FishingGodAchievement : NumericStageAchievement() {
                     if (levelMatch != null && progressMatch != null) {
                         val nextLevel = levelMatch.groupValues[1].toInt()
                         val currentLevel = nextLevel - 1
-                        val currentXp = parseXp(progressMatch.groupValues[1])
+                        val currentXp = Skills.parseXp(progressMatch.groupValues[1])
                         parsedTotalXp = Skills.getTotalXpAtLevel(currentLevel) + currentXp
                     }
                 }
@@ -134,26 +125,6 @@ object FishingGodAchievement : NumericStageAchievement() {
                 }
             }
         })
-    }
-
-    private fun parseXp(str: String): Long {
-        var s = str.replace(",", "").trim()
-        val multiplier = when {
-            s.endsWith("k", ignoreCase = true) -> {
-                s = s.dropLast(1)
-                1_000L
-            }
-            s.endsWith("M", ignoreCase = true) -> {
-                s = s.dropLast(1)
-                1_000_000L
-            }
-            s.endsWith("B", ignoreCase = true) -> {
-                s = s.dropLast(1)
-                1_000_000_000L
-            }
-            else -> 1L
-        }
-        return (s.toDoubleOrNull()?.let { it * multiplier } ?: 0.0).toLong()
     }
 
     override fun saveState(): Map<String, Any> {

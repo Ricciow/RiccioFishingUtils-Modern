@@ -1,12 +1,10 @@
 package cloud.glitchdev.rfu.party.commands
 
-import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.party.AbstractPartyCommand
 import cloud.glitchdev.rfu.party.PartyCommand
 import cloud.glitchdev.rfu.party.WarpKickManager
 import cloud.glitchdev.rfu.config.categories.PartySettings
-import cloud.glitchdev.rfu.utils.Chat
-import cloud.glitchdev.rfu.utils.TextUtils
+import cloud.glitchdev.rfu.party.PartyCommandPermission
 
 @PartyCommand
 object ToggleWarpCommand : AbstractPartyCommand(
@@ -17,7 +15,7 @@ object ToggleWarpCommand : AbstractPartyCommand(
         "You will no longer be warped." to "&aYou will no longer be warped.",
         "You will be warped now." to "&aYou will be warped now."
     ),
-    permission = emptyList()
+    permission = listOf(PartyCommandPermission.LEADER_ONLY)
 ) {
     override fun isEnabled() = PartySettings.toggleToggleWarpCommand
 

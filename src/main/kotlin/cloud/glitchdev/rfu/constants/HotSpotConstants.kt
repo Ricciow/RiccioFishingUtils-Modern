@@ -9,7 +9,7 @@ object HotSpotConstants {
     const val RANGE_DISPOSE_DISTANCE = 25.0
     const val RANGE_ENTRY_TIMEOUT_MS = 2000L
     const val INACTIVITY_TIMEOUT_MS = 200L
-    const val EXTERNAL_TIMEOUT_MS = 300000L // 5 minutes
+    const val EXTERNAL_TIMEOUT_MS = 30000L //30 seconds
     
     const val PARTICLE_MAX_VERTICAL_DISTANCE = 6.0
     const val PARTICLE_MAX_HORIZONTAL_DISTANCE = 6.0
