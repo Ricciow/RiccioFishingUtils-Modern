@@ -97,6 +97,20 @@ object RFUSettings : ConfigKt("rfu/settings") {
         }
 
         button {
+            title = "Best Pets to Level"
+            description = "Click it or use /rfupets!"
+            text = "Open"
+
+            onClick {
+                mc.schedule {
+                    mc.setScreen(null)
+
+                    Chat.sendCommand("rfupets")
+                }
+            }
+        }
+
+        button {
             title = "Move Hud"
             description = "Click it or use /rfumove!"
             text = "Move"
