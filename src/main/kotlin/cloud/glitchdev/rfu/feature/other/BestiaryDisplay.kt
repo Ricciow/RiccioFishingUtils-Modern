@@ -10,7 +10,7 @@ import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 
 @RFUFeature
 object BestiaryDisplay : Feature {
-    private val bestiaryRegex = """([\w\s]+) (\d+): (\d+)/(\d+)""".toExactRegex()
+    private val bestiaryRegex = """([\w\s]+) (\d+): ([\d,]+)/([\d,]+)""".toExactRegex()
 
     var bestiaries = listOf<BestiaryEntry>()
         private set
@@ -22,8 +22,8 @@ object BestiaryDisplay : Feature {
                 
                 val name = result.groupValues[1].trim()
                 val currentTier = result.groupValues[2].toInt()
-                val current = result.groupValues[3].toInt()
-                val goal = result.groupValues[4].toInt()
+                val current = result.groupValues[3].replace(",", "").toInt()
+                val goal = result.groupValues[4].replace(",", "").toInt()
                 
                 BestiaryEntry(name, currentTier, current, goal)
             }
