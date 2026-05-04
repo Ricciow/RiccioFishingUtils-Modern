@@ -24,6 +24,7 @@
 - Made the party finder re-sync if it receives a duplicated party.
 - Fixed not re-validating auth upon reconnecting to rfu websocket
 - Fixed hotspot messages from feesh not being tracked
+- Made togglewarp command only trigger if the user is leader
 
 ### Back-end
 - Added HotSpotChangedEvent
