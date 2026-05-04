@@ -41,6 +41,7 @@ object HotspotPointer : Feature {
         }
 
         registerTickEvent(interval = 10) {
+            if(!FishingSession.isHotspotFishing) return@registerTickEvent
             val playerPos = mc.player?.position() ?: return@registerTickEvent
 
             if (currentHotspots.isEmpty()) {
