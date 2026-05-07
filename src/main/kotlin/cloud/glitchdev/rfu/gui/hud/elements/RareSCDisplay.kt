@@ -21,7 +21,7 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Clock
 
 import cloud.glitchdev.rfu.feature.fishing.FishingSession
-import cloud.glitchdev.rfu.feature.fishing.BaitManager
+import cloud.glitchdev.rfu.events.managers.BaitEventManager
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.events.managers.HotSpotEvents
@@ -71,7 +71,7 @@ object RareSCDisplay : AbstractTextHudElement("rareSCDisplay") {
         if (lastPos == Vec3.ZERO && player != null) {
             lastPos = player.position()
             lastHotspot = HotSpotEvents.getHotspotAt(lastPos)
-            lastBait = BaitManager.lastBait
+            lastBait = BaitEventManager.lastBait
             lastLiquid = lastHotspot?.liquid
         }
 

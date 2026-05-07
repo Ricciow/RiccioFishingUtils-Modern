@@ -2,6 +2,7 @@
 
 ### Features:
 - Added Cocoon message hiding option.
+- Added a no bait alert when fishing without bait in the fishing bag
 
 ### Changes: 
 

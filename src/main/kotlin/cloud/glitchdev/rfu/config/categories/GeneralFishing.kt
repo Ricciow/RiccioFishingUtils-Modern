@@ -185,4 +185,11 @@ object GeneralFishing : Category("General Fishing") {
         slider = true
         condition = { failCastAlert && failCastSound }
     }
+
+    var noBaitAlert by observable(boolean(true) {
+        name = Literal("No Bait Alert")
+        description = Literal("Sends an alert when you're fishing without bait.")
+    }) { _, _ ->
+        reloadScreen()
+    }
 }
