@@ -19,6 +19,7 @@ object HideMessages : Feature {
     val BLOCKS_REGEX = """There are blocks in the way!""".toExactRegex()
     val LOOTSHARE_REGEX = """LOOT SHARE You received loot for assisting (.+?)!""".toExactRegex()
     val THUNDER_SPARK_REGEX = """Try clicking this Thunder Spark with an Empty Thunder Bottle to collect it!""".toExactRegex()
+    val COCOON_REGEX = """CAUGHT! You cocooned a .+!""".toExactRegex()
 
     override fun onInitialize() {
         registerAllowGameEvent(SC_MESSAGE_REGEX) { _, _, _ ->
@@ -60,6 +61,11 @@ object HideMessages : Feature {
         registerAllowGameEvent(THUNDER_SPARK_REGEX) { _, _, _ ->
             return@registerAllowGameEvent !(OtherSettings.hideMessages &&
                     OtherSettings.hiddenMessageTypes.contains(MessageTypes.THUNDER_SPARK))
+        }
+
+        registerAllowGameEvent(COCOON_REGEX) { _, _, _ ->
+            return@registerAllowGameEvent !(OtherSettings.hideMessages &&
+                    OtherSettings.hiddenMessageTypes.contains(MessageTypes.COCOON))
         }
     }
 }
