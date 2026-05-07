@@ -1,6 +1,5 @@
 package cloud.glitchdev.rfu.constants
 
-import cloud.glitchdev.rfu.config.seacreatures.SeaCreatureSettingsManager
 import cloud.glitchdev.rfu.model.data.DataOption
 import cloud.glitchdev.rfu.data.fishing.Hotspot
 import com.google.gson.TypeAdapter
@@ -57,10 +56,6 @@ class SeaCreatures(
         fun register(sc: SeaCreatures) {
             registry[sc.scName] = sc
             displayNameRegistry[sc.scDisplayName.lowercase()] = sc
-        }
-
-        fun isInIslands(sc: SeaCreatures, category: SeaCreatureCategory): Boolean {
-            return category.islands.any { it in sc.category.islands }
         }
     }
 }

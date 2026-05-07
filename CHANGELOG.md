@@ -7,6 +7,7 @@
 ### Changes: 
 
 ### Fixes:
+- Fixed catch history incorrectly incrementing counts for creatures not catchable on the current island but shares an island that does.
 - Made the LOOT SHARE! message not trigger on bait present on the 9th hotbar slot
 
 ### Back-end

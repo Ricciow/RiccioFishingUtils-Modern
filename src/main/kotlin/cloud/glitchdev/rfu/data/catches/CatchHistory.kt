@@ -4,6 +4,7 @@ import cloud.glitchdev.rfu.constants.SeaCreatures
 import cloud.glitchdev.rfu.constants.Bait
 import cloud.glitchdev.rfu.constants.LiquidTypes
 import cloud.glitchdev.rfu.data.fishing.Hotspot
+import cloud.glitchdev.rfu.utils.World
 import net.minecraft.world.phys.Vec3
 import kotlin.time.Clock
 import kotlin.time.Instant
@@ -55,9 +56,10 @@ class CatchHistory {
         val currentRecord = getOrAdd(sc)
 
         if(!dh) {
+            val currentIsland = World.island
             catches.forEach { record ->
                 val recordSc = SeaCreatures.entries.find { it.scName == record.name }
-                if (recordSc != null && SeaCreatures.isInIslands(recordSc, sc.category)) {
+                if (recordSc != null && currentIsland != null && recordSc.category.islands.contains(currentIsland)) {
                     if (recordSc.condition(hotspot, pos, bait)) {
                         record.count += 1
                     }
