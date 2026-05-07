@@ -1,83 +1,57 @@
 package cloud.glitchdev.rfu.feature.fishing
 
-import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.constants.Bait
-import cloud.glitchdev.rfu.events.managers.BobberLiquidEvents.registerBobberLiquidEvent
-import cloud.glitchdev.rfu.events.managers.EntityAddedEvents.registerEntityAddedEvent
-import cloud.glitchdev.rfu.events.managers.EntityDataEvents.registerEntityDataEvent
+import cloud.glitchdev.rfu.events.managers.SetSlotEvents.registerSetSlotEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
-import net.minecraft.world.entity.item.ItemEntity
-import net.minecraft.world.entity.projectile.FishingHook
+import cloud.glitchdev.rfu.utils.dsl.toExactRegex
+import gg.essential.universal.utils.toUnformattedString
+import net.minecraft.core.component.DataComponents
 
 @RFUFeature
 object BaitManager : Feature {
     var lastBait: Bait? = null
+    private var currentBait : Bait? = null
+    var lastCount : Int? = null
+    private var currentCount : Int? = null
+
+    private const val PLAYER_INVENTORY_ID = 0
+    private val BAIT_COUNT_REGEX = """Bait Remaining: ([\d,]+)""".toExactRegex()
 
     override fun onInitialize() {
-        registerEntityAddedEvent { entity ->
-            val player = mc.player ?: return@registerEntityAddedEvent
+        registerSetSlotEvent { id , slot, item ->
+            if (id != PLAYER_INVENTORY_ID || item.isEmpty) return@registerSetSlotEvent
+            if (slot != 44) return@registerSetSlotEvent
+            val bait = Bait.fromName(item.hoverName.string)
 
-            // Reset bait when player casts a new bobber
-            if (entity is FishingHook && entity.owner == player) {
+            if(bait == null) {
                 lastBait = null
+                currentBait = null
+                lastCount = null
+                currentCount = null
+                return@registerSetSlotEvent
             }
-        }
 
-        registerEntityDataEvent { entity ->
-            if (entity !is ItemEntity) return@registerEntityDataEvent
-            val player = mc.player ?: return@registerEntityDataEvent
-            val bobber = player.fishing ?: return@registerEntityDataEvent
-
-            val stack = entity.item
-            if (stack.isEmpty) return@registerEntityDataEvent
-
-            val bait = Bait.fromName(stack.hoverName.string) ?: return@registerEntityDataEvent
-
-            if (entity.distanceTo(bobber) < 5.0) {
+            if(lastBait == null) {
                 lastBait = bait
+            } else {
+                lastBait = currentBait
             }
+
+            lastBait = bait
+
+            val loreLines = item[DataComponents.LORE]?.lines ?: return@registerSetSlotEvent
+            val count = loreLines.mapNotNull {
+                BAIT_COUNT_REGEX.find(it.toUnformattedString())?.groupValues?.getOrNull(1)?.replace(",", "")
+            }.getOrNull(0)?.toIntOrNull() ?: return@registerSetSlotEvent
+
+            if(lastCount == null || (lastCount ?: 0) <= count ) {
+                lastCount = count
+            } else {
+                lastCount = currentCount
+            }
+
+            currentCount = count
         }
-
-
-        registerBobberLiquidEvent { bobber ->
-            val itemBait = findBaitNear(bobber)
-            if (itemBait != null) {
-                lastBait = itemBait
-                return@registerBobberLiquidEvent
-            }
-
-            if (lastBait == null) {
-                lastBait = findBaitInInventory()
-            }
-        }
-    }
-
-    private fun findBaitNear(bobber: FishingHook): Bait? {
-        val speed = bobber.deltaMovement.length()
-        val inflation = (speed * 5.0).coerceAtLeast(1.0)
-        val aabb = bobber.boundingBox.inflate(inflation)
-        val itemsNearBobber = mc.level?.getEntitiesOfClass(ItemEntity::class.java, aabb)
-
-        itemsNearBobber?.forEach { itemEntity ->
-            val stack = itemEntity.item
-            if (stack.isEmpty) return@forEach
-            Bait.fromName(stack.hoverName.string)?.let {
-                return it
-            }
-        }
-        return null
-    }
-
-    private fun findBaitInInventory(): Bait? {
-        val player = mc.player ?: return null
-        for (i in 0 until player.inventory.containerSize) {
-            val stack = player.inventory.getItem(i)
-            if (stack.isEmpty) continue
-            Bait.fromName(stack.hoverName.string)?.let {
-                return it
-            }
-        }
-        return null
     }
 }
