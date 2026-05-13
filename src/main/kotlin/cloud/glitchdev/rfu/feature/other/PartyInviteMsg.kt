@@ -11,6 +11,7 @@ import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.Coroutines
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.dsl.isUser
+import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import kotlinx.coroutines.delay
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
@@ -22,6 +23,7 @@ object PartyInviteMsg : Feature {
     val INVITE_REGEX = """^((lf|any(one)?|who('s)?)\s(((cish|fish|ink)(ing|ers?)?)|((crimson\s|ci\s)?p(arty|arties)?(\sinv(ite)?)?)|inv(ite)?)|p(arty)?|inv(ite)?|((p(arty)?|inv(ite)?)\sme)|(parties)|me+(\sme+)*)[?.!]?$""".toRegex(RegexOption.IGNORE_CASE)
     private const val PLAYER_REGEX = """(?:\[\d+\](?: .) )?(?:\[[A-Z]+\+*\] )?(\w{3,16})(?: \[\w+\])?"""
     val CHAT_REGEX = """(?:(Guild|Officer|Co-op) > )?$PLAYER_REGEX: (.+)""".toRegex()
+    val BOOP_REGEX = """From $PLAYER_REGEX: Boop!""".toExactRegex()
 
     private val ME_ONLY_REGEX = """^(me+(\sme+)*)[?.!]?$""".toRegex(RegexOption.IGNORE_CASE)
 
@@ -44,18 +46,29 @@ object PartyInviteMsg : Feature {
 
             if (isMeMessage && !isPrivateChat) return@registerGameEvent
 
-            val message = TextUtils.rfuLiteral("[Party $playerName]", TextColor.LIGHT_GREEN, TextEffects.BOLD)
-                .withStyle(
-                    Style.EMPTY
-                        .withHoverEvent(HoverEvent.ShowText(Component.literal("/p $playerName")))
-                        .withClickEvent(ClickEvent.RunCommand("/p $playerName"))
-                )
+            sendInviteMessage(playerName)
+        }
 
-            Coroutines.launch {
-                delay(10)
-                mc.execute {
-                    Chat.sendMessage(message)
-                }
+        registerGameEvent(BOOP_REGEX) { _, _, matches ->
+            if (!OtherSettings.partyInviteMsgs) return@registerGameEvent
+            val player = matches?.groupValues?.getOrNull(1) ?: return@registerGameEvent
+            if (player.isUser()) return@registerGameEvent
+            sendInviteMessage(player)
+        }
+    }
+
+    private fun sendInviteMessage(playerName : String) {
+        val message = TextUtils.rfuLiteral("[Party $playerName]", TextColor.LIGHT_GREEN, TextEffects.BOLD)
+            .withStyle(
+                Style.EMPTY
+                    .withHoverEvent(HoverEvent.ShowText(Component.literal("/p $playerName")))
+                    .withClickEvent(ClickEvent.RunCommand("/p $playerName"))
+            )
+
+        Coroutines.launch {
+            delay(10)
+            mc.execute {
+                Chat.sendMessage(message)
             }
         }
     }

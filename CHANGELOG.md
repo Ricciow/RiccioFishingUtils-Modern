@@ -5,6 +5,7 @@
 - Added a no bait alert when fishing without bait in the fishing bag
 
 ### Changes: 
+- Click to invite now also triggers on Boop!
 
 ### Fixes:
 - Fixed catch history incorrectly incrementing counts for creatures not catchable on the current island but shares an island that does.
