@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.utils.dsl
 
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.core.component.DataComponents
+import net.minecraft.world.item.FishingRodItem
 import net.minecraft.world.item.ItemStack
 
 fun ItemStack.hasDescriptionText(text : String) : Boolean {
@@ -17,4 +18,8 @@ fun ItemStack.hasDescriptionText(text : String) : Boolean {
     }
 
     return false
+}
+
+fun ItemStack.isFishingRod() : Boolean {
+    return item is FishingRodItem && hasDescriptionText("FISHING ROD")
 }
