@@ -231,6 +231,26 @@ object SeaCreatureConfig : Category("Sea Creatures") {
 
     init {
         dualSeparator {
+            title = "Sea Creature Display"
+            description = "Tracks all catchable sea creatures."
+        }
+    }
+
+    var seaCreatureDisplay by observable(boolean(false) {
+        name = Literal("Toggle")
+        description = Literal("Enables the Sea Creature display")
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var seaCreatureOnlyWhenFishing by boolean(true) {
+        name = Literal("Only display when fishing")
+        description = Literal("Only show the display when you're fishing")
+        condition = { seaCreatureDisplay }
+    }
+
+    init {
+        dualSeparator {
             title = "Rare SC Display"
             description = "Track your rare sea creatures!"
         }

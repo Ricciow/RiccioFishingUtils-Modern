@@ -22,11 +22,12 @@ data class SeaCreatureSetting(
     val bossbar: Boolean?,
     val gdragAlert: Boolean?,
     val rareSCAlert: Boolean?,
-    val scDisplayColor: String?
+    val scDisplayColor: String?,
+    val weight: Int?
 ) {
     companion object {
         fun empty(): SeaCreatureSetting = SeaCreatureSetting(
-            null, null, null, null, null, null, null, null, null, null, null, null, null, null
+            null, null, null, null, null, null, null, null, null, null, null, null, null, null, null
         )
     }
 }

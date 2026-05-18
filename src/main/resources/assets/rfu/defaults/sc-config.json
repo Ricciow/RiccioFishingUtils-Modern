@@ -13,7 +13,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§3"
+      "scDisplayColor": "§3",
+      "weight": 800
     },
     "Lava Leech": {
       "name": "Lava Leech",
@@ -28,7 +29,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§c"
+      "scDisplayColor": "§c",
+      "weight": 600
     },
     "Moogma": {
       "name": "Moogma",
@@ -43,7 +45,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§c"
+      "scDisplayColor": "§c",
+      "weight": 320
     },
     "Magma Slug": {
       "name": "Magma Slug",
@@ -58,7 +61,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§c"
+      "scDisplayColor": "§c",
+      "weight": 1600
     },
     "Great White Shark": {
       "name": "Great White Shark",
@@ -76,7 +80,8 @@
       "bossbar": true,
       "gdragAlert": false,
       "rareSCAlert": true,
-      "scDisplayColor": "§f"
+      "scDisplayColor": "§f",
+      "weight": 150
     },
     "Thunder": {
       "name": "Thunder",
@@ -91,7 +96,8 @@
       "bossbar": true,
       "gdragAlert": true,
       "rareSCAlert": true,
-      "scDisplayColor": "§4"
+      "scDisplayColor": "§4",
+      "weight": 40
     },
     "Water Hydra": {
       "name": "Water Hydra",
@@ -106,7 +112,8 @@
       "bossbar": true,
       "gdragAlert": false,
       "rareSCAlert": true,
-      "scDisplayColor": "§9"
+      "scDisplayColor": "§9",
+      "weight": 20
     },
     "Poisoned Water Worm": {
       "name": "Poisoned Water Worm",
@@ -121,7 +128,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§9"
+      "scDisplayColor": "§9",
+      "weight": 300
     },
     "Water Worm": {
       "name": "Water Worm",
@@ -136,7 +144,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§9"
+      "scDisplayColor": "§9",
+      "weight": 300
     },
     "Alligator": {
       "name": "Alligator",
@@ -144,14 +153,15 @@
       "article": "an",
       "special": true,
       "style": "§2",
-      "catchMessage": "A long snout breaks the surface of the water. It\u0027s an Alligator!",
+      "catchMessage": "A long snout breaks the surface of the water. It's an Alligator!",
       "liquidType": "WATER",
       "category": "BAYOU",
       "lsRangeEnabled": true,
       "bossbar": true,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§2"
+      "scDisplayColor": "§2",
+      "weight": 50
     },
     "Bayou Sludge": {
       "name": "Bayou Sludge",
@@ -166,7 +176,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§a"
+      "scDisplayColor": "§a",
+      "weight": 100
     },
     "Bloated Mithril Grubber": {
       "name": "Bloated Mithril Grubber",
@@ -174,14 +185,15 @@
       "article": "a",
       "special": false,
       "style": "§2",
-      "catchMessage": "A leech of the mines surfaces... you\u0027ve caught a Bloated Mithril Grubber.",
+      "catchMessage": "A leech of the mines surfaces... you've caught a Bloated Mithril Grubber.",
       "liquidType": "WATER",
       "category": "DWARVEN",
       "lsRangeEnabled": false,
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§6"
+      "scDisplayColor": "§6",
+      "weight": 35
     },
     "Bogged": {
       "name": "Bogged",
@@ -189,14 +201,15 @@
       "article": "a",
       "special": false,
       "style": "§2",
-      "catchMessage": "You\u0027ve hooked a Bogged!",
+      "catchMessage": "You've hooked a Bogged!",
       "liquidType": "WATER",
       "category": "GALATEA",
       "lsRangeEnabled": false,
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§a"
+      "scDisplayColor": "§a",
+      "weight": 5000
     },
     "Deep Sea Protector": {
       "name": "Deep Sea Protector",
@@ -211,7 +224,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§3"
+      "scDisplayColor": "§3",
+      "weight": 90
     },
     "Blue Ringed Octopus": {
       "name": "Blue Ringed Octopus",
@@ -219,7 +233,7 @@
       "article": "a",
       "special": true,
       "style": "§9",
-      "catchMessage": "A garish set of tentacles arise. It\u0027s a Blue Ringed Octopus!",
+      "catchMessage": "A garish set of tentacles arise. It's a Blue Ringed Octopus!",
       "liquidType": "WATER",
       "category": "HOTSPOT_WATER",
       "lsRangeEnabled": true,
@@ -229,7 +243,8 @@
       "bossbar": true,
       "gdragAlert": false,
       "rareSCAlert": true,
-      "scDisplayColor": "§9"
+      "scDisplayColor": "§9",
+      "weight": 25
     },
     "Banshee": {
       "name": "Banshee",
@@ -244,7 +259,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§a"
+      "scDisplayColor": "§a",
+      "weight": 300
     },
     "Carrot King": {
       "name": "Carrot King",
@@ -252,7 +268,7 @@
       "article": "the",
       "special": true,
       "style": "§6",
-      "catchMessage": "Is this even a fish? It\u0027s the Carrot King!",
+      "catchMessage": "Is this even a fish? It's the Carrot King!",
       "liquidType": "WATER",
       "category": "GENERAL_WATER",
       "lsRangeEnabled": false,
@@ -262,7 +278,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": true,
-      "scDisplayColor": "§6"
+      "scDisplayColor": "§6",
+      "weight": 300
     },
     "Ent": {
       "name": "Ent",
@@ -270,14 +287,15 @@
       "article": "an",
       "special": false,
       "style": "§2",
-      "catchMessage": "You\u0027ve hooked an Ent, as ancient as the forest itself.",
+      "catchMessage": "You've hooked an Ent, as ancient as the forest itself.",
       "liquidType": "WATER",
       "category": "GALATEA",
       "lsRangeEnabled": false,
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§a"
+      "scDisplayColor": "§a",
+      "weight": 500
     },
     "Agarimoo": {
       "name": "Agarimoo",
@@ -285,14 +303,15 @@
       "article": "an",
       "special": false,
       "style": "§c",
-      "catchMessage": "Your Chumcap Bucket trembles, it\u0027s an Agarimoo.",
+      "catchMessage": "Your Chumcap Bucket trembles, it's an Agarimoo.",
       "liquidType": "WATER",
       "category": "GENERAL_WATER",
       "lsRangeEnabled": false,
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§3"
+      "scDisplayColor": "§3",
+      "weight": 950
     },
     "Abyssal Miner": {
       "name": "Abyssal Miner",
@@ -320,7 +339,8 @@
       "bossbar": true,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§6"
+      "scDisplayColor": "§6",
+      "weight": 90
     },
     "Grim Reaper": {
       "name": "Grim Reaper",
@@ -328,7 +348,7 @@
       "article": "the",
       "special": true,
       "style": "§5",
-      "catchMessage": "This can\u0027t be! The manifestation of death himself!",
+      "catchMessage": "This can't be! The manifestation of death himself!",
       "liquidType": "WATER",
       "category": "SPOOKY",
       "lsRangeEnabled": true,
@@ -338,7 +358,8 @@
       "bossbar": true,
       "gdragAlert": false,
       "rareSCAlert": true,
-      "scDisplayColor": "§5"
+      "scDisplayColor": "§5",
+      "weight": 25
     },
     "Nessie": {
       "name": "Nessie",
@@ -346,14 +367,15 @@
       "article": "a",
       "special": true,
       "style": "§2",
-      "catchMessage": "You\u0027ve caused a disturbance in the loch. Could it be... Nessie?",
+      "catchMessage": "You've caused a disturbance in the loch. Could it be... Nessie?",
       "liquidType": "WATER",
       "category": "GALATEA",
       "lsRangeEnabled": true,
       "bossbar": true,
       "gdragAlert": false,
       "rareSCAlert": true,
-      "scDisplayColor": "§2"
+      "scDisplayColor": "§2",
+      "weight": 25
     },
     "Mithril Grubber": {
       "name": "Mithril Grubber",
@@ -361,14 +383,15 @@
       "article": "a",
       "special": false,
       "style": "§2",
-      "catchMessage": "A leech of the mines surfaces... you\u0027ve caught a Mithril Grubber.",
+      "catchMessage": "A leech of the mines surfaces... you've caught a Mithril Grubber.",
       "liquidType": "WATER",
       "category": "DWARVEN",
       "lsRangeEnabled": false,
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§6"
+      "scDisplayColor": "§6",
+      "weight": 385
     },
     "Lord Jawbus": {
       "name": "Lord Jawbus",
@@ -383,7 +406,8 @@
       "bossbar": true,
       "gdragAlert": true,
       "rareSCAlert": true,
-      "scDisplayColor": "§4"
+      "scDisplayColor": "§4",
+      "weight": 8
     },
     "Lava Flame": {
       "name": "Lava Flame",
@@ -398,7 +422,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§c"
+      "scDisplayColor": "§c",
+      "weight": 360
     },
     "Blue Shark": {
       "name": "Blue Shark",
@@ -406,7 +431,7 @@
       "article": "a",
       "special": false,
       "style": "§9",
-      "catchMessage": "You spot a fin as blue as the water it came from, it\u0027s a Blue Shark.",
+      "catchMessage": "You spot a fin as blue as the water it came from, it's a Blue Shark.",
       "liquidType": "WATER",
       "category": "SHARK",
       "lsRangeEnabled": false,
@@ -416,7 +441,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§b"
+      "scDisplayColor": "§b",
+      "weight": 550
     },
     "Catfish": {
       "name": "Catfish",
@@ -431,7 +457,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§3"
+      "scDisplayColor": "§3",
+      "weight": 250
     },
     "Wiki Tiki": {
       "name": "Wiki Tiki",
@@ -449,7 +476,8 @@
       "bossbar": true,
       "gdragAlert": true,
       "rareSCAlert": true,
-      "scDisplayColor": "§9"
+      "scDisplayColor": "§9",
+      "weight": 5
     },
     "Wetwing": {
       "name": "Wetwing",
@@ -464,7 +492,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§a"
+      "scDisplayColor": "§a",
+      "weight": 2875
     },
     "Squid": {
       "name": "Squid",
@@ -479,7 +508,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§3"
+      "scDisplayColor": "§3",
+      "weight": 1200
     },
     "Night Squid": {
       "name": "Night Squid",
@@ -494,7 +524,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§3"
+      "scDisplayColor": "§3",
+      "weight": 1100
     },
     "Sea Guardian": {
       "name": "Sea Guardian",
@@ -509,7 +540,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§3"
+      "scDisplayColor": "§3",
+      "weight": 600
     },
     "Sea Witch": {
       "name": "Sea Witch",
@@ -517,14 +549,15 @@
       "article": "a",
       "special": false,
       "style": "§5",
-      "catchMessage": "It looks like you\u0027ve disrupted the Sea Witch\u0027s brewing session. Watch out, she\u0027s furious!",
+      "catchMessage": "It looks like you've disrupted the Sea Witch's brewing session. Watch out, she's furious!",
       "liquidType": "WATER",
       "category": "GENERAL_WATER",
       "lsRangeEnabled": false,
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§3"
+      "scDisplayColor": "§3",
+      "weight": 700
     },
     "Sea Archer": {
       "name": "Sea Archer",
@@ -539,7 +572,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§3"
+      "scDisplayColor": "§3",
+      "weight": 550
     },
     "Rider of the Deep": {
       "name": "Rider of the Deep",
@@ -554,7 +588,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§3"
+      "scDisplayColor": "§3",
+      "weight": 400
     },
     "Sea Leech": {
       "name": "Sea Leech",
@@ -569,7 +604,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§3"
+      "scDisplayColor": "§3",
+      "weight": 160
     },
     "Guardian Defender": {
       "name": "Guardian Defender",
@@ -577,14 +613,15 @@
       "article": "a",
       "special": false,
       "style": "§3",
-      "catchMessage": "You\u0027ve discovered a Guardian Defender of the sea.",
+      "catchMessage": "You've discovered a Guardian Defender of the sea.",
       "liquidType": "WATER",
       "category": "GENERAL_WATER",
       "lsRangeEnabled": false,
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§3"
+      "scDisplayColor": "§3",
+      "weight": 130
     },
     "The Loch Emperor": {
       "name": "The Loch Emperor",
@@ -599,7 +636,8 @@
       "bossbar": true,
       "gdragAlert": false,
       "rareSCAlert": true,
-      "scDisplayColor": "§2"
+      "scDisplayColor": "§2",
+      "weight": 100
     },
     "Tadgang": {
       "name": "Tadgang",
@@ -614,7 +652,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§a"
+      "scDisplayColor": "§a",
+      "weight": 1500
     },
     "Stridersurfer": {
       "name": "Stridersurfer",
@@ -629,7 +668,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§c"
+      "scDisplayColor": "§c",
+      "weight": 1200
     },
     "Frog Man": {
       "name": "Frog Man",
@@ -637,7 +677,7 @@
       "article": "a",
       "special": false,
       "style": "§a",
-      "catchMessage": "Is it a frog? Is it a man? Well, yes, sorta, IT\u0027S FROG MAN!!!!!!",
+      "catchMessage": "Is it a frog? Is it a man? Well, yes, sorta, IT'S FROG MAN!!!!!!",
       "liquidType": "WATER",
       "category": "HOTSPOT_WATER",
       "lsRangeEnabled": false,
@@ -647,7 +687,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§3"
+      "scDisplayColor": "§3",
+      "weight": 1000
     },
     "Snapping Turtle": {
       "name": "Snapping Turtle",
@@ -655,7 +696,7 @@
       "article": "a",
       "special": false,
       "style": "§2",
-      "catchMessage": "A Snapping Turtle is coming your way, and it\u0027s ANGRY!",
+      "catchMessage": "A Snapping Turtle is coming your way, and it's ANGRY!",
       "liquidType": "WATER",
       "category": "HOTSPOT_WATER",
       "lsRangeEnabled": false,
@@ -665,7 +706,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§9"
+      "scDisplayColor": "§9",
+      "weight": 250
     },
     "Oasis Rabbit": {
       "name": "Oasis Rabbit",
@@ -680,7 +722,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§a"
+      "scDisplayColor": "§a",
+      "weight": 300
     },
     "Oasis Sheep": {
       "name": "Oasis Sheep",
@@ -695,7 +738,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§a"
+      "scDisplayColor": "§a",
+      "weight": 700
     },
     "Flaming Worm": {
       "name": "Flaming Worm",
@@ -710,7 +754,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§c"
+      "scDisplayColor": "§c",
+      "weight": 180
     },
     "Lava Blaze": {
       "name": "Lava Blaze",
@@ -725,7 +770,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§6"
+      "scDisplayColor": "§6",
+      "weight": 36
     },
     "Lava Pigman": {
       "name": "Lava Pigman",
@@ -740,7 +786,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§6"
+      "scDisplayColor": "§6",
+      "weight": 36
     },
     "Medium Mithril Grubber": {
       "name": "Medium Mithril Grubber",
@@ -748,14 +795,15 @@
       "article": "a",
       "special": false,
       "style": "§2",
-      "catchMessage": "A leech of the mines surfaces... you\u0027ve caught a Medium Mithril Grubber.",
+      "catchMessage": "A leech of the mines surfaces... you've caught a Medium Mithril Grubber.",
       "liquidType": "WATER",
       "category": "DWARVEN",
       "lsRangeEnabled": false,
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§6"
+      "scDisplayColor": "§6",
+      "weight": 210
     },
     "Large Mithril Grubber": {
       "name": "Large Mithril Grubber",
@@ -763,14 +811,15 @@
       "article": "a",
       "special": false,
       "style": "§2",
-      "catchMessage": "A leech of the mines surfaces... you\u0027ve caught a Large Mithril Grubber.",
+      "catchMessage": "A leech of the mines surfaces... you've caught a Large Mithril Grubber.",
       "liquidType": "WATER",
       "category": "DWARVEN",
       "lsRangeEnabled": false,
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§6"
+      "scDisplayColor": "§6",
+      "weight": 70
     },
     "Dumpster Diver": {
       "name": "Dumpster Diver",
@@ -785,7 +834,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§a"
+      "scDisplayColor": "§a",
+      "weight": 500
     },
     "Trash Gobbler": {
       "name": "Trash Gobbler",
@@ -800,7 +850,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§a"
+      "scDisplayColor": "§a",
+      "weight": 750
     },
     "Titanoboa": {
       "name": "Titanoboa",
@@ -815,7 +866,8 @@
       "bossbar": true,
       "gdragAlert": true,
       "rareSCAlert": true,
-      "scDisplayColor": "§2"
+      "scDisplayColor": "§2",
+      "weight": 10
     },
     "Scarecrow": {
       "name": "Scarecrow",
@@ -823,7 +875,7 @@
       "article": "a",
       "special": false,
       "style": "§5",
-      "catchMessage": "Phew! It\u0027s only a Scarecrow.",
+      "catchMessage": "Phew! It's only a Scarecrow.",
       "liquidType": "WATER",
       "category": "SPOOKY",
       "lsRangeEnabled": false,
@@ -833,7 +885,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§5"
+      "scDisplayColor": "§5",
+      "weight": 1000
     },
     "Nightmare": {
       "name": "Nightmare",
@@ -851,7 +904,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§5"
+      "scDisplayColor": "§5",
+      "weight": 550
     },
     "Werewolf": {
       "name": "Werewolf",
@@ -869,7 +923,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§5"
+      "scDisplayColor": "§5",
+      "weight": 250
     },
     "Phantom Fisher": {
       "name": "Phantom Fisher",
@@ -887,7 +942,8 @@
       "bossbar": true,
       "gdragAlert": false,
       "rareSCAlert": true,
-      "scDisplayColor": "§5"
+      "scDisplayColor": "§5",
+      "weight": 90
     },
     "Frozen Steve": {
       "name": "Frozen Steve",
@@ -902,7 +958,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§b"
+      "scDisplayColor": "§b",
+      "weight": 5000
     },
     "Frosty": {
       "name": "Frosty",
@@ -910,14 +967,15 @@
       "article": "a",
       "special": false,
       "style": "§f",
-      "catchMessage": "It\u0027s a snowman! He looks harmless.",
+      "catchMessage": "It's a snowman! He looks harmless.",
       "liquidType": "WATER",
       "category": "WINTER",
       "lsRangeEnabled": false,
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§b"
+      "scDisplayColor": "§b",
+      "weight": 2875
     },
     "Grinch": {
       "name": "Grinch",
@@ -925,14 +983,15 @@
       "article": "the",
       "special": false,
       "style": "§a",
-      "catchMessage": "The Grinch stole Jerry\u0027s Gifts...get them back!",
+      "catchMessage": "The Grinch stole Jerry's Gifts...get them back!",
       "liquidType": "WATER",
       "category": "WINTER",
       "lsRangeEnabled": false,
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§b"
+      "scDisplayColor": "§b",
+      "weight": 1500
     },
     "Yeti": {
       "name": "Yeti",
@@ -947,7 +1006,8 @@
       "bossbar": true,
       "gdragAlert": false,
       "rareSCAlert": true,
-      "scDisplayColor": "§f"
+      "scDisplayColor": "§f",
+      "weight": 100
     },
     "Nutcracker": {
       "name": "Nutcracker",
@@ -962,7 +1022,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§b"
+      "scDisplayColor": "§b",
+      "weight": 500
     },
     "Reindrake": {
       "name": "Reindrake",
@@ -977,7 +1038,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": true,
-      "scDisplayColor": "§f"
+      "scDisplayColor": "§f",
+      "weight": 6
     },
     "Nurse Shark": {
       "name": "Nurse Shark",
@@ -985,7 +1047,7 @@
       "article": "a",
       "special": false,
       "style": "§3",
-      "catchMessage": "A tiny fin emerges from the water, you\u0027ve caught a Nurse Shark.",
+      "catchMessage": "A tiny fin emerges from the water, you've caught a Nurse Shark.",
       "liquidType": "WATER",
       "category": "SHARK",
       "lsRangeEnabled": false,
@@ -995,7 +1057,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§b"
+      "scDisplayColor": "§b",
+      "weight": 1100
     },
     "Tiger Shark": {
       "name": "Tiger Shark",
@@ -1013,7 +1076,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§b"
+      "scDisplayColor": "§b",
+      "weight": 300
     },
     "Pyroclastic Worm": {
       "name": "Pyroclastic Worm",
@@ -1028,7 +1092,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§c"
+      "scDisplayColor": "§c",
+      "weight": 1200
     },
     "Fire Eel": {
       "name": "Fire Eel",
@@ -1043,7 +1108,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§c"
+      "scDisplayColor": "§c",
+      "weight": 280
     },
     "Taurus": {
       "name": "Taurus",
@@ -1058,7 +1124,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§c"
+      "scDisplayColor": "§c",
+      "weight": 160
     },
     "Plhlegblast": {
       "name": "Plhlegblast",
@@ -1086,7 +1153,8 @@
       "bossbar": true,
       "gdragAlert": true,
       "rareSCAlert": true,
-      "scDisplayColor": "§4"
+      "scDisplayColor": "§4",
+      "weight": 0
     },
     "Fried Chicken": {
       "name": "Fried Chicken",
@@ -1104,7 +1172,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§c"
+      "scDisplayColor": "§c",
+      "weight": 1000
     },
     "Fireproof Witch": {
       "name": "Fireproof Witch",
@@ -1112,7 +1181,7 @@
       "article": "a",
       "special": false,
       "style": "§c",
-      "catchMessage": "Trouble\u0027s brewing, it\u0027s a Fireproof Witch!",
+      "catchMessage": "Trouble's brewing, it's a Fireproof Witch!",
       "liquidType": "LAVA",
       "category": "HOTSPOT_LAVA",
       "lsRangeEnabled": false,
@@ -1122,7 +1191,8 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§c"
+      "scDisplayColor": "§c",
+      "weight": 250
     },
     "Fiery Scuttler": {
       "name": "Fiery Scuttler",
@@ -1140,7 +1210,8 @@
       "bossbar": true,
       "gdragAlert": false,
       "rareSCAlert": true,
-      "scDisplayColor": "§4"
+      "scDisplayColor": "§4",
+      "weight": 25
     },
     "Ragnarok": {
       "name": "Ragnarok",
@@ -1158,7 +1229,8 @@
       "bossbar": true,
       "gdragAlert": true,
       "rareSCAlert": true,
-      "scDisplayColor": "§4"
+      "scDisplayColor": "§4",
+      "weight": 5
     }
   }
 }
