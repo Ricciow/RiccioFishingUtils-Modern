@@ -63,7 +63,7 @@ object HotspotSharer : Feature {
 
     private fun shareNearestHotspot() {
         if (!Party.inParty) {
-            Chat.sendMessage(TextUtils.rfuLiteral("You must be in a party to share hotspots!", TextColor.RED))
+            Chat.sendMessage(TextUtils.rfuLiteral("You must be in a party to share hotspots!", TextColor.LIGHT_RED))
             return
         }
 

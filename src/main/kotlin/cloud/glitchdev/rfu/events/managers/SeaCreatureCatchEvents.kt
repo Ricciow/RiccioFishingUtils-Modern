@@ -12,7 +12,7 @@ import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.world.phys.Vec3
 
 import cloud.glitchdev.rfu.constants.Bait
-import cloud.glitchdev.rfu.feature.fishing.BaitManager
+import cloud.glitchdev.rfu.events.managers.BaitEventManager
 import cloud.glitchdev.rfu.data.fishing.Hotspot
 
 @AutoRegister
@@ -33,7 +33,7 @@ object SeaCreatureCatchEvents : AbstractEventManager<(SeaCreatures, doubleHook :
                 val bobber = mc.player?.fishing
                 val checkPos = bobber?.position() ?: mc.player?.position() ?: Vec3.ZERO
                 val hotspot = HotSpotEvents.getHotspotAt(checkPos)
-                val bait = BaitManager.lastBait
+                val bait = BaitEventManager.lastBait
                 runTasks(sc, isDoubleHook, hotspot, checkPos, bait)
             }
             isDoubleHook = false
