@@ -1,10 +1,8 @@
-# v1.12.0 - ???
+# v1.11.1 - Small patch
 
 ### Features:
 - Added Cocoon message hiding option.
 - Added a no bait alert when fishing without bait in the fishing bag
-
-### Changes: 
 
 ### Fixes:
 - Fixed catch history incorrectly incrementing counts for creatures not catchable on the current island but shares an island that does.
@@ -12,3 +10,6 @@
 
 ### Back-end
 - Changed bait detection to use the 9th hotbar slot with the hypixel change
+
+### Note
+- Been really busy recently so this is a smaller release fixing some stuff
