@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.feature.fishing
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.events.managers.EntityRenderEvents.registerEntityRenderEvent
+import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
@@ -50,6 +51,10 @@ object RodTimer : Feature {
 
             timer = entity
             event.cancel()
+        }
+
+        registerLocationEvent {
+            timer = null
         }
     }
 }

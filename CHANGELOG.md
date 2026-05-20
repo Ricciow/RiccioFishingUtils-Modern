@@ -5,3 +5,4 @@
 
 ### Fixes
 - Fixed the NO BAIT alert triggering on flays
+- Fixed rod timer not disappearing when being warped mid timer
