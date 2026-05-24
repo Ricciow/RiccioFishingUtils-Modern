@@ -17,7 +17,7 @@ object DeployablesDisplay : AbstractTextHudElement("deployablesDisplay") {
     private var activeDeployables: Map<DeployableType, DeployableManager.Deployable> = emptyMap()
 
     override val enabled: Boolean
-        get() = activeDeployables.any { (type, _) -> type.isDisplayEnabled() } || super.enabled
+        get() = GeneralFishing.deployableDisplay && activeDeployables.any { (type, _) -> type.isDisplayEnabled() } || super.enabled
 
     override fun onUpdateState() {
         super.onUpdateState()

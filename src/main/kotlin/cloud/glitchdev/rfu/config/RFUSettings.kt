@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.config
 
+import cloud.glitchdev.rfu.RiccioFishingUtils.RFU_VERSION
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.BackendSettings
 import cloud.glitchdev.rfu.config.categories.DevSettings
@@ -21,7 +22,7 @@ import net.minecraft.util.Util
 
 object RFUSettings : ConfigKt("rfu/settings") {
     override val name: TranslatableValue
-        get() = Literal("RiccioFishingUtils")
+        get() = Literal("RiccioFishingUtils - v$RFU_VERSION")
     override val description: TranslatableValue
         get() = Literal("Settings for the greatest hit mod RFU")
 
