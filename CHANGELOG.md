@@ -6,4 +6,5 @@
 ### Changes
 
 ### Fixes
+- Fixed hotspots height calculation to correctly handle waterlogged blocks.
 - Made the party finder treat unknown islands and display them
