@@ -80,6 +80,7 @@ enum class SeaCreatureCategory(val islands: List<FishingIslands>, val partyTypes
 
     val displayName: String
         get() = when (this) {
+            ATOLL -> "Lotus Atoll"
             GENERAL_WATER -> "General Water"
             HOTSPOT_WATER -> "Hotspot Water"
             HOTSPOT_LAVA -> "Hotspot Lava"

@@ -1,4 +1,4 @@
-{
+﻿{
   "creatures": {
     "Sea Walker": {
       "name": "Sea Walker",
@@ -640,7 +640,7 @@
       "article": "a",
       "special": false,
       "style": "§8",
-      "catchMessage": "You get an inkling you've caught... an Inkling!",
+      "catchMessage": "You get an inkling you\u0027ve caught... an Inkling!",
       "liquidType": "WATER",
       "category": "HOTSPOT_WATER",
       "lsRangeEnabled": false,
@@ -676,7 +676,7 @@
       "article": "a",
       "special": false,
       "style": "§2",
-      "catchMessage": "A majestic creature rises from the water. It's a Manta Ray.",
+      "catchMessage": "A majestic creature rises from the water. It\u0027s a Manta Ray.",
       "liquidType": "WATER",
       "category": "HOTSPOT_WATER",
       "lsRangeEnabled": false,
@@ -1216,6 +1216,96 @@
       "gdragAlert": true,
       "rareSCAlert": true,
       "scDisplayColor": "§4"
+    },
+    "Atoll Croaker": {
+      "name": "Atoll Croaker",
+      "plural": "Atoll Croakers",
+      "article": "an",
+      "special": false,
+      "style": "§2",
+      "catchMessage": "An inquisitive Atoll Croaker takes the bait!",
+      "liquidType": "WATER",
+      "category": "ATOLL",
+      "lsRangeEnabled": false,
+      "bossbar": false,
+      "gdragAlert": false,
+      "rareSCAlert": false,
+      "scDisplayColor": "§2"
+    },
+    "Drowned Captain": {
+      "name": "Drowned Captain",
+      "plural": "Drowned Captains",
+      "article": "a",
+      "special": false,
+      "style": "§5",
+      "catchMessage": "A Drowned Captain takes hold of your bobber!",
+      "liquidType": "WATER",
+      "category": "ATOLL",
+      "lsRangeEnabled": false,
+      "bossbar": false,
+      "gdragAlert": false,
+      "rareSCAlert": false,
+      "scDisplayColor": "§2"
+    },
+    "Frog Prince": {
+      "name": "Frog Prince",
+      "plural": "Frog Princes",
+      "article": "the",
+      "special": true,
+      "style": "§5",
+      "catchMessage": "Bow down before the Frog Prince... or pay the hefty price!",
+      "liquidType": "WATER",
+      "category": "ATOLL",
+      "lsRangeEnabled": true,
+      "bossbar": true,
+      "gdragAlert": true,
+      "rareSCAlert": true,
+      "scDisplayColor": "§a"
+    },
+    "Lotus Guardian": {
+      "name": "Lotus Guardian",
+      "plural": "Lotus Guardians",
+      "article": "a",
+      "special": false,
+      "style": "§5",
+      "catchMessage": "A Lotus Guardian emerges, ready to protect the Atoll.",
+      "liquidType": "WATER",
+      "category": "ATOLL",
+      "lsRangeEnabled": false,
+      "bossbar": false,
+      "gdragAlert": false,
+      "rareSCAlert": false,
+      "scDisplayColor": "§2"
+    },
+    "Puddle Jumper": {
+      "name": "Puddle Jumper",
+      "plural": "Puddle Jumpers",
+      "article": "a",
+      "special": true,
+      "style": "§2",
+      "catchMessage": "A Puddle Jumper is preparing for liftoff—cast your rod into it and hold on tight!",
+      "liquidType": "WATER",
+      "category": "ATOLL",
+      "lsRangeEnabled": true,
+      "bossbar": false,
+      "gdragAlert": true,
+      "rareSCAlert": true,
+      "scDisplayColor": "§a"
+    },
+    "gorF": {
+      "name": "gorF",
+      "plural": "gorFs",
+      "article": "a",
+      "special": false,
+      "style": "§6",
+      "catchMessage": "What even is that?! A... gorF?",
+      "liquidType": "WATER",
+      "category": "ATOLL",
+      "lsRangeEnabled": false,
+      "bossbar": false,
+      "gdragAlert": false,
+      "rareSCAlert": false,
+      "scDisplayColor": "§2"
     }
   }
 }

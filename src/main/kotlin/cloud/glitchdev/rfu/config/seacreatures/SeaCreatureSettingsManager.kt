@@ -15,6 +15,7 @@ import net.minecraft.world.phys.Vec3
 import cloud.glitchdev.rfu.RiccioFishingUtils
 import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.utils.network.Network
+import cloud.glitchdev.rfu.config.categories.BackendSettings
 import com.google.gson.Gson
 import java.lang.reflect.Field
 
@@ -247,7 +248,9 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
     }
 
     override fun register() {
-        updateFromBackend()
+        if (BackendSettings.backendAccepted && BackendSettings.loadScConfigFromBackend) {
+            updateFromBackend()
+        }
     }
 
     private fun buildCondition(conditions: SeaCreatureConditions?): (Hotspot?, Vec3, Bait?) -> Boolean {
