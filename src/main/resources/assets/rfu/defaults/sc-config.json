@@ -481,21 +481,6 @@
       "rareSCAlert": false,
       "scDisplayColor": "§3"
     },
-    "Night Squid": {
-      "name": "Night Squid",
-      "plural": "Night Squids",
-      "article": "a",
-      "special": false,
-      "style": "§8",
-      "catchMessage": "Pitch darkness reveals a Night Squid.",
-      "liquidType": "WATER",
-      "category": "GENERAL_WATER",
-      "lsRangeEnabled": false,
-      "bossbar": false,
-      "gdragAlert": false,
-      "rareSCAlert": false,
-      "scDisplayColor": "§3"
-    },
     "Sea Guardian": {
       "name": "Sea Guardian",
       "plural": "Sea Guardians",
@@ -649,6 +634,24 @@
       "rareSCAlert": false,
       "scDisplayColor": "§3"
     },
+    "Inkling": {
+      "name": "Inkling",
+      "plural": "Inkling",
+      "article": "a",
+      "special": false,
+      "style": "§8",
+      "catchMessage": "You get an inkling you've caught... an Inkling!",
+      "liquidType": "WATER",
+      "category": "HOTSPOT_WATER",
+      "lsRangeEnabled": false,
+      "conditions": {
+        "hotspot": "WATER"
+      },
+      "bossbar": false,
+      "gdragAlert": false,
+      "rareSCAlert": false,
+      "scDisplayColor": "§9"
+    },
     "Snapping Turtle": {
       "name": "Snapping Turtle",
       "plural": "Snapping Turtles",
@@ -665,7 +668,25 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": false,
-      "scDisplayColor": "§9"
+      "scDisplayColor": "§3"
+    },
+    "Manta Ray": {
+      "name": "Manta Ray",
+      "plural": "Manta Rays",
+      "article": "a",
+      "special": false,
+      "style": "§2",
+      "catchMessage": "A majestic creature rises from the water. It's a Manta Ray.",
+      "liquidType": "WATER",
+      "category": "HOTSPOT_WATER",
+      "lsRangeEnabled": false,
+      "conditions": {
+        "hotspot": "WATER"
+      },
+      "bossbar": false,
+      "gdragAlert": false,
+      "rareSCAlert": false,
+      "scDisplayColor": "§3"
     },
     "Oasis Rabbit": {
       "name": "Oasis Rabbit",
@@ -1106,6 +1127,24 @@
       "rareSCAlert": false,
       "scDisplayColor": "§c"
     },
+    "Volcanic Snail": {
+      "name": "Volcanic Snail",
+      "plural": "Volcanic Snails",
+      "article": "a",
+      "special": false,
+      "style": "§c",
+      "catchMessage": "You feel a burning sensation as you reel in a Volcanic Snail!",
+      "liquidType": "LAVA",
+      "category": "HOTSPOT_LAVA",
+      "lsRangeEnabled": false,
+      "conditions": {
+        "hotspot": "LAVA"
+      },
+      "bossbar": false,
+      "gdragAlert": false,
+      "rareSCAlert": false,
+      "scDisplayColor": "§c"
+    },
     "Fireproof Witch": {
       "name": "Fireproof Witch",
       "plural": "Fireproof Witches",
@@ -1113,6 +1152,24 @@
       "special": false,
       "style": "§c",
       "catchMessage": "Trouble\u0027s brewing, it\u0027s a Fireproof Witch!",
+      "liquidType": "LAVA",
+      "category": "HOTSPOT_LAVA",
+      "lsRangeEnabled": false,
+      "conditions": {
+        "hotspot": "LAVA"
+      },
+      "bossbar": false,
+      "gdragAlert": false,
+      "rareSCAlert": false,
+      "scDisplayColor": "§c"
+    },
+    "Magma Pillar": {
+      "name": "Magma Pillar",
+      "plural": "Magma Pillars",
+      "article": "a",
+      "special": false,
+      "style": "§c",
+      "catchMessage": "A Magma Pillar rises from the lava.",
       "liquidType": "LAVA",
       "category": "HOTSPOT_LAVA",
       "lsRangeEnabled": false,

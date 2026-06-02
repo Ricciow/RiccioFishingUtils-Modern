@@ -9,7 +9,6 @@ enum class SeaCreatureCategory(val islands: List<FishingIslands>, val partyTypes
             FishingIslands.DESERT,
             FishingIslands.SPIDER,
             FishingIslands.HOLLOWS,
-            FishingIslands.BAYOU,
             FishingIslands.PARK
         ),
         listOf(PartyTypes.REGULAR, PartyTypes.HOTSPOT, PartyTypes.BARN)
@@ -72,6 +71,10 @@ enum class SeaCreatureCategory(val islands: List<FishingIslands>, val partyTypes
     ),
     BAYOU(
         listOf(FishingIslands.BAYOU),
+        listOf(PartyTypes.REGULAR, PartyTypes.HOTSPOT, PartyTypes.BARN)
+    ),
+    ATOLL(
+        listOf(FishingIslands.ATOLL),
         listOf(PartyTypes.REGULAR, PartyTypes.HOTSPOT, PartyTypes.BARN)
     );
 
