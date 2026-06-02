@@ -6,3 +6,4 @@
 ### Changes
 
 ### Fixes
+- Made the party finder treat unknown islands and display them

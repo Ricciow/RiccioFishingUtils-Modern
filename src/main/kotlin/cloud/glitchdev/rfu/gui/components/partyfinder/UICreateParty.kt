@@ -80,7 +80,7 @@ class UICreateParty : UIContainer() {
         registerLocationEvent { event ->
             val islandName = event.map.getOrNull() ?: return@registerLocationEvent
             val newIsland = FishingIslands.findIslandObject(islandName)
-            if (newIsland != null && newIsland != FishingIslands.OTHER && newIsland != FishingIslands.NOT_SB) {
+            if (newIsland != null && newIsland != FishingIslands.OTHER && newIsland != FishingIslands.NOT_SB && newIsland != FishingIslands.UNKNOWN) {
                 if (party.island != newIsland) {
                     party.island = newIsland
                     islandField.setSelected(newIsland.toDataOption())
