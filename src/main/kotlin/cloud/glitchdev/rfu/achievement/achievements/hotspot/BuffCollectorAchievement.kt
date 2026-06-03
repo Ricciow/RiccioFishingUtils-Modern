@@ -20,7 +20,7 @@ object BuffCollectorAchievement : NumericAchievement() {
         "Fishing Speed",
         "Sea Creature Chance",
         "Double Hook Chance",
-        "Trophy Fish Chance"
+        "Trophy Chance"
     )
 
     override fun setupListeners() {

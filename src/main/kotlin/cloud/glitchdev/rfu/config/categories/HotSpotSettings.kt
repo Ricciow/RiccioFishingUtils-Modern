@@ -28,7 +28,7 @@ object HotSpotSettings : Category("Hot Spots") {
         HotspotType.DOUBLE_HOOK,
         HotspotType.SEA_CREATURE,
         HotspotType.FISHING_SPEED,
-        HotspotType.TROPHY_FISH,
+        HotspotType.TROPHY,
         HotspotType.TREASURE
     ) {
         name = Literal("Pointer Priority")

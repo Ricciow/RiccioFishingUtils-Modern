@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
+import cloud.glitchdev.rfu.config.seacreatures.SeaCreatureSettingsManager
 import cloud.glitchdev.rfu.utils.network.Network
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 
@@ -43,5 +44,15 @@ object BackendSettings : Category("Backend Settings") {
         name = Literal("Share Vicent Data")
         description = Literal("Sends the current dyes in rotation to the RFU back-end when the vincent menu is opened so everyone can know them!")
         condition = { backendAccepted }
+    }
+
+    var loadScConfigFromBackend by observable(boolean(true) {
+        name = Literal("Sync SC Config")
+        description = Literal("Automatically synchronizes Sea Creature configurations from the RFU backend.")
+        condition = { backendAccepted }
+    }) { _, newValue ->
+        if (newValue && backendAccepted) {
+            SeaCreatureSettingsManager.updateFromBackend()
+        }
     }
 }

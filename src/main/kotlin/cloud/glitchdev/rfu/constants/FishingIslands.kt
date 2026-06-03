@@ -1,9 +1,14 @@
 package cloud.glitchdev.rfu.constants
 
 import cloud.glitchdev.rfu.model.data.DataOption
+import com.google.gson.TypeAdapter
+import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
+import com.google.gson.stream.JsonReader
+import com.google.gson.stream.JsonWriter
 import java.awt.Color
 
+@JsonAdapter(FishingIslands.Adapter::class)
 enum class FishingIslands(val island: String, val availableLiquids : List<LiquidTypes>, val color: Color) {
     @SerializedName("Crimson Isle")
     ISLE("Crimson Isle", listOf(LiquidTypes.LAVA), Color(255, 85, 85)),
@@ -35,11 +40,17 @@ enum class FishingIslands(val island: String, val availableLiquids : List<Liquid
     @SerializedName("Hub")
     HUB("Hub", listOf(LiquidTypes.WATER), Color(45, 75, 200)),
 
+    @SerializedName("Lotus Atoll")
+    ATOLL("Lotus Atoll", listOf(LiquidTypes.WATER), Color(180, 100, 0)),
+
     @SerializedName("Other")
     OTHER("Other", listOf(), Color(100, 100, 100)),
 
     @SerializedName("Not Skyblock")
-    NOT_SB("Not Skyblock", listOf(), Color(100, 100, 100));
+    NOT_SB("Not Skyblock", listOf(), Color(100, 100, 100)),
+
+    @SerializedName("Unknown")
+    UNKNOWN("Unknown", listOf(LiquidTypes.WATER, LiquidTypes.LAVA), Color(150, 150, 150));
 
     fun toDataOption(): DataOption {
         return DataOption(this, this.island)
@@ -47,13 +58,24 @@ enum class FishingIslands(val island: String, val availableLiquids : List<Liquid
 
     companion object {
         fun toDataOptions(): ArrayList<DataOption> {
-            return entries.filter { it != OTHER && it != NOT_SB } .map { island ->
+            return entries.filter { it != OTHER && it != NOT_SB && it != UNKNOWN } .map { island ->
                 island.toDataOption()
             } as ArrayList<DataOption>
         }
 
         fun findIslandObject(name : String) : FishingIslands? {
             return entries.find { fishingIslands -> fishingIslands.island == name }
+        }
+    }
+
+    class Adapter : TypeAdapter<FishingIslands>() {
+        override fun write(out: JsonWriter, value: FishingIslands?) {
+            out.value(value?.island ?: "Unknown")
+        }
+
+        override fun read(`in`: JsonReader): FishingIslands {
+            val name = `in`.nextString()
+            return entries.find { it.island == name } ?: UNKNOWN
         }
     }
 }

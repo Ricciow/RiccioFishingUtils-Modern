@@ -35,8 +35,8 @@ import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.DustParticleOptions
 import net.minecraft.core.particles.ParticleTypes
+import net.minecraft.tags.FluidTags
 import net.minecraft.world.entity.decoration.ArmorStand
-import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 import java.util.UUID
@@ -408,7 +408,7 @@ object HotSpotEvents : RegisteredEvent {
             for (dz in -horizontal..horizontal) {
                 for (dy in HotSpotConstants.LIQUID_SEARCH_VERTICAL_MIN..HotSpotConstants.LIQUID_SEARCH_VERTICAL_MAX) {
                     val blockPos = BlockPos.containing(pos.x + dx, pos.y + dy, pos.z + dz)
-                    if (world.getBlockState(blockPos).`is`(Blocks.LAVA)) return LiquidTypes.LAVA
+                    if (world.getFluidState(blockPos).`is`(FluidTags.LAVA)) return LiquidTypes.LAVA
                 }
             }
         }
