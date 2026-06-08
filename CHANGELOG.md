@@ -1,15 +1,19 @@
-# v1.12.0 - ???
+# v1.12.0 - Atoll Patch
 
-### Features:
-- Added Cocoon message hiding option.
-- Added a no bait alert when fishing without bait in the fishing bag
+This also fixes the crash from the incorrect sc json
 
-### Changes: 
-- Click to invite now also triggers on Boop!
+### Features
+- Added Lotus Atoll to RFU Party Finder (Only appears to people on this version onwards)
+- Added Lotus Atoll SCs
 
-### Fixes:
-- Fixed catch history incorrectly incrementing counts for creatures not catchable on the current island but shares an island that does.
-- Made the LOOT SHARE! message not trigger on bait present on the 9th hotbar slot
+### Changes
+- Removed normal scs from bayou
 
 ### Back-end
-- Changed bait detection to use the 9th hotbar slot with the hypixel change
+- Added an option to disable automatic Sea Creature configuration synchronization in Backend Settings.
+
+### Fixes
+- Improved Sea Creature configuration error handling to prevent malformed JSON entries from breaking the loading process aka crashing if incorrect.
+- Fixed hotspots height calculation to correctly handle waterlogged blocks.
+- Made the party finder treat unknown islands and display them
+- Fixed the Trophy Chance Hotspots (was Trophy Fish Chance)

@@ -10,7 +10,7 @@ import cloud.glitchdev.rfu.utils.rendering.Render3D
 import cloud.glitchdev.rfu.utils.rendering.Render3DBuilder.Companion.cylinder
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.core.BlockPos
-import net.minecraft.world.level.block.Blocks
+import net.minecraft.tags.FluidTags
 import net.minecraft.world.phys.Vec3
 
 @RFUFeature
@@ -43,13 +43,14 @@ object HighlightHotSpots : Feature {
     }
 
     private fun findSurfaceY(pos: Vec3, world: ClientLevel, isLava: Boolean): Double {
-        val blockType = if (isLava) Blocks.LAVA else Blocks.WATER
+        val fluidTag = if (isLava) FluidTags.LAVA else FluidTags.WATER
         val centerPos = BlockPos.containing(pos)
 
         for (dy in 5 downTo -10) {
             val current = centerPos.offset(0, dy, 0)
-            if (world.getBlockState(current).`is`(blockType) && !world.getBlockState(current.above()).`is`(blockType)) {
-                return current.y + 1.0
+            val fluidState = world.getFluidState(current)
+            if (fluidState.`is`(fluidTag) && !world.getFluidState(current.above()).`is`(fluidTag)) {
+                return current.y + fluidState.getHeight(world, current).toDouble()
             }
         }
         return pos.y
