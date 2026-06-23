@@ -10,7 +10,9 @@ import com.google.gson.Gson
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.WebSocket
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlin.time.Clock
 import kotlin.time.Instant
 import java.util.concurrent.CompletionStage
@@ -27,6 +29,7 @@ object WebSocketClient {
     private var reconnectAttempts = 0
     private var isReconnecting = false
     private var isConnecting = false
+    private var heartbeatJob: Job? = null
     
     var isConnected = false
         private set(value) {
@@ -66,10 +69,7 @@ object WebSocketClient {
                 override fun onText(webSocket: WebSocket, data: CharSequence, last: Boolean): CompletionStage<*>? {
                     lastIncomingTime = Clock.System.now()
                     val frame = data.toString()
-                    if (frame.trim() == "") {
-                        // Respond to server heartbeat
-                        webSocket.sendText("\n", true)
-                    } else {
+                    if (frame.trim() != "") {
                         handleFrame(frame)
                     }
                     webSocket.request(1)
@@ -162,6 +162,18 @@ object WebSocketClient {
             isConnecting = false
             RFULogger.info("STOMP Connected")
 
+            heartbeatJob?.cancel()
+            heartbeatJob = Coroutines.launch {
+                while (isActive && isConnected) {
+                    delay(30000)
+                    try {
+                        webSocket?.sendText("\n", true)
+                    } catch (e: Exception) {
+                        RFULogger.error("Failed to send heartbeat: ", e)
+                    }
+                }
+            }
+
             subscribe("/user/queue/errors") { msg ->
                 try {
                     val map = gson.fromJson(msg, Map::class.java)
@@ -242,6 +254,8 @@ object WebSocketClient {
     }
 
     fun disconnect() {
+        heartbeatJob?.cancel()
+        heartbeatJob = null
         webSocket?.sendClose(WebSocket.NORMAL_CLOSURE, "Disconnecting")
         webSocket = null
         isConnected = false
