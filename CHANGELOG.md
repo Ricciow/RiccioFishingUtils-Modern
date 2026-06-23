@@ -8,6 +8,7 @@
 - Added {coords} variable to rare sc messages
 
 ### Changes
+- Made the bestiary display show in alphabetical order
 
 ### Back-end
 

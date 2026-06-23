@@ -18,15 +18,15 @@ object BestiaryDisplay : Feature {
     override fun onInitialize() {
         registerTickEvent(interval = 20) {
             bestiaries = Tablist.getTablistAsStrings().mapNotNull { text ->
-                val result = bestiaryRegex.find(text.removeFormatting()) ?: return@mapNotNull null
-                
-                val name = result.groupValues[1].trim()
-                val currentTier = result.groupValues[2].toInt()
-                val current = result.groupValues[3].replace(",", "").toInt()
-                val goal = result.groupValues[4].replace(",", "").toInt()
-                
-                BestiaryEntry(name, currentTier, current, goal)
-            }
+                    val result = bestiaryRegex.find(text.removeFormatting()) ?: return@mapNotNull null
+
+                    val name = result.groupValues[1].trim()
+                    val currentTier = result.groupValues[2].toInt()
+                    val current = result.groupValues[3].replace(",", "").toInt()
+                    val goal = result.groupValues[4].replace(",", "").toInt()
+
+                    BestiaryEntry(name, currentTier, current, goal)
+                }.sortedBy { it.name.lowercase() }
 
             BestiaryHUD.updateState()
         }
