@@ -2,9 +2,9 @@
 
 ### Features
 - Added 22 new emojis!
-  - :goat: :pleadingface: :jaw: :thunder: :plhleg: :rag: :scuttler:
+  - :goat: :pleadingface: :jaw: :thun: :plhleg: :rag: :scuttler:
   :drake: :tiki: :boa: :yeti: :hydra: :octopus: :gator: :prince: :jumper:
-  :ness: :emp: :gw: :reaper: :pfisher: :miner:
+  :ness: :emp: :gw: :reaper: :pfish: :miner:
 - Added {coords} variable to rare sc messages
 
 ### Changes
