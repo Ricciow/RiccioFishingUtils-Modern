@@ -14,3 +14,4 @@
 
 ### Fixes
 - Fixed current party members amount not being updated when creating a party
+- Fixed gdrag alert to correctly work with skinned pets
