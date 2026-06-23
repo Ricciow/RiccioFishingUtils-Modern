@@ -16,3 +16,4 @@
 - Fixed current party members amount not being updated when creating a party
 - Fixed gdrag alert to correctly work with skinned pets
 - Fixed wooden bait triggering bait alert
+- Fixed pet display not changing when clicking on the pets menu

@@ -23,7 +23,7 @@ object PetEvents {
     @AutoRegister
     object PetUpdateEventManager : AbstractEventManager<(String?) -> Unit, PetUpdateEventManager.PetUpdateEvent>(), RegisteredEvent {
         const val SAVE_FIELD = "current_pet"
-        val PETS_SCREEN_REGEX = """Pets:?( ".+")?( \(\d+\/\d+\))?""".toRegex()
+        val PETS_SCREEN_REGEX = """(\(\d+\/\d+\) )?Pets""".toRegex()
         const val PET_REGEX = """(?:⭐ )?\[Lvl (\d+)] (?:(\[\d+✦\]) )?(.+)(?: ✦)?"""
         val AUTOPET_REGEX = """Autopet equipped your $PET_REGEX! VIEW RULE""".toRegex()
         val COLORED_AUTOPET_REGEX = """§r§cAutopet §r§eequipped your (.+)§r§e! §r§a§lVIEW RULE""".toRegex()
@@ -52,7 +52,9 @@ object PetEvents {
 
             registerSlotClickedEvent { slot ->
                 val screen = mc.screen as? AbstractContainerScreen<*> ?: return@registerSlotClickedEvent
+                print("Validating")
                 if(!PETS_SCREEN_REGEX.matches(screen.title.string.trim())) return@registerSlotClickedEvent
+                print("Matches")
                 val pet = slot.item.hoverName.toFormattedString()
                 if(!PET_REGEX.toRegex().matches(pet.removeFormatting())) return@registerSlotClickedEvent
                 updatePet(pet)
