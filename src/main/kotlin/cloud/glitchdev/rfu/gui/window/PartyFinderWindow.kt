@@ -287,10 +287,11 @@ object PartyFinderWindow : BaseWindow(false) {
 
         val newCards = currentFilteredParties.map { party ->
             val existingCard = existingCardsMap[party.user]
-            if (existingCard?.party === party) {
+            if (existingCard?.party == party) {
                 existingCard
             } else {
-                UIPartyCard(party, 5f).constrain {
+                val wasHovered = existingCard?.isHovered() ?: false
+                UIPartyCard(party, 5f, wasHovered = wasHovered).constrain {
                     x = JustifiedCramSiblingConstraint(2f)
                     y = JustifiedCramSiblingConstraint(2f)
                     width = 33.percent

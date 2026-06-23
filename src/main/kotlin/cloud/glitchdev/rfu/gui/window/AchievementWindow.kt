@@ -195,6 +195,8 @@ object AchievementWindow : BaseWindow() {
             }
         }
 
+        val existingCardsMap = achievementComponents.associateBy { it.achievement.id }
+        
         achievementComponents.forEach {
             scrollArea.removeChild(it)
         }
@@ -213,7 +215,10 @@ object AchievementWindow : BaseWindow() {
                 { it.getDisplayDifficulty() }
             ))
             .forEach { achievement ->
-                val component = Achievement(achievement).constrain {
+                val existingCard = existingCardsMap[achievement.id]
+                val wasHovered = existingCard?.isHovered() ?: false
+                
+                val component = Achievement(achievement, wasHovered).constrain {
                     x = CenterConstraint()
                     y = SiblingConstraint(5f)
                     width = 100.percent()

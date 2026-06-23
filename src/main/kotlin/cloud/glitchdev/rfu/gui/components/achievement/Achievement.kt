@@ -30,7 +30,8 @@ import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.animate
 
 class Achievement(
-    val achievement : IAchievement
+    val achievement : IAchievement,
+    val wasHovered: Boolean = false
 ) : UIRoundedRectangle(5f) {
     private val padding = UIScheme.pfCardInnerPadding
 
@@ -41,23 +42,15 @@ class Achievement(
     fun create() {
         val borderWidth = UIScheme.pfCardBorderWidth
         this.constrain {
-            color = UIScheme.pfCardBorder.toConstraint()
-            height = BoundingBoxConstraint() + (borderWidth).pixels()
-        }.onMouseEnter {
-            animate {
-                setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, UIScheme.pfCardBorderHovered.toConstraint())
-            }
-        }.onMouseLeave {
-            animate {
-                setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, UIScheme.pfCardBorder.toConstraint())
-            }
+            color = (if (wasHovered) UIScheme.pfCardBorderHovered else UIScheme.pfCardBorder).toConstraint()
+            height = BoundingBoxConstraint() + borderWidth.pixels()
         }
 
         val innerBg = UIRoundedRectangle(5f).constrain {
             x = CenterConstraint()
             y = borderWidth.pixels()
             width = 100.percent() - (borderWidth * 2).pixels()
-            height = BoundingBoxConstraint() + (padding * 2).pixels()
+            height = BoundingBoxConstraint() + padding.pixels()
             color = UIScheme.pfCardBg.toConstraint()
         } childOf this
 
@@ -83,13 +76,18 @@ class Achievement(
             color = (if (AchievementHandler.isTracked(achievement.id)) UIScheme.trackedStarColor else UIScheme.untrackedStarColor).toConstraint()
         } childOf topContainer
 
-        star.setHidden(!AchievementHandler.isTracked(achievement.id))
+        star.setHidden(!wasHovered && !AchievementHandler.isTracked(achievement.id))
 
         this.onMouseEnter {
             star.setHidden(false)
-        }
-        this.onMouseLeave {
+            animate {
+                setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, UIScheme.pfCardBorderHovered.toConstraint())
+            }
+        }.onMouseLeave {
             star.setHidden(!AchievementHandler.isTracked(achievement.id))
+            animate {
+                setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, UIScheme.pfCardBorder.toConstraint())
+            }
         }
 
         star.onMouseClick {
