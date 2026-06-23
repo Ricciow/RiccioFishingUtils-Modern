@@ -181,7 +181,7 @@ object SeaCreatureConfig : Category("Sea Creatures") {
 
     var rarePartyMessage by string("WOAH! A {name} just surfaced! {dh}Catch #{count} after {time}!") {
         name = Literal("Rare SC message")
-        description = Literal("Variables: {name} {total} {count}, {time}, {dh}")
+        description = Literal("Variables: {name} {total} {count}, {time}, {dh}, {coords}")
         condition = { rarePartyMessages }
     }
 

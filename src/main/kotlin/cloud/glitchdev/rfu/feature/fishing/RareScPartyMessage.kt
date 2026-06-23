@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.feature.fishing
 
+import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig.RARE_SC_REGEX
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
@@ -29,6 +30,7 @@ object RareScPartyMessage : Feature {
                 val scName = seaCreature.scDisplayName
                 val article = if (scName.take(1).lowercase() in "aeiou") "n" else ""
                 val startsWithThe = scName.startsWith("The ", ignoreCase = true)
+                val pos = mc.player?.blockPosition()
 
                 val messageString = SeaCreatureConfig.rarePartyMessage
                     .replace("""(?i)\b(a)\s\{name\}""".toRegex()) { match  ->
@@ -41,7 +43,8 @@ object RareScPartyMessage : Feature {
                         "total" to history.total.toString(),
                         "count" to (history.count + 1).toString(),
                         "time" to timeSinceLast,
-                        "dh" to if (isDoubleHook) SeaCreatureConfig.dhText else ""
+                        "dh" to if (isDoubleHook) SeaCreatureConfig.dhText else "",
+                        "coords" to if (pos != null) "X: ${pos.x}, Y: ${pos.y}, Z: ${pos.z}" else ""
                     )
                 Chat.sendPartyMessage(messageString)
             }
