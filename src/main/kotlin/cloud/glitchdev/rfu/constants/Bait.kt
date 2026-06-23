@@ -21,7 +21,8 @@ enum class Bait(val displayName: String) {
     WHALE("Whale Bait"),
     FROZEN("Frozen Bait"),
     HOTSPOT("Hotspot Bait"),
-    TREASURE("Treasure Bait");
+    TREASURE("Treasure Bait"),
+    WOODEN("Wooden Bait");
 
     companion object {
         fun fromName(name: String): Bait? {
