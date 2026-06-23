@@ -24,8 +24,12 @@ object SeaCreatureConfig : Category("Sea Creatures") {
         customButton(
             {
                 @Suppress("UnstableApiUsage")
-                val window = SeaCreatureEditWindow(mc.screen as? ConfigScreen)
-                mc.setScreen(window)
+                //~ if >=26.2 'screen' -> 'gui.screen()' {
+                val window = SeaCreatureEditWindow(mc.gui.screen() as? ConfigScreen)
+                //~}
+                //~ if >=26.2 'setScreen' -> 'gui.setScreen' {
+                mc.gui.setScreen(window)
+                //~}
             },
             "Edit Sea Creatures",
             "Open a window to edit sea creature properties (Name, Plural, Article, Special, etc.)",

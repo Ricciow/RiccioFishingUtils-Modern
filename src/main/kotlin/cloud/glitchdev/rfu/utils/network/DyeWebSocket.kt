@@ -53,7 +53,9 @@ object DyeWebSocket : RegisteredEvent {
             if(!BackendSettings.shareDyeData) return@registerContainerOpenEvent
             if(!areDyesOutdated()) return@registerContainerOpenEvent
 
-            if(mc.screen?.title?.string == "Dyes") {
+            //~ if >=26.2 'screen' -> 'gui.screen()' {
+            if(mc.gui.screen()?.title?.string == "Dyes") {
+            //~}
                 val dyes = dyeIndexes.map { itens[it] }
 
                 if(dyes.any { it.customName == null }) return@registerContainerOpenEvent

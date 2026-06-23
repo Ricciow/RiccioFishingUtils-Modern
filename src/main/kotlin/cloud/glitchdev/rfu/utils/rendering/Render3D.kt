@@ -18,7 +18,12 @@ import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext
 
 object Render3D {
     val camera : Camera
-        get() = mc.gameRenderer.mainCamera
+        get() = 
+        //? if >=26.2 {
+        mc.gameRenderer.mainCamera()
+        //?} else {
+        /*mc.gameRenderer.mainCamera
+        *///?}
 
     fun builder(shape: Shape, context: LevelRenderContext) = Render3DBuilder(shape, context)
 
@@ -41,10 +46,12 @@ object Render3D {
             return
         }
 
-        //? if >=26.1 {
-        val consumers = context.bufferSource()
+        //? if >=26.2 {
         val matrixStack = context.poseStack()
-        //?} else {
+        //?} elif >=26.1 {
+        /*val consumers = context.bufferSource()
+        val matrixStack = context.poseStack()
+        *///?} else {
         /*val consumers = context.consumers()
         val matrixStack = context.matrices()
         *///?}
@@ -62,7 +69,11 @@ object Render3D {
         val matrix = matrixStack.last().pose()
 
         if (filled) {
-            val buffer = consumers.getBuffer(RFURenderTypes.TRANSLUCENT_SHAPE)
+            //? if >=26.2 {
+            context.submitNodeCollector().submitCustomGeometry(matrixStack, RFURenderTypes.TRANSLUCENT_SHAPE) { _, buffer ->
+            //?} else {
+            /*val buffer = consumers.getBuffer(RFURenderTypes.TRANSLUCENT_SHAPE)
+            *///?}
 
             for (i in 0 until stacks) {
                 val lat0 = Math.PI * (-0.5 + i.toDouble() / stacks)
@@ -94,12 +105,17 @@ object Render3D {
                     drawVertexSolid(buffer, matrix, x3.toFloat(), z1.toFloat(), y3.toFloat(), color, x3.toFloat() / radius, z1.toFloat() / radius, y3.toFloat() / radius)
                 }
             }
+            //? if >=26.2 {
+            }
+            //?}
         }
 
         if (borderColor != null) {
-            val buffer = consumers.getBuffer(
-                RenderTypes.LINES
-            )
+            //? if >=26.2 {
+            context.submitNodeCollector().submitCustomGeometry(matrixStack, RenderTypes.LINES) { _, buffer ->
+            //?} else {
+            /*val buffer = consumers.getBuffer(RenderTypes.LINES)
+            *///?}
 
             for (i in 0 until stacks) {
                 val lat0 = Math.PI * (-0.5 + (i.toDouble() - 1) / stacks)
@@ -126,6 +142,9 @@ object Render3D {
                     drawVertex(buffer, matrix, (x1 * zr1).toFloat(), z1.toFloat(), (y1 * zr1).toFloat(), borderColor, lineWidth)
                 }
             }
+            //? if >=26.2 {
+            }
+            //?}
         }
 
         matrixStack.popPose()
@@ -145,10 +164,12 @@ object Render3D {
             return
         }
 
-        //? if >=26.1 {
-        val consumers = context.bufferSource()
+        //? if >=26.2 {
         val matrixStack = context.poseStack()
-        //?} else {
+        //?} elif >=26.1 {
+        /*val consumers = context.bufferSource()
+        val matrixStack = context.poseStack()
+        *///?} else {
         /*val consumers = context.consumers()
         val matrixStack = context.matrices()
         *///?}
@@ -166,7 +187,11 @@ object Render3D {
             )
             val matrix = matrixStack.last().pose()
 
-            val solidBuffer = consumers.getBuffer(RFURenderTypes.TRANSLUCENT_SHAPE)
+            //? if >=26.2 {
+            context.submitNodeCollector().submitCustomGeometry(matrixStack, RFURenderTypes.TRANSLUCENT_SHAPE) { _, solidBuffer ->
+            //?} else {
+            /*val solidBuffer = consumers.getBuffer(RFURenderTypes.TRANSLUCENT_SHAPE)
+            *///?}
 
             for (i in 0 until slices) {
                 val angle0 = 2 * Math.PI * i.toDouble() / slices
@@ -192,11 +217,16 @@ object Render3D {
                 drawVertexSolid(solidBuffer, matrix, x1, height, z1, color)
                 drawVertexSolid(solidBuffer, matrix, x0, height, z0, color)
             }
+            //? if >=26.2 {
+            }
+            //?}
 
             if (borderColor != null) {
-                val lineBuffer = consumers.getBuffer(
-                    RenderTypes.LINES
-                )
+                //? if >=26.2 {
+                context.submitNodeCollector().submitCustomGeometry(matrixStack, RenderTypes.LINES) { _, lineBuffer ->
+                //?} else {
+                /*val lineBuffer = consumers.getBuffer(RenderTypes.LINES)
+                *///?}
 
                 for (i in 0 until slices) {
                     val angle0 = 2 * Math.PI * i.toDouble() / slices
@@ -213,6 +243,9 @@ object Render3D {
                     drawVertex(lineBuffer, matrix, x0, 0f, z0, borderColor, lineWidth)
                     drawVertex(lineBuffer, matrix, x1, 0f, z1, borderColor, lineWidth)
                 }
+                //? if >=26.2 {
+                }
+                //?}
             }
 
         } finally {
@@ -227,10 +260,12 @@ object Render3D {
         context: LevelRenderContext,
         lineWidth: Float = 2.0f
     ) {
-        //? if >=26.1 {
-        val consumers = context.bufferSource()
+        //? if >=26.2 {
         val matrixStack = context.poseStack()
-        //?} else {
+        //?} elif >=26.1 {
+        /*val consumers = context.bufferSource()
+        val matrixStack = context.poseStack()
+        *///?} else {
         /*val consumers = context.consumers()
         val matrixStack = context.matrices()
         *///?}
@@ -250,10 +285,17 @@ object Render3D {
 
         matrixStack.pushPose()
         val matrix = matrixStack.last().pose()
-        val buffer = consumers.getBuffer(RenderTypes.LINES)
-
+        
+        //? if >=26.2 {
+        context.submitNodeCollector().submitCustomGeometry(matrixStack, RenderTypes.LINES) { _, buffer ->
+            drawVertex(buffer, matrix, relStart.x.toFloat(), relStart.y.toFloat(), relStart.z.toFloat(), color, lineWidth, nx, ny, nz)
+            drawVertex(buffer, matrix, relEnd.x.toFloat(), relEnd.y.toFloat(), relEnd.z.toFloat(), color, lineWidth, nx, ny, nz)
+        }
+        //?} else {
+        /*val buffer = consumers.getBuffer(RenderTypes.LINES)
         drawVertex(buffer, matrix, relStart.x.toFloat(), relStart.y.toFloat(), relStart.z.toFloat(), color, lineWidth, nx, ny, nz)
         drawVertex(buffer, matrix, relEnd.x.toFloat(), relEnd.y.toFloat(), relEnd.z.toFloat(), color, lineWidth, nx, ny, nz)
+        *///?}
 
         matrixStack.popPose()
     }
@@ -277,8 +319,14 @@ object Render3D {
         //? if < 26.1 {
         /*val fov = mc.options.fov().get().toFloat()
         *///?}
+        //~ if >=26.2 'getProjectionMatrix(fov)' -> 'gameRenderState().levelRenderState.cameraRenderState.projectionMatrix' {
         //~ if >=26.1 'getProjectionMatrix(fov)' -> 'gameRenderState.levelRenderState.cameraRenderState.projectionMatrix' {
-        val projectionMatrix = mc.gameRenderer.gameRenderState.levelRenderState.cameraRenderState.projectionMatrix
+        //? if >=26.2 {
+        val projectionMatrix = mc.gameRenderer.gameRenderState().levelRenderState.cameraRenderState.projectionMatrix
+        //?} else {
+        /*val projectionMatrix = mc.gameRenderer.gameRenderState.levelRenderState.cameraRenderState.projectionMatrix
+        *///?}
+        //~}
         //~}
 
         val quaternion = camera.rotation().conjugate(org.joml.Quaternionf())

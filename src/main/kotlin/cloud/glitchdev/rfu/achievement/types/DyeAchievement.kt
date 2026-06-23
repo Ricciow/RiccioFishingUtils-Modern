@@ -24,7 +24,9 @@ abstract class DyeAchievement(val dye: Dyes) : BaseAchievement() {
         })
 
         activeListeners.add(ContainerEvents.registerContainerOpenEvent { _, items ->
-            if (mc.screen?.title?.string == "Dye Compendium") {
+            //~ if >=26.2 'screen' -> 'gui.screen()' {
+            if (mc.gui.screen()?.title?.string == "Dye Compendium") {
+            //~}
                 val item = items.find { it.hoverName.toUnformattedString() == dye.dyeName }
                     ?: return@registerContainerOpenEvent
                 val lore = item[DataComponents.LORE] ?: return@registerContainerOpenEvent

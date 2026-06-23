@@ -11,7 +11,9 @@ object PetCommand : SimpleCommand("rfupets") {
 
     override fun execute(context: CommandContext<FabricClientCommandSource>): Int {
         mc.execute {
-            mc.setScreen(BestPetsWindow)
+            //~ if >=26.2 'setScreen' -> 'gui.setScreen' {
+            mc.gui.setScreen(BestPetsWindow)
+            //~}
         }
         return 1
     }

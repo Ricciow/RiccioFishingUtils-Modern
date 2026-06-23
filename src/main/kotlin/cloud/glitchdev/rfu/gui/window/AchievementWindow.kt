@@ -49,7 +49,9 @@ object AchievementWindow : BaseWindow() {
         create()
 
         registerTickEvent {
-            if (needsRefresh && RiccioFishingUtils.mc.screen == this) {
+            //~ if >=26.2 'screen' -> 'gui.screen()' {
+            if (needsRefresh && RiccioFishingUtils.mc.gui.screen() == this) {
+            //~}
                 refreshAchievements()
                 needsRefresh = false
             }

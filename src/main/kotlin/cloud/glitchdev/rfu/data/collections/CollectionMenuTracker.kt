@@ -9,6 +9,7 @@ import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.core.component.DataComponents
 
+//~ if >=26.2 'screen' -> 'gui.screen()' {
 @AutoRegister
 object CollectionMenuTracker : RegisteredEvent {
     private var pollingTask: TickEvents.TickEvent? = null
@@ -16,7 +17,7 @@ object CollectionMenuTracker : RegisteredEvent {
 
     override fun register() {
         registerContainerOpenEvent { _, _ ->
-            val title = mc.screen?.title?.string ?: return@registerContainerOpenEvent
+            val title = mc.gui.screen()?.title?.string ?: return@registerContainerOpenEvent
             if (title == "Collections") {
                 startPolling()
             }
@@ -29,7 +30,7 @@ object CollectionMenuTracker : RegisteredEvent {
         pollingTask = registerTickEvent(interval = 20) { client ->
             val gameTime = client.level?.gameTime ?: return@registerTickEvent
 
-            if (gameTime - pollStartTick > 400L || client.screen == null) {
+            if (gameTime - pollStartTick > 400L || client.gui.screen() == null) {
                 stopPolling()
                 return@registerTickEvent
             }
@@ -53,5 +54,5 @@ object CollectionMenuTracker : RegisteredEvent {
         pollingTask?.unregister()
         pollingTask = null
     }
-
 }
+//~}

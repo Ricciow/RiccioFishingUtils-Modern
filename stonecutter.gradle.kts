@@ -14,7 +14,7 @@ fun getProp(p: Project, name: String): String {
     return p.property(name).toString()
 }
 
-stonecutter active "26.1.2"
+stonecutter active "26.2"
 
 stonecutter parameters {
     swaps["mod_version"] = "\"" + getProp(project, "mod.version") + "\";"

@@ -20,6 +20,7 @@ import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 import com.teamresourceful.resourcefulconfigkt.api.ConfigKt
 import net.minecraft.util.Util
 
+//~ if >=26.2 'setScreen' -> 'gui.setScreen' {
 object RFUSettings : ConfigKt("rfu/settings") {
     override val name: TranslatableValue
         get() = Literal("RiccioFishingUtils - v$RFU_VERSION")
@@ -76,7 +77,7 @@ object RFUSettings : ConfigKt("rfu/settings") {
 
             onClick {
                 mc.schedule {
-                    mc.setScreen(null)
+                    mc.gui.setScreen(null)
 
                     Chat.sendCommand("rfuachievements")
                 }
@@ -90,7 +91,7 @@ object RFUSettings : ConfigKt("rfu/settings") {
 
             onClick {
                 mc.schedule {
-                    mc.setScreen(null)
+                    mc.gui.setScreen(null)
 
                     Chat.sendCommand("rfupf")
                 }
@@ -104,7 +105,7 @@ object RFUSettings : ConfigKt("rfu/settings") {
 
             onClick {
                 mc.schedule {
-                    mc.setScreen(null)
+                    mc.gui.setScreen(null)
 
                     Chat.sendCommand("rfupets")
                 }
@@ -118,7 +119,7 @@ object RFUSettings : ConfigKt("rfu/settings") {
 
             onClick {
                 mc.schedule {
-                    mc.setScreen(null)
+                    mc.gui.setScreen(null)
 
                     Chat.sendCommand("rfumove")
                 }
@@ -132,7 +133,7 @@ object RFUSettings : ConfigKt("rfu/settings") {
 
             onClick {
                 mc.schedule {
-                    mc.setScreen(null)
+                    mc.gui.setScreen(null)
 
                     Chat.sendCommand("rfuhelp")
                 }
@@ -158,3 +159,4 @@ object RFUSettings : ConfigKt("rfu/settings") {
         condition = { false }
     }
 }
+//~}
