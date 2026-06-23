@@ -6,6 +6,160 @@
       "ascent": 7,
       "height": 8,
       "chars": ["\uE001"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/goat.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE002"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/pleadingface.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE003"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/lordjawbus.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE004"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/thunder.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE005"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/reindrake.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE006"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/wikitiki.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE007"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/titanoboa.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE008"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/yeti.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE009"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/ragnarok.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE00A"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/fieryscuttler.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE00B"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/plhlegblast.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE00C"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/waterhydra.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE00D"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/blueringedoctopus.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE00E"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/alligator.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE00F"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/frogprince.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE0F0"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/puddlejumper.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE0F1"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/nessie.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE0F2"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/lochemperor.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE0F3"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/greatwhiteshark.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE0F4"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/grimreaper.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE0F5"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/phantomfisher.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE0F6"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/abyssalminer.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE0F7"]
     }
   ]
 }

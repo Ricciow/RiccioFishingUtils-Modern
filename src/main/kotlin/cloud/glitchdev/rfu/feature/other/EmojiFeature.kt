@@ -12,7 +12,7 @@ object EmojiFeature {
         
         var result = text
         Emoji.ALL.forEach { (trigger, replacement) ->
-            result = result?.replace(trigger, replacement)
+            result = result?.replace(trigger, replacement, true)
         }
         return result
     }
