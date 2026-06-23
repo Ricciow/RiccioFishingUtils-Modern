@@ -9,6 +9,7 @@
 
 ### Changes
 - Made the bestiary display show in alphabetical order
+- Redesigned the rfu achievements window with the party finder look
 
 ### Back-end
 

@@ -49,8 +49,8 @@ object UIScheme {
     val easyDifficultyColor = Color(85, 255, 85)
     val mediumDifficultyColor = Color(255, 255, 85)
     val hardDifficultyColor = Color(255, 85, 85)
-    val veryHardDifficultyColor = Color(120, 7, 7)
-    val impossibleDifficultyColor = Color(90, 0, 0)
+    val veryHardDifficultyColor = Color(200, 40, 40)
+    val impossibleDifficultyColor = Color(180, 0, 0)
 
     val postConfirmationColor = Color(23, 209, 51)
     

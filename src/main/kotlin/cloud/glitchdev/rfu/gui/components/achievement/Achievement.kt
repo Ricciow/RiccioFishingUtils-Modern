@@ -24,34 +24,49 @@ import gg.essential.elementa.dsl.minus
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.toConstraint
+import gg.essential.elementa.dsl.plus
+import cloud.glitchdev.rfu.gui.components.elementa.BoundingBoxConstraint
+import gg.essential.elementa.constraints.animation.Animations
+import gg.essential.elementa.dsl.animate
 
 class Achievement(
     val achievement : IAchievement
 ) : UIRoundedRectangle(5f) {
-    private val padding = 5f
+    private val padding = UIScheme.pfCardInnerPadding
 
     init {
         create()
     }
 
     fun create() {
+        val borderWidth = UIScheme.pfCardBorderWidth
         this.constrain {
-            color = UIScheme.achievementBgColorOpaque.toConstraint()
+            color = UIScheme.pfCardBorder.toConstraint()
+            height = BoundingBoxConstraint() + (borderWidth).pixels()
+        }.onMouseEnter {
+            animate {
+                setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, UIScheme.pfCardBorderHovered.toConstraint())
+            }
+        }.onMouseLeave {
+            animate {
+                setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, UIScheme.pfCardBorder.toConstraint())
+            }
         }
 
-        val container = UIContainer().constrain {
+        val innerBg = UIRoundedRectangle(5f).constrain {
             x = CenterConstraint()
-            y = CenterConstraint()
-            width = 100.percent() - (padding*2).pixels()
-            height = ChildBasedSizeConstraint()
+            y = borderWidth.pixels()
+            width = 100.percent() - (borderWidth * 2).pixels()
+            height = BoundingBoxConstraint() + (padding * 2).pixels()
+            color = UIScheme.pfCardBg.toConstraint()
         } childOf this
 
-        UIContainer().constrain {
-            x = CenterConstraint()
-            y = SiblingConstraint()
-            width = 100.percent()
-            height = padding.pixels()
-        } childOf container
+        val container = UIContainer().constrain {
+            x = padding.pixels()
+            y = padding.pixels()
+            width = 100.percent() - (padding*2).pixels()
+            height = BoundingBoxConstraint()
+        } childOf innerBg
 
         val topContainer = UIContainer().constrain {
             x = CenterConstraint()
@@ -131,16 +146,9 @@ class Achievement(
 
         AchievementProgress(achievement).constrain {
             x = 0.pixels()
-            y = SiblingConstraint()
+            y = SiblingConstraint(UIScheme.pfCardSmallPadding)
             width = 100.percent()
             height = ChildBasedSizeConstraint()
-        } childOf container
-
-        UIContainer().constrain {
-            x = CenterConstraint()
-            y = SiblingConstraint()
-            width = 100.percent()
-            height = padding.pixels()
         } childOf container
     }
 }
