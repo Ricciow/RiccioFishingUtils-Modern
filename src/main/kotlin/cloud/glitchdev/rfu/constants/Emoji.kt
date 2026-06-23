@@ -7,7 +7,9 @@ object Emoji {
     val ALL = mapOf(
         ":dog:" to "\uE001".whiteText(),
         ":goat:" to "\uE002".whiteText(),
+        ":pleading_face:" to "\uE003".whiteText(),
         ":pleadingface:" to "\uE003".whiteText(),
+        ":plead:" to "\uE003".whiteText(),
         ":lordjawbus:" to "\uE004".whiteText(),
         ":jawbus:" to "\uE004".whiteText(),
         ":jaw:" to "\uE004".whiteText(),
@@ -34,6 +36,7 @@ object Emoji {
         ":frogprince:" to "\uE0F0".whiteText(),
         ":prince:" to "\uE0F0".whiteText(),
         ":puddlejumper:" to "\uE0F1".whiteText(),
+        ":puddle:" to "\uE0F1".whiteText(),
         ":jumper:" to "\uE0F1".whiteText(),
         ":nessie:" to "\uE0F2".whiteText(),
         ":ness:" to "\uE0F2".whiteText(),
