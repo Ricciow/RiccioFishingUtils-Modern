@@ -13,6 +13,7 @@
 ### Changes
 - Made the bestiary display show in alphabetical order
 - Redesigned the rfu achievements window with the party finder look
+- Made the rare sc display not show when wearing trophy hunter armor
 
 ### Fixes
 - Fixed current party members amount not being updated when creating a party
