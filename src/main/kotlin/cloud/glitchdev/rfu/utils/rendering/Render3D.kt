@@ -322,14 +322,8 @@ object Render3D {
         /*//? if < 26.1 {
         /*val fov = mc.options.fov().get().toFloat()
         *///?}
-        //~ if >=26.2 'getProjectionMatrix(fov)' -> 'gameRenderState().levelRenderState.cameraRenderState.projectionMatrix' {
         //~ if >=26.1 'getProjectionMatrix(fov)' -> 'gameRenderState.levelRenderState.cameraRenderState.projectionMatrix' {
-        //? if >=26.2 {
-        val projectionMatrix = mc.gameRenderer.gameRenderState().levelRenderState.cameraRenderState.projectionMatrix
-        //?} else {
-        /*val projectionMatrix = mc.gameRenderer.gameRenderState.levelRenderState.cameraRenderState.projectionMatrix
-        *///?}
-        //~}
+        val projectionMatrix = mc.gameRenderer.gameRenderState.levelRenderState.cameraRenderState.projectionMatrix
         //~}
 
         val quaternion = camera.rotation().conjugate(org.joml.Quaternionf())
