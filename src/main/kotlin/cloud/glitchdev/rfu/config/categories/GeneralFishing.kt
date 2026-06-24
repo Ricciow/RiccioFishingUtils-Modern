@@ -186,10 +186,13 @@ object GeneralFishing : Category("General Fishing") {
         condition = { failCastAlert && failCastSound }
     }
 
-    var noBaitAlert by observable(boolean(true) {
+    var noBaitAlert by boolean(true) {
         name = Literal("No Bait Alert")
         description = Literal("Sends an alert when you're fishing without bait.")
-    }) { _, _ ->
-        reloadScreen()
+    }
+
+    var frogcoinBlessingDisplay by boolean(true) {
+        name = Literal("Frogcoin Blessing Display")
+        description = Literal("Displays active frogcoin blessings on the Lotus Atoll.")
     }
 }
