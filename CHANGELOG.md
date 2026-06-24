@@ -6,6 +6,9 @@
   :drake: :tiki: :boa: :yeti: :hydra: :octopus: :gator: :prince: :jumper:
   :ness: :emp: :gw: :reaper: :pfish: :miner:
 - Added {coords} variable to rare sc messages
+- Added 26.2 support
+  - This is the last release that will also support 1.21.11
+  - Added an alert for users on 1.21.11  
 
 ### Changes
 - Made the bestiary display show in alphabetical order
