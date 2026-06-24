@@ -316,7 +316,10 @@ object Render3D {
     }
 
     private fun isVisible(bounds: AABB): Boolean {
-        //? if < 26.1 {
+        //? if >=26.2 {
+        return mc.gameRenderer.gameRenderState().levelRenderState.cameraRenderState.cullFrustum.isVisible(bounds)
+        //?} else {
+        /*//? if < 26.1 {
         /*val fov = mc.options.fov().get().toFloat()
         *///?}
         //~ if >=26.2 'getProjectionMatrix(fov)' -> 'gameRenderState().levelRenderState.cameraRenderState.projectionMatrix' {
@@ -335,6 +338,7 @@ object Render3D {
         val camPos = camera.position()
         frustum.prepare(camPos.x, camPos.y, camPos.z)
         return frustum.isVisible(bounds)
+        *///?}
     }
 
     private fun buildSphereBounds(location: Vec3, radius: Float): AABB {
