@@ -11,6 +11,7 @@
   - Added an alert for users on 1.21.11  
 - Added Frogcoin blessing display
 - Added !sch command
+- Added username param to !coords command
 
 ### Changes
 - Made the bestiary display show in alphabetical order
