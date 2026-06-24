@@ -236,6 +236,10 @@ object Party : RegisteredEvent {
                 TextColor.YELLOW,
                 TextEffects.BOLD
                 )
+            ).withStyle(
+                Style.EMPTY
+                    .withHoverEvent(HoverEvent.ShowText(Component.literal("/pv $username")))
+                    .withClickEvent(ClickEvent.RunCommand("pv $username"))
             )
         )
         text.append(
