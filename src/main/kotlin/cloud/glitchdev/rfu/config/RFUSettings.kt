@@ -41,8 +41,8 @@ object RFUSettings : ConfigKt("rfu/settings") {
         }
 
         button {
-            title = "RFU Discord"
-            description = "Join the rfu discord!"
+            title = "\uE0F9 RFU Discord"
+            description = "\nJoin the rfu discord!"
             text = "Join"
 
             onClick {
@@ -51,8 +51,8 @@ object RFUSettings : ConfigKt("rfu/settings") {
         }
 
         button {
-            title = "Github"
-            description = "Contribute to the mod's development! Leave a star <3"
+            title = "\uE0F8 Github"
+            description = "\nContribute to the mod's development! Leave a star <3"
             text = "Open"
 
             onClick {
@@ -61,8 +61,8 @@ object RFUSettings : ConfigKt("rfu/settings") {
         }
 
         button {
-            title = "Patreon"
-            description = "Help me maintain the servers, not really a must but thanks if you do <3"
+            title = "\uE0FA Patreon"
+            description = "\nHelp me maintain the servers, not really a must but thanks if you do <3"
             text = "Open"
 
             onClick {

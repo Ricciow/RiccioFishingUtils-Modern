@@ -160,6 +160,34 @@
       "ascent": 7,
       "height": 8,
       "chars": ["\uE0F7"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/github.png",
+      "ascent": 11,
+      "height": 16,
+      "chars": ["\uE0F8"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/discord.png",
+      "ascent": 11,
+      "height": 16,
+      "chars": ["\uE0F9"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/patreon.png",
+      "ascent": 11,
+      "height": 16,
+      "chars": ["\uE0FA"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/skull.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE0FB"]
     }
   ]
 }

@@ -1,8 +1,8 @@
 # v1.13.0 - ???
 
 ### Features
-- Added 22 new emojis!
-  - :goat: :pleadingface: :jaw: :thun: :plhleg: :rag: :scuttler:
+- Added 23 new emojis!
+  - :goat: :pleadingface: :skull: :jaw: :thun: :plhleg: :rag: :scuttler:
   :drake: :tiki: :boa: :yeti: :hydra: :octopus: :gator: :prince: :jumper:
   :ness: :emp: :gw: :reaper: :pfish: :miner:
 - Added {coords} variable to rare sc messages
