@@ -12,6 +12,7 @@
 - Added Frogcoin blessing display
 - Added !sch command
 - Added username param to !coords command
+- Added a rod timer sound that gets more high-pitched the lower the timer is
 
 ### Changes
 - Made the bestiary display show in alphabetical order

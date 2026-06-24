@@ -165,6 +165,11 @@ object GeneralFishing : Category("General Fishing") {
         description = Literal("Display the current rod timer on screen")
     }
 
+    var rodTimerSound by boolean(false) {
+        name = Literal("Rod Timer Sound")
+        description = Literal("Plays a sound when the fishing stream approaches, increasing in pitch.")
+    }
+
     var failCastAlert by boolean(true) {
         name = Literal("Failed cast alert")
         description = Literal("Sends an alert whenever a rod cast fails.")

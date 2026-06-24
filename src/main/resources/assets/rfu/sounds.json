@@ -104,5 +104,15 @@
         "type": "event"
       }
     ]
+  },
+  "rod_timer": {
+    "category": "player",
+    "subtitle": "Rod Timer",
+    "sounds": [
+      {
+        "name": "block.note_block.harp",
+        "type": "event"
+      }
+    ]
   }
 }
