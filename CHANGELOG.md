@@ -14,10 +14,9 @@
 - Made the bestiary display show in alphabetical order
 - Redesigned the rfu achievements window with the party finder look
 
-### Back-end
-
 ### Fixes
 - Fixed current party members amount not being updated when creating a party
 - Fixed gdrag alert to correctly work with skinned pets
 - Fixed wooden bait triggering bait alert
 - Fixed pet display not changing when clicking on the pets menu
+- Made the party explorer achievement require sending the invite within 60s to prevent memory leaks
