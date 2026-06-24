@@ -66,7 +66,7 @@ object Render3D {
             vecToSphere.z
         )
 
-        val matrix = matrixStack.last().pose()
+        val matrix = Matrix4f(matrixStack.last().pose())
 
         if (filled) {
             //? if >=26.2 {
@@ -185,7 +185,7 @@ object Render3D {
                 vecToCylinder.y,
                 vecToCylinder.z
             )
-            val matrix = matrixStack.last().pose()
+            val matrix = Matrix4f(matrixStack.last().pose())
 
             //? if >=26.2 {
             context.submitNodeCollector().submitCustomGeometry(matrixStack, RFURenderTypes.TRANSLUCENT_SHAPE) { _, solidBuffer ->
@@ -284,7 +284,7 @@ object Render3D {
         val nz = if (length != 0f) dz / length else 0f
 
         matrixStack.pushPose()
-        val matrix = matrixStack.last().pose()
+        val matrix = Matrix4f(matrixStack.last().pose())
         
         //? if >=26.2 {
         context.submitNodeCollector().submitCustomGeometry(matrixStack, RenderTypes.LINES) { _, buffer ->
