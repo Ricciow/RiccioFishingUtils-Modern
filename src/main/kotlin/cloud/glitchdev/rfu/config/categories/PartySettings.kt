@@ -84,4 +84,10 @@ object PartySettings : Category("Party") {
         description = Literal("Enables or disables the !coords party command.")
         condition = { togglePartyCommands }
     }
+
+    var toggleSchCommand by boolean(true) {
+        name = Literal("Enable Sch Command")
+        description = Literal("Enables or disables the !sch party command.")
+        condition = { togglePartyCommands }
+    }
 }

@@ -10,6 +10,7 @@
   - This is the last release that will also support 1.21.11
   - Added an alert for users on 1.21.11  
 - Added Frogcoin blessing display
+- Added !sch command
 
 ### Changes
 - Made the bestiary display show in alphabetical order
