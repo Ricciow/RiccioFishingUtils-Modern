@@ -14,7 +14,9 @@ object Settings : SimpleCommand("rfu") {
 
     override fun execute(context: CommandContext<FabricClientCommandSource>): Int {
         mc.schedule {
-            mc.setScreen(ResourcefulConfigScreen.getFactory(MOD_ID).apply(null))
+            //~ if >=26.2 'setScreen' -> 'gui.setScreen' {
+            mc.gui.setScreen(ResourcefulConfigScreen.getFactory(MOD_ID).apply(null))
+            //~}
         }
 
         return 1

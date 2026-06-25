@@ -24,7 +24,8 @@ object SinceCommand : AbstractPartyCommand(
         "Since {name}: {count} catches | Last catch: {time} ago" to "&9&l{sender} &b- &6{1}&b:\n &f{2} &ecatches &7| &f{3} &eago",
         "Target '{name}' not found." to "&cTarget &6'{1}' &cnot found.",
         "Usage: !since <target> [username]" to "&cUsage: &f!since &e<target> [username]",
-        "Since {name}: {count} drops | Last drop: {time} ago" to "&9&l{sender} &b- &6{1}&b:\n &f{2} &edrops &7| &f{3} &eago"
+        "Since {name}: {count} drops | Last drop: {time} ago" to "&9&l{sender} &b- &6{1}&b:\n &f{2} &edrops &7| &f{3} &eago",
+        "Since Grass: 0 touches | Last touch: Never" to "&9&l{sender} &b- &aGrass&b:\n &c0 &etouches &7| &cNever"
     ),
     permission = listOf(PartyCommandPermission.SELF_TRIGGER)
 ) {
@@ -55,24 +56,40 @@ object SinceCommand : AbstractPartyCommand(
         val myUsername = User.getUsername()
         var target: Any? = null
         var query = args.joinToString(" ")
+        var isGrass = false
 
-        // Try matching whole input first
-        target = findTarget(query)
+        if (query.equals("grass", ignoreCase = true)) {
+            isGrass = true
+        } else {
+            target = findTarget(query)
+        }
 
-        if (target == null && args.size > 1) {
+        if (target == null && !isGrass && args.size > 1) {
             val lastArg = args.last()
             val inputWithoutUser = args.dropLast(1).joinToString(" ")
-            val potentialTarget = findTarget(inputWithoutUser)
 
-            if (potentialTarget != null) {
+            if (inputWithoutUser.equals("grass", ignoreCase = true)) {
                 if (lastArg.equals(myUsername, ignoreCase = true)) {
-                    target = potentialTarget
-                    query = inputWithoutUser
+                    isGrass = true
                 } else {
-                    // Intended for someone else
                     return
                 }
+            } else {
+                val potentialTarget = findTarget(inputWithoutUser)
+                if (potentialTarget != null) {
+                    if (lastArg.equals(myUsername, ignoreCase = true)) {
+                        target = potentialTarget
+                        query = inputWithoutUser
+                    } else {
+                        return
+                    }
+                }
             }
+        }
+
+        if (isGrass) {
+            sendPartyMessage(responseTemplates[4].first)
+            return
         }
 
         if (target == null) {

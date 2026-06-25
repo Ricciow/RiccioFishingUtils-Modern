@@ -10,7 +10,9 @@ import com.google.gson.Gson
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.WebSocket
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlin.time.Clock
 import kotlin.time.Instant
 import java.util.concurrent.CompletionStage
@@ -26,6 +28,8 @@ object WebSocketClient {
     private var lastAuthToken: String? = null
     private var reconnectAttempts = 0
     private var isReconnecting = false
+    private var isConnecting = false
+    private var heartbeatJob: Job? = null
     
     var isConnected = false
         private set(value) {
@@ -40,8 +44,9 @@ object WebSocketClient {
 
     fun connect(authToken: String) {
         lastAuthToken = authToken
-        if (isConnected || isReconnecting) return
+        if (isConnected || isReconnecting || isConnecting) return
         
+        isConnecting = true
         val wsUrl = API_URL.replace("https://", "wss://").replace("http://", "ws://").replace("/api", "") + "/ws"
         RFULogger.dev("Connecting to WebSocket: $wsUrl")
         
@@ -64,10 +69,7 @@ object WebSocketClient {
                 override fun onText(webSocket: WebSocket, data: CharSequence, last: Boolean): CompletionStage<*>? {
                     lastIncomingTime = Clock.System.now()
                     val frame = data.toString()
-                    if (frame.trim() == "") {
-                        // Respond to server heartbeat
-                        webSocket.sendText("\n", true)
-                    } else {
+                    if (frame.trim() != "") {
                         handleFrame(frame)
                     }
                     webSocket.request(1)
@@ -77,6 +79,7 @@ object WebSocketClient {
                 override fun onClose(webSocket: WebSocket, statusCode: Int, reason: String): CompletionStage<*>? {
                     RFULogger.info("WebSocket Closed: $statusCode $reason")
                     isConnected = false
+                    isConnecting = false
                     if (statusCode != WebSocket.NORMAL_CLOSURE) {
                         attemptReconnect()
                     }
@@ -86,6 +89,7 @@ object WebSocketClient {
                 override fun onError(webSocket: WebSocket, error: Throwable) {
                     RFULogger.error("WebSocket Error (on Listener): ", error)
                     isConnected = false
+                    isConnecting = false
                     attemptReconnect()
                 }
             }).thenAccept { ws ->
@@ -94,6 +98,7 @@ object WebSocketClient {
             }.exceptionally { error ->
                 RFULogger.error("WebSocket buildAsync failed: ", error)
                 isReconnecting = false
+                isConnecting = false
                 attemptReconnect()
                 null
             }
@@ -154,7 +159,20 @@ object WebSocketClient {
 
         if (command == "CONNECTED") {
             isConnected = true
+            isConnecting = false
             RFULogger.info("STOMP Connected")
+
+            heartbeatJob?.cancel()
+            heartbeatJob = Coroutines.launch {
+                while (isActive && isConnected) {
+                    delay(30000)
+                    try {
+                        webSocket?.sendText("\n", true)
+                    } catch (e: Exception) {
+                        RFULogger.error("Failed to send heartbeat: ", e)
+                    }
+                }
+            }
 
             subscribe("/user/queue/errors") { msg ->
                 try {
@@ -236,10 +254,13 @@ object WebSocketClient {
     }
 
     fun disconnect() {
+        heartbeatJob?.cancel()
+        heartbeatJob = null
         webSocket?.sendClose(WebSocket.NORMAL_CLOSURE, "Disconnecting")
         webSocket = null
         isConnected = false
         isReconnecting = false
+        isConnecting = false
         lastAuthToken = null
     }
 }

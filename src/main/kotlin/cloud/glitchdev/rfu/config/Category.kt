@@ -15,7 +15,9 @@ open class Category(id: String) : CategoryKt(id) {
     }
 
     fun reloadScreen() {
-        val screen = mc.screen as? ConfigScreenInvoker
+        //~ if >=26.2 'mc.screen' -> 'mc.gui.screen()' {
+        val screen = mc.gui.screen() as? ConfigScreenInvoker
+        //~}
         screen?.`rfu$ReloadAndScroll`()
     }
 
@@ -31,7 +33,9 @@ open class Category(id: String) : CategoryKt(id) {
             text = "Preview"
             onClick {
                 mc.schedule {
-                    mc.setScreen(null)
+                    //~ if >=26.2 'setScreen' -> 'gui.setScreen' {
+                    mc.gui.setScreen(null)
+                    //~}
                     previewAction()
                 }
             }

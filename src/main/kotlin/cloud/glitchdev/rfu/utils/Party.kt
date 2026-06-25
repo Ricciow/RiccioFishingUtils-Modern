@@ -35,6 +35,7 @@ import net.minecraft.network.chat.Style
 import net.minecraft.network.chat.Component
 import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
+import kotlinx.coroutines.delay
 
 @AutoRegister
 object Party : RegisteredEvent {
@@ -235,6 +236,10 @@ object Party : RegisteredEvent {
                 TextColor.YELLOW,
                 TextEffects.BOLD
                 )
+            ).withStyle(
+                Style.EMPTY
+                    .withHoverEvent(HoverEvent.ShowText(Component.literal("/pv $username")))
+                    .withClickEvent(ClickEvent.RunCommand("pv $username"))
             )
         )
         text.append(
@@ -281,6 +286,12 @@ object Party : RegisteredEvent {
     fun requestEntry(username: String) {
         requestedUser = username
         Chat.sendCommand("w $username [RFUPF] I would like to join your party!")
+        Coroutines.launch {
+            delay(60_000)
+            if (requestedUser == username) {
+                requestedUser = null
+            }
+        }
     }
 
     @Command
@@ -295,6 +306,11 @@ object Party : RegisteredEvent {
 
                         Chat.sendCommand("party $username")
                         pendingPFInvites.add(username)
+                        
+                        Coroutines.launch {
+                            delay(60_000)
+                            pendingPFInvites.remove(username)
+                        }
 
                         1
                     }

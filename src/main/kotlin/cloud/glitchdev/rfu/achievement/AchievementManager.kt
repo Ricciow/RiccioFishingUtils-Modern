@@ -31,4 +31,13 @@ object AchievementManager : RegisteredEvent {
         }
         AchievementHandler.updateData(allData)
     }
+
+    fun reloadAll() {
+        registry.values.forEach {
+            it.reloadState()
+        }
+        registry.values.forEach {
+            it.postReload()
+        }
+    }
 }

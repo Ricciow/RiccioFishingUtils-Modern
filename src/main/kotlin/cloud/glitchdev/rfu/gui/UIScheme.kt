@@ -41,16 +41,15 @@ object UIScheme {
     //Achievements
     val trackedStarColor = Color(255, 215, 0)
     val untrackedStarColor = Color(160, 160, 160)
-    val achievementBgColor = Color(10, 40, 50)
+    val achievementIdColor = Color(100, 100, 100)
     val achievementDescriptionColor = Color(200, 200, 200)
-    val achievementBgColorOpaque = achievementBgColor.increaseOpacity(127)
     val achievementCompleteColor = Color(85, 255, 85)
     val achievementIncompleteColor = Color(255, 255, 85)
     val easyDifficultyColor = Color(85, 255, 85)
     val mediumDifficultyColor = Color(255, 255, 85)
     val hardDifficultyColor = Color(255, 85, 85)
-    val veryHardDifficultyColor = Color(120, 7, 7)
-    val impossibleDifficultyColor = Color(90, 0, 0)
+    val veryHardDifficultyColor = Color(200, 40, 40)
+    val impossibleDifficultyColor = Color(180, 0, 0)
 
     val postConfirmationColor = Color(23, 209, 51)
     

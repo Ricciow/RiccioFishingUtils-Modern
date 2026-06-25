@@ -6,6 +6,7 @@ import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.managers.CocoonEvents.registerCocoonEvent
 import cloud.glitchdev.rfu.utils.command.Command
 import cloud.glitchdev.rfu.utils.JsonFile
 import cloud.glitchdev.rfu.utils.TextUtils
@@ -19,14 +20,19 @@ object CatchTracker : RegisteredEvent {
     val catchesFile = JsonFile(
         filename = "catches.json",
         type = CatchHistory::class.java,
-        defaultFactory = { CatchHistory() }
+        defaultFactory = { CatchHistory() },
+        revertOnAlpha = true
     )
 
-    val catchHistory = catchesFile.data
+    val catchHistory get() = catchesFile.data
 
     override fun register() {
         registerSeaCreatureCatchEvent(0) { sc, doubleHook, hotspot, pos, bait ->
             catchHistory.registerCatch(sc, doubleHook, hotspot, pos, bait)
+        }
+
+        registerCocoonEvent { sc ->
+            catchHistory.registerCocoon(sc)
         }
 
         //Initialize every sc for accurate tracking

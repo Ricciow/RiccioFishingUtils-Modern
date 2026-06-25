@@ -13,8 +13,10 @@ import cloud.glitchdev.rfu.data.catches.CatchTracker
 import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 import cloud.glitchdev.rfu.utils.World
+import cloud.glitchdev.rfu.utils.dsl.hasDescriptionText
 import cloud.glitchdev.rfu.utils.dsl.toReadableString
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
+import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.phys.Vec3
 import kotlin.math.ceil
 import kotlin.time.Duration.Companion.minutes
@@ -32,8 +34,15 @@ object RareSCDisplay : AbstractTextHudElement("rareSCDisplay") {
     private val isFishing: Boolean
         get() = FishingSession.isFishing
 
+    private val armorSlots = arrayOf(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET)
+
     override val enabled: Boolean
-        get() = SeaCreatureConfig.rareScDisplay && (super.enabled || !SeaCreatureConfig.rareScOnlyWhenFishing || (isFishing && FishingSession.pausedDuration < 1.minutes))
+        get() {
+            val hasPeaceTreaty = mc.player?.let { player ->
+                armorSlots.any { slot -> player.getItemBySlot(slot).hasDescriptionText("Tiered Bonus: Peace Treaty (2/2)") }
+            } == true
+            return !hasPeaceTreaty && SeaCreatureConfig.rareScDisplay && (super.enabled || !SeaCreatureConfig.rareScOnlyWhenFishing || (isFishing && FishingSession.pausedDuration < 1.minutes))
+        }
 
     override fun onInitialize() {
         super.onInitialize()

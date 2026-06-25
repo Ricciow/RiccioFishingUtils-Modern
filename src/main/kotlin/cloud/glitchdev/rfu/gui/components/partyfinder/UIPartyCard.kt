@@ -46,7 +46,8 @@ import gg.essential.elementa.dsl.toConstraint
 class UIPartyCard(
     val party: FishingParty,
     val radiusProps: Float,
-    var postConfirmationText: String? = null
+    var postConfirmationText: String? = null,
+    val wasHovered: Boolean = false
 ) : UIRoundedRectangle(radiusProps) {
     val borderWidth = UIScheme.pfCardBorderWidth
     val innerPadding = UIScheme.pfCardInnerPadding
@@ -78,7 +79,7 @@ class UIPartyCard(
         val joinErrorPopup = PartyFinderWindow.popup
 
         this.constrain {
-            color = UIScheme.pfCardBorder.toConstraint()
+            color = (if (wasHovered) UIScheme.pfCardBorderHovered else UIScheme.pfCardBorder).toConstraint()
             height = BoundingBoxConstraint() + borderWidth.pixels //Not 2x because bounding box accounts for padding
         }.onMouseEnter {
             animate {
@@ -145,6 +146,17 @@ class UIPartyCard(
         createDescription()
         createTags()
         createFloating()
+
+        if (wasHovered) {
+            hiddenOverlay = false
+            overlayButton.unhide()
+            titleText.constrain { color = UIScheme.pfCardTitleHoverColor.toConstraint() }
+            levelBadge.constrain { color = UIScheme.pfCardLevelBorderHoveredColor.toConstraint() }
+            levelBadge.valueText.constrain { color = UIScheme.pfCardTitleHoverColor.toConstraint() }
+            memberBadge.constrain { color = UIScheme.pfCardLevelBorderHoveredColor.toConstraint() }
+            memberBadge.valueText.constrain { color = UIScheme.pfCardTitleHoverColor.toConstraint() }
+            descriptionSeparator.constrain { color = UIScheme.pfCardSeparatorHover.toConstraint() }
+        }
     }
 
     fun createHeader() {

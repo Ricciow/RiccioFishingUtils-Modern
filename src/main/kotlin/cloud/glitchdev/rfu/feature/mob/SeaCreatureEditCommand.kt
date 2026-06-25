@@ -14,7 +14,9 @@ object SeaCreatureEditCommand : AbstractCommand("rfuscedit") {
     override fun build(builder: LiteralArgumentBuilder<FabricClientCommandSource>) {
         builder.executes {
             mc.schedule {
-                mc.setScreen(SeaCreatureEditWindow(null))
+                //~ if >=26.2 'setScreen' -> 'gui.setScreen' {
+                mc.gui.setScreen(SeaCreatureEditWindow(null))
+                //~}
             }
             1
         }

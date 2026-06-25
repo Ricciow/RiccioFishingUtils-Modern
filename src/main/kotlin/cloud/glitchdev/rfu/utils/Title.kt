@@ -23,9 +23,11 @@ object Title {
 
                 if (title.condition()) {
                     mc.execute {
-                        mc.gui.setTimes(title.fadeIn, title.duration, title.fadeOut)
-                        mc.gui.setTitle(Component.literal(title.title))
-                        mc.gui.setSubtitle(Component.literal(title.subTitle))
+                        //~ if >= 26.2 'mc.gui' -> 'mc.gui.hud'{
+                        mc.gui.hud.setTimes(title.fadeIn, title.duration, title.fadeOut)
+                        mc.gui.hud.setTitle(Component.literal(title.title))
+                        mc.gui.hud.setSubtitle(Component.literal(title.subTitle))
+                        //~}
                     }
 
                     val totalTicks = title.fadeIn + title.duration + title.fadeOut

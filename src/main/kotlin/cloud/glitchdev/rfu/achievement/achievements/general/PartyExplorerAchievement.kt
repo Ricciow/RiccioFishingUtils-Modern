@@ -13,7 +13,7 @@ object PartyExplorerAchievement : NumericStageAchievement() {
     override val name: String = "Party Explorer"
     override val description: String = "Join parties or host players through the RFU Party Finder."
     override val type: AchievementType = AchievementType.NORMAL
-    override val difficulty: AchievementDifficulty = AchievementDifficulty.EASY
+    override val difficulty: AchievementDifficulty = AchievementDifficulty.IMPOSSIBLE
     override val category: AchievementCategory = AchievementCategory.GENERAL
 
     override val targetStage: Int = 10

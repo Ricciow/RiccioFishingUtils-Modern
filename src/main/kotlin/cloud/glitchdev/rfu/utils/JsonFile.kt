@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.utils
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.CONFIG_DIR
 import cloud.glitchdev.rfu.RiccioFishingUtils.MOD_ID
+import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
@@ -22,7 +23,9 @@ class JsonFile<T : Any>(
     private val type: Class<T>,
     private val defaultFactory: () -> T,
     private val onSave: () -> Unit = {},
+    private val onReload: () -> Unit = {},
     builder : (GsonBuilder) -> Gson = { it.create() },
+    private val revertOnAlpha: Boolean = false,
     ) {
     private val gson: Gson = builder(
         GsonBuilder()
@@ -41,6 +44,7 @@ class JsonFile<T : Any>(
         private set
 
     init {
+        instances.add(this)
         load()
 
         registerJoinEvent {
@@ -75,9 +79,18 @@ class JsonFile<T : Any>(
         } else {
             save(false)
         }
+        try {
+            onReload()
+        } catch (e: Exception) {
+            RFULogger.error("[$filename] Error during onReload callback", e)
+        }
     }
 
     fun save(triggerOnSave: Boolean = true) {
+        if (revertOnAlpha && isOnAlpha()) {
+            RFULogger.dev("[$filename] Skipping save: currently on alpha server.")
+            return
+        }
         if (triggerOnSave) onSave()
         try {
             RFULogger.dev("Saved to ${file.absolutePath}")
@@ -87,6 +100,52 @@ class JsonFile<T : Any>(
             }
         } catch (e: Exception) {
             RFULogger.warn("[$filename] Failed to save json file.", e)
+        }
+    }
+
+    companion object {
+        private val instances = mutableListOf<JsonFile<*>>()
+        private var currentlyOnAlpha = false
+
+        fun reloadAll() {
+            instances.filter { it.revertOnAlpha }.forEach {
+                try {
+                    it.load()
+                } catch (e: Exception) {
+                    RFULogger.error("Failed to reload ${it.filename}", e)
+                }
+            }
+        }
+
+        fun isOnAlpha(): Boolean {
+            if (currentlyOnAlpha) return true
+            val ip = mc.currentServer?.ip?.lowercase() ?: return false
+            return ip == "alpha.hypixel.net" || ip.endsWith(".alpha.hypixel.net")
+        }
+
+        init {
+            registerJoinEvent(priority = -100) {
+                val ip = mc.currentServer?.ip?.lowercase()
+                val isAlpha = ip != null && (ip == "alpha.hypixel.net" || ip.endsWith(".alpha.hypixel.net"))
+
+                if (isAlpha) {
+                    currentlyOnAlpha = true
+                } else {
+                    if (currentlyOnAlpha) {
+                        RFULogger.info("[RFU] Leaving Alpha server. Rolling back data...")
+                        reloadAll()
+                    }
+                    currentlyOnAlpha = false
+                }
+            }
+
+            registerDisconnectEvent(priority = -100) {
+                if (currentlyOnAlpha) {
+                    RFULogger.info("[RFU] Disconnected from Alpha server. Rolling back data...")
+                    reloadAll()
+                }
+                currentlyOnAlpha = false
+            }
         }
     }
 }

@@ -24,8 +24,12 @@ object SeaCreatureConfig : Category("Sea Creatures") {
         customButton(
             {
                 @Suppress("UnstableApiUsage")
-                val window = SeaCreatureEditWindow(mc.screen as? ConfigScreen)
-                mc.setScreen(window)
+                //~ if >=26.2 'screen' -> 'gui.screen()' {
+                val window = SeaCreatureEditWindow(mc.gui.screen() as? ConfigScreen)
+                //~}
+                //~ if >=26.2 'setScreen' -> 'gui.setScreen' {
+                mc.gui.setScreen(window)
+                //~}
             },
             "Edit Sea Creatures",
             "Open a window to edit sea creature properties (Name, Plural, Article, Special, etc.)",
@@ -181,7 +185,7 @@ object SeaCreatureConfig : Category("Sea Creatures") {
 
     var rarePartyMessage by string("WOAH! A {name} just surfaced! {dh}Catch #{count} after {time}!") {
         name = Literal("Rare SC message")
-        description = Literal("Variables: {name} {total} {count}, {time}, {dh}")
+        description = Literal("Variables: {name} {total} {count}, {time}, {dh}, {coords}")
         condition = { rarePartyMessages }
     }
 
@@ -191,6 +195,27 @@ object SeaCreatureConfig : Category("Sea Creatures") {
             "Preview Message",
             "Shows a preview of the rare SC party message in chat."
         ) { rarePartyMessages }
+    }
+
+    var rareCocoonPartyMessages by observable(boolean(true) {
+        name = Literal("Party Cocoon messages")
+        description = Literal("Sends a party message whenever you cocoon a rare sea creature.")
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var rareCocoonPartyMessage by string("WOAH! A {name} was cocooned!") {
+        name = Literal("Rare Cocoon message")
+        description = Literal("Variables: {name} {total}, {coords}")
+        condition = { rareCocoonPartyMessages }
+    }
+
+    init {
+        previewButton(
+            RareScPartyMessage::previewCocoon,
+            "Preview Cocoon Message",
+            "Shows a preview of the rare cocoon party message in chat."
+        ) { rareCocoonPartyMessages }
     }
 
     var dhText by string("(Double Hook) ") {

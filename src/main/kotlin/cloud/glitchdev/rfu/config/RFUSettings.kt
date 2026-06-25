@@ -20,6 +20,7 @@ import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 import com.teamresourceful.resourcefulconfigkt.api.ConfigKt
 import net.minecraft.util.Util
 
+//~ if >=26.2 'setScreen' -> 'gui.setScreen' {
 object RFUSettings : ConfigKt("rfu/settings") {
     override val name: TranslatableValue
         get() = Literal("RiccioFishingUtils - v$RFU_VERSION")
@@ -40,8 +41,8 @@ object RFUSettings : ConfigKt("rfu/settings") {
         }
 
         button {
-            title = "RFU Discord"
-            description = "Join the rfu discord!"
+            title = "\uE0F9 RFU Discord"
+            description = "\nJoin the rfu discord!"
             text = "Join"
 
             onClick {
@@ -50,8 +51,8 @@ object RFUSettings : ConfigKt("rfu/settings") {
         }
 
         button {
-            title = "Github"
-            description = "Contribute to the mod's development! Leave a star <3"
+            title = "\uE0F8 Github"
+            description = "\nContribute to the mod's development! Leave a star <3"
             text = "Open"
 
             onClick {
@@ -60,8 +61,8 @@ object RFUSettings : ConfigKt("rfu/settings") {
         }
 
         button {
-            title = "Patreon"
-            description = "Help me maintain the servers, not really a must but thanks if you do <3"
+            title = "\uE0FA Patreon"
+            description = "\nHelp me maintain the servers, not really a must but thanks if you do <3"
             text = "Open"
 
             onClick {
@@ -76,7 +77,7 @@ object RFUSettings : ConfigKt("rfu/settings") {
 
             onClick {
                 mc.schedule {
-                    mc.setScreen(null)
+                    mc.gui.setScreen(null)
 
                     Chat.sendCommand("rfuachievements")
                 }
@@ -90,7 +91,7 @@ object RFUSettings : ConfigKt("rfu/settings") {
 
             onClick {
                 mc.schedule {
-                    mc.setScreen(null)
+                    mc.gui.setScreen(null)
 
                     Chat.sendCommand("rfupf")
                 }
@@ -104,7 +105,7 @@ object RFUSettings : ConfigKt("rfu/settings") {
 
             onClick {
                 mc.schedule {
-                    mc.setScreen(null)
+                    mc.gui.setScreen(null)
 
                     Chat.sendCommand("rfupets")
                 }
@@ -118,7 +119,7 @@ object RFUSettings : ConfigKt("rfu/settings") {
 
             onClick {
                 mc.schedule {
-                    mc.setScreen(null)
+                    mc.gui.setScreen(null)
 
                     Chat.sendCommand("rfumove")
                 }
@@ -132,7 +133,7 @@ object RFUSettings : ConfigKt("rfu/settings") {
 
             onClick {
                 mc.schedule {
-                    mc.setScreen(null)
+                    mc.gui.setScreen(null)
 
                     Chat.sendCommand("rfuhelp")
                 }
@@ -158,3 +159,4 @@ object RFUSettings : ConfigKt("rfu/settings") {
         condition = { false }
     }
 }
+//~}

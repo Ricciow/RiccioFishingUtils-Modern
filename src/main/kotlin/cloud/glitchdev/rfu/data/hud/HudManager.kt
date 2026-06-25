@@ -10,7 +10,7 @@ object HudManager {
         defaultFactory = { HudConfig() }
     )
 
-    val hudData = hudFile.data
+    val hudData get() = hudFile.data
 
     fun getElementConfig(element : AbstractHudElement) : HudConfig.HudElement {
         return hudData.getOrAdd(element.id, element.defaultX, element.defaultY, element.scale)

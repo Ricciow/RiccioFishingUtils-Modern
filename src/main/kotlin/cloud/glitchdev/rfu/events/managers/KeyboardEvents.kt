@@ -24,7 +24,10 @@ object KeyboardEvents : AbstractEventManager<() -> Unit, KeyboardEvents.Keyboard
                 val key = task.key
                 if (key == 0) return@forEach
 
-                val isDown = UKeyboard.isKeyDown(key) && mc.screen == null
+                //~ if >=26.2 'screen' -> 'gui.screen()' {
+                val isDown = UKeyboard.isKeyDown(key) && mc.gui.screen() == null
+                //~}
+
                 val wasDown = keyStates.getOrDefault(task, false)
 
                 if (isDown && !wasDown) {

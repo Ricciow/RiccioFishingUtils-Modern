@@ -30,10 +30,11 @@ object DropManager : RegisteredEvent {
                     entry
                 }
             ).create()
-        }
+        },
+        revertOnAlpha = true
     )
 
-    val dropHistory = dropsFile.data
+    val dropHistory get() = dropsFile.data
 
     override fun register() {
         DropEvents.registerRareDropEvent(0) { rareDrop, magicFind ->

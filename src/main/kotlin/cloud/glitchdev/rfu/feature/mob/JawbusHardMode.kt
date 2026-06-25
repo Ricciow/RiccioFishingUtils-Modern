@@ -2,13 +2,16 @@ package cloud.glitchdev.rfu.feature.mob
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.LavaFishing
+import cloud.glitchdev.rfu.data.mob.MobManager
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.events.managers.ShutdownEvents
+import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.gui.window.DeadWindow
 import cloud.glitchdev.rfu.utils.Coroutines
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
+import cloud.glitchdev.rfu.utils.gui.HeartsUtil
 import kotlinx.coroutines.delay
 import net.minecraft.CrashReport
 
@@ -29,5 +32,19 @@ object JawbusHardMode : Feature {
                 }
             }
         }
+
+        registerTickEvent(interval = 10L) { client ->
+            val world = client.level
+            if (world == null || !LavaFishing.jawbus_hard_mode) {
+                HeartsUtil.disableHardcoreHearts()
+                return@registerTickEvent
+            }
+            if (MobManager.getEntities().any { it.sbName == "Lord Jawbus" }) {
+                HeartsUtil.enableHardcoreHearts()
+            } else {
+                HeartsUtil.disableHardcoreHearts()
+            }
+        }
     }
 }
+

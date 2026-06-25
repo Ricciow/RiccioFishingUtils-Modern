@@ -103,7 +103,9 @@ object PartyFinderWindow : BaseWindow(false) {
         }
 
         registerErrorMessageEvent { message, origin ->
-            if (mc.screen == this && (origin == "/app/party/join" || origin == "/app/party/report" || origin == "/app/party/delete")) {
+            //~ if >=26.2 'screen' -> 'gui.screen()' {
+            if (mc.gui.screen() == this && (origin == "/app/party/join" || origin == "/app/party/report" || origin == "/app/party/delete")) {
+            //~}
                 if (message == "Target user is not currently connected to the WebSocket.") return@registerErrorMessageEvent
                 popup.show(message)
             }
@@ -287,10 +289,11 @@ object PartyFinderWindow : BaseWindow(false) {
 
         val newCards = currentFilteredParties.map { party ->
             val existingCard = existingCardsMap[party.user]
-            if (existingCard?.party === party) {
+            if (existingCard?.party == party) {
                 existingCard
             } else {
-                UIPartyCard(party, 5f).constrain {
+                val wasHovered = existingCard?.isHovered() ?: false
+                UIPartyCard(party, 5f, wasHovered = wasHovered).constrain {
                     x = JustifiedCramSiblingConstraint(2f)
                     y = JustifiedCramSiblingConstraint(2f)
                     width = 33.percent

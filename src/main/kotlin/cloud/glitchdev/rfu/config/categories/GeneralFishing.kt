@@ -165,6 +165,11 @@ object GeneralFishing : Category("General Fishing") {
         description = Literal("Display the current rod timer on screen")
     }
 
+    var rodTimerSound by boolean(false) {
+        name = Literal("Rod Timer Sound")
+        description = Literal("Plays a sound when the fishing stream approaches, increasing in pitch.")
+    }
+
     var failCastAlert by boolean(true) {
         name = Literal("Failed cast alert")
         description = Literal("Sends an alert whenever a rod cast fails.")
@@ -186,10 +191,26 @@ object GeneralFishing : Category("General Fishing") {
         condition = { failCastAlert && failCastSound }
     }
 
-    var noBaitAlert by observable(boolean(true) {
+    var noBaitAlert by boolean(true) {
         name = Literal("No Bait Alert")
         description = Literal("Sends an alert when you're fishing without bait.")
+    }
+
+    var missingRodPieceAlert by boolean(true) {
+        name = Literal("Missing Rod Piece Alert")
+        description = Literal("Sends an alert when you're fishing with a rod that is missing a piece (Hook, Line, or Sinker).")
+    }
+
+    var frogcoinBlessingDisplay by boolean(true) {
+        name = Literal("Frogcoin Blessing Display")
+        description = Literal("Displays active frogcoin blessings on the Lotus Atoll.")
+    }
+
+    var bobbinTimeDisplay by observable(boolean(true) {
+        name = Literal("Bobbin' Time Display")
+        description = Literal("Display nearby bobbers and Bobbin' Time bonus on screen")
     }) { _, _ ->
         reloadScreen()
     }
 }
+

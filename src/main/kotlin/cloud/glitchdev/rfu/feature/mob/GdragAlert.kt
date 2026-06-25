@@ -21,7 +21,7 @@ object GdragAlert : Feature {
             if (!SeaCreatureConfig.goldenDragonAlert) return@registerMobDetectEvent
 
             val petName = PetUpdateEventManager.currentPetName
-            val hasGdrag = petName == "Golden Dragon"
+            val hasGdrag = petName?.contains("Golden Dragon") ?: false
 
             entities.forEach { entity ->
                 val sc = SeaCreatures.get(entity.sbName) ?: return@forEach

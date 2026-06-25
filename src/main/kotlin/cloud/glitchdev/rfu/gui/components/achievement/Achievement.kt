@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.gui.components.achievement
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.interfaces.IAchievement
 import cloud.glitchdev.rfu.achievement.interfaces.IStageAchievement
+import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.data.achievements.AchievementHandler
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.elementa.TextWrappingConstraint
@@ -24,34 +25,42 @@ import gg.essential.elementa.dsl.minus
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.toConstraint
+import gg.essential.elementa.dsl.plus
+import cloud.glitchdev.rfu.gui.components.elementa.BoundingBoxConstraint
+import gg.essential.elementa.constraints.animation.Animations
+import gg.essential.elementa.dsl.animate
 
 class Achievement(
-    val achievement : IAchievement
+    val achievement : IAchievement,
+    val wasHovered: Boolean = false
 ) : UIRoundedRectangle(5f) {
-    private val padding = 5f
+    private val padding = UIScheme.pfCardInnerPadding
 
     init {
         create()
     }
 
     fun create() {
+        val borderWidth = UIScheme.pfCardBorderWidth
         this.constrain {
-            color = UIScheme.achievementBgColorOpaque.toConstraint()
+            color = (if (wasHovered) UIScheme.pfCardBorderHovered else UIScheme.pfCardBorder).toConstraint()
+            height = BoundingBoxConstraint() + borderWidth.pixels()
         }
 
-        val container = UIContainer().constrain {
+        val innerBg = UIRoundedRectangle(5f).constrain {
             x = CenterConstraint()
-            y = CenterConstraint()
-            width = 100.percent() - (padding*2).pixels()
-            height = ChildBasedSizeConstraint()
+            y = borderWidth.pixels()
+            width = 100.percent() - (borderWidth * 2).pixels()
+            height = BoundingBoxConstraint() + padding.pixels()
+            color = UIScheme.pfCardBg.toConstraint()
         } childOf this
 
-        UIContainer().constrain {
-            x = CenterConstraint()
-            y = SiblingConstraint()
-            width = 100.percent()
-            height = padding.pixels()
-        } childOf container
+        val container = UIContainer().constrain {
+            x = padding.pixels()
+            y = padding.pixels()
+            width = 100.percent() - (padding*2).pixels()
+            height = BoundingBoxConstraint()
+        } childOf innerBg
 
         val topContainer = UIContainer().constrain {
             x = CenterConstraint()
@@ -68,13 +77,18 @@ class Achievement(
             color = (if (AchievementHandler.isTracked(achievement.id)) UIScheme.trackedStarColor else UIScheme.untrackedStarColor).toConstraint()
         } childOf topContainer
 
-        star.setHidden(!AchievementHandler.isTracked(achievement.id))
+        star.setHidden(!wasHovered && !AchievementHandler.isTracked(achievement.id))
 
         this.onMouseEnter {
             star.setHidden(false)
-        }
-        this.onMouseLeave {
+            animate {
+                setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, UIScheme.pfCardBorderHovered.toConstraint())
+            }
+        }.onMouseLeave {
             star.setHidden(!AchievementHandler.isTracked(achievement.id))
+            animate {
+                setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, UIScheme.pfCardBorder.toConstraint())
+            }
         }
 
         star.onMouseClick {
@@ -100,6 +114,16 @@ class Achievement(
             width = ScaledTextConstraint(1.1f)
             height = TextAspectConstraint()
         } childOf topContainer
+
+        if(DevSettings.devMode) {
+            UIText(achievement.id).constrain {
+                x = 0.pixels()
+                y = SiblingConstraint()
+                width = ScaledTextConstraint(0.8f)
+                height = TextAspectConstraint()
+                color = UIScheme.achievementIdColor.toConstraint()
+            } childOf container
+        }
 
         val displayDifficulty = if (achievement is IStageAchievement && !achievement.isCompleted) {
             achievement.getStageDifficulty(achievement.currentStage) ?: achievement.difficulty
@@ -131,16 +155,9 @@ class Achievement(
 
         AchievementProgress(achievement).constrain {
             x = 0.pixels()
-            y = SiblingConstraint()
+            y = SiblingConstraint(UIScheme.pfCardSmallPadding)
             width = 100.percent()
             height = ChildBasedSizeConstraint()
-        } childOf container
-
-        UIContainer().constrain {
-            x = CenterConstraint()
-            y = SiblingConstraint()
-            width = 100.percent()
-            height = padding.pixels()
         } childOf container
     }
 }

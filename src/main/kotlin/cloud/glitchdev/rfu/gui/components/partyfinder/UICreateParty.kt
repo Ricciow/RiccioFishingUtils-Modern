@@ -395,6 +395,7 @@ class UICreateParty : UIContainer() {
         party.island = islandField.getSelectedItem().value as FishingIslands
         party.liquid = if (waterToggle.selected) LiquidTypes.WATER else LiquidTypes.LAVA
         party.level = levelField.getText().toIntOrNull() ?: 0
+        party.players.current = if (Party.inParty) Party.members.size else 1
         party.players.max = maxPlayersField.getText().toIntOrNull() ?: 6
 
         party.setRequisite("has_killer", "Has Killer", killerToggle.selected)

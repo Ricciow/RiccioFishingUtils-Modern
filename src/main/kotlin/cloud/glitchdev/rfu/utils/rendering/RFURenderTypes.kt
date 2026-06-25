@@ -12,10 +12,12 @@ import net.minecraft.client.renderer.rendertype.RenderType
 import net.minecraft.client.renderer.rendertype.RenderSetup
 
 object RFURenderTypes {
+    //~ if >= 26.2 'LESS_THAN_OR_EQUAL' -> 'GREATER_THAN_OR_EQUAL' {
     //? if >= 26.1 {
-    val depth : DepthStencilState = DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false)
+    val depth : DepthStencilState = DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false)
     val color : ColorTargetState = ColorTargetState(BlendFunction.TRANSLUCENT)
     //?}
+    //~}
 
     val NO_DEPTH_QUAD_PIPELINE: RenderPipeline = RenderPipelines.register(
         RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)

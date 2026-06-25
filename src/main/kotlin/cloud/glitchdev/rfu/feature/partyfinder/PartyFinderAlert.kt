@@ -44,7 +44,7 @@ object PartyFinderAlert : Feature {
         val now = System.currentTimeMillis()
 
         newUsers.forEach { user ->
-            pendingAlerts[user] = now + 15000
+            pendingAlerts[user] = now + 30000
         }
 
         // Clean up pending and lastParties if they are no longer in currentParties

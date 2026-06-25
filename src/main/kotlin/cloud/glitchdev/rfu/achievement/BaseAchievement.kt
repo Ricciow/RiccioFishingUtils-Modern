@@ -36,6 +36,31 @@ abstract class BaseAchievement : IAchievement {
         }
     }
 
+    fun reloadState() {
+        unregisterAllListeners()
+        _progress = 0.0f
+        val data = AchievementHandler.getAchievementData(id)
+        if (data != null) {
+            _isCompleted = data.isCompleted
+            _isCheated = data.isCheated
+            if (data.progressData.isNotEmpty()) {
+                loadState(data.progressData)
+            } else {
+                loadState(emptyMap())
+            }
+        } else {
+            _isCompleted = false
+            _isCheated = false
+            loadState(emptyMap())
+        }
+    }
+
+    fun postReload() {
+        if (!isCompleted) {
+            setupListeners()
+        }
+    }
+
     abstract fun setupListeners()
 
     protected open fun complete() {

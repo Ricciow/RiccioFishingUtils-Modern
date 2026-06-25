@@ -76,6 +76,11 @@ class CatchHistory {
         currentRecord.total += 1
     }
 
+    fun registerCocoon(sc: SeaCreatures) {
+        val currentRecord = getOrAdd(sc)
+        currentRecord.total += 1
+    }
+
     /**
      * Function to delete particularly large mob histories
      * @param maxSize The maximum number of history data allowed
