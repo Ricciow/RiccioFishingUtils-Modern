@@ -21,6 +21,7 @@
 - Redesigned the rfu achievements window with the party finder look
 - Made the rare sc display not show when wearing trophy hunter armor
 - Added option to pv player by clicking on the party finder join message
+- Added hardcore mode hearts rendering to the healthbar when a Lord Jawbus is nearby while Jawbus Hard Mode is enabled
 
 ### Fixes
 - Fixed current party members amount not being updated when creating a party
