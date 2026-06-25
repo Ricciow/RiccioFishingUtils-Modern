@@ -4,6 +4,7 @@ import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig.RARE_SC_REGEX
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.managers.CocoonEvents.registerCocoonEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.data.catches.CatchTracker
@@ -49,6 +50,31 @@ object RareScPartyMessage : Feature {
                 Chat.sendPartyMessage(messageString)
             }
         }
+
+        registerCocoonEvent { seaCreature ->
+            if (!SeaCreatureConfig.rareCocoonPartyMessages) return@registerCocoonEvent
+
+            if (RARE_SC_REGEX.matches(seaCreature.scName)) {
+                val history = CatchTracker.catchHistory.getOrAdd(seaCreature)
+                val scName = seaCreature.scDisplayName
+                val article = if (scName.take(1).lowercase() in "aeiou") "n" else ""
+                val startsWithThe = scName.startsWith("The ", ignoreCase = true)
+                val pos = mc.player?.blockPosition()
+
+                val messageString = SeaCreatureConfig.rareCocoonPartyMessage
+                    .replace("""(?i)\b(a)\s\{name\}""".toRegex()) { match ->
+                        if (startsWithThe) return@replace scName
+                        val originalA = match.groupValues[1]
+                        "$originalA$article $scName"
+                    }
+                    .formatTemplate(
+                        "name" to scName,
+                        "total" to history.total.toString(),
+                        "coords" to if (pos != null) "X: ${pos.x}, Y: ${pos.y}, Z: ${pos.z}" else ""
+                    )
+                Chat.sendPartyMessage(messageString)
+            }
+        }
     }
 
     fun preview() {
@@ -58,6 +84,15 @@ object RareScPartyMessage : Feature {
             "count" to "1",
             "time" to "2m 30s",
             "dh" to SeaCreatureConfig.dhText
+        )
+
+        Chat.sendMessage(Component.literal(preview))
+    }
+
+    fun previewCocoon() {
+        val preview = SeaCreatureConfig.rareCocoonPartyMessage.formatTemplate(
+            "name" to "Great White Shark",
+            "total" to "100"
         )
 
         Chat.sendMessage(Component.literal(preview))

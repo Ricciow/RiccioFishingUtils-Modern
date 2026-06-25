@@ -197,6 +197,27 @@ object SeaCreatureConfig : Category("Sea Creatures") {
         ) { rarePartyMessages }
     }
 
+    var rareCocoonPartyMessages by observable(boolean(true) {
+        name = Literal("Party Cocoon messages")
+        description = Literal("Sends a party message whenever you cocoon a rare sea creature.")
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var rareCocoonPartyMessage by string("WOAH! A {name} was cocooned!") {
+        name = Literal("Rare Cocoon message")
+        description = Literal("Variables: {name} {total}, {coords}")
+        condition = { rareCocoonPartyMessages }
+    }
+
+    init {
+        previewButton(
+            RareScPartyMessage::previewCocoon,
+            "Preview Cocoon Message",
+            "Shows a preview of the rare cocoon party message in chat."
+        ) { rareCocoonPartyMessages }
+    }
+
     var dhText by string("(Double Hook) ") {
         name = Literal("Double Hook Text")
         description = Literal("The text used in {dh}")
