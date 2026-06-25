@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.gui.components.achievement
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.interfaces.IAchievement
 import cloud.glitchdev.rfu.achievement.interfaces.IStageAchievement
+import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.data.achievements.AchievementHandler
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.elementa.TextWrappingConstraint
@@ -113,6 +114,16 @@ class Achievement(
             width = ScaledTextConstraint(1.1f)
             height = TextAspectConstraint()
         } childOf topContainer
+
+        if(DevSettings.devMode) {
+            UIText(achievement.id).constrain {
+                x = 0.pixels()
+                y = SiblingConstraint()
+                width = ScaledTextConstraint(0.8f)
+                height = TextAspectConstraint()
+                color = UIScheme.achievementIdColor.toConstraint()
+            } childOf container
+        }
 
         val displayDifficulty = if (achievement is IStageAchievement && !achievement.isCompleted) {
             achievement.getStageDifficulty(achievement.currentStage) ?: achievement.difficulty
