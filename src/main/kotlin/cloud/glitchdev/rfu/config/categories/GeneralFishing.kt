@@ -196,6 +196,11 @@ object GeneralFishing : Category("General Fishing") {
         description = Literal("Sends an alert when you're fishing without bait.")
     }
 
+    var missingRodPieceAlert by boolean(true) {
+        name = Literal("Missing Rod Piece Alert")
+        description = Literal("Sends an alert when you're fishing with a rod that is missing a piece (Hook, Line, or Sinker).")
+    }
+
     var frogcoinBlessingDisplay by boolean(true) {
         name = Literal("Frogcoin Blessing Display")
         description = Literal("Displays active frogcoin blessings on the Lotus Atoll.")
