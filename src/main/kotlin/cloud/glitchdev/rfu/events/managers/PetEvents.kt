@@ -54,9 +54,7 @@ object PetEvents {
                 //~ if >=26.2 'mc.screen' -> 'mc.gui.screen()' {
                 val screen = mc.gui.screen() as? AbstractContainerScreen<*> ?: return@registerSlotClickedEvent
                 //~}
-                print("Validating")
                 if(!PETS_SCREEN_REGEX.matches(screen.title.string.trim())) return@registerSlotClickedEvent
-                print("Matches")
                 val pet = slot.item.hoverName.toFormattedString()
                 if(!PET_REGEX.toRegex().matches(pet.removeFormatting())) return@registerSlotClickedEvent
                 updatePet(pet)
