@@ -200,4 +200,12 @@ object GeneralFishing : Category("General Fishing") {
         name = Literal("Frogcoin Blessing Display")
         description = Literal("Displays active frogcoin blessings on the Lotus Atoll.")
     }
+
+    var bobbinTimeDisplay by observable(boolean(true) {
+        name = Literal("Bobbin' Time Display")
+        description = Literal("Display nearby bobbers and Bobbin' Time bonus on screen")
+    }) { _, _ ->
+        reloadScreen()
+    }
 }
+

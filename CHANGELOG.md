@@ -13,6 +13,7 @@
 - Added !sch command
 - Added username param to !coords command
 - Added a rod timer sound that gets more high-pitched the lower the timer is
+- Added Bobbin' Time Display feature to track nearby bobbers and show the calculated buff percentage
 
 ### Changes
 - Made the bestiary display show in alphabetical order
