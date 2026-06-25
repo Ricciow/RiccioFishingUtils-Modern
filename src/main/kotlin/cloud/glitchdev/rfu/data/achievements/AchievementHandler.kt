@@ -8,7 +8,9 @@ object AchievementHandler {
         filename = "achievements.json",
         type = AchievementsData::class.java,
         defaultFactory = { AchievementsData() },
-        onSave = { AchievementManager.saveAll() }
+        onSave = { AchievementManager.saveAll() },
+        onReload = { AchievementManager.reloadAll() },
+        revertOnAlpha = true
     )
     
     fun getAchievementData(id: String): AchievementsData.AchievementSaveData? {

@@ -17,6 +17,7 @@
 - Added an alert when attempting to fish with a rod missing a Hook, Line, or Sinker
 - Added cocooning feature
 - Added 3 new achievements!
+- Made data non-persistent on the Hypixel Alpha server.
 
 ### Changes
 - Made the bestiary display show in alphabetical order

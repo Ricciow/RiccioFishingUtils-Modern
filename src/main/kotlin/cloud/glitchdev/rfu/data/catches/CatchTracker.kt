@@ -20,10 +20,11 @@ object CatchTracker : RegisteredEvent {
     val catchesFile = JsonFile(
         filename = "catches.json",
         type = CatchHistory::class.java,
-        defaultFactory = { CatchHistory() }
+        defaultFactory = { CatchHistory() },
+        revertOnAlpha = true
     )
 
-    val catchHistory = catchesFile.data
+    val catchHistory get() = catchesFile.data
 
     override fun register() {
         registerSeaCreatureCatchEvent(0) { sc, doubleHook, hotspot, pos, bait ->
