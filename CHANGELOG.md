@@ -15,7 +15,8 @@
 - Added a rod timer sound that gets more high-pitched the lower the timer is
 - Added Bobbin' Time Display feature to track nearby bobbers and show the calculated buff percentage
 - Added an alert when attempting to fish with a rod missing a Hook, Line, or Sinker
-- Added cocooned rare sc party message
+- Added cocooning feature
+- Added 3 new achievements!
 
 ### Changes
 - Made the bestiary display show in alphabetical order
