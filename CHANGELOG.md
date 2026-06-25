@@ -1,4 +1,4 @@
-# v1.13.0 - ???
+# v1.13.0 - Sound, Emojis & QoL
 
 ### Features
 - Added 23 new emojis!
