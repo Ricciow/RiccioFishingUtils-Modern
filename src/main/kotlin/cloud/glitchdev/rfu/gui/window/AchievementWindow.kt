@@ -120,7 +120,7 @@ object AchievementWindow : BaseWindow() {
                 AchievementCategory.GENERAL -> "/assets/rfu/ui/water.png"
                 AchievementCategory.ISLE -> "/assets/rfu/ui/lava.png"
                 AchievementCategory.HOT_SPOT -> "/assets/rfu/ui/location.png"
-                AchievementCategory.INK -> "/assets/rfu/ui/ink_sac.png"
+                AchievementCategory.INK -> "/assets/rfu/ui/squid.png"
                 AchievementCategory.SPECIAL -> "/assets/rfu/ui/looting_5.png"
             }
             val image = UIImage.ofResource(iconPath)
