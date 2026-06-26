@@ -10,3 +10,4 @@
 
 ### Fixes
 - Fixed typo in plhleg emoji
+- Fixed Frog Blessing Display not working
