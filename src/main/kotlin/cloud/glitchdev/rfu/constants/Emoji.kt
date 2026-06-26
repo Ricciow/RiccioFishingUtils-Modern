@@ -4,7 +4,7 @@ import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
 
 object Emoji {
-    val ALL = mapOf(
+    val EMOJIS = mapOf(
         "\uE001" to listOf("dog"),
         "\uE002" to listOf("goat"),
         "\uE003" to listOf("pleading_face", "pleadingface", "plead"),
@@ -31,7 +31,9 @@ object Emoji {
         "\uE0FB" to listOf("skull"),
         "\uE0FC" to listOf("sob"),
         "\uE0FD" to listOf("thumbsup")
-    ).flatMap { (unicode, aliases) ->
+    )
+
+    val ALL = EMOJIS.flatMap { (unicode, aliases) ->
         aliases.map { ":$it:" to unicode.whiteText() }
     }.toMap()
 

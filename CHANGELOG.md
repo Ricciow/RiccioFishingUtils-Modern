@@ -2,6 +2,8 @@
 
 ### Features
 - Added :sob: :thumbsup:
+- Added /rfuemojis command to list all available emojis along with their shortest alias
+
 
 ### Changes
 - Added grim alias to :grim:
