@@ -16,7 +16,7 @@ object Emoji {
         "\uE009" to listOf("yeti"),
         "\uE00A" to listOf("ragnarok", "rag"),
         "\uE00B" to listOf("fiery_scuttler", "fieryscuttler", "scuttler"),
-        "\uE00C" to listOf("plhegblast", "plhleg"),
+        "\uE00C" to listOf("plhlegblast", "plhleg"),
         "\uE00D" to listOf("water_hydra", "waterhydra", "hydra"),
         "\uE00E" to listOf("blue_ringed_octopus", "blueringedoctopus", "octopus"),
         "\uE00F" to listOf("alligator", "gator"),
@@ -25,7 +25,7 @@ object Emoji {
         "\uE0F2" to listOf("nessie", "ness"),
         "\uE0F3" to listOf("the_loch_emperor", "thelochemperor", "loch_emperor", "lochemperor", "emperor", "emp"),
         "\uE0F4" to listOf("great_white_shark", "greatwhiteshark", "great_white", "greatwhite", "gw"),
-        "\uE0F5" to listOf("grim_reaper", "grimreaper", "reaper"),
+        "\uE0F5" to listOf("grim_reaper", "grimreaper", "reaper", "grim"),
         "\uE0F6" to listOf("phantom_fisher", "phantomfisher", "pfish"),
         "\uE0F7" to listOf("abyssal_miner", "abyssalminer", "miner"),
         "\uE0FB" to listOf("skull")
