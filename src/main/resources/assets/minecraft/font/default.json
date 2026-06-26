@@ -188,6 +188,20 @@
       "ascent": 7,
       "height": 8,
       "chars": ["\uE0FB"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/sob.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE0FC"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/thumbsup.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE0FD"]
     }
   ]
 }

@@ -28,7 +28,9 @@ object Emoji {
         "\uE0F5" to listOf("grim_reaper", "grimreaper", "reaper", "grim"),
         "\uE0F6" to listOf("phantom_fisher", "phantomfisher", "pfish"),
         "\uE0F7" to listOf("abyssal_miner", "abyssalminer", "miner"),
-        "\uE0FB" to listOf("skull")
+        "\uE0FB" to listOf("skull"),
+        "\uE0FC" to listOf("sob"),
+        "\uE0FD" to listOf("thumbsup")
     ).flatMap { (unicode, aliases) ->
         aliases.map { ":$it:" to unicode.whiteText() }
     }.toMap()
