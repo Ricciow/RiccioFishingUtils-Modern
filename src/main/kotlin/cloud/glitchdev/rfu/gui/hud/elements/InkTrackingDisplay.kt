@@ -100,13 +100,13 @@ object InkTrackingDisplay : AbstractTextHudElement("inktrackingdisplay") {
             lines.add(line)
         }
 
-        if(items.contains(InkTrackingType.N_SQUID)) {
-            val nightSquid = SeaCreatures.get("Night Squid")
-            val nightSquidNow = nightSquid?.let { catchHistory.getOrAdd(it).total } ?: 0
-            val nSquidGain = InkSessionTracker.nightSquidGain
+        if(items.contains(InkTrackingType.INKLING)) {
+            val inkling = SeaCreatures.get("Inkling")
+            val inklingNow = inkling?.let { catchHistory.getOrAdd(it).total } ?: 0
+            val inklingGain = InkSessionTracker.inklingGain
 
             val line = buildString {
-                append("$CYAN${BOLD}Night Squids: $YELLOW${nSquidGain} $CYAN($LIGHT_GREEN${nightSquidNow}$CYAN)")
+                append("$CYAN${BOLD}Inklings: $YELLOW${inklingGain} $CYAN($LIGHT_GREEN${inklingNow}$CYAN)")
             }
             lines.add(line)
         }

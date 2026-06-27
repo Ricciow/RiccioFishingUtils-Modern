@@ -36,10 +36,10 @@ object InkSessionTracker : Feature {
 
     // Session-based squid tracking
     private var squidStart: Long = 0L
-    private var nightSquidStart: Long = 0L
+    private var inklingStart: Long = 0L
 
     val squidGain: Long get() = SeaCreatures.get("Squid")?.let { catchHistory.getOrAdd(it).total - squidStart } ?: 0L
-    val nightSquidGain: Long get() = SeaCreatures.get("Night Squid")?.let { catchHistory.getOrAdd(it).total - nightSquidStart } ?: 0L
+    val inklingGain: Long get() = SeaCreatures.get("Inkling")?.let { catchHistory.getOrAdd(it).total - inklingStart } ?: 0L
 
     // Goal tracking
     val percentageToGoal: Double
@@ -64,15 +64,15 @@ object InkSessionTracker : Feature {
     override fun onInitialize() {
         // Initialize start counts
         val squid = SeaCreatures.get("Squid")
-        val nightSquid = SeaCreatures.get("Night Squid")
+        val inkling = SeaCreatures.get("Inkling")
 
-        if (squid == null || nightSquid == null) {
-            RFULogger.error("Squid or Night Squid not found in registry during InkSessionTracker initialization!")
+        if (squid == null || inkling == null) {
+            RFULogger.error("Squid or Inkling not found in registry during InkSessionTracker initialization!")
             return
         }
 
         squidStart = catchHistory.getOrAdd(squid).total.toLong()
-        nightSquidStart = catchHistory.getOrAdd(nightSquid).total.toLong()
+        inklingStart = catchHistory.getOrAdd(inkling).total.toLong()
 
         registerCollectionUpdateEvent { item, amount, _, isSync ->
             if (item == CollectionItem.INK_SAC && amount > 0 && !isSync) {
@@ -113,7 +113,7 @@ object InkSessionTracker : Feature {
         
         // Reset squid tracking to current values
         SeaCreatures.get("Squid")?.let { squidStart = catchHistory.getOrAdd(it).total.toLong() }
-        SeaCreatures.get("Night Squid")?.let { nightSquidStart = catchHistory.getOrAdd(it).total.toLong() }
+        SeaCreatures.get("Inkling")?.let { inklingStart = catchHistory.getOrAdd(it).total.toLong() }
     }
 
 }

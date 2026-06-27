@@ -7,7 +7,9 @@
 
 ### Changes
 - Added grim alias to :grim:
+- Updated "Pitch Black" achievement requirement to 6 Inklings in a row (was 7)
 
 ### Fixes
 - Fixed typo in plhleg emoji
 - Fixed Frog Blessing Display not working
+- Fixed Night Squid tracking and achievements (renamed to Inkling in-game)
