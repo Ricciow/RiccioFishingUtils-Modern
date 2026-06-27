@@ -48,8 +48,10 @@ object CollectionGainTracker : RegisteredEvent {
             val diffCount = if (isNewItem) item.count else item.count - previousItem.count
 
             for (collItem in CollectionItem.entries) {
-                if (collItem.displayName == itemName) {
-                    CollectionsHandler.add(collItem, diffCount.toLong(), isSync = false)
+                val matchedPair = collItem.items.find { it.first == itemName }
+                if (matchedPair != null) {
+                    val gainedAmount = diffCount.toLong() * matchedPair.second
+                    CollectionsHandler.add(collItem, gainedAmount, isSync = false)
                     break
                 }
             }
@@ -66,9 +68,11 @@ object CollectionGainTracker : RegisteredEvent {
 
             if ("Added" in hoverText) {
                 for (item in CollectionItem.entries) {
-                    val match = item.sackRegex.find(hoverText) ?: continue
-                    val amount = match.groupValues[1].toLongOrNull() ?: continue
-                    CollectionsHandler.add(item, amount, isSync = false)
+                    for ((regex, multiplier) in item.sackRegexes) {
+                        val match = regex.find(hoverText) ?: continue
+                        val amount = match.groupValues[1].toLongOrNull() ?: continue
+                        CollectionsHandler.add(item, amount * multiplier, isSync = false)
+                    }
                 }
             }
         }
