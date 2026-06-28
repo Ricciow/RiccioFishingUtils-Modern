@@ -9,7 +9,6 @@
     "AbstractContainerScreenMixin",
     "EntityRenderDispatcherMixin",
     "EntityMixin",
-    "GameRendererMixin",
     "FontMixin",
     "CameraMixin",
     "ClientLevelDataMixin",

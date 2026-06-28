@@ -14,14 +14,14 @@ import net.fabricmc.loader.api.Version
 @AutoRegister
 object UnsupportedVersionAlert : RegisteredEvent {
     private const val minVersion = "26.1"
-    private val cutoffVersion = Version.parse("1.21.11")
+    private val cutoffVersion = Version.parse("26.1")
     private val mcVersion = Version.parse(RFU_VERSION.friendlyString.substringAfter("+"))
 
     override fun register() {
         registerJoinEvent(10000) { wasConnected ->
-            if (!wasConnected && mcVersion <= cutoffVersion) {
+            if (!wasConnected && mcVersion < cutoffVersion) {
                 Chat.sendMessage(TextUtils.rfuLiteral(
-                    "${LIGHT_RED}${BOLD}This minecraft version is no longer supported! ($cutoffVersion)\n" +
+                    "${LIGHT_RED}${BOLD}This minecraft version is no longer supported! (< $cutoffVersion)\n" +
                         "${YELLOW}Hypixel is no longer supporting this version on skyblock soon\n" +
                         "${YELLOW}Update to $minVersion or newer to continue receiving updates for RFU!"
                 ))

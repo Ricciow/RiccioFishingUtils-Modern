@@ -2,7 +2,6 @@ package cloud.glitchdev.rfu.utils.rendering
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import net.minecraft.client.Camera
-import net.minecraft.client.renderer.culling.Frustum
 import net.minecraft.client.renderer.rendertype.RenderTypes
 import com.mojang.blaze3d.vertex.VertexConsumer
 import net.minecraft.world.phys.AABB
@@ -12,9 +11,10 @@ import java.awt.Color
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
-//~ if >=26.1 'world' -> 'level'{
-//~ if >=26.1 'World' -> 'Level'{
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext
+//?if < 26.2 {
+import net.minecraft.client.renderer.culling.Frustum
+//?}
 
 object Render3D {
     val camera : Camera
@@ -48,12 +48,9 @@ object Render3D {
 
         //? if >=26.2 {
         val matrixStack = context.poseStack()
-        //?} elif >=26.1 {
+        //?} else {
         /*val consumers = context.bufferSource()
         val matrixStack = context.poseStack()
-        *///?} else {
-        /*val consumers = context.consumers()
-        val matrixStack = context.matrices()
         *///?}
 
         val camPos = camera.position()
@@ -166,12 +163,9 @@ object Render3D {
 
         //? if >=26.2 {
         val matrixStack = context.poseStack()
-        //?} elif >=26.1 {
+        //?} else {
         /*val consumers = context.bufferSource()
         val matrixStack = context.poseStack()
-        *///?} else {
-        /*val consumers = context.consumers()
-        val matrixStack = context.matrices()
         *///?}
 
         val camPos = camera.position()
@@ -262,12 +256,9 @@ object Render3D {
     ) {
         //? if >=26.2 {
         val matrixStack = context.poseStack()
-        //?} elif >=26.1 {
+        //?} else {
         /*val consumers = context.bufferSource()
         val matrixStack = context.poseStack()
-        *///?} else {
-        /*val consumers = context.consumers()
-        val matrixStack = context.matrices()
         *///?}
 
         val camPos = camera.position()
@@ -319,12 +310,7 @@ object Render3D {
         //? if >=26.2 {
         return mc.gameRenderer.gameRenderState().levelRenderState.cameraRenderState.cullFrustum.isVisible(bounds)
         //?} else {
-        /*//? if < 26.1 {
-        /*val fov = mc.options.fov().get().toFloat()
-        *///?}
-        //~ if >=26.1 'getProjectionMatrix(fov)' -> 'gameRenderState.levelRenderState.cameraRenderState.projectionMatrix' {
-        val projectionMatrix = mc.gameRenderer.gameRenderState.levelRenderState.cameraRenderState.projectionMatrix
-        //~}
+        /*val projectionMatrix = mc.gameRenderer.gameRenderState.levelRenderState.cameraRenderState.projectionMatrix
 
         val quaternion = camera.rotation().conjugate(org.joml.Quaternionf())
         val viewMatrix = Matrix4f().rotation(quaternion)
@@ -376,5 +362,3 @@ object Render3D {
             .setNormal(nx, ny, nz)
     }
 }
-//~}
-//~}

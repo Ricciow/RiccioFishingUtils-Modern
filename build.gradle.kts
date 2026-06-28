@@ -1,6 +1,5 @@
 plugins {
-    id("fabric-loom") apply false
-    id("net.fabricmc.fabric-loom") apply false
+    id("net.fabricmc.fabric-loom")
     kotlin("jvm")
     id("com.google.devtools.ksp")
     id("com.modrinth.minotaur") version "2.8.7"
@@ -23,12 +22,6 @@ fun getProp(name: String): String {
     return project.property(name).toString()
 }
 
-if (stonecutter.eval(stonecutter.current.version, ">=26.1")) {
-    apply(plugin = "net.fabricmc.fabric-loom")
-} else {
-    apply(plugin = "fabric-loom")
-}
-
 version = "${getProp("mod.version")}+${stonecutter.current.version}"
 base.archivesName = getProp("mod.id")
 
@@ -39,9 +32,7 @@ if (project.name != rootProject.name && project.name != "processor" && project.f
         versionNumber.set(project.version.toString())
         versionType.set("release")
 
-        // Conditionally set the upload task based on the version
-        val uploadTaskName = if (stonecutter.eval(stonecutter.current.version, ">=26.1")) "jar" else "remapJar"
-        uploadFile.set(tasks.named(uploadTaskName))
+        uploadFile.set(tasks.named("jar"))
 
         gameVersions.add(stonecutter.current.version)
         rootProject.subprojects.forEach {
@@ -65,14 +56,10 @@ if (project.name != rootProject.name && project.name != "processor" && project.f
 
 val requiredJava = when {
     stonecutter.eval(stonecutter.current.version, ">=26.1") -> JavaVersion.VERSION_25
-    stonecutter.eval(stonecutter.current.version, ">=1.20.6") -> JavaVersion.VERSION_21
-    stonecutter.eval(stonecutter.current.version, ">=1.18") -> JavaVersion.VERSION_17
-    stonecutter.eval(stonecutter.current.version, ">=1.17") -> JavaVersion.VERSION_16
-    else -> JavaVersion.VERSION_1_8
+    else -> JavaVersion.VERSION_25
 }
 
-val awVersion = if (stonecutter.eval(stonecutter.current.version, ">=26.1")) "26.1" else stonecutter.current.version
-val awFileName = "rfu-$awVersion.accesswidener"
+val awFileName = "rfu-26.1.accesswidener"
 
 repositories {
     /**
@@ -104,45 +91,31 @@ repositories {
 }
 
 dependencies {
-    "minecraft"("com.mojang:minecraft:${stonecutter.current.version}")
+    minecraft("com.mojang:minecraft:${stonecutter.current.version}")
 
-    if (stonecutter.eval(stonecutter.current.version, "<26.1")) {
-        val loomExt = project.extensions.getByType<net.fabricmc.loom.api.LoomGradleExtensionAPI>()
-        "mappings"(loomExt.officialMojangMappings())
-    }
-
-    // Modern dependency naming wrappers
-    val isModern = stonecutter.eval(stonecutter.current.version, ">=26.1")
-    val modImpl = if (isModern) "implementation" else "modImplementation"
-    val modRuntime = if (isModern) "runtimeOnly" else "modRuntimeOnly"
-
-    modImpl("net.fabricmc:fabric-loader:${getProp("deps.fabric_loader")}")
-    modImpl("net.fabricmc:fabric-language-kotlin:${getProp("fabric_language_kotlin")}")
-    modImpl("net.fabricmc.fabric-api:fabric-api:${getProp("deps.fabric_api")}")
+    implementation("net.fabricmc:fabric-loader:${getProp("deps.fabric_loader")}")
+    implementation("net.fabricmc:fabric-language-kotlin:${getProp("fabric_language_kotlin")}")
+    implementation("net.fabricmc.fabric-api:fabric-api:${getProp("deps.fabric_api")}")
 
     val resConfig = "com.teamresourceful.resourcefulconfig:resourcefulconfig-fabric-${getProp("resourceful_mc_version")}:${getProp("resourceful_version")}"
-    modImpl(resConfig)
-    "include"(resConfig)
+    implementation(resConfig)
+    include(resConfig)
 
-    val resConfigKt = if (stonecutter.eval(stonecutter.current.version, "< 26.1")) {
-        "com.teamresourceful.resourcefulconfigkt:resourcefulconfigkt-fabric-${getProp("resourcefulkt_mc_version")}:${getProp("resourcefulkt_version")}"
-    } else {
-        "com.teamresourceful.resourcefulconfigkt:resourcefulconfigkt-${getProp("resourcefulkt_mc_version")}-rc-1:${getProp("resourcefulkt_version")}-beta.1"
-    }
-    modImpl(resConfigKt)
-    "include"(resConfigKt)
+    val resConfigKt = "com.teamresourceful.resourcefulconfigkt:resourcefulconfigkt-${getProp("resourcefulkt_mc_version")}-rc-1:${getProp("resourcefulkt_version")}-beta.1"
+    implementation(resConfigKt)
+    include(resConfigKt)
 
     val univCraft = "gg.essential:universalcraft-${getProp("universalcraft_mc_version")}-fabric:${getProp("universalcraft_version")}"
-    modImpl(univCraft)
-    "include"(univCraft)
+    implementation(univCraft)
+    include(univCraft)
 
     val elementa = "gg.essential:elementa:${getProp("elementa_version")}"
-    "implementation"(elementa)
-    "include"(elementa)
+    implementation(elementa)
+    include(elementa)
 
-    "implementation"("net.hypixel:mod-api:${getProp("hypixel_mod_api_version")}")
+    implementation("net.hypixel:mod-api:${getProp("hypixel_mod_api_version")}")
 
-    modRuntime("me.djtheredstoner:DevAuth-fabric:${getProp("devauth_version")}")
+    runtimeOnly("me.djtheredstoner:DevAuth-fabric:${getProp("devauth_version")}")
 
     ksp(project(":processor"))
 }
@@ -219,13 +192,7 @@ tasks {
 
     val isPrimary = project.name != rootProject.name && project.name != "processor" && project.findProperty("stonecutter.redirect") == null
 
-    if (stonecutter.eval(stonecutter.current.version, "<26.1")) {
-        named("remapJar", net.fabricmc.loom.task.RemapJarTask::class) {
-            if (isPrimary) destinationDirectory.set(rootProject.layout.buildDirectory.dir("libs"))
-        }
-    } else {
-        named("jar", Jar::class) {
-            if (isPrimary) destinationDirectory.set(rootProject.layout.buildDirectory.dir("libs"))
-        }
+    named("jar", Jar::class) {
+        if (isPrimary) destinationDirectory.set(rootProject.layout.buildDirectory.dir("libs"))
     }
 }

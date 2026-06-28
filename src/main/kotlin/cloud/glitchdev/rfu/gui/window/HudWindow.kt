@@ -34,9 +34,7 @@ object HudWindow : BaseWindow(false) {
 
         registerHudRenderEvent { context, ticks ->
             if(!isEditingOpen) {
-                //~ if >=26.1 'render' -> 'extractRenderState' {
                 extractRenderState(context, 0, 0, ticks)
-                //~}
             }
         }
 

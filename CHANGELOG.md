@@ -6,6 +6,7 @@
 
 
 ### Changes
+- Removed 1.21.11 Support
 - Added grim alias to :grim:
 - Updated "Pitch Black" achievement requirement to 6 Inklings in a row (was 7)
 - Enhanced collection tracker to support item variant multipliers (e.g., Enchanted Ink Sac now counts as 160)

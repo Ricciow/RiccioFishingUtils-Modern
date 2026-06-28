@@ -4,8 +4,6 @@ import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.phys.Vec3
 import java.awt.Color
-//~if >=26.1 'world.World' -> 'level.Level' {
-//~if >=26.1 'World' -> 'Level' {
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext
 
 class Render3DBuilder(val shape: Shape, val context: LevelRenderContext) {
@@ -83,5 +81,3 @@ class Render3DBuilder(val shape: Shape, val context: LevelRenderContext) {
         }
     }
 }
-//~}
-//~}
