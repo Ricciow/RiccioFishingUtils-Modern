@@ -70,9 +70,9 @@ class AnnouncementWindow(val announcement: Announcement) : BaseWindow() {
 
         val contentWrapper = UIContainer().constrain {
             x = CenterConstraint()
-            y = SiblingConstraint()
+            y = SiblingConstraint(2f)
             width = 100.percent() - (2 * UIScheme.pfSpacing).pixels()
-            height = FillConstraint()
+            height = FillConstraint() - 22.pixels
         } childOf useableArea effect ScissorEffect()
 
         val scrollArea = ScrollComponent().constrain {
