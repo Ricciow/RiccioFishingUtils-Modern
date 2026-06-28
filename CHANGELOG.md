@@ -12,6 +12,7 @@
 - Enhanced collection tracker to support item variant multipliers (e.g., Enchanted Ink Sac now counts as 160)
   - I tested ink collection and skyblock didn't count it at all though, like i think its bugged
 - Updated Umberella display and alerts to work like the Flare display, using a 30-block range check
+- Redesigned the rfuannouncements window to be inline with other windows
 
 ### Fixes
 - Fixed typo in plhleg emoji

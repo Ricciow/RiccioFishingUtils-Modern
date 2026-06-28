@@ -4,97 +4,96 @@ import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.model.announcement.Announcement
 import cloud.glitchdev.rfu.utils.dsl.toFormattedDate
 import gg.essential.elementa.components.ScrollComponent
+import gg.essential.elementa.components.UIBlock
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
-import gg.essential.elementa.constraints.CenterConstraint
-import gg.essential.elementa.constraints.ChildBasedSizeConstraint
-import gg.essential.elementa.constraints.FillConstraint
-import gg.essential.elementa.constraints.RelativeWindowConstraint
-import gg.essential.elementa.constraints.ScaledTextConstraint
-import gg.essential.elementa.constraints.SiblingConstraint
-import gg.essential.elementa.constraints.TextAspectConstraint
-import gg.essential.elementa.dsl.childOf
-import gg.essential.elementa.dsl.constrain
-import gg.essential.elementa.dsl.max
-import gg.essential.elementa.dsl.minus
-import gg.essential.elementa.dsl.percent
-import gg.essential.elementa.dsl.pixels
-import gg.essential.elementa.dsl.toConstraint
+import gg.essential.elementa.constraints.*
+import gg.essential.elementa.dsl.*
+import gg.essential.elementa.effects.ScissorEffect
 import gg.essential.elementa.markdown.MarkdownComponent
 
 class AnnouncementWindow(val announcement: Announcement) : BaseWindow() {
-    val primaryColor = UIScheme.primaryColorOpaque.toConstraint()
-    val secondaryColor = UIScheme.secondaryColorOpaque.toConstraint()
-    val radius = 5f
-    val windowSize = 0.8f
 
     init {
         create()
     }
 
     fun create() {
+        val radius = 5f
+
         val background = UIRoundedRectangle(radius).constrain {
             x = CenterConstraint()
             y = CenterConstraint()
-            width = max(RelativeWindowConstraint(windowSize), 320.pixels())
-            height = RelativeWindowConstraint(windowSize)
-            color = primaryColor
+            width = 80.percent()
+            height = 80.percent()
+            color = UIScheme.pfWindowBackground.toConstraint()
         } childOf window
 
-        val innerContainer = UIContainer().constrain {
+        val useableArea = UIContainer().constrain {
             x = CenterConstraint()
-            y = CenterConstraint()
-            width = max(90.percent(), 310.pixels())
-            height = 90.percent()
+            y = (radius / 2).pixels()
+            width = 100.percent()
+            height = 100.percent() - radius.pixels()
         } childOf background
 
         val header = UIContainer().constrain {
             x = CenterConstraint()
             y = SiblingConstraint()
             width = 100.percent()
-            height = ChildBasedSizeConstraint()
-        } childOf innerContainer
+            height = 30.pixels()
+        } childOf useableArea effect ScissorEffect()
 
         UIText(announcement.title).constrain {
-            x = CenterConstraint()
+            x = UIScheme.pfSpacing.pixels()
             y = CenterConstraint()
-            width = TextAspectConstraint()
-            height = ScaledTextConstraint(1.5f)
+            width = ScaledTextConstraint(1.5f)
+            height = TextAspectConstraint()
+            color = UIScheme.pfTitleText.toConstraint()
         } childOf header
 
         UIText(announcement.issuedAt.toFormattedDate()).constrain {
-            x = 0.pixels()
+            x = UIScheme.pfSpacing.pixels(true)
             y = CenterConstraint()
-            width = TextAspectConstraint()
-            height = ScaledTextConstraint(1f)
+            width = ScaledTextConstraint(1f)
+            height = TextAspectConstraint()
+            color = UIScheme.secondaryTextColor.toConstraint()
         } childOf header
 
-        val mainArea = UIContainer().constrain {
+        UIBlock().constrain {
             x = CenterConstraint()
-            y = SiblingConstraint(2f)
-            width = 100.percent()
+            y = SiblingConstraint()
+            width = 100.percent() - UIScheme.pfSpacing.pixels()
+            height = 1.pixels()
+            color = UIScheme.pfWindowSeparator.toConstraint()
+        } childOf useableArea
+
+        val contentWrapper = UIContainer().constrain {
+            x = CenterConstraint()
+            y = SiblingConstraint()
+            width = 100.percent() - (2 * UIScheme.pfSpacing).pixels()
             height = FillConstraint()
-        } childOf innerContainer
+        } childOf useableArea effect ScissorEffect()
 
-        val scrollComponent = ScrollComponent().constrain {
-            x = CenterConstraint()
-            y = SiblingConstraint(2f)
-            width = 100.percent() - 12.pixels()
-            height = 100.percent()
-        } childOf mainArea
+        val scrollArea = ScrollComponent().constrain {
+            x = 0.pixels()
+            y = UIScheme.pfSmallSpacing.pixels()
+            width = FillConstraint() - UIScheme.pfSmallSpacing.pixels()
+            height = 100.percent() - UIScheme.pfSmallSpacing.pixels()
+        } childOf contentWrapper
 
-        val scrollbar = UIRoundedRectangle(5f).constrain {
+        val scrollBar = UIRoundedRectangle(5f).constrain {
             x = 0.pixels(true)
-            width = 5.pixels()
-            color = secondaryColor
-        } childOf mainArea
+            width = 3.pixels()
+            color = UIScheme.pfScrollBar.toConstraint()
+        } childOf contentWrapper
 
-        scrollComponent.setScrollBarComponent(scrollbar, false, false)
+        scrollArea.setScrollBarComponent(scrollBar, hideWhenUseless = true, isHorizontal = false)
 
         MarkdownComponent(announcement.content).constrain {
             x = CenterConstraint()
+            y = SiblingConstraint(5f)
             width = 100.percent()
-        } childOf scrollComponent
+        } childOf scrollArea
     }
 }

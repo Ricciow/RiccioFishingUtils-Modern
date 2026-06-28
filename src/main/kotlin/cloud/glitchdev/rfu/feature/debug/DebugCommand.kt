@@ -13,6 +13,7 @@ object DebugCommand : AbstractCommand("rfudebug") {
         append(Entities)
         append(Sound)
         append(PartyDebug)
+        append(AnnouncementDebug)
         append(AchievementDebug)
         append(DebugHotspots.Hotspots)
     }
