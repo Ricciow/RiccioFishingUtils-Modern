@@ -38,6 +38,7 @@ class UISeaCreatureEditor : UIContainer() {
     private lateinit var gdragAlertCheckbox: UICheckbox
     private lateinit var rareSCAlertCheckbox: UICheckbox
     private lateinit var scDisplayColorInput: UIDecoratedTextInput
+    private lateinit var rarePartyMessageInput: UIDecoratedTextInput
 
     // Preview texts
     private lateinit var previewNormal: UIText
@@ -166,9 +167,11 @@ class UISeaCreatureEditor : UIContainer() {
             width = 100.pixels()
             height = 15.pixels()
         } childOf parent
+
+        rarePartyMessageInput = addField("Rare Party Msg:", parent, placeholder = SeaCreatureConfig.rarePartyMessage)
     }
 
-    private fun addField(label: String, parent: UIComponent, topPadding: Float = 5f): UIDecoratedTextInput {
+    private fun addField(label: String, parent: UIComponent, topPadding: Float = 5f, placeholder: String = ""): UIDecoratedTextInput {
         val container = UIContainer().constrain {
             x = 0.pixels()
             y = SiblingConstraint(topPadding)
@@ -191,7 +194,7 @@ class UISeaCreatureEditor : UIContainer() {
             color = UIScheme.secondaryTextColor.toConstraint()
         } childOf textContainer
         
-        return UIDecoratedTextInput("", 2f).constrain {
+        return UIDecoratedTextInput(placeholder, 2f).constrain {
             x = SiblingConstraint(2f)
             y = CenterConstraint()
             width = FillConstraint() - 32.pixels
@@ -206,6 +209,7 @@ class UISeaCreatureEditor : UIContainer() {
         articleInput.onChange = { saveCurrent() }
         styleInput.onChange = { saveCurrent() }
         scDisplayColorInput.onChange = { saveCurrent() }
+        rarePartyMessageInput.onChange = { saveCurrent() }
     }
 
     fun loadSc(sc: SeaCreatures?) {
@@ -225,6 +229,7 @@ class UISeaCreatureEditor : UIContainer() {
         gdragAlertCheckbox.state = current.gdragAlert
         rareSCAlertCheckbox.state = current.rareSCAlert
         scDisplayColorInput.setText(current.scDisplayColor.replace("§", "&"))
+        rarePartyMessageInput.setText(current.rarePartyMessage)
         
         refreshEnabledStates()
         updatePreviews()
@@ -236,6 +241,7 @@ class UISeaCreatureEditor : UIContainer() {
         bossbarCheckbox.isEnabled = isRare
         gdragAlertCheckbox.isEnabled = isRare
         rareSCAlertCheckbox.isEnabled = isRare
+        rarePartyMessageInput.isEnabled = isRare
     }
 
     private fun updatePreviews() {
@@ -295,7 +301,8 @@ class UISeaCreatureEditor : UIContainer() {
                 bossbar = bossbarCheckbox.state,
                 gdragAlert = gdragAlertCheckbox.state,
                 rareSCAlert = rareSCAlertCheckbox.state,
-                scDisplayColor = scDisplayColorInput.getText().toMcCodes()
+                scDisplayColor = scDisplayColorInput.getText().toMcCodes(),
+                rarePartyMessage = rarePartyMessageInput.getText()
             )
         }
         
