@@ -26,12 +26,12 @@ object DeployableManager : RegisteredEvent {
         val posZ: Double? = null,
         val highestY: Double? = null,
     ) {
-        fun isInFlareRadius(playerPos : Vec3): Boolean {
+        fun isInRange(playerPos: Vec3): Boolean {
             if (posX == null || posZ == null || highestY == null) return true
             val dy = playerPos.y - (round(highestY * 2.0) / 2.0 + 0.35)
             val dx = playerPos.x - posX
             val dz = playerPos.z - posZ
-            return dx * dx + dy * dy + dz * dz <= 40 * 40
+            return dx * dx + dy * dy + dz * dz <= type.range * type.range
         }
     }
 
@@ -64,12 +64,14 @@ object DeployableManager : RegisteredEvent {
     fun update(world: ClientLevel) {
         var foundAnyFlare = false
         var largestUmberellaSeconds: Double? = null
+        var umberellaEntity: ArmorStand? = null
 
         world.entitiesForRendering().forEach { entity ->
             if (entity is ArmorStand) {
                 val umbSeconds = checkUmberella(entity)
                 if (umbSeconds != null && umbSeconds > (largestUmberellaSeconds ?: 0.0)) {
                     largestUmberellaSeconds = umbSeconds
+                    umberellaEntity = entity
                 }
             }
 
@@ -82,12 +84,15 @@ object DeployableManager : RegisteredEvent {
             resetFlare()
         }
 
-        if (largestUmberellaSeconds == null) {
+        if (largestUmberellaSeconds == null || umberellaEntity == null) {
             resetUmberella()
         } else {
             activeDeployables[DeployableType.UMBERELLA] = Deployable(
                 type = DeployableType.UMBERELLA,
                 endTimeMillis = System.currentTimeMillis() + (largestUmberellaSeconds * 1_000).toLong(),
+                posX = umberellaEntity.x,
+                posZ = umberellaEntity.z,
+                highestY = umberellaEntity.y,
             )
         }
     }
