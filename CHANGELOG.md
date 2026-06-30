@@ -18,3 +18,4 @@
 - Fixed typo in plhleg emoji
 - Fixed Frog Blessing Display not working
 - Fixed Night Squid tracking and achievements (renamed to Inkling in-game)
+- Fixed rfupf member count not properly updating
