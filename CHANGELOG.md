@@ -14,7 +14,7 @@
 - Updated Umberella display and alerts to work like the Flare display, using a 30-block range check
 - Redesigned the rfuannouncements window to be inline with other windows
 - Updated hotspot sharing coordinates to round up instead of down
-- Added tracking for Snake Eyes, Deep Sea Orbs, Prince's Crown Jewels and Pyroclasm Books
+- Added tracking for Snake Eyes, Deep Sea Orbs, Prince's Crown Jewels, Scuttler Shells and Pyroclasm Books
 - Made the failed cast, missing rod piece, and no bait alerts require an active fishing session
 
 ### Fixes

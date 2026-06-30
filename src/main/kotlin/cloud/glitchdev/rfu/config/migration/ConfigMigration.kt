@@ -180,7 +180,7 @@ object ConfigMigration {
         val cat = getCategory(json, "Drops") ?: return
         val items = cat["rareDrops"]?.asJsonArray ?: return
 
-        val newDrops = listOf("SNAKE_EYES", "DEEP_SEA_ORB", "PYROCLASM_BOOK", "PRINCE_CROWN_JEWEL")
+        val newDrops = listOf("SNAKE_EYES", "DEEP_SEA_ORB", "PYROCLASM_BOOK", "PRINCE_CROWN_JEWEL", "SCUTTLER_SHELL")
         for (drop in newDrops) {
             var exists = false
             for (item in items) {
