@@ -12,6 +12,7 @@ object Emoji {
         "\uE0FB" to listOf("skull"),
         "\uE0FC" to listOf("sob"),
         "\uE0FD" to listOf("thumbsup"),
+        "\uE0FE" to listOf("eyes"),
 
         // Sea Creatures
         "\uE0F7" to listOf("abyssal_miner", "abyssalminer", "miner"),
@@ -35,7 +36,7 @@ object Emoji {
         "\uE007" to listOf("wiki_tiki", "wikitiki", "tiki"),
         "\uE009" to listOf("yeti")
 
-        //\uE0FE next
+        //\uE0FF next
     )
 
     val ALL = EMOJIS.flatMap { (unicode, aliases) ->

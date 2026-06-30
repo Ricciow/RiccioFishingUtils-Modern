@@ -202,6 +202,13 @@
       "ascent": 7,
       "height": 8,
       "chars": ["\uE0FD"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/eyes.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE0FE"]
     }
   ]
 }
