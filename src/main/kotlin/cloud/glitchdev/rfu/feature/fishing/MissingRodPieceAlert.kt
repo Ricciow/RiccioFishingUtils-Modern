@@ -15,6 +15,7 @@ object MissingRodPieceAlert : Feature {
     override fun onInitialize() {
         registerItemUsedEvent { item ->
             if (!GeneralFishing.missingRodPieceAlert) return@registerItemUsedEvent
+            if (!FishingSession.isFishing) return@registerItemUsedEvent
             if (!item.isFishingRod()) return@registerItemUsedEvent
             if (mc.player?.fishing != null) return@registerItemUsedEvent
 

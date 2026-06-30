@@ -14,6 +14,7 @@ object NoBaitAlert : Feature {
     override fun onInitialize() {
         registerItemUsedEvent { item ->
             if (!GeneralFishing.noBaitAlert) return@registerItemUsedEvent
+            if (!FishingSession.isFishing) return@registerItemUsedEvent
             if (!item.isFishingRod()) return@registerItemUsedEvent
             if (mc.player?.fishing != null) return@registerItemUsedEvent
 

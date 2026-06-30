@@ -15,6 +15,7 @@
 - Redesigned the rfuannouncements window to be inline with other windows
 - Updated hotspot sharing coordinates to round up instead of down
 - Added tracking for Snake Eyes, Deep Sea Orbs, Prince's Crown Jewels and Pyroclasm Books
+- Made the failed cast, missing rod piece, and no bait alerts require an active fishing session
 
 ### Fixes
 - Fixed typo in plhleg emoji
