@@ -13,6 +13,7 @@
 - Enhanced collection tracker to support item variant multipliers (e.g., Enchanted Ink Sac now counts as 160)
 - Updated Umberella display and alerts to work like the Flare display, using a 30-block range check
 - Redesigned the rfuannouncements window to be inline with other windows
+- Updated hotspot sharing coordinates to round up instead of down
 
 ### Fixes
 - Fixed typo in plhleg emoji
