@@ -68,16 +68,4 @@ object Skills {
         return (s.toDoubleOrNull()?.let { it * multiplier } ?: 0.0).toLong()
     }
 
-    fun calculateTotalXp(currentXp: Long, requiredXp: Long): Long {
-        return if (requiredXp == 0L) {
-            getTotalXpAtLevel(50) + currentXp
-        } else {
-            val index = XP_REQUIRED_FOR_LEVEL.indexOf(requiredXp)
-            if (index != -1) {
-                getTotalXpAtLevel(index) + currentXp
-            } else {
-                0L
-            }
-        }
-    }
 }
