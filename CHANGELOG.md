@@ -4,6 +4,7 @@
 - Added :sob: :thumbsup: :eyes:
 - Added /rfuemojis command to list all available emojis along with their shortest alias
 - Added option to configure custom rare sea creature party messages per creature in /rfuscedit
+- Added 1 new achievements!
 
 ### Changes
 - Removed 1.21.11 Support
