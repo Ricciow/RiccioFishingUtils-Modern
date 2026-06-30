@@ -5,7 +5,8 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.BaseAchievement
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerChatEvent
+import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
+import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 
 @Achievement
 object SupportingTheCauseAchievement : BaseAchievement() {
@@ -16,10 +17,10 @@ object SupportingTheCauseAchievement : BaseAchievement() {
     override val difficulty: AchievementDifficulty = AchievementDifficulty.EASY
     override val category: AchievementCategory = AchievementCategory.SPECIAL
 
-    private val VOTE_MARINA_REGEX = """You cast \d+ votes for Marina in the Year \d+ Elections!""".toRegex()
+    private val VOTE_MARINA_REGEX = """You cast \d+ votes for Marina in the Year \d+ Elections!""".toExactRegex()
 
     override fun setupListeners() {
-        activeListeners.add(registerChatEvent(filter = VOTE_MARINA_REGEX) { _, _ ->
+        activeListeners.add(registerGameEvent(VOTE_MARINA_REGEX) { _, _, _ ->
             complete()
         })
     }
