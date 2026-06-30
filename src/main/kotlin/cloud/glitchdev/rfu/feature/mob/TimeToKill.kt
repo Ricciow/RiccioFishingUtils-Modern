@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.feature.mob
 
+import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig.RARE_SC_REGEX
 import cloud.glitchdev.rfu.constants.text.TextColor
@@ -18,6 +19,8 @@ object TimeToKill : Feature {
             if(!SeaCreatureConfig.timeToKill) return@registerMobDisposeEvent
             val entities = entities.filter { RARE_SC_REGEX.matches(it.sbName) }
             entities.forEach { entity ->
+                val player = mc.player ?: return@forEach
+                if (player.distanceTo(entity.modelEntity) > 40f) return@forEach
                 val duration = Clock.System.now() - entity.createdAt
 
                 Chat.sendMessage(

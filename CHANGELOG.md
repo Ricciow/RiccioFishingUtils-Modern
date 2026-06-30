@@ -16,6 +16,7 @@
 - Updated hotspot sharing coordinates to round up instead of down
 - Added tracking for Snake Eyes, Deep Sea Orbs, Prince's Crown Jewels, Scuttler Shells and Pyroclasm Books
 - Made the failed cast, missing rod piece, and no bait alerts require an active fishing session
+- Updated time to kill message to not trigger if the player dies or is teleported far away
 
 ### Fixes
 - Fixed typo in plhleg emoji
