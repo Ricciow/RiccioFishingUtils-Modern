@@ -10,6 +10,7 @@ import cloud.glitchdev.rfu.config.categories.HotSpotSettings
 import cloud.glitchdev.rfu.config.categories.InkFishing
 import cloud.glitchdev.rfu.config.categories.JerryFishing
 import cloud.glitchdev.rfu.config.categories.LavaFishing
+import cloud.glitchdev.rfu.config.categories.LotusAtollSettings
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.config.categories.PartySettings
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
@@ -145,6 +146,7 @@ object RFUSettings : ConfigKt("rfu/settings") {
         category(HotSpotSettings)
         category(InkFishing)
         category(JerryFishing)
+        category(LotusAtollSettings)
         category(SeaCreatureConfig)
         category(DropsSettings)
         category(PartySettings)
