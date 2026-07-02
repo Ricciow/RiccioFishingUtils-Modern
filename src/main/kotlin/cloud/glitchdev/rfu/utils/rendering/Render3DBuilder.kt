@@ -17,6 +17,11 @@ class Render3DBuilder(val shape: Shape, val context: LevelRenderContext) {
     var slices: Int = 16
     var lineWidth: Float = 2.0f
     var filled: Boolean = false
+    var text: String = ""
+    var seeThrough: Boolean = false
+    var dropShadow: Boolean = false
+    var backgroundOpacity: Float = 0.25f
+    var scale: Float = 0.025f
 
     var from: Vec3
         get() = startLocation
@@ -60,6 +65,9 @@ class Render3DBuilder(val shape: Shape, val context: LevelRenderContext) {
             Shape.LINE -> Render3D.renderLine(
                 startLocation, location, color, context, lineWidth
             )
+            Shape.TEXT -> Render3D.renderText(
+                location, text, color, context, scale, seeThrough, dropShadow, backgroundOpacity
+            )
         }
     }
 
@@ -74,6 +82,10 @@ class Render3DBuilder(val shape: Shape, val context: LevelRenderContext) {
 
         inline fun LevelRenderContext.line(block: Render3DBuilder.() -> Unit) {
             Render3DBuilder(Shape.LINE, this).apply(block).render()
+        }
+
+        inline fun LevelRenderContext.text(block: Render3DBuilder.() -> Unit) {
+            Render3DBuilder(Shape.TEXT, this).apply(block).render()
         }
 
         inline fun build(shape: Shape, context: LevelRenderContext, block: Render3DBuilder.() -> Unit): Render3DBuilder {

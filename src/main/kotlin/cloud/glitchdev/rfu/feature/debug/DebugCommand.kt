@@ -19,5 +19,6 @@ object DebugCommand : AbstractCommand("rfudebug") {
         append(DebugHotspots.Hotspots)
         append(Reauth)
         append(SkillsDebug)
+        append(DebugText)
     }
 }

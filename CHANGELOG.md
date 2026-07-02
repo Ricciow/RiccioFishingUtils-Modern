@@ -24,3 +24,6 @@
 - Fixed Night Squid tracking and achievements (renamed to Inkling in-game)
 - Fixed rfupf member count not properly updating
 - Fixed Supporting the cause achievement :dog:
+
+### Back-end
+- Added 3D text rendering capabilities.
