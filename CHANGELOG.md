@@ -4,7 +4,7 @@
 - Added :sob: :thumbsup: :eyes:
 - Added /rfuemojis command to list all available emojis along with their shortest alias
 - Added option to configure custom rare sea creature party messages per creature in /rfuscedit
-- Added 1 new achievements!
+- Added 2 new achievements!
 - Added Lilypad Size Display feature
 
 ### Changes
@@ -19,6 +19,7 @@
 - Made the failed cast, missing rod piece, and no bait alerts require an active fishing session
 - Updated time to kill message to not trigger if the player dies or is teleported far away
 - Made party finder alerts only trigger while in Skyblock
+- Updated the !since command to check for username using contains instead of an exact match
 
 ### Fixes
 - Fixed typo in plhleg emoji
