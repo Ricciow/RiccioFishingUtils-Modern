@@ -10,7 +10,8 @@ object DebugCommand : AbstractCommand("rfudebug") {
     init {
         append(Chat)
         append(Title)
-        append(Entities)
+        append(SbEntities)
+        append(Alive)
         append(Sound)
         append(PartyDebug)
         append(AnnouncementDebug)
