@@ -21,6 +21,7 @@
 - Made party finder alerts only trigger while in Skyblock
 - Updated the !since command to check for username using contains instead of an exact match
 - Updated autopet message hiding to also hide "Autopet rule triggered but couldn't find your pet!"
+- Added Sacks message hiding option
 
 ### Fixes
 - Fixed typo in plhleg emoji
