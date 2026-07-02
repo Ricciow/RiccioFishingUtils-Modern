@@ -8,10 +8,10 @@ import cloud.glitchdev.rfu.achievement.types.StageAchievement
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 
 @Achievement
-object VolcanicTwins : StageAchievement() {
-    override val id: String = "volcanic_twins"
-    override val name: String = "Volcanic Twins"
-    override val description: String = "Catch back-to-back trophy fish of the same tier."
+object AmphibianTwinsAchievement : StageAchievement() {
+    override val id: String = "amphibian_twins"
+    override val name: String = "Amphibian Twins"
+    override val description: String = "Catch back-to-back trophy frogs of the same tier."
     override val type: AchievementType = AchievementType.NORMAL
     override val difficulty: AchievementDifficulty = AchievementDifficulty.VERY_HARD
     override val category: AchievementCategory = AchievementCategory.TROPHY_FISHING
@@ -19,17 +19,17 @@ object VolcanicTwins : StageAchievement() {
 
     private var lastTrophyTier: String? = null
 
-    private val TROPHY_FISH_REGEX = """♔ TROPHY FISH! You caught (?:an? )?(.+?) (BRONZE|SILVER|GOLD|DIAMOND)!""".toRegex(RegexOption.IGNORE_CASE)
+    private val TROPHY_FROG_REGEX = """♔ TROPHY FROG! You caught (?:an? )?(.+?) (BRONZE|SILVER|GOLD|DIAMOND)!""".toRegex(RegexOption.IGNORE_CASE)
 
     init {
-        addStageInfo(1, "Bronze Volcanic Twins", "Catch two Bronze trophy fish back-to-back.", AchievementDifficulty.EASY)
-        addStageInfo(2, "Silver Volcanic Twins", "Catch two Silver trophy fish back-to-back.", AchievementDifficulty.MEDIUM)
-        addStageInfo(3, "Gold Volcanic Twins", "Catch two Gold trophy fish back-to-back.", AchievementDifficulty.HARD)
-        addStageInfo(4, "Diamond Volcanic Twins", "Catch two Diamond trophy fish back-to-back.", AchievementDifficulty.VERY_HARD)
+        addStageInfo(1, "Bronze Amphibian Twins", "Catch two Bronze trophy frogs back-to-back.", AchievementDifficulty.EASY)
+        addStageInfo(2, "Silver Amphibian Twins", "Catch two Silver trophy frogs back-to-back.", AchievementDifficulty.MEDIUM)
+        addStageInfo(3, "Gold Amphibian Twins", "Catch two Gold trophy frogs back-to-back.", AchievementDifficulty.HARD)
+        addStageInfo(4, "Diamond Amphibian Twins", "Catch two Diamond trophy frogs back-to-back.", AchievementDifficulty.VERY_HARD)
     }
 
     override fun setupListeners() {
-        activeListeners.add(registerGameEvent(TROPHY_FISH_REGEX) { _, _, matches ->
+        activeListeners.add(registerGameEvent(TROPHY_FROG_REGEX) { _, _, matches ->
             val tier = matches?.groupValues?.get(2)?.uppercase() ?: return@registerGameEvent
             
             val requiredTier = when (currentStage) {
