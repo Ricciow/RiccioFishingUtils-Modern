@@ -4,7 +4,8 @@
 - Added :sob: :thumbsup: :eyes:
 - Added /rfuemojis command to list all available emojis along with their shortest alias
 - Added option to configure custom rare sea creature party messages per creature in /rfuscedit
-- Added 2 new achievements!
+- Added 3 new achievements!
+  - Added Trophy Fishing achievement category
 - Added Lilypad Size Display feature
 
 ### Changes
