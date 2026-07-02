@@ -20,6 +20,7 @@
 - Updated time to kill message to not trigger if the player dies or is teleported far away
 - Made party finder alerts only trigger while in Skyblock
 - Updated the !since command to check for username using contains instead of an exact match
+- Updated autopet message hiding to also hide "Autopet rule triggered but couldn't find your pet!"
 
 ### Fixes
 - Fixed typo in plhleg emoji

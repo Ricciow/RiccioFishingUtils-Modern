@@ -13,7 +13,7 @@ import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 object HideMessages : Feature {
     val SC_MESSAGE_REGEX = SeaCreatures.entries.joinToString("|") { it.catchMessage.escapeForRegex() }.toExactRegex()
     val DOUBLE_HOOK_REGEX = """Double Hook!|It's a Double Hook! Woot woot!|It's a Double Hook!""".toExactRegex()
-    val AUTOPET_REGEX = """Autopet equipped your .+! VIEW RULE""".toExactRegex()
+    val AUTOPET_REGEX = """(?:Autopet equipped your .+! VIEW RULE|Autopet rule triggered but couldn't find your pet!)""".toExactRegex()
     val HYPE_REGEX = """Your Implosion hit \d+ enem(?:y|ies) for [\d.,]+ damage\.""".toExactRegex()
     val COMBO_REGEX = """\+\d+ Kill Combo (.+)""".toExactRegex()
     val BLOCKS_REGEX = """There are blocks in the way!""".toExactRegex()
