@@ -1,6 +1,9 @@
 package cloud.glitchdev.rfu.gui.window
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
+import cloud.glitchdev.rfu.config.categories.OtherSettings
+import cloud.glitchdev.rfu.events.managers.HudRenderEvents.registerHudRenderEvent
+import cloud.glitchdev.rfu.events.managers.KeyboardEvents.registerKeyboardEvent
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.UIPopup
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyListChangedEvent
@@ -8,6 +11,8 @@ import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyCreate
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyUpdatedEvent
 import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents
+import cloud.glitchdev.rfu.feature.Feature
+import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.colors
 import cloud.glitchdev.rfu.gui.components.elementa.BoundingBoxConstraint
@@ -48,7 +53,8 @@ import gg.essential.elementa.dsl.toConstraint
 import gg.essential.elementa.effects.ScissorEffect
 import kotlinx.coroutines.delay
 
-object PartyFinderWindow : BaseWindow(false) {
+@RFUFeature
+object PartyFinderWindow : BaseWindow(false), Feature {
     private val primaryColor = UIScheme.pfWindowBackground.toConstraint()
     private val headerHeight = 30.pixels
     private val filterHeight = 50.pixels
@@ -60,6 +66,7 @@ object PartyFinderWindow : BaseWindow(false) {
     private var reloadOnCooldown = false
     private var parties : List<FishingParty> = PartyFinderEvents.parties
     private var partyCards : MutableList<UIPartyCard> = mutableListOf()
+    private var isPeeking = false
 
     val popup: UIPopup = UIPopup(5f, "", isBordered = true).childOf(window).colors {
         primaryColor = UIScheme.pfCardBorder.toConstraint()
@@ -78,6 +85,9 @@ object PartyFinderWindow : BaseWindow(false) {
     lateinit var creationArea : UICreateParty
     lateinit var scrollArea : ScrollComponent
     lateinit var partiesContainer : UIContainer
+
+    //To force initialization of gui
+    override fun onInitialize() {}
 
     init {
         create()
@@ -108,6 +118,18 @@ object PartyFinderWindow : BaseWindow(false) {
             //~}
                 if (message == "Target user is not currently connected to the WebSocket.") return@registerErrorMessageEvent
                 popup.show(message)
+            }
+        }
+
+        registerKeyboardEvent(
+            key = { OtherSettings.peekPartyFinderKeybind },
+            onPress = { isPeeking = true },
+            onRelease = { isPeeking = false }
+        )
+
+        registerHudRenderEvent(50) { context, ticks ->
+            if (isPeeking) {
+                extractRenderState(context, 0, 0, ticks)
             }
         }
     }

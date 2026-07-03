@@ -118,6 +118,12 @@ object OtherSettings : Category("Other") {
         condition = { BackendSettings.backendAccepted }
     }
 
+    var peekPartyFinderKeybind by key(0) {
+        name = Literal("Peek Party Finder Keybind")
+        description = Literal("Keybind to peek the party finder window without opening the GUI.")
+        condition = { BackendSettings.backendAccepted }
+    }
+
     var partyInviteMsgs by boolean(true) {
         name = Literal("Party invite messages")
         description = Literal("Sends a prompt to invite player msg when some keywords are said by player")
