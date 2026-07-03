@@ -11,4 +11,9 @@ object LotusAtollSettings : Category("Lotus Atoll") {
         name = Literal("Lilypad Size Display")
         description = Literal("Displays a percentage scale above lilypads on Lotus Atoll when they grow/shrink or move.")
     }
+
+    var frogcoinBlessingDisplay by boolean(true) {
+        name = Literal("Frogcoin Blessing Display")
+        description = Literal("Displays active frogcoin blessings on the Lotus Atoll.")
+    }
 }

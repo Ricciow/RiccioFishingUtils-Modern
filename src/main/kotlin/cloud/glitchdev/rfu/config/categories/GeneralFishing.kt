@@ -155,19 +155,9 @@ object GeneralFishing : Category("General Fishing") {
 
     init {
         dualSeparator {
-            title = "Fishing"
-            description = "Anything fishing related that didn't fit elsewhere"
+            title = "Alerts"
+            description = "Alerts to help you fish!"
         }
-    }
-
-    var rodTimerDisplay by boolean(false) {
-        name = Literal("Rod Timer Display")
-        description = Literal("Display the current rod timer on screen")
-    }
-
-    var rodTimerSound by boolean(false) {
-        name = Literal("Rod Timer Sound")
-        description = Literal("Plays a sound when the fishing stream approaches, increasing in pitch.")
     }
 
     var failCastAlert by boolean(true) {
@@ -201,9 +191,26 @@ object GeneralFishing : Category("General Fishing") {
         description = Literal("Sends an alert when you're fishing with a rod that is missing a piece (Hook, Line, or Sinker).")
     }
 
-    var frogcoinBlessingDisplay by boolean(true) {
-        name = Literal("Frogcoin Blessing Display")
-        description = Literal("Displays active frogcoin blessings on the Lotus Atoll.")
+    var noFishingArmorAlert by boolean(true) {
+        name = Literal("No Fishing Armor Alert")
+        description = Literal("Sends an alert when you're fishing without a fishing armor.")
+    }
+
+    init {
+        dualSeparator {
+            title = "Fishing"
+            description = "Anything fishing related that didn't fit elsewhere"
+        }
+    }
+
+    var rodTimerDisplay by boolean(false) {
+        name = Literal("Rod Timer Display")
+        description = Literal("Display the current rod timer on screen")
+    }
+
+    var rodTimerSound by boolean(false) {
+        name = Literal("Rod Timer Sound")
+        description = Literal("Plays a sound when the fishing stream approaches, increasing in pitch.")
     }
 
     var bobbinTimeDisplay by observable(boolean(true) {
@@ -212,5 +219,6 @@ object GeneralFishing : Category("General Fishing") {
     }) { _, _ ->
         reloadScreen()
     }
+
 }
 
