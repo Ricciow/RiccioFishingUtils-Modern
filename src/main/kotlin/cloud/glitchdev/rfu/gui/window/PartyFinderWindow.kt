@@ -15,8 +15,6 @@ import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.colors
-import cloud.glitchdev.rfu.gui.components.elementa.BoundingBoxConstraint
-import cloud.glitchdev.rfu.gui.components.elementa.CopyComponentSizeConstraint
 import cloud.glitchdev.rfu.gui.components.elementa.JustifiedCramSiblingConstraint
 import cloud.glitchdev.rfu.gui.components.partyfinder.UICreateParty
 import cloud.glitchdev.rfu.gui.components.partyfinder.UIFilterArea
@@ -32,7 +30,6 @@ import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIImage
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
-import gg.essential.elementa.components.inspector.Inspector
 import gg.essential.elementa.constraints.AspectConstraint
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
