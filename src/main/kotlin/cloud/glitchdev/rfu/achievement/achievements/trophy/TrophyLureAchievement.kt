@@ -33,7 +33,7 @@ object TrophyLureAchievement : BaseAchievement() {
         }
 
     private val tablistRegex = """Trophy Chance:\s*♔\s*([0-9]+(?:\.[0-9]+)?)""".toRegex(RegexOption.IGNORE_CASE)
-    private val statRegex = """♔\s*Trophy Chance\s*([0-9]+(?:\.[0-9]+)?)(?:%)?""".toRegex(RegexOption.IGNORE_CASE)
+    private val statRegex = """♔\s*Trophy Chance\s*([0-9]+(?:\.[0-9]+)?)%?""".toRegex(RegexOption.IGNORE_CASE)
 
     override fun setupListeners() {
         activeListeners.add(registerTickEvent(interval = 20) {
