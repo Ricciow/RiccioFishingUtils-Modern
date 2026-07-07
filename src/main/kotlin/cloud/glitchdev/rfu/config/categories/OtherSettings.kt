@@ -14,7 +14,7 @@ object OtherSettings : Category("Other") {
 
     var emojis by boolean(true) {
         name = Literal("Emojis")
-        description = Literal("Replaces triggers like :dog: with the respective emoji. Currently only :dog:")
+        description = Literal("Replaces triggers like :dog: with the respective emoji. Use /rfuemojis to see all emojis!")
     }
 
     var lobbyTracking by boolean(true) {
