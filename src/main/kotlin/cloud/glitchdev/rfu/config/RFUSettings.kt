@@ -42,7 +42,7 @@ object RFUSettings : ConfigKt("rfu/settings") {
         }
 
         button {
-            title = "\uE0F9 RFU Discord"
+            title = "\uE118 RFU Discord"
             description = "\nJoin the rfu discord!"
             text = "Join"
 
@@ -52,7 +52,7 @@ object RFUSettings : ConfigKt("rfu/settings") {
         }
 
         button {
-            title = "\uE0F8 Github"
+            title = "\uE117 Github"
             description = "\nContribute to the mod's development! Leave a star <3"
             text = "Open"
 
@@ -62,7 +62,7 @@ object RFUSettings : ConfigKt("rfu/settings") {
         }
 
         button {
-            title = "\uE0FA Patreon"
+            title = "\uE119 Patreon"
             description = "\nHelp me maintain the servers, not really a must but thanks if you do <3"
             text = "Open"
 

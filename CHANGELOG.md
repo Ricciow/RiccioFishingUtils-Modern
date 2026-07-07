@@ -37,3 +37,5 @@
 
 ### Back-end
 - Added 3D text rendering capabilities.
+- Added unicode escape decoding support to the `/rfudebug chat` command.
+- Moved custom characters mapping to a sequential range starting at `\uE100` to avoid conflicts with new Hypixel textures.
