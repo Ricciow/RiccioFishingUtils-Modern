@@ -9,6 +9,7 @@
 - Added Lilypad Size Display feature
 - Added a keybind to peek the Party Finder window without opening the GUI
 - Added No Fishing Armor Alert option to notify you when fishing without fishing armor
+- Added /rfuresetcakes command to clear the cake alert list
 
 ### Changes
 - Removed 1.21.11 Support
