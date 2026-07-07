@@ -19,7 +19,7 @@ object AmphibianTwinsAchievement : StageAchievement() {
 
     private var lastTrophyTier: String? = null
 
-    private val TROPHY_FROG_REGEX = """♔ TROPHY FROG! You caught (?:an? )?(.+?) (BRONZE|SILVER|GOLD|DIAMOND)!""".toRegex(RegexOption.IGNORE_CASE)
+    private val TROPHY_FROG_REGEX = """[♔] TROPHY FROG! You caught (?:an? )?(.+?) (BRONZE|SILVER|GOLD|DIAMOND)!""".toRegex(RegexOption.IGNORE_CASE)
 
     init {
         addStageInfo(1, "Bronze Amphibian Twins", "Catch two Bronze trophy frogs back-to-back.", AchievementDifficulty.EASY)

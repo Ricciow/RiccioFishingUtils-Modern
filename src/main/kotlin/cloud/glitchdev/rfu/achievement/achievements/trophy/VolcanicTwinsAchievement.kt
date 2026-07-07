@@ -19,7 +19,7 @@ object VolcanicTwinsAchievement : StageAchievement() {
 
     private var lastTrophyTier: String? = null
 
-    private val TROPHY_FISH_REGEX = """♔ TROPHY FISH! You caught (?:an? )?(.+?) (BRONZE|SILVER|GOLD|DIAMOND)!""".toRegex(RegexOption.IGNORE_CASE)
+    private val TROPHY_FISH_REGEX = """[♔] TROPHY FISH! You caught (?:an? )?(.+?) (BRONZE|SILVER|GOLD|DIAMOND)!""".toRegex(RegexOption.IGNORE_CASE)
 
     init {
         addStageInfo(1, "Bronze Volcanic Twins", "Catch two Bronze trophy fish back-to-back.", AchievementDifficulty.EASY)
