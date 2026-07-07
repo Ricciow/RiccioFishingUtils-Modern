@@ -5,7 +5,8 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.StageAchievement
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.TrophyCatchEvents.registerTrophyFrogCatchEvent
+import cloud.glitchdev.rfu.constants.TrophyTier
 
 @Achievement
 object AmphibianTwinsAchievement : StageAchievement() {
@@ -19,8 +20,6 @@ object AmphibianTwinsAchievement : StageAchievement() {
 
     private var lastTrophyTier: String? = null
 
-    private val TROPHY_FROG_REGEX = """[♔] TROPHY FROG! You caught (?:an? )?(.+?) (BRONZE|SILVER|GOLD|DIAMOND)!""".toRegex(RegexOption.IGNORE_CASE)
-
     init {
         addStageInfo(1, "Bronze Amphibian Twins", "Catch two Bronze trophy frogs back-to-back.", AchievementDifficulty.EASY)
         addStageInfo(2, "Silver Amphibian Twins", "Catch two Silver trophy frogs back-to-back.", AchievementDifficulty.MEDIUM)
@@ -29,19 +28,18 @@ object AmphibianTwinsAchievement : StageAchievement() {
     }
 
     override fun setupListeners() {
-        activeListeners.add(registerGameEvent(TROPHY_FROG_REGEX) { _, _, matches ->
-            val tier = matches?.groupValues?.get(2)?.uppercase() ?: return@registerGameEvent
-            
+        activeListeners.add(registerTrophyFrogCatchEvent { _, tier ->
             val requiredTier = when (currentStage) {
-                1 -> "BRONZE"
-                2 -> "SILVER"
-                3 -> "GOLD"
-                4 -> "DIAMOND"
-                else -> return@registerGameEvent
+                1 -> TrophyTier.BRONZE
+                2 -> TrophyTier.SILVER
+                3 -> TrophyTier.GOLD
+                4 -> TrophyTier.DIAMOND
+                else -> return@registerTrophyFrogCatchEvent
             }
             
+            val tierStr = tier.name
             if (tier == requiredTier) {
-                if (lastTrophyTier == tier) {
+                if (lastTrophyTier == tierStr) {
                     lastTrophyTier = null
                     if (currentStage == 4) {
                         complete()
@@ -49,10 +47,10 @@ object AmphibianTwinsAchievement : StageAchievement() {
                         advanceStage()
                     }
                 } else {
-                    lastTrophyTier = tier
+                    lastTrophyTier = tierStr
                 }
             } else {
-                lastTrophyTier = tier
+                lastTrophyTier = tierStr
             }
         })
     }

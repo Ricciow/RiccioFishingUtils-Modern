@@ -5,7 +5,8 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.StageAchievement
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.TrophyCatchEvents.registerTrophyFishCatchEvent
+import cloud.glitchdev.rfu.constants.TrophyTier
 
 @Achievement
 object VolcanicTwinsAchievement : StageAchievement() {
@@ -19,8 +20,6 @@ object VolcanicTwinsAchievement : StageAchievement() {
 
     private var lastTrophyTier: String? = null
 
-    private val TROPHY_FISH_REGEX = """[♔] TROPHY FISH! You caught (?:an? )?(.+?) (BRONZE|SILVER|GOLD|DIAMOND)!""".toRegex(RegexOption.IGNORE_CASE)
-
     init {
         addStageInfo(1, "Bronze Volcanic Twins", "Catch two Bronze trophy fish back-to-back.", AchievementDifficulty.EASY)
         addStageInfo(2, "Silver Volcanic Twins", "Catch two Silver trophy fish back-to-back.", AchievementDifficulty.MEDIUM)
@@ -29,19 +28,18 @@ object VolcanicTwinsAchievement : StageAchievement() {
     }
 
     override fun setupListeners() {
-        activeListeners.add(registerGameEvent(TROPHY_FISH_REGEX) { _, _, matches ->
-            val tier = matches?.groupValues?.get(2)?.uppercase() ?: return@registerGameEvent
-            
+        activeListeners.add(registerTrophyFishCatchEvent { _, tier ->
             val requiredTier = when (currentStage) {
-                1 -> "BRONZE"
-                2 -> "SILVER"
-                3 -> "GOLD"
-                4 -> "DIAMOND"
-                else -> return@registerGameEvent
+                1 -> TrophyTier.BRONZE
+                2 -> TrophyTier.SILVER
+                3 -> TrophyTier.GOLD
+                4 -> TrophyTier.DIAMOND
+                else -> return@registerTrophyFishCatchEvent
             }
             
+            val tierStr = tier.name
             if (tier == requiredTier) {
-                if (lastTrophyTier == tier) {
+                if (lastTrophyTier == tierStr) {
                     lastTrophyTier = null
                     if (currentStage == 4) {
                         complete()
@@ -49,10 +47,10 @@ object VolcanicTwinsAchievement : StageAchievement() {
                         advanceStage()
                     }
                 } else {
-                    lastTrophyTier = tier
+                    lastTrophyTier = tierStr
                 }
             } else {
-                lastTrophyTier = tier
+                lastTrophyTier = tierStr
             }
         })
     }
