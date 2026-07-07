@@ -21,6 +21,7 @@ import cloud.glitchdev.rfu.gui.components.partyfinder.UIFilterArea
 import cloud.glitchdev.rfu.gui.components.partyfinder.UIPartyCard
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.utils.Coroutines
+import cloud.glitchdev.rfu.utils.World
 import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.network.PartyWebSocket
 import gg.essential.elementa.UIComponent
@@ -120,7 +121,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
 
         registerKeyboardEvent(
             key = { OtherSettings.peekPartyFinderKeybind },
-            onPress = { isPeeking = true },
+            onPress = { if (!World.isOnAlpha()) isPeeking = true },
             onRelease = { isPeeking = false }
         )
 

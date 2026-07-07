@@ -10,6 +10,9 @@ import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.HotSpotEvents
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.RiccioFishingUtils.mc
+import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import net.hypixel.data.type.GameType
 import java.time.Clock
 import kotlin.jvm.optionals.getOrElse
@@ -24,6 +27,13 @@ object  World : RegisteredEvent {
     var lobby : String? = null
     var island : FishingIslands? = null
     var jerryFishingFestival = false
+    private var currentlyOnAlpha = false
+
+    fun isOnAlpha(): Boolean {
+        if (currentlyOnAlpha) return true
+        val ip = mc.currentServer?.ip?.lowercase() ?: return false
+        return ip == "alpha.hypixel.net" || ip.endsWith(".alpha.hypixel.net")
+    }
 
     private const val SKYBLOCK_EPOCH = 1560275700000L
     private const val DAY_DURATION_MS = 20L * 60 * 1000L
@@ -104,6 +114,29 @@ object  World : RegisteredEvent {
             if (sc.category == SeaCreatureCategory.SHARK && mayor == Mayors.JERRY) {
                 jerryFishingFestival = true
             }
+        }
+
+        registerJoinEvent(priority = -100) {
+            val ip = mc.currentServer?.ip?.lowercase()
+            val isAlpha = ip != null && (ip == "alpha.hypixel.net" || ip.endsWith(".alpha.hypixel.net"))
+
+            if (isAlpha) {
+                currentlyOnAlpha = true
+            } else {
+                if (currentlyOnAlpha) {
+                    RFULogger.info("[RFU] Leaving Alpha server. Rolling back data...")
+                    JsonFile.reloadAll()
+                }
+                currentlyOnAlpha = false
+            }
+        }
+
+        registerDisconnectEvent(priority = -100) {
+            if (currentlyOnAlpha) {
+                RFULogger.info("[RFU] Disconnected from Alpha server. Rolling back data...")
+                JsonFile.reloadAll()
+            }
+            currentlyOnAlpha = false
         }
     }
 }

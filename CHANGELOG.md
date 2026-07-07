@@ -25,6 +25,7 @@
 - Updated the !since command to check for username using contains instead of an exact match
 - Updated autopet message hiding to also hide "Autopet rule triggered but couldn't find your pet!"
 - Added Sacks message hiding option
+- Prevented Party Finder from opening and disabled alerts when on the Alpha network server
 
 ### Fixes
 - Fixed typo in plhleg emoji

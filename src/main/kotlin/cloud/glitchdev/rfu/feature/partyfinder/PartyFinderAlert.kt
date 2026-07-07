@@ -24,7 +24,7 @@ object PartyFinderAlert : Feature {
 
     override fun onInitialize() {
         registerPartyListChangedEvent { parties ->
-            if (!World.isInSkyblock) {
+            if (!World.isInSkyblock || World.isOnAlpha()) {
                 isFirstFetch = true
                 lastParties.clear()
                 pendingAlerts.clear()
@@ -34,7 +34,7 @@ object PartyFinderAlert : Feature {
         }
 
         registerTickEvent(interval = 200) {
-            if (!World.isInSkyblock) {
+            if (!World.isInSkyblock || World.isOnAlpha()) {
                 isFirstFetch = true
                 lastParties.clear()
                 pendingAlerts.clear()
