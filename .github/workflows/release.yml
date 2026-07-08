@@ -105,15 +105,61 @@ jobs:
           DISCORD_ROLE_ID: ${{ secrets.DISCORD_ROLE_ID }}
           TITLE: ${{ steps.changelog.outputs.title }}
           BODY: ${{ steps.changelog.outputs.body }}
+        shell: python
         run: |
-          # Combine role ping, title, and body
-          MESSAGE="<@&$DISCORD_ROLE_ID>
-          # $TITLE
-          $BODY"
+          import os, sys, json, urllib.request, time
 
-          # Prepare the payload using jq
-          JSON_PAYLOAD=$(jq -n --arg content "$MESSAGE" '{content: $content}')
+          webhook_url = os.environ.get("DISCORD_WEBHOOK")
+          role_id = os.environ.get("DISCORD_ROLE_ID", "").strip()
+          title = os.environ.get("TITLE", "").strip()
+          body = os.environ.get("BODY", "")
 
-          curl --fail -X POST "$DISCORD_WEBHOOK" \
-            -H "Content-Type: application/json" \
-            -d "$JSON_PAYLOAD"
+          if not webhook_url:
+              print("No webhook URL provided. Skipping Discord announcement.")
+              sys.exit(0)
+
+          # Format initial message
+          ping = f"<@&{role_id}>\n" if role_id and role_id != "***" else ""
+          header = f"# {title}\n" if title else ""
+          full_content = ping + header + body
+
+          # Split content into chunks of at most 1950 characters
+          chunks = []
+          current_chunk = ""
+          for line in full_content.splitlines(keepends=True):
+              while len(line) > 1950:
+                  part = line[:1950]
+                  line = line[1950:]
+                  if len(current_chunk) + len(part) > 1950:
+                      if current_chunk:
+                          chunks.append(current_chunk)
+                      current_chunk = part
+                  else:
+                      current_chunk += part
+              
+              if len(current_chunk) + len(line) > 1950:
+                  if current_chunk:
+                      chunks.append(current_chunk)
+                  current_chunk = line
+              else:
+                  current_chunk += line
+
+          if current_chunk:
+              chunks.append(current_chunk)
+
+          # Send each chunk to the webhook
+          for i, chunk in enumerate(chunks):
+              if i > 0:
+                  time.sleep(1)
+              payload = {"content": chunk.strip()}
+              req = urllib.request.Request(
+                  webhook_url,
+                  data=json.dumps(payload).encode("utf-8"),
+                  headers={"Content-Type": "application/json", "User-Agent": "Mozilla/5.0"}
+              )
+              try:
+                  with urllib.request.urlopen(req) as response:
+                      print(f"Sent chunk {i+1}/{len(chunks)} successfully. Status: {response.status}")
+              except Exception as e:
+                  print(f"Error sending chunk {i+1}: {e}")
+                  sys.exit(1)
