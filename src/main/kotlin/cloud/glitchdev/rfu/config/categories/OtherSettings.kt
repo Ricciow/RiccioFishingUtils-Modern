@@ -201,4 +201,10 @@ object OtherSettings : Category("Other") {
         description = Literal("Saves server-sent resource packs to your local resource packs folder to load them on startup and avoid reloads.")
         condition = { autoAcceptResourcePacks }
     }
+
+    var autoLoadResourcePacks by boolean(true) {
+        name = Literal("Auto Load Resource Packs")
+        description = Literal("Automatically loads the server-sent resource packs. If disabled, packs are still accepted and saved but not loaded into the game.")
+        condition = { autoAcceptResourcePacks }
+    }
 }

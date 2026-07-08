@@ -51,13 +51,15 @@ public abstract class DownloadedPackSourceMixin {
                     
                     Files.copy(pack.path(), destPack, StandardCopyOption.REPLACE_EXISTING);
 
-                    String packNameInOptions = "file/" + filename;
-                    this.minecraft.getResourcePackRepository().reload();
-                    if (!this.minecraft.options.resourcePacks.contains(packNameInOptions)) {
-                        this.minecraft.options.resourcePacks.addFirst(packNameInOptions);
+                    if (OtherSettings.INSTANCE.getAutoLoadResourcePacks()) {
+                        String packNameInOptions = "file/" + filename;
+                        this.minecraft.getResourcePackRepository().reload();
+                        if (!this.minecraft.options.resourcePacks.contains(packNameInOptions)) {
+                            this.minecraft.options.resourcePacks.addFirst(packNameInOptions);
+                        }
+                        this.minecraft.options.loadSelectedResourcePacks(this.minecraft.getResourcePackRepository());
+                        this.minecraft.options.save();
                     }
-                    this.minecraft.options.loadSelectedResourcePacks(this.minecraft.getResourcePackRepository());
-                    this.minecraft.options.save();
                 }
             } catch (IOException e) {
                 RFULogger.INSTANCE.error("Failed to copy server resource pack to local resourcepacks folder", e, "[RFU]");

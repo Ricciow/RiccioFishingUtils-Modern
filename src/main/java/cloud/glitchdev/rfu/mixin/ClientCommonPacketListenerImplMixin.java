@@ -42,7 +42,7 @@ public abstract class ClientCommonPacketListenerImplMixin {
                 boolean isSelected = this.minecraft.options.resourcePacks.contains(packNameInOptions);
                 
                 if (Files.exists(destPack)) {
-                    if (!isSelected) {
+                    if (!isSelected && OtherSettings.INSTANCE.getAutoLoadResourcePacks()) {
                         rfu$cleanUpOldVersionsInOptions(packId, filename);
                         this.minecraft.getResourcePackRepository().reload();
                         this.minecraft.options.resourcePacks.addFirst(packNameInOptions);
