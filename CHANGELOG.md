@@ -17,7 +17,7 @@ with an optional "Save for future use" caching mode to skip resource pack reload
 - Removed 1.21.11 Support
 - Added grim alias to :grim:
 - Updated "Pitch Black" achievement requirement to 6 Inklings in a row (was 7)
-- Enhanced collection tracker to support item variant multipliers (e.g., Enchanted Ink Sac now counts as 160)
+- Enhanced collection tracker to support item variant multipliers (e.g., Enchanted Ink Sac now counts as 80)
 - Updated Umberella display and alerts to work like the Flare display, using a 30-block range check
 - Redesigned the rfuannouncements window to be inline with other windows
 - Updated hotspot sharing coordinates to round up instead of down
