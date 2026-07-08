@@ -182,4 +182,21 @@ object OtherSettings : Category("Other") {
         description = Literal("Whether the user has acknowledged the mod's walkthrough.")
         condition = { false }
     }
+
+    init {
+        dualSeparator {
+            title = "Resource Packs"
+        }
+    }
+
+    var autoAcceptResourcePacks by boolean(true) {
+        name = Literal("Auto Accept Resource Packs")
+        description = Literal("Automatically accept resource/texture packs sent by the server if you are on Hypixel.")
+    }
+
+    var saveResourcePacks by boolean(true) {
+        name = Literal("Save for future use")
+        description = Literal("Saves server-sent resource packs to your local resource packs folder to load them on startup and avoid reloads.")
+        condition = { autoAcceptResourcePacks }
+    }
 }

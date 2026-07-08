@@ -10,6 +10,8 @@
 - Added a keybind to peek the Party Finder window without opening the GUI
 - Added No Fishing Armor Alert option to notify you when fishing without fishing armor
 - Added /rfuresetcakes command to clear the cake alert list
+- Added feature to automatically accept texture packs sent by the server if the user is on Hypixel (enabled by default, configurable under Other settings), 
+with an optional "Save for future use" caching mode to skip resource pack reloads/freezes if the texture pack hasn't changed.
 
 ### Changes
 - Removed 1.21.11 Support

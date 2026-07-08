@@ -6,6 +6,8 @@
     "ConfigScreenMixin",
     "ListWidgetMixin",
     "ClientPacketListenerMixin",
+    "ClientCommonPacketListenerImplMixin",
+    "DownloadedPackSourceMixin",
     "AbstractContainerScreenMixin",
     "EntityRenderDispatcherMixin",
     "EntityMixin",
