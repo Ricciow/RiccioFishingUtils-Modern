@@ -52,15 +52,20 @@ object Network : RegisteredEvent {
     private val client = HttpClient.newHttpClient()
     private val USER_AGENT = "Java-http-client/${System.getProperty("java.version")} rfu:${RFU_VERSION.friendlyString}"
 
-    val isOnHypixel: Boolean
-        get() = DevSettings.bypassHypixelCheck || mc.currentServer?.ip?.lowercase()?.endsWith("hypixel.net") == true
+    var isOnHypixel: Boolean = false
+        private set
+        get() = DevSettings.bypassHypixelCheck || field
 
     override fun register() {
-        registerJoinEvent {
-            authenticateUser()
+        registerJoinEvent { wasConnected ->
+            if(!wasConnected) {
+                isOnHypixel = mc.currentServer?.ip?.lowercase()?.endsWith("hypixel.net") ?: false
+                authenticateUser()
+            }
         }
 
         registerDisconnectEvent {
+            isOnHypixel = false
             WebSocketClient.disconnect()
         }
 

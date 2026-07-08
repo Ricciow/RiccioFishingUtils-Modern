@@ -1,43 +1,6 @@
-# v1.14.0 - ???
-
-### Features
-- Added :sob: :thumbsup: :eyes:
-- Added /rfuemojis command to list all available emojis along with their shortest alias
-- Added option to configure custom rare sea creature party messages per creature in /rfuscedit
-- Added 8 new achievements!
-  - Added Trophy Fishing achievement category
-- Added Lilypad Size Display feature
-- Added a keybind to peek the Party Finder window without opening the GUI
-- Added No Fishing Armor Alert option to notify you when fishing without fishing armor
-- Added /rfuresetcakes command to clear the cake alert list
-- Added feature to automatically accept texture packs sent by the server if the user is on Hypixel (enabled by default, configurable under Other settings), 
-with an optional "Save for future use" caching mode to skip resource pack reloads/freezes if the texture pack hasn't changed.
-
-### Changes
-- Removed 1.21.11 Support
-- Added grim alias to :grim:
-- Updated "Pitch Black" achievement requirement to 6 Inklings in a row (was 7)
-- Enhanced collection tracker to support item variant multipliers (e.g., Enchanted Ink Sac now counts as 80)
-- Updated Umberella display and alerts to work like the Flare display, using a 30-block range check
-- Redesigned the rfuannouncements window to be inline with other windows
-- Updated hotspot sharing coordinates to round up instead of down
-- Added tracking for Snake Eyes, Deep Sea Orbs, Prince's Crown Jewels, Scuttler Shells and Pyroclasm Books
-- Made the failed cast, missing rod piece, and no bait alerts require an active fishing session
-- Updated time to kill message to not trigger if the player dies or is teleported far away
-- Made party finder alerts only trigger while in Skyblock
-- Updated the !since command to check for username using contains instead of an exact match
-- Updated autopet message hiding to also hide "Autopet rule triggered but couldn't find your pet!"
-- Added Sacks message hiding option
-- Prevented Party Finder from opening and disabled alerts when on the Alpha network server
+# v1.14.1 - ??? Patches
 
 ### Fixes
-- Fixed typo in plhleg emoji
-- Fixed Frog Blessing Display not working
-- Fixed Night Squid tracking and achievements (renamed to Inkling in-game)
-- Fixed rfupf member count not properly updating
-- Fixed Supporting the cause achievement :dog:
-
-### Back-end
-- Added 3D text rendering capabilities.
-- Added unicode escape decoding support to the `/rfudebug chat` command.
-- Moved custom characters mapping to a sequential range starting at `\uE100` to avoid conflicts with new Hypixel textures.
+- Fixed the isOnHypixel Check not working when swapping lobbies leading to 
+the resourcepack feature not working
+- Fixed Jealous Fisher not including Iceberg Dye

@@ -14,12 +14,12 @@ import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 object JealousFisherAchievement : BaseAchievement() {
     override val id: String = "jealous_fisher"
     override val name: String = "Jealous Fisher"
-    override val description: String = "Witness another player drop a Carmine, Aquamarine, Treasure, or Midnight Dye."
+    override val description: String = "Witness another player drop a Carmine, Aquamarine, Treasure, Iceberg or Midnight Dye."
     override val type: AchievementType = AchievementType.NORMAL
     override val difficulty: AchievementDifficulty = AchievementDifficulty.HARD
     override val category: AchievementCategory = AchievementCategory.SPECIAL
 
-    private val DYE_REGEX = """WOW! (.+) found (?:an? )?(Carmine|Aquamarine|Treasure|Midnight) Dye!""".toExactRegex()
+    private val DYE_REGEX = """WOW! (.+) found (?:an? )?(Carmine|Aquamarine|Treasure|Midnight|Iceberg) Dye!""".toExactRegex()
 
     override fun setupListeners() {
         activeListeners.add(ChatEvents.registerGameEvent(filter = DYE_REGEX) { _, _, matches ->
