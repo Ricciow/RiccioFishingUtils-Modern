@@ -189,10 +189,12 @@ object OtherSettings : Category("Other") {
         }
     }
 
-    var autoAcceptResourcePacks by boolean(true) {
+    var autoAcceptResourcePacks by observable(boolean(true) {
         name = Literal("Auto Accept Resource Packs")
         description = Literal("Automatically accept resource/texture packs sent by the server if you are on Hypixel.")
-    }
+    }, { _, _ ->
+        reloadScreen()
+    })
 
     var saveResourcePacks by boolean(true) {
         name = Literal("Save for future use")
