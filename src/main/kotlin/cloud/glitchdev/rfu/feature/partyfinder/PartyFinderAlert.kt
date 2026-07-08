@@ -6,6 +6,7 @@ import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.TextUtils
+import cloud.glitchdev.rfu.utils.World
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyListChangedEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.model.party.FishingParty
@@ -23,11 +24,23 @@ object PartyFinderAlert : Feature {
 
     override fun onInitialize() {
         registerPartyListChangedEvent { parties ->
+            if (!World.isInSkyblock || World.isOnAlpha()) {
+                isFirstFetch = true
+                lastParties.clear()
+                pendingAlerts.clear()
+                return@registerPartyListChangedEvent
+            }
             processParties(parties)
         }
 
-        registerTickEvent(interval = 20) {
-                checkPending()
+        registerTickEvent(interval = 200) {
+            if (!World.isInSkyblock || World.isOnAlpha()) {
+                isFirstFetch = true
+                lastParties.clear()
+                pendingAlerts.clear()
+                return@registerTickEvent
+            }
+            checkPending()
         }
     }
 
@@ -47,7 +60,6 @@ object PartyFinderAlert : Feature {
             pendingAlerts[user] = now + 30000
         }
 
-        // Clean up pending and lastParties if they are no longer in currentParties
         pendingAlerts.keys.retainAll(currentPartiesUsers)
         lastParties.retainAll(currentPartiesUsers)
     }

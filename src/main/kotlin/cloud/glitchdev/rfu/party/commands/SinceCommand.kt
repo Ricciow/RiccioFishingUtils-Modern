@@ -13,6 +13,7 @@ import cloud.glitchdev.rfu.party.PartyCommandPermission
 import cloud.glitchdev.rfu.config.categories.PartySettings
 import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.dsl.toReadableString
+import cloud.glitchdev.rfu.achievement.achievements.special.TouchGrassAchievement
 import kotlin.time.Clock
 
 @PartyCommand
@@ -69,7 +70,7 @@ object SinceCommand : AbstractPartyCommand(
             val inputWithoutUser = args.dropLast(1).joinToString(" ")
 
             if (inputWithoutUser.equals("grass", ignoreCase = true)) {
-                if (lastArg.equals(myUsername, ignoreCase = true)) {
+                if (myUsername.contains(lastArg, ignoreCase = true)) {
                     isGrass = true
                 } else {
                     return
@@ -77,7 +78,7 @@ object SinceCommand : AbstractPartyCommand(
             } else {
                 val potentialTarget = findTarget(inputWithoutUser)
                 if (potentialTarget != null) {
-                    if (lastArg.equals(myUsername, ignoreCase = true)) {
+                    if (myUsername.contains(lastArg, ignoreCase = true)) {
                         target = potentialTarget
                         query = inputWithoutUser
                     } else {
@@ -89,12 +90,13 @@ object SinceCommand : AbstractPartyCommand(
 
         if (isGrass) {
             sendPartyMessage(responseTemplates[4].first)
+            TouchGrassAchievement.trigger()
             return
         }
 
         if (target == null) {
             // Only show "not found" if we are sure it was for us or no username was provided
-            val isForUs = args.size > 1 && args.last().equals(myUsername, ignoreCase = true)
+            val isForUs = args.size > 1 && myUsername.contains(args.last(), ignoreCase = true)
             if (args.size == 1 || isForUs) {
                 val notFoundName = if (isForUs) args.dropLast(1).joinToString(" ") else query
                 val response = formatResponse(responseTemplates[1].first, "name" to notFoundName)

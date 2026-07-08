@@ -87,7 +87,7 @@ class JsonFile<T : Any>(
     }
 
     fun save(triggerOnSave: Boolean = true) {
-        if (revertOnAlpha && isOnAlpha()) {
+        if (revertOnAlpha && World.isOnAlpha()) {
             RFULogger.dev("[$filename] Skipping save: currently on alpha server.")
             return
         }
@@ -105,7 +105,6 @@ class JsonFile<T : Any>(
 
     companion object {
         private val instances = mutableListOf<JsonFile<*>>()
-        private var currentlyOnAlpha = false
 
         fun reloadAll() {
             instances.filter { it.revertOnAlpha }.forEach {
@@ -114,37 +113,6 @@ class JsonFile<T : Any>(
                 } catch (e: Exception) {
                     RFULogger.error("Failed to reload ${it.filename}", e)
                 }
-            }
-        }
-
-        fun isOnAlpha(): Boolean {
-            if (currentlyOnAlpha) return true
-            val ip = mc.currentServer?.ip?.lowercase() ?: return false
-            return ip == "alpha.hypixel.net" || ip.endsWith(".alpha.hypixel.net")
-        }
-
-        init {
-            registerJoinEvent(priority = -100) {
-                val ip = mc.currentServer?.ip?.lowercase()
-                val isAlpha = ip != null && (ip == "alpha.hypixel.net" || ip.endsWith(".alpha.hypixel.net"))
-
-                if (isAlpha) {
-                    currentlyOnAlpha = true
-                } else {
-                    if (currentlyOnAlpha) {
-                        RFULogger.info("[RFU] Leaving Alpha server. Rolling back data...")
-                        reloadAll()
-                    }
-                    currentlyOnAlpha = false
-                }
-            }
-
-            registerDisconnectEvent(priority = -100) {
-                if (currentlyOnAlpha) {
-                    RFULogger.info("[RFU] Disconnected from Alpha server. Rolling back data...")
-                    reloadAll()
-                }
-                currentlyOnAlpha = false
             }
         }
     }

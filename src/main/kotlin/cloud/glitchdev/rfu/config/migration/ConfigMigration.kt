@@ -12,7 +12,7 @@ import kotlin.io.path.readText
 import kotlin.io.path.writeText
 
 object ConfigMigration {
-    const val CURRENT_VERSION = 6
+    const val CURRENT_VERSION = 7
     const val VERSION_KEY = "rfuConfigVersion"
 
     private val logger = LoggerFactory.getLogger(ConfigMigration::class.java)
@@ -49,6 +49,7 @@ object ConfigMigration {
                 3 -> migrateV3toV4(json)
                 4 -> migrateV4toV5(json)
                 5 -> migrateV5toV6(json)
+                6 -> migrateV6toV7(json)
             }
         }
     }
@@ -173,6 +174,25 @@ object ConfigMigration {
             cat.addProperty("fishingTime", 5)
         }
 
+    }
+
+    private fun migrateV6toV7(json: JsonObject) {
+        val cat = getCategory(json, "Drops") ?: return
+        val items = cat["rareDrops"]?.asJsonArray ?: return
+
+        val newDrops = listOf("SNAKE_EYES", "DEEP_SEA_ORB", "PYROCLASM_BOOK", "PRINCE_CROWN_JEWEL", "SCUTTLER_SHELL")
+        for (drop in newDrops) {
+            var exists = false
+            for (item in items) {
+                if (item.asString == drop) {
+                    exists = true
+                    break
+                }
+            }
+            if (!exists) {
+                items.add(drop)
+            }
+        }
     }
 
     private fun deleteKey(json: JsonObject, category: String, key: String): JsonElement? {

@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.gui.hud.elements
 
-import cloud.glitchdev.rfu.config.categories.GeneralFishing
+import cloud.glitchdev.rfu.config.categories.LotusAtollSettings
 import cloud.glitchdev.rfu.constants.FishingIslands
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
@@ -16,7 +16,7 @@ import kotlin.time.Duration.Companion.milliseconds
 object FrogcoinBlessingDisplay : AbstractTextHudElement("frogcoinBlessing") {
 
     override val enabled: Boolean
-        get() = GeneralFishing.frogcoinBlessingDisplay && (isEditing || (World.island == FishingIslands.ATOLL && FrogcoinBlessingFeature.activeBlessings.isNotEmpty()))
+        get() = LotusAtollSettings.frogcoinBlessingDisplay && (isEditing || (World.island == FishingIslands.ATOLL && FrogcoinBlessingFeature.activeBlessings.isNotEmpty()))
 
     override fun onInitialize() {
         super.onInitialize()
@@ -33,8 +33,8 @@ object FrogcoinBlessingDisplay : AbstractTextHudElement("frogcoinBlessing") {
         if (isEditing && activeBlessings.isEmpty()) {
             val preview = buildString {
                 append("${TextColor.DARK_GREEN}${TextEffects.BOLD}Blessings:\n")
-                append("${TextColor.CYAN}+2.5α Sea Creature Chance: ${TextColor.WHITE}29m 59s\n")
-                append("${TextColor.GOLD}+5♔ Trophy Chance: ${TextColor.WHITE}29m 59s")
+                append("${TextColor.CYAN}+2.5\uE021 Sea Creature Chance: ${TextColor.WHITE}29m 59s\n")
+                append("${TextColor.GOLD}+5\uE02A Trophy Chance: ${TextColor.WHITE}29m 59s")
             }
             text.setText(preview)
             return

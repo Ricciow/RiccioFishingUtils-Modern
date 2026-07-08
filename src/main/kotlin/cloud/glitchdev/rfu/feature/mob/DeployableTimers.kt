@@ -32,17 +32,13 @@ object DeployableTimers : Feature {
                 val isActive = currentDeployable != null
 
                 if (wasActive && !isActive && alertEnabled(type)) {
-                    val shouldAlert = if (type == DeployableType.FLARE) {
-                        val wasInRadius = if (player != null) {
-                            prevDeployable.isInFlareRadius(player.position())
-                        } else true
+                    val wasInRadius = if (player != null) {
+                        prevDeployable.isInRange(player.position())
+                    } else true
 
-                        val isExpired = System.currentTimeMillis() >= (prevDeployable.endTimeMillis - 1000) // Small grace period for sync
+                    val isExpired = System.currentTimeMillis() >= (prevDeployable.endTimeMillis - 1000) // Small grace period for sync
 
-                        wasInRadius && isExpired
-                    } else {
-                        true
-                    }
+                    val shouldAlert = wasInRadius && isExpired
 
                     if (shouldAlert) {
                         Title.showTitle(type.expiredTitle)
@@ -57,10 +53,8 @@ object DeployableTimers : Feature {
             }
 
             val displayMap = if (player != null) {
-                active.filter { (type, deployable) ->
-                    if (type == DeployableType.FLARE) {
-                        deployable.isInFlareRadius(player.position())
-                    } else true
+                active.filter { (_, deployable) ->
+                    deployable.isInRange(player.position())
                 }
             } else active
 

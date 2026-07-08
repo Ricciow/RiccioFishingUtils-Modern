@@ -640,7 +640,7 @@
       "article": "a",
       "special": false,
       "style": "§8",
-      "catchMessage": "You get an inkling you\u0027ve caught... an Inkling!",
+      "catchMessage": "You get an inkling that you\u0027ve caught... an Inkling!",
       "liquidType": "WATER",
       "category": "HOTSPOT_WATER",
       "lsRangeEnabled": false,

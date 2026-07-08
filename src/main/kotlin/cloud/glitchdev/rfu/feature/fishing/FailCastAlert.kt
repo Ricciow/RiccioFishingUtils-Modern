@@ -37,9 +37,11 @@ object FailCastAlert : Feature {
             isFishing = false
             if(!sentAlert) {
                 sentAlert = true
-                Title.showTitle(FAILED_CAST_MESSAGE, "", 0, 5, 5) { !isFishing }
-                if(GeneralFishing.failCastSound) {
-                    Sounds.playSound("rfu:failed_cast", 1f, GeneralFishing.failCastVolume)
+                if(FishingSession.isFishing) {
+                    Title.showTitle(FAILED_CAST_MESSAGE, "", 0, 5, 5) { !isFishing }
+                    if(GeneralFishing.failCastSound) {
+                        Sounds.playSound("rfu:failed_cast", 1f, GeneralFishing.failCastVolume)
+                    }
                 }
             }
         }

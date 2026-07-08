@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.data.mob
 
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
+import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
 import cloud.glitchdev.rfu.events.managers.MobEvents
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents
@@ -30,6 +31,10 @@ object MobManager : RegisteredEvent {
         }
 
         registerJoinEvent {
+            clearAll()
+        }
+
+        registerDisconnectEvent {
             clearAll()
         }
     }

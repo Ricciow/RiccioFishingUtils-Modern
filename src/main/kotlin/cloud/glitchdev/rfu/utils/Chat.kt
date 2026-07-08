@@ -90,11 +90,7 @@ object Chat : RegisteredEvent {
         mc.execute {
             isSendingModMessage = true
             try {
-                //? if >=26.1 {
                 mc.player?.sendSystemMessage(message)
-                //?} else {
-                /*mc.player?.displayClientMessage(message, false)
-                *///?}
             } finally {
                 isSendingModMessage = false
             }

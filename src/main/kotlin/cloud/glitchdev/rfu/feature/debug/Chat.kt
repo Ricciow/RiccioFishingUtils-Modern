@@ -16,6 +16,8 @@ import net.minecraft.network.chat.Component
 object Chat : AbstractCommand("chat") {
     override val description: String = "Sends a test message in chat which will be processed by ChatEvents."
 
+    private val unicodeRegex = """\\u([0-9a-fA-F]{4})""".toRegex()
+
     override fun build(builder: LiteralArgumentBuilder<FabricClientCommandSource>) {
         builder
             .then(
@@ -40,8 +42,16 @@ object Chat : AbstractCommand("chat") {
             )
     }
 
+    private fun decodeUnicodeEscapes(input: String): String {
+        return unicodeRegex.replace(input) { matchResult ->
+            val hex = matchResult.groupValues[1]
+            hex.toInt(16).toChar().toString()
+        }
+    }
+
     fun debugChat(argument: String) {
-        val text = Component.literal(argument.removeSurrounding("\""))
+        val decoded = decodeUnicodeEscapes(argument.removeSurrounding("\""))
+        val text = Component.literal(decoded)
         Chat.sendMessage(text)
         ChatEvents.ChatEventManager.runTasks(text)
         ChatEvents.GameEventManager.runTasks(text, true)

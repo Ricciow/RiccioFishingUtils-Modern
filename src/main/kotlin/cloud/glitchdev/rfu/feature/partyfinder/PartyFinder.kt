@@ -13,7 +13,6 @@ import cloud.glitchdev.rfu.utils.command.SimpleCommand
 import cloud.glitchdev.rfu.utils.network.WebSocketClient
 import com.mojang.brigadier.context.CommandContext
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
-import net.minecraft.network.chat.Component
 
 @Command
 object PartyFinder : SimpleCommand("rfupf") {
@@ -29,6 +28,16 @@ object PartyFinder : SimpleCommand("rfupf") {
             context.source.sendFeedback(
                 TextUtils.rfuLiteral(
                     "Must be in skyblock to use this feature!",
+                    TextStyle(TextColor.LIGHT_RED, TextEffects.UNDERLINE)
+                )
+            )
+            return 1
+        }
+
+        if (World.isOnAlpha()) {
+            context.source.sendFeedback(
+                TextUtils.rfuLiteral(
+                    "Party Finder is disabled on the Alpha network!",
                     TextStyle(TextColor.LIGHT_RED, TextEffects.UNDERLINE)
                 )
             )

@@ -13,13 +13,14 @@ import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 object HideMessages : Feature {
     val SC_MESSAGE_REGEX = SeaCreatures.entries.joinToString("|") { it.catchMessage.escapeForRegex() }.toExactRegex()
     val DOUBLE_HOOK_REGEX = """Double Hook!|It's a Double Hook! Woot woot!|It's a Double Hook!""".toExactRegex()
-    val AUTOPET_REGEX = """Autopet equipped your .+! VIEW RULE""".toExactRegex()
+    val AUTOPET_REGEX = """(?:Autopet equipped your .+! VIEW RULE|Autopet rule triggered but couldn't find your pet!)""".toExactRegex()
     val HYPE_REGEX = """Your Implosion hit \d+ enem(?:y|ies) for [\d.,]+ damage\.""".toExactRegex()
     val COMBO_REGEX = """\+\d+ Kill Combo (.+)""".toExactRegex()
     val BLOCKS_REGEX = """There are blocks in the way!""".toExactRegex()
     val LOOTSHARE_REGEX = """LOOT SHARE You received loot for assisting (.+?)!""".toExactRegex()
     val THUNDER_SPARK_REGEX = """Try clicking this Thunder Spark with an Empty Thunder Bottle to collect it!""".toExactRegex()
     val COCOON_REGEX = """CAUGHT! You cocooned (?:an? )?(.+)!""".toExactRegex()
+    val SACKS_REGEX = """\[Sacks\] \+\d+ items?\. \(Last \d+s\.\)""".toExactRegex()
 
     override fun onInitialize() {
         registerAllowGameEvent(SC_MESSAGE_REGEX) { _, _, _ ->
@@ -66,6 +67,11 @@ object HideMessages : Feature {
         registerAllowGameEvent(COCOON_REGEX) { _, _, _ ->
             return@registerAllowGameEvent !(OtherSettings.hideMessages &&
                     OtherSettings.hiddenMessageTypes.contains(MessageTypes.COCOON))
+        }
+
+        registerAllowGameEvent(SACKS_REGEX) { _, _, _ ->
+            return@registerAllowGameEvent !(OtherSettings.hideMessages &&
+                    OtherSettings.hiddenMessageTypes.contains(MessageTypes.SACKS))
         }
     }
 }

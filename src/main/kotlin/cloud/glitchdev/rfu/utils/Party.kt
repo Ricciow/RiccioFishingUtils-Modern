@@ -43,6 +43,7 @@ object Party : RegisteredEvent {
     var isLeader = false
     var isAllInvite = false
     val members: MutableMap<String, ClientboundPartyInfoPacket.PartyRole> = mutableMapOf()
+    var memberCount = 0
     var requestedUser: String? = null
     private val joinedCooldowns: MutableMap<String, Long> = mutableMapOf()
     private val pendingPFInvites: MutableSet<String> = mutableSetOf()
@@ -55,6 +56,7 @@ object Party : RegisteredEvent {
             Coroutines.launch {
                 inParty = event.isInParty
                 isLeader = event.leader.getOrNull()?.equals(mc.player?.uuid) ?: false
+                memberCount = if (inParty) event.memberMap.size else 0
 
                 members.clear()
                 if (inParty) {
@@ -190,8 +192,8 @@ object Party : RegisteredEvent {
             val currentParty: FishingParty? = PartyWebSocket.myParty
             if (currentParty != null) {
                 if (isLeader) {
-                    currentParty.players.current = members.size
-                    PartyWebSocket.editParty(currentParty)
+                    val updatedParty = currentParty.copy(players = currentParty.players.copy(current = memberCount))
+                    PartyWebSocket.editParty(updatedParty)
                 } else {
                     PartyWebSocket.deleteParty(User.getUsername())
                 }
@@ -211,21 +213,57 @@ object Party : RegisteredEvent {
         }
     }
 
+    private var lastRequestTime = 0L
+    private var delayedRequestJob: kotlinx.coroutines.Job? = null
+
     fun requestPartyInfo(callback: (() -> Unit)? = null) {
         callback?.let { partyInfoCallbacks.add(it) }
-        Coroutines.launch { 
+        
+        val now = System.currentTimeMillis()
+        val elapsed = now - lastRequestTime
+        
+        if (elapsed >= 3000) {
+            delayedRequestJob?.cancel()
+            delayedRequestJob = null
+            sendPartyInfoPacket()
+        } else {
+            if (delayedRequestJob == null) {
+                delayedRequestJob = Coroutines.launch {
+                    delay(3000 - elapsed)
+                    delayedRequestJob = null
+                    sendPartyInfoPacket()
+                }
+            }
+        }
+    }
+
+    private fun sendPartyInfoPacket() {
+        lastRequestTime = System.currentTimeMillis()
+        Coroutines.launch {
             hypixelModAPI.sendPacket(ServerboundPartyInfoPacket())
         }
     }
 
     private fun getUsernameFromUUID(uuid: UUID): String? {
         uuidToNameCache[uuid]?.let { return it }
-        val profile = mc.services().sessionService.fetchProfile(uuid, false)
-        val name = profile?.profile?.name
-        if (name != null) {
-            uuidToNameCache[uuid] = name
+        
+        val localName = mc.connection?.getPlayerInfo(uuid)?.profile?.name
+        if (localName != null) {
+            uuidToNameCache[uuid] = localName
+            return localName
         }
-        return name
+
+        try {
+            val profile = mc.services().sessionService.fetchProfile(uuid, false)
+            val name = profile?.profile?.name
+            if (name != null) {
+                uuidToNameCache[uuid] = name
+                return name
+            }
+        } catch (e: Exception) {
+            RFULogger.error("Error fetching profile for UUID $uuid: ${e.message}")
+        }
+        return null
     }
 
     fun promptInvite(username: String) {
@@ -266,12 +304,14 @@ object Party : RegisteredEvent {
     private var wasInParty: Boolean = false
     private var wasLeader: Boolean = false
     private var wasAllInvite: Boolean = false
-    private var oldMembers: MutableMap<String, ClientboundPartyInfoPacket.PartyRole> = mutableMapOf()
+    private var wasMemberCount: Int = 0
+    private val oldMembers: MutableMap<String, ClientboundPartyInfoPacket.PartyRole> = mutableMapOf()
 
     private fun executePartyChange() {
         if (inParty != wasInParty ||
             wasLeader != isLeader ||
             wasAllInvite != isAllInvite ||
+            wasMemberCount != memberCount ||
             oldMembers != members
         ) {
             PartyEvents.OnPartyChange.runTasks(inParty, isLeader, isAllInvite, members)
@@ -279,6 +319,7 @@ object Party : RegisteredEvent {
 
         wasInParty = inParty
         wasLeader = isLeader
+        wasMemberCount = memberCount
         oldMembers.clear()
         oldMembers.putAll(members)
     }

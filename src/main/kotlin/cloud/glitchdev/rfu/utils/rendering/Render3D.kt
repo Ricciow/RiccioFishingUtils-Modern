@@ -2,7 +2,6 @@ package cloud.glitchdev.rfu.utils.rendering
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import net.minecraft.client.Camera
-import net.minecraft.client.renderer.culling.Frustum
 import net.minecraft.client.renderer.rendertype.RenderTypes
 import com.mojang.blaze3d.vertex.VertexConsumer
 import net.minecraft.world.phys.AABB
@@ -12,9 +11,12 @@ import java.awt.Color
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
-//~ if >=26.1 'world' -> 'level'{
-//~ if >=26.1 'World' -> 'Level'{
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext
+import net.minecraft.client.gui.Font
+import net.minecraft.network.chat.Component
+//?if < 26.2 {
+import net.minecraft.client.renderer.culling.Frustum
+//?}
 
 object Render3D {
     val camera : Camera
@@ -48,12 +50,9 @@ object Render3D {
 
         //? if >=26.2 {
         val matrixStack = context.poseStack()
-        //?} elif >=26.1 {
+        //?} else {
         /*val consumers = context.bufferSource()
         val matrixStack = context.poseStack()
-        *///?} else {
-        /*val consumers = context.consumers()
-        val matrixStack = context.matrices()
         *///?}
 
         val camPos = camera.position()
@@ -166,12 +165,9 @@ object Render3D {
 
         //? if >=26.2 {
         val matrixStack = context.poseStack()
-        //?} elif >=26.1 {
+        //?} else {
         /*val consumers = context.bufferSource()
         val matrixStack = context.poseStack()
-        *///?} else {
-        /*val consumers = context.consumers()
-        val matrixStack = context.matrices()
         *///?}
 
         val camPos = camera.position()
@@ -262,12 +258,9 @@ object Render3D {
     ) {
         //? if >=26.2 {
         val matrixStack = context.poseStack()
-        //?} elif >=26.1 {
+        //?} else {
         /*val consumers = context.bufferSource()
         val matrixStack = context.poseStack()
-        *///?} else {
-        /*val consumers = context.consumers()
-        val matrixStack = context.matrices()
         *///?}
 
         val camPos = camera.position()
@@ -319,12 +312,7 @@ object Render3D {
         //? if >=26.2 {
         return mc.gameRenderer.gameRenderState().levelRenderState.cameraRenderState.cullFrustum.isVisible(bounds)
         //?} else {
-        /*//? if < 26.1 {
-        /*val fov = mc.options.fov().get().toFloat()
-        *///?}
-        //~ if >=26.1 'getProjectionMatrix(fov)' -> 'gameRenderState.levelRenderState.cameraRenderState.projectionMatrix' {
-        val projectionMatrix = mc.gameRenderer.gameRenderState.levelRenderState.cameraRenderState.projectionMatrix
-        //~}
+        /*val projectionMatrix = mc.gameRenderer.gameRenderState.levelRenderState.cameraRenderState.projectionMatrix
 
         val quaternion = camera.rotation().conjugate(org.joml.Quaternionf())
         val viewMatrix = Matrix4f().rotation(quaternion)
@@ -375,6 +363,79 @@ object Render3D {
             .setColor(color.red, color.green, color.blue, color.alpha)
             .setNormal(nx, ny, nz)
     }
+
+    fun renderText(
+        location: Vec3,
+        text: String,
+        color: Color,
+        context: LevelRenderContext,
+        scale: Float = 0.025f,
+        seeThrough: Boolean = false,
+        dropShadow: Boolean = false,
+        backgroundOpacity: Float = 0.25f
+    ) {
+        if (text.isEmpty()) return
+
+        //? if >=26.2 {
+        val matrixStack = context.poseStack()
+        val collector = context.submitNodeCollector()
+        //?} else {
+        /*val consumers = context.bufferSource()
+        val matrixStack = context.poseStack()
+        *///?}
+
+        val camPos = camera.position()
+        val vecToText = location.subtract(camPos)
+
+        matrixStack.pushPose()
+        matrixStack.translate(
+            vecToText.x,
+            vecToText.y,
+            vecToText.z
+        )
+        matrixStack.mulPose(camera.rotation())
+        matrixStack.scale(scale, -scale, scale)
+
+        val font = mc.font
+        val textComp = Component.literal(text)
+        val charSequence = textComp.getVisualOrderText()
+        val x = -font.width(textComp) / 2f
+        val y = 0f
+
+        val backgroundAlpha = (backgroundOpacity * 255).toInt().coerceIn(0, 255)
+        val backgroundColorInt = (backgroundAlpha shl 24) or 0x000000
+
+        //? if >=26.2 {
+        val displayMode = if (seeThrough) Font.DisplayMode.SEE_THROUGH else Font.DisplayMode.NORMAL
+        collector.submitText(
+            matrixStack,
+            x,
+            y,
+            charSequence,
+            dropShadow,
+            displayMode,
+            0xF000F0,
+            color.rgb,
+            backgroundColorInt,
+            0
+        )
+        //?} else {
+        /*val displayMode = if (seeThrough) Font.DisplayMode.SEE_THROUGH else Font.DisplayMode.NORMAL
+        val matrix = matrixStack.last().pose()
+        font.drawInBatch(
+            charSequence,
+            x,
+            y,
+            color.rgb,
+            dropShadow,
+            matrix,
+            consumers,
+            displayMode,
+            backgroundColorInt,
+            0xF000F0
+        )
+        *///?}
+
+        matrixStack.popPose()
+    }
 }
-//~}
-//~}

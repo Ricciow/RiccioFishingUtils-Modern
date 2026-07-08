@@ -1,15 +1,16 @@
 package cloud.glitchdev.rfu.feature.fishing
 
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
-import cloud.glitchdev.rfu.constants.Skills
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.data.fishing.Hotspot
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
 import cloud.glitchdev.rfu.events.managers.KeyboardEvents.registerKeyboardEvent
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.SkillEvents.registerSkillXpUpdateEvent
+import cloud.glitchdev.rfu.utils.SkillTracker
+import cloud.glitchdev.rfu.constants.SkillType
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.feature.ink.InkSessionTracker
@@ -18,7 +19,6 @@ import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.command.Command
 import cloud.glitchdev.rfu.utils.command.SimpleCommand
 import com.mojang.brigadier.context.CommandContext
-import gg.essential.universal.utils.toUnformattedString
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import kotlin.time.Clock
 import kotlin.time.Duration
@@ -27,7 +27,6 @@ import kotlin.time.Instant
 
 @RFUFeature
 object FishingSession : Feature {
-    val FISHING_XP_REGEX = """\+([0-9,]+(?:\.[0-9]+)?) Fishing(?: \(([^/]+)/([^)]+)\))?""" .toRegex()
 
     val xpTracker = SlidingRateTracker()
     val scTracker = SlidingRateTracker()
@@ -64,32 +63,18 @@ object FishingSession : Feature {
         }
 
     override fun onInitialize() {
-        registerGameEvent(FISHING_XP_REGEX, isOverlay = true) { _, _, matches ->
+        registerSkillXpUpdateEvent(SkillType.FISHING) { _, xp ->
             handleActivity()
-            
-            val gainedXpStr = matches?.groupValues?.getOrNull(1) ?: return@registerGameEvent
-            val currentXpStr = matches.groupValues.getOrNull(2)
-            val requiredXpStr = matches.groupValues.getOrNull(3)
-
-            if (currentXpStr != null && requiredXpStr != null) {
-                val x = Skills.parseXp(currentXpStr)
-                val y = Skills.parseXp(requiredXpStr)
-                val calculatedTotalXp = Skills.calculateTotalXp(x, y)
-
-                if (calculatedTotalXp > totalFishingXp) {
-                    if (totalFishingXp != 0L) {
-                        xpTracker.addEvent((calculatedTotalXp - totalFishingXp).toDouble())
-                    } else {
-                        val gainedXp = gainedXpStr.replace(",", "").toDoubleOrNull() ?: 0.0
-                        if (gainedXp > 0) xpTracker.addEvent(gainedXp)
-                    }
-                    totalFishingXp = calculatedTotalXp
+            if (totalFishingXp != 0L && xp > totalFishingXp) {
+                val diff = xp - totalFishingXp
+                if (diff < 1_000_000L) {
+                    xpTracker.addEvent(diff.toDouble())
                 }
-            } else {
-                val gainedXp = gainedXpStr.replace(",", "").toDoubleOrNull() ?: return@registerGameEvent
-                if (gainedXp > 0) xpTracker.addEvent(gainedXp)
             }
+            totalFishingXp = xp
         }
+
+        totalFishingXp = SkillTracker.getSkillXp(SkillType.FISHING)
 
         registerSeaCreatureCatchEvent { _, isDoubleHook, hotspot, _, _ ->
             handleActivity()
@@ -147,7 +132,7 @@ object FishingSession : Feature {
         startFishing = Instant.DISTANT_PAST
         lastFishingEvent = Instant.DISTANT_PAST
         pausedAt = null
-        totalFishingXp = 0L
+        totalFishingXp = SkillTracker.getSkillXp(SkillType.FISHING)
 
         scTracker.reset()
         scTracker.update()
@@ -177,7 +162,7 @@ object FishingSession : Feature {
         override val description: String = "Resets your current Xp/h tracker."
         override fun execute(context: CommandContext<FabricClientCommandSource>): Int {
             xpTracker.reset()
-            totalFishingXp = 0L
+            totalFishingXp = SkillTracker.getSkillXp(SkillType.FISHING)
             context.source.sendFeedback(
                 TextUtils.rfuLiteral("The Xp/h tracker has been reset!", TextStyle(TextColor.LIGHT_GREEN))
             )

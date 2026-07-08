@@ -21,6 +21,7 @@ import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
 import net.minecraft.network.chat.Style
+import kotlin.math.ceil
 
 @RFUFeature
 object HotspotSharer : Feature {
@@ -83,7 +84,7 @@ object HotspotSharer : Feature {
         if (!Party.inParty) return
         val pos = hotspot.center
         val stat = hotspot.type.displayName
-        Chat.sendCommand("pc $stat Hotspot - ${pos.x.toInt()}, ${pos.y.toInt()}, ${pos.z.toInt()}")
+        Chat.sendCommand("pc $stat Hotspot - ${ceil(pos.x).toInt()}, ${ceil(pos.y).toInt()}, ${ceil(pos.z).toInt()}")
     }
 
     private fun showShareMessage(hotspot: Hotspot) {
@@ -95,8 +96,8 @@ object HotspotSharer : Feature {
         val clickComponent = Component.literal("${TextColor.GOLD}${TextEffects.BOLD}[Share]")
             .setStyle(
                 Style.EMPTY
-                    .withClickEvent(ClickEvent.RunCommand("/pc $stat Hotspot - ${pos.x.toInt()}, ${pos.y.toInt()}, ${pos.z.toInt()}"))
-                    .withHoverEvent(HoverEvent.ShowText(Component.literal("${TextColor.YELLOW}Click to share this ${TextColor.AQUAMARINE}$stat ${TextColor.YELLOW}hotspot with your party!\n${TextColor.GRAY}Location: ${pos.x.toInt()}, ${pos.y.toInt()}, ${pos.z.toInt()}")))
+                    .withClickEvent(ClickEvent.RunCommand("/pc $stat Hotspot - ${ceil(pos.x).toInt()}, ${ceil(pos.y).toInt()}, ${ceil(pos.z).toInt()}"))
+                    .withHoverEvent(HoverEvent.ShowText(Component.literal("${TextColor.YELLOW}Click to share this ${TextColor.AQUAMARINE}$stat ${TextColor.YELLOW}hotspot with your party!\n${TextColor.GRAY}Location: ${ceil(pos.x).toInt()}, ${ceil(pos.y).toInt()}, ${ceil(pos.z).toInt()}")))
             )
             
         base.append(clickComponent)

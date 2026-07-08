@@ -9,20 +9,20 @@ import cloud.glitchdev.rfu.constants.SeaCreatures
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 
 @Achievement
-object NightSquidStreakAchievement: NumericAchievement() {
+object InklingStreakAchievement: NumericAchievement() {
     override val id: String = "night_squid_streak"
     override val name: String = "Pitch Black"
-    override val description: String = "Catch 7 Night Squids in a row!"
+    override val description: String = "Catch 6 Inklings in a row!"
     override val type: AchievementType = AchievementType.NORMAL
     override val difficulty: AchievementDifficulty = AchievementDifficulty.HARD
     override val category: AchievementCategory = AchievementCategory.INK
-    override val targetCount: Long = 7L
+    override val targetCount: Long = 6L
 
     override fun setupListeners() {
         activeListeners.add(registerSeaCreatureCatchEvent
         { sc, _, _, _, _ ->
-            val nightSquid = SeaCreatures.get("Night Squid")
-            if (nightSquid != null && sc == nightSquid) {
+            val inkling = SeaCreatures.get("Inkling")
+            if (inkling != null && sc == inkling) {
                 addProgress()
             } else {
                 currentCount = 0L

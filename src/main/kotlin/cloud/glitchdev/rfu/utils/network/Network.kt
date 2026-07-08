@@ -274,6 +274,13 @@ object Network : RegisteredEvent {
         }
     }
 
+    fun reauthenticate() {
+        WebSocketClient.disconnect()
+        token = null
+        expiresAt = null
+        authenticateUser()
+    }
+
     private fun sendAcknowledgementMessage() {
         val message = TextUtils.rfuLiteral("This mod utilizes a separate back-end for some features. Do you want to enable it? ", TextStyle(YELLOW))
 

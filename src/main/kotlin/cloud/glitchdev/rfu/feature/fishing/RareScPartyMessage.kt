@@ -33,7 +33,11 @@ object RareScPartyMessage : Feature {
                 val startsWithThe = scName.startsWith("The ", ignoreCase = true)
                 val pos = mc.player?.blockPosition()
 
-                val messageString = SeaCreatureConfig.rarePartyMessage
+                val template = seaCreature.rarePartyMessage.ifEmpty {
+                    SeaCreatureConfig.rarePartyMessage
+                }
+
+                val messageString = template
                     .replace("""(?i)\b(a)\s\{name\}""".toRegex()) { match  ->
                         if (startsWithThe) return@replace scName
                         val originalA = match.groupValues[1]

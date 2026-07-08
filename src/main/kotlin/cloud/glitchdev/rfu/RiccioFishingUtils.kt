@@ -14,7 +14,7 @@ object RiccioFishingUtils : ClientModInitializer {
     const val MOD_ID = "rfu"
     val API_URL = "https://rfu.glitchdev.cloud/api"
         get() {
-            if(DevSettings.devMode) return DevSettings.backEndEnvironment
+            if (DevSettings.devMode && DevSettings.useCustomBackend) return DevSettings.backEndEnvironment
             return field
         }
 

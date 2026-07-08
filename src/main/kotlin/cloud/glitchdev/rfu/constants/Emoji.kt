@@ -4,32 +4,42 @@ import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
 
 object Emoji {
-    val ALL = mapOf(
-        "\uE001" to listOf("dog"),
-        "\uE002" to listOf("goat"),
-        "\uE003" to listOf("pleading_face", "pleadingface", "plead"),
-        "\uE004" to listOf("lord_jawbus", "lordjawbus", "jawbus", "jaw"),
-        "\uE005" to listOf("thunder", "thun"),
-        "\uE006" to listOf("reindrake", "drake"),
-        "\uE007" to listOf("wiki_tiki", "wikitiki", "tiki"),
-        "\uE008" to listOf("titanoboa", "boa"),
-        "\uE009" to listOf("yeti"),
-        "\uE00A" to listOf("ragnarok", "rag"),
-        "\uE00B" to listOf("fiery_scuttler", "fieryscuttler", "scuttler"),
-        "\uE00C" to listOf("plhegblast", "plhleg"),
-        "\uE00D" to listOf("water_hydra", "waterhydra", "hydra"),
-        "\uE00E" to listOf("blue_ringed_octopus", "blueringedoctopus", "octopus"),
-        "\uE00F" to listOf("alligator", "gator"),
-        "\uE0F0" to listOf("frog_prince", "frogprince", "prince"),
-        "\uE0F1" to listOf("puddle_jumper", "puddlejumper", "puddle", "jumper"),
-        "\uE0F2" to listOf("nessie", "ness"),
-        "\uE0F3" to listOf("the_loch_emperor", "thelochemperor", "loch_emperor", "lochemperor", "emperor", "emp"),
-        "\uE0F4" to listOf("great_white_shark", "greatwhiteshark", "great_white", "greatwhite", "gw"),
-        "\uE0F5" to listOf("grim_reaper", "grimreaper", "reaper"),
-        "\uE0F6" to listOf("phantom_fisher", "phantomfisher", "pfish"),
-        "\uE0F7" to listOf("abyssal_miner", "abyssalminer", "miner"),
-        "\uE0FB" to listOf("skull")
-    ).flatMap { (unicode, aliases) ->
+    val EMOJIS = mapOf(
+        // Non-Sea Creatures
+        "\uE100" to listOf("dog"),
+        "\uE101" to listOf("goat"),
+        "\uE102" to listOf("pleading_face", "pleadingface", "plead"),
+        "\uE11A" to listOf("skull"),
+        "\uE11B" to listOf("sob"),
+        "\uE11C" to listOf("thumbsup"),
+        "\uE11D" to listOf("eyes"),
+
+        // Sea Creatures
+        "\uE116" to listOf("abyssal_miner", "abyssalminer", "miner"),
+        "\uE10E" to listOf("alligator", "gator"),
+        "\uE10D" to listOf("blue_ringed_octopus", "blueringedoctopus", "octopus"),
+        "\uE10A" to listOf("fiery_scuttler", "fieryscuttler", "scuttler"),
+        "\uE10F" to listOf("frog_prince", "frogprince", "prince"),
+        "\uE113" to listOf("great_white_shark", "greatwhiteshark", "great_white", "greatwhite", "gw"),
+        "\uE114" to listOf("grim_reaper", "grimreaper", "reaper", "grim"),
+        "\uE103" to listOf("lord_jawbus", "lordjawbus", "jawbus", "jaw"),
+        "\uE111" to listOf("nessie", "ness"),
+        "\uE115" to listOf("phantom_fisher", "phantomfisher", "pfish"),
+        "\uE10B" to listOf("plhlegblast", "plhleg"),
+        "\uE110" to listOf("puddle_jumper", "puddlejumper", "puddle", "jumper"),
+        "\uE109" to listOf("ragnarok", "rag"),
+        "\uE105" to listOf("reindrake", "drake"),
+        "\uE112" to listOf("the_loch_emperor", "thelochemperor", "loch_emperor", "lochemperor", "emperor", "emp"),
+        "\uE104" to listOf("thunder", "thun"),
+        "\uE107" to listOf("titanoboa", "boa"),
+        "\uE10C" to listOf("water_hydra", "waterhydra", "hydra"),
+        "\uE106" to listOf("wiki_tiki", "wikitiki", "tiki"),
+        "\uE108" to listOf("yeti")
+
+        //\uE1FF next
+    )
+
+    val ALL = EMOJIS.flatMap { (unicode, aliases) ->
         aliases.map { ":$it:" to unicode.whiteText() }
     }.toMap()
 

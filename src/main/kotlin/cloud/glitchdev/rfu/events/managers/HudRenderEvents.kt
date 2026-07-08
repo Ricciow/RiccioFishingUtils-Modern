@@ -6,7 +6,6 @@ import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.utils.dsl.getResource
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements
-//~ if >= 26.1 'GuiGraphics' -> 'GuiGraphicsExtractor' {
 import net.minecraft.client.gui.GuiGraphicsExtractor
 
 /**
@@ -47,4 +46,3 @@ object HudRenderEvents : AbstractEventManager<(GuiGraphicsExtractor, Float) -> U
         override fun unregister() = removeTask(this)
     }
 }
-//~}

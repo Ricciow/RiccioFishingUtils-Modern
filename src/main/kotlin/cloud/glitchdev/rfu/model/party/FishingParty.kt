@@ -63,7 +63,7 @@ data class FishingParty(
                     Requisite("brain_food", "Brain Food", false),
                 ),
                 listOf(),
-                Players(maxOf(Party.members.size, 1), 6)
+                Players(maxOf(Party.memberCount, 1), 6)
             )
         }
     }

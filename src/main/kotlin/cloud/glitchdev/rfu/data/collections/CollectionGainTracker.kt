@@ -5,7 +5,8 @@ import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.events.managers.SetSlotEvents.registerSetSlotEvent
-import cloud.glitchdev.rfu.feature.fishing.FishingSession
+import cloud.glitchdev.rfu.events.managers.SkillEvents.registerSkillXpUpdateEvent
+import cloud.glitchdev.rfu.constants.SkillType
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.client.Minecraft
 import net.minecraft.network.chat.HoverEvent
@@ -19,7 +20,7 @@ object CollectionGainTracker : RegisteredEvent {
     private var lastFishingTime = 0L
 
     override fun register() {
-        registerGameEvent(FishingSession.FISHING_XP_REGEX, isOverlay = true) { _, _, _ ->
+        registerSkillXpUpdateEvent(SkillType.FISHING) { _, _ ->
             lastFishingTime = System.currentTimeMillis()
         }
 
@@ -48,8 +49,10 @@ object CollectionGainTracker : RegisteredEvent {
             val diffCount = if (isNewItem) item.count else item.count - previousItem.count
 
             for (collItem in CollectionItem.entries) {
-                if (collItem.displayName == itemName) {
-                    CollectionsHandler.add(collItem, diffCount.toLong(), isSync = false)
+                val matchedPair = collItem.items.find { it.first == itemName }
+                if (matchedPair != null) {
+                    val gainedAmount = diffCount.toLong() * matchedPair.second
+                    CollectionsHandler.add(collItem, gainedAmount, isSync = false)
                     break
                 }
             }
@@ -66,9 +69,11 @@ object CollectionGainTracker : RegisteredEvent {
 
             if ("Added" in hoverText) {
                 for (item in CollectionItem.entries) {
-                    val match = item.sackRegex.find(hoverText) ?: continue
-                    val amount = match.groupValues[1].toLongOrNull() ?: continue
-                    CollectionsHandler.add(item, amount, isSync = false)
+                    for ((regex, multiplier) in item.sackRegexes) {
+                        val match = regex.find(hoverText) ?: continue
+                        val amount = match.groupValues[1].toLongOrNull() ?: continue
+                        CollectionsHandler.add(item, amount * multiplier, isSync = false)
+                    }
                 }
             }
         }

@@ -14,7 +14,7 @@ object OtherSettings : Category("Other") {
 
     var emojis by boolean(true) {
         name = Literal("Emojis")
-        description = Literal("Replaces triggers like :dog: with the respective emoji. Currently only :dog:")
+        description = Literal("Replaces triggers like :dog: with the respective emoji. Use /rfuemojis to see all emojis!")
     }
 
     var lobbyTracking by boolean(true) {
@@ -118,6 +118,12 @@ object OtherSettings : Category("Other") {
         condition = { BackendSettings.backendAccepted }
     }
 
+    var peekPartyFinderKeybind by key(0) {
+        name = Literal("Peek Party Finder Keybind")
+        description = Literal("Keybind to peek the party finder window without opening the GUI.")
+        condition = { BackendSettings.backendAccepted }
+    }
+
     var partyInviteMsgs by boolean(true) {
         name = Literal("Party invite messages")
         description = Literal("Sends a prompt to invite player msg when some keywords are said by player")
@@ -175,5 +181,30 @@ object OtherSettings : Category("Other") {
         name = Literal("Walkthrough Acknowledged")
         description = Literal("Whether the user has acknowledged the mod's walkthrough.")
         condition = { false }
+    }
+
+    init {
+        dualSeparator {
+            title = "Resource Packs"
+        }
+    }
+
+    var autoAcceptResourcePacks by observable(boolean(true) {
+        name = Literal("Auto Accept Resource Packs")
+        description = Literal("Automatically accept resource/texture packs sent by the server if you are on Hypixel.")
+    }, { _, _ ->
+        reloadScreen()
+    })
+
+    var saveResourcePacks by boolean(true) {
+        name = Literal("Save for future use")
+        description = Literal("Saves server-sent resource packs to your local resource packs folder to load them on startup and avoid reloads.")
+        condition = { autoAcceptResourcePacks }
+    }
+
+    var autoLoadResourcePacks by boolean(true) {
+        name = Literal("Auto Load Resource Packs")
+        description = Literal("Automatically loads the server-sent resource packs. If disabled, packs are still accepted and saved but not loaded into the game.")
+        condition = { autoAcceptResourcePacks }
     }
 }

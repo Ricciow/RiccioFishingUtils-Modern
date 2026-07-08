@@ -74,4 +74,21 @@ object CakeExpiredAlert : Feature {
             return 1
         }
     }
+
+    @Command
+    object ResetCakes : SimpleCommand("rfuresetcakes") {
+        override val description: String = "Clears the saved cake timers."
+
+        override fun execute(context: CommandContext<FabricClientCommandSource>): Int {
+            val cakes = OtherManager.getField("cakes") {
+                CakesEntry()
+            } as? CakesEntry ?: CakesEntry()
+
+            cakes.clearCakeList()
+
+            context.source.sendFeedback(TextUtils.rfuLiteral("Successfully cleared cake list.", TextColor.LIGHT_GREEN))
+
+            return 1
+        }
+    }
 }

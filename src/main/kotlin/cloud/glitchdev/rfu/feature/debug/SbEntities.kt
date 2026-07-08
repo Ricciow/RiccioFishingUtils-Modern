@@ -13,7 +13,7 @@ import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
 import net.minecraft.network.chat.Style
 
-object Entities : SimpleCommand("entities") {
+object SbEntities : SimpleCommand("sbentities") {
     override val description: String = "Sends a message with the rfu entities"
 
     override fun execute(context: CommandContext<FabricClientCommandSource>): Int {

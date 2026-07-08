@@ -25,7 +25,8 @@ class SeaCreatures(
     val bossbar: Boolean = false,
     val gdragAlert: Boolean = false,
     val rareSCAlert: Boolean = false,
-    val scDisplayColor: String = "§f"
+    val scDisplayColor: String = "§f",
+    val rarePartyMessage: String = ""
 ) {
     fun toDataOption(): DataOption = DataOption(this, this.scDisplayName)
     fun getSingularNameWithArticle(): String = "$article $scDisplayName"

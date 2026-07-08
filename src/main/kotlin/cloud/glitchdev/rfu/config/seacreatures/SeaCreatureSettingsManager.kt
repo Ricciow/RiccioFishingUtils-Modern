@@ -136,7 +136,8 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
                 bossbar = isBossbarEnabled(scName),
                 gdragAlert = isGdragAlert(scName),
                 rareSCAlert = isRareSCAlert(scName),
-                scDisplayColor = resolve(scName) { it.scDisplayColor } ?: "§f"
+                scDisplayColor = resolve(scName) { it.scDisplayColor } ?: "§f",
+                rarePartyMessage = resolve(scName) { it.rarePartyMessage } ?: ""
             )
             SeaCreatures.register(sc)
             RFULogger.dev("Registered Sea Creature: $scName")
@@ -185,6 +186,7 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
                                 article = currentSc.article ?: backendSc.article,
                                 style = currentSc.style ?: backendSc.style,
                                 scDisplayColor = currentSc.scDisplayColor ?: backendSc.scDisplayColor,
+                                rarePartyMessage = currentSc.rarePartyMessage ?: backendSc.rarePartyMessage,
                                 catchMessage = backendSc.catchMessage,
                                 liquidType = backendSc.liquidType,
                                 category = backendSc.category,
