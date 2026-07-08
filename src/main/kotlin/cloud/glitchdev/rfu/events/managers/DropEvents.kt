@@ -16,7 +16,7 @@ object DropEvents : RegisteredEvent {
     val RARE_DROP_REGEX = buildString {
         append("RARE DROP! (")
         append(RareDrops.entries.joinToString("|") { it.overrideRegex ?: it.toString().escapeForRegex() })
-        append(""")(?: \(\+(\d+) [✯] Magic Find\))?""")
+        append(""")(?: \(\+(\d+)  Magic Find\))?""")
     }.toExactRegex()
 
     val DYE_REGEX = buildString {
@@ -25,7 +25,7 @@ object DropEvents : RegisteredEvent {
         append(")!")
     }.toExactRegex()
 
-    val DYE_ODD_REGEX = """.+ [\d,]+\/[\d,]+(?:\.\d+)?\w? \(\d+(?:\.\d+)?%\) chance!(?: \(\+(\d+)% [✯] Magic Find\))?""".toExactRegex()
+    val DYE_ODD_REGEX = """.+ [\d,]+\/[\d,]+(?:\.\d+)?\w? \(\d+(?:\.\d+)?%\) chance!(?: \(\+(\d+)%  Magic Find\))?""".toExactRegex()
     var currentDye : Dyes? = null
 
     override fun register() {

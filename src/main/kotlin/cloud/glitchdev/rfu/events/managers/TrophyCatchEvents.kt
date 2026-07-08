@@ -9,8 +9,8 @@ import cloud.glitchdev.rfu.constants.TrophyType
 
 @AutoRegister
 object TrophyCatchEvents : RegisteredEvent {
-    private val TROPHY_FROG_REGEX = """[♔] TROPHY FROG! You caught (?:an? )?(.+?) (BRONZE|SILVER|GOLD|DIAMOND)!""".toRegex(RegexOption.IGNORE_CASE)
-    private val TROPHY_FISH_REGEX = """[♔] TROPHY FISH! You caught (?:an? )?(.+?) (BRONZE|SILVER|GOLD|DIAMOND)!""".toRegex(RegexOption.IGNORE_CASE)
+    private val TROPHY_FROG_REGEX = """ TROPHY FROG! You caught (?:an? )?(.+?) (BRONZE|SILVER|GOLD|DIAMOND)!""".toRegex(RegexOption.IGNORE_CASE)
+    private val TROPHY_FISH_REGEX = """ TROPHY FISH! You caught (?:an? )?(.+?) (BRONZE|SILVER|GOLD|DIAMOND)!""".toRegex(RegexOption.IGNORE_CASE)
 
     override fun register() {
         registerGameEvent(TROPHY_FROG_REGEX) { _, _, matches ->

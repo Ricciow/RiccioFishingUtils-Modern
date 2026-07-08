@@ -60,7 +60,7 @@ object DropsHistory {
                 val itemName = dropEntry.type.toString()
                 val lastDrop = dropEntry.history.lastOrNull() ?: return@forEach
                 val sincePart = lastDrop.sinceCount?.let { " ($it)" } ?: ""
-                text.append(Component.literal("\n $YELLOW$BOLD- $itemName: ${YELLOW}Total: $WHITE${dropEntry.history.size} ${YELLOW}- Last: $WHITE${lastDrop.date.toFormattedDate()}$sincePart $AQUAMARINE(${lastDrop.magicFind}% ✯)"))
+                text.append(Component.literal("\n $YELLOW$BOLD- $itemName: ${YELLOW}Total: $WHITE${dropEntry.history.size} ${YELLOW}- Last: $WHITE${lastDrop.date.toFormattedDate()}$sincePart $AQUAMARINE(${lastDrop.magicFind}% \uE01A)"))
             } catch (e : Exception) {
                 RFULogger.error("Error on rfudrophistory:", e)
             }
@@ -71,7 +71,7 @@ object DropsHistory {
                 val itemName = dropEntry.type.toString()
                 val lastDrop = dropEntry.history.lastOrNull() ?: return@forEach
                 val sincePart = lastDrop.sinceCount?.let { " ($it)" } ?: ""
-                text.append(Component.literal("\n $YELLOW$BOLD- $itemName: ${YELLOW}Total: $WHITE${dropEntry.history.size} ${YELLOW}- Last: $WHITE${lastDrop.date.toFormattedDate()}$sincePart $AQUAMARINE(${lastDrop.magicFind}% ✯)"))
+                text.append(Component.literal("\n $YELLOW$BOLD- $itemName: ${YELLOW}Total: $WHITE${dropEntry.history.size} ${YELLOW}- Last: $WHITE${lastDrop.date.toFormattedDate()}$sincePart $AQUAMARINE(${lastDrop.magicFind}% \uE01A)"))
             } catch (e : Exception) {
                 RFULogger.error("Error on rfudrophistory (dye):", e)
             }

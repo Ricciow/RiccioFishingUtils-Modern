@@ -33,8 +33,8 @@ object FrogcoinBlessingDisplay : AbstractTextHudElement("frogcoinBlessing") {
         if (isEditing && activeBlessings.isEmpty()) {
             val preview = buildString {
                 append("${TextColor.DARK_GREEN}${TextEffects.BOLD}Blessings:\n")
-                append("${TextColor.CYAN}+2.5α Sea Creature Chance: ${TextColor.WHITE}29m 59s\n")
-                append("${TextColor.GOLD}+5♔ Trophy Chance: ${TextColor.WHITE}29m 59s")
+                append("${TextColor.CYAN}+2.5\uE021 Sea Creature Chance: ${TextColor.WHITE}29m 59s\n")
+                append("${TextColor.GOLD}+5\uE02A Trophy Chance: ${TextColor.WHITE}29m 59s")
             }
             text.setText(preview)
             return

@@ -63,7 +63,7 @@ class BossHealthBar(
 
         val displayName = buildString {
             append(entity?.sbName ?: "Example Mob")
-            if(entity?.isShurikened ?: false) append(" &b✯".toMcCodes())
+            if(entity?.isShurikened ?: false) append(" &b\uE01A".toMcCodes())
         }
 
         name.setText(displayName)
