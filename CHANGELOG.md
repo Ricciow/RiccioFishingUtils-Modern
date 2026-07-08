@@ -1,6 +1,6 @@
-# v1.14.1 - ??? Patches
+# v1.15.0 - ???
+
+### Features
+- Added custom tooltip GUI scaling option (Just really missed that)
 
 ### Fixes
-- Fixed the isOnHypixel Check not working when swapping lobbies leading to 
-the resourcepack feature not working
-- Fixed Jealous Fisher not including Iceberg Dye

@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
 import cloud.glitchdev.rfu.constants.MessageTypes
+import cloud.glitchdev.rfu.constants.TooltipGuiScale
 import cloud.glitchdev.rfu.constants.text.TextColor.LIGHT_RED
 
 object OtherSettings : Category("Other") {
@@ -69,6 +70,11 @@ object OtherSettings : Category("Other") {
     var zoomEtherwarp by boolean(false) {
         name = Literal("Zoom on etherwarp")
         description = Literal("Zooms when etherwarping")
+    }
+
+    var tooltipGuiScale by enum(TooltipGuiScale.DEFAULT) {
+        name = Literal("Tooltip GUI Scale")
+        description = Literal("The GUI scale for tooltips.")
     }
 
     init {
