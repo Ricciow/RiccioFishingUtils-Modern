@@ -20,7 +20,8 @@
     "SquidRenderStateMixin",
     "PlainTextLiteralContentsMixin",
     "TranslatableContentsMixin",
-    "screen.PackSelectionScreenMixin"
+    "screen.PackSelectionScreenMixin",
+    "ItemModelResolverMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -1,4 +1,4 @@
-﻿package cloud.glitchdev.rfu.mixin;
+package cloud.glitchdev.rfu.mixin;
 
 import cloud.glitchdev.rfu.config.categories.OtherSettings;
 import cloud.glitchdev.rfu.constants.ui.TooltipGuiScale;
@@ -13,6 +13,7 @@ import org.joml.Matrix3x2fStack;
 import org.joml.Vector2i;
 import org.joml.Vector2ic;
 import org.jspecify.annotations.Nullable;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -24,11 +25,24 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 @Mixin(GuiGraphicsExtractor.class)
 public abstract class GuiGraphicsExtractorMixin {
     @Shadow @Final private Minecraft minecraft;
     @Shadow @Final private Matrix3x2fStack pose;
+    @Shadow @Final private TextureAtlas guiSprites;
+
+    @ModifyVariable(method = "tooltip", at = @At("HEAD"), name = "style", argsOnly = true)
+    private Identifier rfu$modifyStyle(Identifier style) {
+        if (style != null && this.guiSprites != null && !cloud.glitchdev.rfu.utils.ResourcePackUtils.isHypixelPackActive()) {
+            Identifier bgSprite = style.withPath(path -> "tooltip/" + path + "_background");
+            if (this.guiSprites.getSprite(bgSprite) == this.guiSprites.missingSprite()) {
+                return null;
+            }
+        }
+        return style;
+    }
 
     @Unique
     private boolean rfu$isCustomScaleActive() {

@@ -4,3 +4,5 @@
 - Added custom tooltip GUI scaling option (Just really missed that)
 
 ### Fixes
+- Made item models and custom tooltip styles fall back to vanilla defaults if 
+the resource pack is not active to prevent the missing textures with it not loaded
