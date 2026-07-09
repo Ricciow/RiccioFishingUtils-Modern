@@ -1,4 +1,4 @@
-﻿package cloud.glitchdev.rfu.config.categories
+package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
 import cloud.glitchdev.rfu.constants.chat.MessageTypes
@@ -108,6 +108,30 @@ object OtherSettings : Category("Other") {
             title = "Party & Alerts"
         }
     }
+
+    var fullInventoryAlert by observable(boolean(true) {
+        name = Literal("Full Inventory Alert")
+        description = Literal("Shows an alert when your inventory becomes full.")
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var fullInventorySound by observable(boolean(true) {
+        name = Literal("Full Inventory Sound")
+        description = Literal("Plays a sound when your inventory becomes full.")
+        condition = { fullInventoryAlert }
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var fullInventoryVolume by float(1f) {
+        name = Literal("Sound Volume")
+        description = Literal("The volume for the full inventory alert sound.")
+        range = 0f..1f
+        slider = true
+        condition = { fullInventoryAlert && fullInventorySound }
+    }
+
 
     init {
         separator {
