@@ -1,7 +1,7 @@
-package cloud.glitchdev.rfu.gui.hud.elements
+﻿package cloud.glitchdev.rfu.gui.hud.elements
 
 import cloud.glitchdev.rfu.config.categories.LotusAtollSettings
-import cloud.glitchdev.rfu.constants.FishingIslands
+import cloud.glitchdev.rfu.constants.fishing.FishingIslands
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent

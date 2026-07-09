@@ -1,4 +1,8 @@
-package cloud.glitchdev.rfu.constants
+﻿package cloud.glitchdev.rfu.constants.skyblock
+import cloud.glitchdev.rfu.constants.fishing.IRareDrop
+import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
+import cloud.glitchdev.rfu.constants.fishing.SeaCreatureCategory
+import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 
 enum class Dyes(val dyeName: String, val hex: String, val relatedScNames : List<String> = listOf(), override val rarity: Rarity = Rarity.LEGENDARY) : IRareDrop {
     AQUAMARINE("Aquamarine Dye", "7FFFD4", listOf("WATER_LIQUID")),

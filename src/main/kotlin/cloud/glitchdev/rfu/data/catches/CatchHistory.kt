@@ -1,8 +1,8 @@
-package cloud.glitchdev.rfu.data.catches
+﻿package cloud.glitchdev.rfu.data.catches
 
-import cloud.glitchdev.rfu.constants.SeaCreatures
-import cloud.glitchdev.rfu.constants.Bait
-import cloud.glitchdev.rfu.constants.LiquidTypes
+import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
+import cloud.glitchdev.rfu.constants.fishing.Bait
+import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
 import cloud.glitchdev.rfu.data.fishing.Hotspot
 import cloud.glitchdev.rfu.utils.World
 import net.minecraft.world.phys.Vec3

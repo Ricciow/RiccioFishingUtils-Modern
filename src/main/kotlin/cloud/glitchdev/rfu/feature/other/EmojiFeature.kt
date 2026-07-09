@@ -1,7 +1,7 @@
-package cloud.glitchdev.rfu.feature.other
+﻿package cloud.glitchdev.rfu.feature.other
 
 import cloud.glitchdev.rfu.config.categories.OtherSettings
-import cloud.glitchdev.rfu.constants.Emoji
+import cloud.glitchdev.rfu.constants.text.Emoji
 
 object EmojiFeature {
     /**

@@ -1,4 +1,4 @@
-package cloud.glitchdev.rfu.gui.hud.elements
+﻿package cloud.glitchdev.rfu.gui.hud.elements
 
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.constants.text.TextColor.CYAN
@@ -10,15 +10,15 @@ import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 import cloud.glitchdev.rfu.utils.dsl.toReadableString
 import cloud.glitchdev.rfu.config.categories.InkFishing
-import cloud.glitchdev.rfu.constants.FishingIslands
+import cloud.glitchdev.rfu.constants.fishing.FishingIslands
 import cloud.glitchdev.rfu.feature.fishing.FishingSession
 import cloud.glitchdev.rfu.feature.ink.InkSessionTracker
 import cloud.glitchdev.rfu.data.catches.CatchTracker.catchHistory
-import cloud.glitchdev.rfu.constants.SeaCreatures
+import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.data.collections.CollectionItem
 import cloud.glitchdev.rfu.data.collections.CollectionsHandler
 import cloud.glitchdev.rfu.utils.World
-import cloud.glitchdev.rfu.constants.InkTrackingType
+import cloud.glitchdev.rfu.constants.fishing.InkTrackingType
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.utils.dsl.compact
 import kotlin.time.Duration

@@ -1,10 +1,10 @@
-package cloud.glitchdev.rfu.achievement.achievements.isle
+﻿package cloud.glitchdev.rfu.achievement.achievements.isle
 
 import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.BaseAchievement
-import cloud.glitchdev.rfu.constants.RareDrops
+import cloud.glitchdev.rfu.constants.fishing.RareDrops
 import cloud.glitchdev.rfu.events.managers.DropEvents.registerRareDropEvent
 
 object ItsMyLuckyDayAchievement : BaseAchievement() {

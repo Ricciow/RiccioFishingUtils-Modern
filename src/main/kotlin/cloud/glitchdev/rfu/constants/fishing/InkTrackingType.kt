@@ -1,4 +1,4 @@
-package cloud.glitchdev.rfu.constants
+﻿package cloud.glitchdev.rfu.constants.fishing
 
 enum class InkTrackingType(val displayName: String) {
     INK_H("Ink/h"),

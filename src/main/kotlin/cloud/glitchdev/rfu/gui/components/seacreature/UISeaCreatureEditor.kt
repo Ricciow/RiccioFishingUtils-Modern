@@ -1,9 +1,9 @@
-package cloud.glitchdev.rfu.gui.components.seacreature
+﻿package cloud.glitchdev.rfu.gui.components.seacreature
 
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
 import cloud.glitchdev.rfu.config.seacreatures.SeaCreatureSettingsManager
-import cloud.glitchdev.rfu.constants.RareScDisplayDataType
-import cloud.glitchdev.rfu.constants.SeaCreatures
+import cloud.glitchdev.rfu.constants.fishing.RareScDisplayDataType
+import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.constants.text.TextColor.GRAY
 import cloud.glitchdev.rfu.constants.text.TextColor.WHITE
 import cloud.glitchdev.rfu.constants.text.TextColor.YELLOW

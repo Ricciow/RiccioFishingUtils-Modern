@@ -1,6 +1,6 @@
-package cloud.glitchdev.rfu.utils.dsl
+﻿package cloud.glitchdev.rfu.utils.dsl
 
-import cloud.glitchdev.rfu.constants.Skills
+import cloud.glitchdev.rfu.constants.skyblock.Skills
 
 fun Long.compact(): String {
     return when {

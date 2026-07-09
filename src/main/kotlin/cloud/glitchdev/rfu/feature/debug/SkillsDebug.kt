@@ -1,6 +1,6 @@
-package cloud.glitchdev.rfu.feature.debug
+﻿package cloud.glitchdev.rfu.feature.debug
 
-import cloud.glitchdev.rfu.constants.SkillType
+import cloud.glitchdev.rfu.constants.skyblock.SkillType
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.utils.SkillTracker

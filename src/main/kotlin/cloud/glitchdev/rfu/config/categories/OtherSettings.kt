@@ -1,8 +1,8 @@
-package cloud.glitchdev.rfu.config.categories
+﻿package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
-import cloud.glitchdev.rfu.constants.MessageTypes
-import cloud.glitchdev.rfu.constants.TooltipGuiScale
+import cloud.glitchdev.rfu.constants.chat.MessageTypes
+import cloud.glitchdev.rfu.constants.ui.TooltipGuiScale
 import cloud.glitchdev.rfu.constants.text.TextColor.LIGHT_RED
 
 object OtherSettings : Category("Other") {

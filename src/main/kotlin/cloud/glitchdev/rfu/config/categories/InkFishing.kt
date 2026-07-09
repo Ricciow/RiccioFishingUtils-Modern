@@ -1,7 +1,7 @@
-package cloud.glitchdev.rfu.config.categories
+﻿package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
-import cloud.glitchdev.rfu.constants.InkTrackingType
+import cloud.glitchdev.rfu.constants.fishing.InkTrackingType
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 
 object InkFishing : Category("Ink Fishing") {

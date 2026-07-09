@@ -1,9 +1,9 @@
-package cloud.glitchdev.rfu.config.categories
+﻿package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.Category
-import cloud.glitchdev.rfu.constants.RareScDisplayDataType
-import cloud.glitchdev.rfu.constants.SeaCreatures
+import cloud.glitchdev.rfu.constants.fishing.RareScDisplayDataType
+import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.feature.fishing.CatchMessageReplacer
 import cloud.glitchdev.rfu.feature.fishing.RareScPartyMessage
 import cloud.glitchdev.rfu.gui.window.SeaCreatureEditWindow

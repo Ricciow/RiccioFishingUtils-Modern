@@ -1,4 +1,5 @@
-package cloud.glitchdev.rfu.constants
+﻿package cloud.glitchdev.rfu.constants.fishing
+import cloud.glitchdev.rfu.constants.chat.PartyTypes
 
 import kotlin.collections.listOf
 

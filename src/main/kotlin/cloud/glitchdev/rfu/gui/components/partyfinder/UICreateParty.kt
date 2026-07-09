@@ -1,8 +1,8 @@
-package cloud.glitchdev.rfu.gui.components.partyfinder
+﻿package cloud.glitchdev.rfu.gui.components.partyfinder
 
 import cloud.glitchdev.rfu.config.categories.DevSettings
-import cloud.glitchdev.rfu.constants.FishingIslands
-import cloud.glitchdev.rfu.constants.LiquidTypes
+import cloud.glitchdev.rfu.constants.fishing.FishingIslands
+import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
 import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.UIPopup
 import cloud.glitchdev.rfu.gui.components.textinput.UIDecoratedTextInput

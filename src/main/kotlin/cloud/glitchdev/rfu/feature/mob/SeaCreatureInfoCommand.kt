@@ -1,6 +1,6 @@
-package cloud.glitchdev.rfu.feature.mob
+﻿package cloud.glitchdev.rfu.feature.mob
 
-import cloud.glitchdev.rfu.constants.SeaCreatures
+import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.data.catches.CatchTracker

@@ -1,10 +1,10 @@
-package cloud.glitchdev.rfu.gui.hud.elements
+﻿package cloud.glitchdev.rfu.gui.hud.elements
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
-import cloud.glitchdev.rfu.constants.RareScDisplayDataType
-import cloud.glitchdev.rfu.constants.SeaCreatures
-import cloud.glitchdev.rfu.constants.LiquidTypes
+import cloud.glitchdev.rfu.constants.fishing.RareScDisplayDataType
+import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
+import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
 import cloud.glitchdev.rfu.constants.text.TextColor.YELLOW
 import cloud.glitchdev.rfu.constants.text.TextColor.WHITE
 import cloud.glitchdev.rfu.constants.text.TextColor.GRAY

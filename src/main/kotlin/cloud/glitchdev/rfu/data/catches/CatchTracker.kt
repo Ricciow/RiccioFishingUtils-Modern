@@ -1,6 +1,6 @@
-package cloud.glitchdev.rfu.data.catches
+﻿package cloud.glitchdev.rfu.data.catches
 
-import cloud.glitchdev.rfu.constants.SeaCreatures
+import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.events.AutoRegister

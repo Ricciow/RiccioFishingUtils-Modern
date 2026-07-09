@@ -1,7 +1,7 @@
-package cloud.glitchdev.rfu.config.categories
+﻿package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
-import cloud.glitchdev.rfu.constants.HotspotType
+import cloud.glitchdev.rfu.constants.fishing.HotspotType
 
 object HotSpotSettings : Category("Hot Spots") {
     init {

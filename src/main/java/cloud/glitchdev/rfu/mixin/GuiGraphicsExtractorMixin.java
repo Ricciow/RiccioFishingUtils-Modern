@@ -1,7 +1,7 @@
-package cloud.glitchdev.rfu.mixin;
+﻿package cloud.glitchdev.rfu.mixin;
 
 import cloud.glitchdev.rfu.config.categories.OtherSettings;
-import cloud.glitchdev.rfu.constants.TooltipGuiScale;
+import cloud.glitchdev.rfu.constants.ui.TooltipGuiScale;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;

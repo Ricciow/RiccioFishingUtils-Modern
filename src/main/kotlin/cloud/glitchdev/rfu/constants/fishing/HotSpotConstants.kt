@@ -1,4 +1,4 @@
-package cloud.glitchdev.rfu.constants
+﻿package cloud.glitchdev.rfu.constants.fishing
 
 //Used in HotspotEvents.kt, Hotspot.kt and HotspotCache.kt
 object HotSpotConstants {

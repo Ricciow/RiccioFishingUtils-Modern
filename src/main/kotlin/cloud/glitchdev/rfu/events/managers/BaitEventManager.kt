@@ -1,6 +1,6 @@
-package cloud.glitchdev.rfu.events.managers
+﻿package cloud.glitchdev.rfu.events.managers
 
-import cloud.glitchdev.rfu.constants.Bait
+import cloud.glitchdev.rfu.constants.fishing.Bait
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent

@@ -1,4 +1,4 @@
-package cloud.glitchdev.rfu.constants
+﻿package cloud.glitchdev.rfu.constants.chat
 
 import cloud.glitchdev.rfu.model.data.DataOption
 import com.google.gson.annotations.SerializedName

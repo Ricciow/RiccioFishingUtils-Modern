@@ -1,7 +1,7 @@
-package cloud.glitchdev.rfu.feature.mob
+﻿package cloud.glitchdev.rfu.feature.mob
 
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
-import cloud.glitchdev.rfu.constants.SeaCreatures
+import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.data.mob.SkyblockEntity
 import cloud.glitchdev.rfu.events.managers.PetEvents.PetUpdateEventManager
 import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDetectEvent

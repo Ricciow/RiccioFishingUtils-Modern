@@ -1,4 +1,4 @@
-package cloud.glitchdev.rfu.constants
+﻿package cloud.glitchdev.rfu.constants.skyblock
 
 object Skills {
     /**

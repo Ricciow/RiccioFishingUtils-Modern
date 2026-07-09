@@ -1,4 +1,4 @@
-package cloud.glitchdev.rfu.constants
+﻿package cloud.glitchdev.rfu.constants.ui
 
 enum class TooltipGuiScale(val displayName: String, val scaleValue: Int?) {
     DEFAULT("Default", null),

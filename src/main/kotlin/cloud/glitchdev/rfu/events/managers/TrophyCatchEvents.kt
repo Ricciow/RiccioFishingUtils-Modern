@@ -1,11 +1,11 @@
-package cloud.glitchdev.rfu.events.managers
+﻿package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
-import cloud.glitchdev.rfu.constants.TrophyTier
-import cloud.glitchdev.rfu.constants.TrophyType
+import cloud.glitchdev.rfu.constants.fishing.TrophyTier
+import cloud.glitchdev.rfu.constants.fishing.TrophyType
 
 @AutoRegister
 object TrophyCatchEvents : RegisteredEvent {

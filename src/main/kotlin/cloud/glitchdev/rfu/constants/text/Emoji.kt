@@ -1,7 +1,5 @@
-package cloud.glitchdev.rfu.constants
+﻿package cloud.glitchdev.rfu.constants.text
 
-import cloud.glitchdev.rfu.constants.text.TextColor
-import cloud.glitchdev.rfu.constants.text.TextEffects
 
 object Emoji {
     val EMOJIS = mapOf(

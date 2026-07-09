@@ -1,7 +1,7 @@
-package cloud.glitchdev.rfu.data.drops
+﻿package cloud.glitchdev.rfu.data.drops
 
-import cloud.glitchdev.rfu.constants.Dyes
-import cloud.glitchdev.rfu.constants.RareDrops
+import cloud.glitchdev.rfu.constants.skyblock.Dyes
+import cloud.glitchdev.rfu.constants.fishing.RareDrops
 import cloud.glitchdev.rfu.data.catches.CatchTracker.catchHistory
 
 class DropHistory {

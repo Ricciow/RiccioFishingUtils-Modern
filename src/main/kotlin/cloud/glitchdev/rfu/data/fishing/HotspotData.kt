@@ -1,7 +1,7 @@
-package cloud.glitchdev.rfu.data.fishing
+﻿package cloud.glitchdev.rfu.data.fishing
 
-import cloud.glitchdev.rfu.constants.FishingIslands
-import cloud.glitchdev.rfu.constants.LiquidTypes
+import cloud.glitchdev.rfu.constants.fishing.FishingIslands
+import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
 import java.util.Collections
 
 data class HotspotData(

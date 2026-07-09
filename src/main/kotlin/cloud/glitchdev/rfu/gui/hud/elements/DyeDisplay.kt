@@ -1,8 +1,8 @@
-package cloud.glitchdev.rfu.gui.hud.elements
+﻿package cloud.glitchdev.rfu.gui.hud.elements
 
 import cloud.glitchdev.rfu.config.categories.BackendSettings
 import cloud.glitchdev.rfu.config.categories.OtherSettings
-import cloud.glitchdev.rfu.constants.Dyes as ConstDyes
+import cloud.glitchdev.rfu.constants.skyblock.Dyes as ConstDyes
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects.BOLD
 import cloud.glitchdev.rfu.constants.text.TextEffects.RESET

@@ -1,14 +1,14 @@
-package cloud.glitchdev.rfu.config.seacreatures
+﻿package cloud.glitchdev.rfu.config.seacreatures
 
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.InstantRegister
 import cloud.glitchdev.rfu.events.InstantRegisteredEvent
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.utils.JsonFile
-import cloud.glitchdev.rfu.constants.Bait
-import cloud.glitchdev.rfu.constants.LiquidTypes
-import cloud.glitchdev.rfu.constants.SeaCreatureCategory
-import cloud.glitchdev.rfu.constants.SeaCreatures
+import cloud.glitchdev.rfu.constants.fishing.Bait
+import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
+import cloud.glitchdev.rfu.constants.fishing.SeaCreatureCategory
+import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.data.fishing.Hotspot
 import cloud.glitchdev.rfu.utils.World
 import net.minecraft.world.phys.Vec3

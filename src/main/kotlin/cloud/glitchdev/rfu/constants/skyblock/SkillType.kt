@@ -1,4 +1,4 @@
-package cloud.glitchdev.rfu.constants
+﻿package cloud.glitchdev.rfu.constants.skyblock
 
 enum class SkillType(val displayName: String, val maxLevel: Int) {
     COMBAT("Combat", 60),

@@ -1,6 +1,6 @@
-package cloud.glitchdev.rfu.constants
-
+﻿package cloud.glitchdev.rfu.constants.skyblock
 import cloud.glitchdev.rfu.constants.text.TextColor
+
 
 enum class Rarity(val color: TextColor) {
     COMMON(TextColor.WHITE),

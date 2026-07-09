@@ -1,4 +1,4 @@
-package cloud.glitchdev.rfu.constants
+﻿package cloud.glitchdev.rfu.constants.fishing
 
 import cloud.glitchdev.rfu.model.data.DataOption
 import cloud.glitchdev.rfu.data.fishing.Hotspot

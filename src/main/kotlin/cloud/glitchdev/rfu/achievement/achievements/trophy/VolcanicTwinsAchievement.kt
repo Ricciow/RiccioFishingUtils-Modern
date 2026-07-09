@@ -1,4 +1,4 @@
-package cloud.glitchdev.rfu.achievement.achievements.trophy
+﻿package cloud.glitchdev.rfu.achievement.achievements.trophy
 
 import cloud.glitchdev.rfu.achievement.Achievement
 import cloud.glitchdev.rfu.achievement.AchievementCategory
@@ -6,7 +6,7 @@ import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.StageAchievement
 import cloud.glitchdev.rfu.events.managers.TrophyCatchEvents.registerTrophyFishCatchEvent
-import cloud.glitchdev.rfu.constants.TrophyTier
+import cloud.glitchdev.rfu.constants.fishing.TrophyTier
 
 @Achievement
 object VolcanicTwinsAchievement : StageAchievement() {

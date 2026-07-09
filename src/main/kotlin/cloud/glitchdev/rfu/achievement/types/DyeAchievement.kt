@@ -1,8 +1,8 @@
-package cloud.glitchdev.rfu.achievement.types
+﻿package cloud.glitchdev.rfu.achievement.types
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.achievement.BaseAchievement
-import cloud.glitchdev.rfu.constants.Dyes
+import cloud.glitchdev.rfu.constants.skyblock.Dyes
 import cloud.glitchdev.rfu.events.managers.ContainerEvents
 import cloud.glitchdev.rfu.events.managers.DropEvents
 import cloud.glitchdev.rfu.utils.Coroutines

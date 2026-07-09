@@ -1,9 +1,9 @@
-package cloud.glitchdev.rfu.utils
+﻿package cloud.glitchdev.rfu.utils
 
 import cloud.glitchdev.rfu.config.categories.DevSettings
-import cloud.glitchdev.rfu.constants.FishingIslands
-import cloud.glitchdev.rfu.constants.Mayors
-import cloud.glitchdev.rfu.constants.SeaCreatureCategory
+import cloud.glitchdev.rfu.constants.fishing.FishingIslands
+import cloud.glitchdev.rfu.constants.skyblock.Mayors
+import cloud.glitchdev.rfu.constants.fishing.SeaCreatureCategory
 import cloud.glitchdev.rfu.data.fishing.HotspotCache
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent

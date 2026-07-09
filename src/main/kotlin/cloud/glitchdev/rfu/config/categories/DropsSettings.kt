@@ -1,8 +1,8 @@
-package cloud.glitchdev.rfu.config.categories
+﻿package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
-import cloud.glitchdev.rfu.constants.Dyes
-import cloud.glitchdev.rfu.constants.RareDrops
+import cloud.glitchdev.rfu.constants.skyblock.Dyes
+import cloud.glitchdev.rfu.constants.fishing.RareDrops
 import cloud.glitchdev.rfu.feature.drops.RareDropAlert
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 

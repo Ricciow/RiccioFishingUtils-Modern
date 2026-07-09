@@ -1,9 +1,9 @@
-package cloud.glitchdev.rfu.party.commands
+﻿package cloud.glitchdev.rfu.party.commands
 
-import cloud.glitchdev.rfu.constants.SeaCreatures
-import cloud.glitchdev.rfu.constants.RareDrops
-import cloud.glitchdev.rfu.constants.Dyes
-import cloud.glitchdev.rfu.constants.IRareDrop
+import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
+import cloud.glitchdev.rfu.constants.fishing.RareDrops
+import cloud.glitchdev.rfu.constants.skyblock.Dyes
+import cloud.glitchdev.rfu.constants.fishing.IRareDrop
 import cloud.glitchdev.rfu.data.catches.CatchTracker
 import cloud.glitchdev.rfu.data.drops.DropHistory
 import cloud.glitchdev.rfu.data.drops.DropManager

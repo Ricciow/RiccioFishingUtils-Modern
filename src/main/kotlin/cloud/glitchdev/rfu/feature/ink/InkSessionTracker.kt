@@ -1,8 +1,8 @@
-package cloud.glitchdev.rfu.feature.ink
+﻿package cloud.glitchdev.rfu.feature.ink
 
 import cloud.glitchdev.rfu.config.categories.InkFishing
-import cloud.glitchdev.rfu.constants.FishingIslands
-import cloud.glitchdev.rfu.constants.SeaCreatures
+import cloud.glitchdev.rfu.constants.fishing.FishingIslands
+import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.constants.text.TextColor.GOLD
 import cloud.glitchdev.rfu.constants.text.TextColor.LIGHT_GREEN
 import cloud.glitchdev.rfu.constants.text.TextColor.YELLOW

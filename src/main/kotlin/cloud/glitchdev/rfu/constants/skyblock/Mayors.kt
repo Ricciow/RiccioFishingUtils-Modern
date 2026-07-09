@@ -1,4 +1,4 @@
-package cloud.glitchdev.rfu.constants
+﻿package cloud.glitchdev.rfu.constants.skyblock
 
 enum class Mayors(val mayorName: String) {
     AATROX("Aatrox"),

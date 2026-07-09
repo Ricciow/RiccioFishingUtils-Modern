@@ -1,4 +1,5 @@
-package cloud.glitchdev.rfu.constants
+﻿package cloud.glitchdev.rfu.constants.fishing
+import cloud.glitchdev.rfu.constants.skyblock.Rarity
 
 enum class RareDrops(val dropName : String, override val rarity: Rarity, val relatedScNames : List<String> = listOf(), val overrideRegex : String? = null) : IRareDrop {
     //Drops

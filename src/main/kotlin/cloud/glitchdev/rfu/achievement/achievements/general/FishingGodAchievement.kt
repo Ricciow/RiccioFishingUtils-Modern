@@ -1,11 +1,11 @@
-package cloud.glitchdev.rfu.achievement.achievements.general
+﻿package cloud.glitchdev.rfu.achievement.achievements.general
 
 import cloud.glitchdev.rfu.achievement.Achievement
 import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
-import cloud.glitchdev.rfu.constants.SkillType
+import cloud.glitchdev.rfu.constants.skyblock.SkillType
 import cloud.glitchdev.rfu.events.managers.SkillEvents.registerSkillXpUpdateEvent
 import cloud.glitchdev.rfu.utils.SkillTracker
 

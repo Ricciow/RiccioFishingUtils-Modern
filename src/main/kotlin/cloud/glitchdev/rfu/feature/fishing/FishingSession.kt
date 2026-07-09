@@ -1,4 +1,4 @@
-package cloud.glitchdev.rfu.feature.fishing
+﻿package cloud.glitchdev.rfu.feature.fishing
 
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.constants.text.TextColor
@@ -10,7 +10,7 @@ import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCre
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.events.managers.SkillEvents.registerSkillXpUpdateEvent
 import cloud.glitchdev.rfu.utils.SkillTracker
-import cloud.glitchdev.rfu.constants.SkillType
+import cloud.glitchdev.rfu.constants.skyblock.SkillType
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.feature.ink.InkSessionTracker
