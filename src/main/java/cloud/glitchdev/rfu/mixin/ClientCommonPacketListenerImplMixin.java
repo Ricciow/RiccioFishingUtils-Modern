@@ -32,39 +32,42 @@ public abstract class ClientCommonPacketListenerImplMixin {
         if (OtherSettings.INSTANCE.getAutoAcceptResourcePacks() && Network.INSTANCE.isOnHypixel()) {
             UUID packId = packet.id();
             String hash = packet.hash();
+            String urlVal = packet.url();
 
-            if (OtherSettings.INSTANCE.getSaveResourcePacks()) {
-                Path resourcePacksDir = this.minecraft.gameDirectory.toPath().resolve("resourcepacks");
-                String filename = "Hypixel Server Pack - " + packId + " - " + hash + ".zip";
-                Path destPack = resourcePacksDir.resolve(filename);
-                
-                String packNameInOptions = "file/" + filename;
-                boolean isSelected = this.minecraft.options.resourcePacks.contains(packNameInOptions);
-                
-                if (Files.exists(destPack)) {
-                    if (!isSelected && OtherSettings.INSTANCE.getAutoLoadResourcePacks()) {
-                        rfu$cleanUpOldVersionsInOptions(packId, filename);
-                        this.minecraft.getResourcePackRepository().reload();
-                        this.minecraft.options.resourcePacks.addFirst(packNameInOptions);
-                        this.minecraft.options.loadSelectedResourcePacks(this.minecraft.getResourcePackRepository());
-                        this.minecraft.options.save();
-                        this.minecraft.reloadResourcePacks();
+            this.minecraft.execute(() -> {
+                if (OtherSettings.INSTANCE.getSaveResourcePacks()) {
+                    Path resourcePacksDir = this.minecraft.gameDirectory.toPath().resolve("resourcepacks");
+                    String filename = "Hypixel Server Pack - " + packId + " - " + hash + ".zip";
+                    Path destPack = resourcePacksDir.resolve(filename);
+                    
+                    String packNameInOptions = "file/" + filename;
+                    boolean isSelected = this.minecraft.options.resourcePacks.contains(packNameInOptions);
+                    
+                    if (Files.exists(destPack)) {
+                        if (!isSelected && OtherSettings.INSTANCE.getAutoLoadResourcePacks()) {
+                            rfu$cleanUpOldVersionsInOptions(packId, filename);
+                            this.minecraft.getResourcePackRepository().reload();
+                            this.minecraft.options.resourcePacks.addFirst(packNameInOptions);
+                            this.minecraft.options.loadSelectedResourcePacks(this.minecraft.getResourcePackRepository());
+                            this.minecraft.options.save();
+                            this.minecraft.reloadResourcePacks();
+                        }
+
+                        this.connection.send(new ServerboundResourcePackPacket(packId, Action.ACCEPTED));
+                        this.connection.send(new ServerboundResourcePackPacket(packId, Action.DOWNLOADED));
+                        this.connection.send(new ServerboundResourcePackPacket(packId, Action.SUCCESSFULLY_LOADED));
+                        return;
                     }
-
-                    this.connection.send(new ServerboundResourcePackPacket(packId, Action.ACCEPTED));
-                    this.connection.send(new ServerboundResourcePackPacket(packId, Action.DOWNLOADED));
-                    this.connection.send(new ServerboundResourcePackPacket(packId, Action.SUCCESSFULLY_LOADED));
-                    ci.cancel();
-                    return;
                 }
-            }
 
-            URL url = rfu$parseResourcePackUrl(packet.url());
-            if (url == null) {
-                this.connection.send(new ServerboundResourcePackPacket(packId, Action.INVALID_URL));
-            } else {
-                this.minecraft.getDownloadedPackSource().pushPack(packId, url, hash);
-            }
+                URL url = rfu$parseResourcePackUrl(urlVal);
+                if (url == null) {
+                    this.connection.send(new ServerboundResourcePackPacket(packId, Action.INVALID_URL));
+                } else {
+                    this.minecraft.getDownloadedPackSource().allowServerPacks();
+                    this.minecraft.getDownloadedPackSource().pushPack(packId, url, hash);
+                }
+            });
             ci.cancel();
         }
     }
