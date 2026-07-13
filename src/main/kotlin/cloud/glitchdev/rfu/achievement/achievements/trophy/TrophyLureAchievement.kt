@@ -76,12 +76,10 @@ object TrophyLureAchievement : BaseAchievement() {
                             val itemName = item.hoverName.toUnformattedString()
                             if (itemName.contains("Fishing Stats", ignoreCase = true)) {
                                 val lore = item[DataComponents.LORE]
-                                if (lore != null) {
-                                    lore.lines.forEach { line ->
-                                        val chance = extractTrophyChance(line.toUnformattedString(), statRegex)
-                                        if (chance != null && chance > maxMeasured) {
-                                            maxMeasured = chance
-                                        }
+                                lore?.lines?.forEach { line ->
+                                    val chance = extractTrophyChance(line.toUnformattedString(), statRegex)
+                                    if (chance != null && chance > maxMeasured) {
+                                        maxMeasured = chance
                                     }
                                 }
                             }
