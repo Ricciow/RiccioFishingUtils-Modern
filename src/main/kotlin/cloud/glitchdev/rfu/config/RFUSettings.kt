@@ -36,7 +36,7 @@ object RFUSettings : ConfigKt("rfu/settings") {
         }
 
         separator {
-            title = "Your mod is outdated!"
+            title = "§cYour mod is outdated!"
             description = "You should update!"
             condition = { isOutdated }
         }
