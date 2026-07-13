@@ -34,7 +34,7 @@ object PartyFinder : SimpleCommand("rfupf") {
             return 1
         }
 
-        if (World.isOnAlpha()) {
+        if (World.isOnAlpha) {
             context.source.sendFeedback(
                 TextUtils.rfuLiteral(
                     "Party Finder is disabled on the Alpha network!",

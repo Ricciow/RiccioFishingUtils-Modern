@@ -1,4 +1,4 @@
-﻿package cloud.glitchdev.rfu.utils
+package cloud.glitchdev.rfu.utils
 
 import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.fishing.FishingIslands
@@ -27,13 +27,12 @@ object  World : RegisteredEvent {
     var lobby : String? = null
     var island : FishingIslands? = null
     var jerryFishingFestival = false
-    private var currentlyOnAlpha = false
+    var isOnAlpha: Boolean = false
+        private set
 
-    fun isOnAlpha(): Boolean {
-        if (currentlyOnAlpha) return true
-        val ip = mc.currentServer?.ip?.lowercase() ?: return false
-        return ip == "alpha.hypixel.net" || ip.endsWith(".alpha.hypixel.net")
-    }
+    var isOnHypixel: Boolean = false
+        private set
+        get() = DevSettings.bypassHypixelCheck || field
 
     private const val SKYBLOCK_EPOCH = 1560275700000L
     private const val DAY_DURATION_MS = 20L * 60 * 1000L
@@ -116,27 +115,32 @@ object  World : RegisteredEvent {
             }
         }
 
-        registerJoinEvent(priority = -100) {
-            val ip = mc.currentServer?.ip?.lowercase()
-            val isAlpha = ip != null && (ip == "alpha.hypixel.net" || ip.endsWith(".alpha.hypixel.net"))
+        registerJoinEvent(priority = -100) { wasConnected ->
+            if (!wasConnected) {
+                val ip = mc.currentServer?.ip?.lowercase()
+                val isAlpha = ip != null && (ip == "alpha.hypixel.net" || ip.endsWith(".alpha.hypixel.net"))
 
-            if (isAlpha) {
-                currentlyOnAlpha = true
-            } else {
-                if (currentlyOnAlpha) {
-                    RFULogger.info("[RFU] Leaving Alpha server. Rolling back data...")
-                    JsonFile.reloadAll()
+                if (isAlpha) {
+                    isOnAlpha = true
+                } else {
+                    if (isOnAlpha) {
+                        RFULogger.info("[RFU] Leaving Alpha server. Rolling back data...")
+                        JsonFile.reloadAll()
+                    }
+                    isOnAlpha = false
                 }
-                currentlyOnAlpha = false
+
+                isOnHypixel = ip?.endsWith("hypixel.net") ?: false
             }
         }
 
         registerDisconnectEvent(priority = -100) {
-            if (currentlyOnAlpha) {
+            if (isOnAlpha) {
                 RFULogger.info("[RFU] Disconnected from Alpha server. Rolling back data...")
                 JsonFile.reloadAll()
             }
-            currentlyOnAlpha = false
+            isOnAlpha = false
+            isOnHypixel = false
         }
     }
 }

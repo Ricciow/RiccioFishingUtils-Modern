@@ -1,7 +1,7 @@
 package cloud.glitchdev.rfu.mixin;
 
 import cloud.glitchdev.rfu.config.categories.OtherSettings;
-import cloud.glitchdev.rfu.utils.network.Network;
+import cloud.glitchdev.rfu.utils.World;
 import cloud.glitchdev.rfu.utils.RFULogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.server.DownloadedPackSource;
@@ -52,7 +52,7 @@ public abstract class DownloadedPackSourceMixin {
     private void onLoadRequestedPacks(List<IdAndPath> packsToLoad, CallbackInfoReturnable<List<Pack>> cir) {
         if (OtherSettings.INSTANCE.getAutoAcceptResourcePacks() && 
             OtherSettings.INSTANCE.getSaveResourcePacks() && 
-            Network.INSTANCE.isOnHypixel()) {
+            World.INSTANCE.isOnHypixel()) {
             
             try {
                 Path resourcePacksDir = this.minecraft.gameDirectory.toPath().resolve("resourcepacks");

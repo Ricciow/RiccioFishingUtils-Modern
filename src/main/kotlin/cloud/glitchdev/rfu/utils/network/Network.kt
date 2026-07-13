@@ -13,6 +13,7 @@ import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.config.categories.BackendSettings
 import cloud.glitchdev.rfu.config.categories.DevSettings
+import cloud.glitchdev.rfu.utils.World
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
@@ -52,25 +53,19 @@ object Network : RegisteredEvent {
     private val client = HttpClient.newHttpClient()
     private val USER_AGENT = "Java-http-client/${System.getProperty("java.version")} rfu:${RFU_VERSION.friendlyString}"
 
-    var isOnHypixel: Boolean = false
-        private set
-        get() = DevSettings.bypassHypixelCheck || field
-
     override fun register() {
         registerJoinEvent { wasConnected ->
             if(!wasConnected) {
-                isOnHypixel = mc.currentServer?.ip?.lowercase()?.endsWith("hypixel.net") ?: false
                 authenticateUser()
             }
         }
 
         registerDisconnectEvent {
-            isOnHypixel = false
             WebSocketClient.disconnect()
         }
 
         registerLocationEvent {
-            if (isOnHypixel) {
+            if (World.isOnHypixel) {
                 authenticateUser()
             } else {
                 WebSocketClient.disconnect()
@@ -235,7 +230,7 @@ object Network : RegisteredEvent {
             return
         }
 
-        if (!BackendSettings.backendAccepted || !isOnHypixel) {
+        if (!BackendSettings.backendAccepted || !World.isOnHypixel) {
             RFULogger.warn("Backend not accepted or not on hypixel")
             WebSocketClient.disconnect()
             return
@@ -256,7 +251,7 @@ object Network : RegisteredEvent {
                 postRequest("${API_URL}/auth/login?user=${User.getUsername()}&server=$serverId") { response ->
                     if(response.isSuccessful()) {
                         token = response.body
-                        if (isOnHypixel) {
+                        if (World.isOnHypixel) {
                             WebSocketClient.connect(token!!)
                             RFULogger.dev("Token Renewed")
                         }
@@ -270,7 +265,7 @@ object Network : RegisteredEvent {
                 RFULogger.error("Verification failed: ${e.message}")
             }
         } else {
-            if (isOnHypixel) {
+            if (World.isOnHypixel) {
                 RFULogger.dev("Renewing Token")
                 WebSocketClient.connect(token!!)
             } else {

@@ -1,7 +1,7 @@
 package cloud.glitchdev.rfu.mixin;
 
 import cloud.glitchdev.rfu.config.categories.OtherSettings;
-import cloud.glitchdev.rfu.utils.network.Network;
+import cloud.glitchdev.rfu.utils.World;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientCommonPacketListenerImpl;
 import net.minecraft.network.Connection;
@@ -29,7 +29,7 @@ public abstract class ClientCommonPacketListenerImplMixin {
 
     @Inject(method = "handleResourcePackPush", at = @At("HEAD"), cancellable = true)
     private void onHandleResourcePackPush(ClientboundResourcePackPushPacket packet, CallbackInfo ci) {
-        if (OtherSettings.INSTANCE.getAutoAcceptResourcePacks() && Network.INSTANCE.isOnHypixel()) {
+        if (OtherSettings.INSTANCE.getAutoAcceptResourcePacks() && World.INSTANCE.isOnHypixel()) {
             UUID packId = packet.id();
             String hash = packet.hash();
             String urlVal = packet.url();
