@@ -1,4 +1,4 @@
-﻿{
+{
   "creatures": {
     "Sea Walker": {
       "name": "Sea Walker",
@@ -1197,6 +1197,7 @@
       "bossbar": true,
       "gdragAlert": false,
       "rareSCAlert": true,
+      "mergeBossbarHp": true,
       "scDisplayColor": "§4"
     },
     "Ragnarok": {

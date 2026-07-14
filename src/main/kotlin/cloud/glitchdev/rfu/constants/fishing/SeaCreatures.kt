@@ -1,4 +1,4 @@
-﻿package cloud.glitchdev.rfu.constants.fishing
+package cloud.glitchdev.rfu.constants.fishing
 
 import cloud.glitchdev.rfu.model.data.DataOption
 import cloud.glitchdev.rfu.data.fishing.Hotspot
@@ -25,6 +25,7 @@ class SeaCreatures(
     val bossbar: Boolean = false,
     val gdragAlert: Boolean = false,
     val rareSCAlert: Boolean = false,
+    val mergeBossbarHp: Boolean = false,
     val scDisplayColor: String = "§f",
     val rarePartyMessage: String = ""
 ) {

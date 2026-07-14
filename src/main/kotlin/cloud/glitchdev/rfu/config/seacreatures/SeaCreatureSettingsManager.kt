@@ -1,4 +1,4 @@
-﻿package cloud.glitchdev.rfu.config.seacreatures
+package cloud.glitchdev.rfu.config.seacreatures
 
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.InstantRegister
@@ -55,6 +55,7 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
     fun isGdragAlert(scName: String): Boolean = isSpecial(scName) && (resolve(scName) { it.gdragAlert } ?: false)
     fun isRareSCAlert(scName: String): Boolean = isSpecial(scName) && (resolve(scName) { it.rareSCAlert } ?: false)
     fun isBossbarEnabled(scName: String): Boolean = isSpecial(scName) && (resolve(scName) { it.bossbar } ?: false)
+    fun isMergeBossbarHpEnabled(scName: String): Boolean = resolve(scName) { it.mergeBossbarHp } ?: scName.contains("Scuttler", ignoreCase = true)
     fun getScDisplayColor(scName: String): String = resolve(scName) { it.scDisplayColor } ?: "§f"
 
     fun save() {
@@ -136,6 +137,7 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
                 bossbar = isBossbarEnabled(scName),
                 gdragAlert = isGdragAlert(scName),
                 rareSCAlert = isRareSCAlert(scName),
+                mergeBossbarHp = isMergeBossbarHpEnabled(scName),
                 scDisplayColor = resolve(scName) { it.scDisplayColor } ?: "§f",
                 rarePartyMessage = resolve(scName) { it.rarePartyMessage } ?: ""
             )
@@ -190,7 +192,8 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
                                 catchMessage = backendSc.catchMessage,
                                 liquidType = backendSc.liquidType,
                                 category = backendSc.category,
-                                conditions = backendSc.conditions
+                                conditions = backendSc.conditions,
+                                mergeBossbarHp = currentSc.mergeBossbarHp ?: backendSc.mergeBossbarHp
                             )
                             if (updatedSc != currentSc) {
                                 mergedCreatures[scName] = updatedSc

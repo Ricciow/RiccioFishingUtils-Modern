@@ -2,7 +2,7 @@ package cloud.glitchdev.rfu.gui.hud.elements.bossbar
 
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
 import cloud.glitchdev.rfu.gui.UIScheme
-import cloud.glitchdev.rfu.data.mob.SkyblockEntity
+import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.utils.dsl.parseHealthValue
 import cloud.glitchdev.rfu.utils.dsl.toMcCodes
 import cloud.glitchdev.rfu.utils.gui.setHidden
@@ -25,7 +25,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 class BossHealthBar(
-    var entity: SkyblockEntity?,
+    var info: BossBarEntityInfo?,
 ) : UIContainer() {
     var scale = 1f
     val name = UIText() childOf this
@@ -40,10 +40,10 @@ class BossHealthBar(
         }
 
     fun updateState() {
-        this.setHidden(entity == null && !forceRendering)
-        val health = entity?.health ?: "0"
-        val maxHealth = entity?.maxHealth ?: "1"
-        val isShurikened = entity?.isShurikened ?: false
+        this.setHidden(info == null && !forceRendering)
+        val health = info?.health ?: "0"
+        val maxHealth = info?.maxHealth ?: "1"
+        val isShurikened = (info?.shurikenCount ?: 0) > 0
         val healthPercentage = health.parseHealthValue().toFloat() / maxHealth.parseHealthValue().toFloat() * 100
         val themeColor = when {
             isShurikened && SeaCreatureConfig.coloredShurikenBar -> UIScheme.barShuriken
@@ -62,8 +62,19 @@ class BossHealthBar(
         }
 
         val displayName = buildString {
-            append(entity?.sbName ?: "Example Mob")
-            if(entity?.isShurikened ?: false) append(" &b\uE01A".toMcCodes())
+            append(info?.sbName ?: "Example Mob")
+            val count = info?.count ?: 1
+            if (info?.showCount == true && count > 1) {
+                append(" ${TextColor.GRAY}(${TextColor.YELLOW}${count}x${TextColor.GRAY})")
+            }
+            val shurikenCount = info?.shurikenCount ?: 0
+            if (shurikenCount > 0) {
+                if (count > 1) {
+                    append(" ${TextColor.AQUAMARINE}${shurikenCount}\uE01A")
+                } else {
+                    append(" ${TextColor.AQUAMARINE}\uE01A")
+                }
+            }
         }
 
         name.setText(displayName)
@@ -90,8 +101,6 @@ class BossHealthBar(
             color = themeColor
         }
 
-
-
         healthText.constrain {
             x = SiblingConstraint(2 * scale)
             y = CenterConstraint()
@@ -100,7 +109,7 @@ class BossHealthBar(
             color = themeColor
         }
 
-        if(entity?.outdatedNametag() ?: true) {
+        if (info?.outdatedNametag ?: true) {
             healthText.setText("${" ".repeat(max(maxHealth.length - min(health.length, 3), 0))}${"?".repeat(min(health.length, 3))} / $maxHealth ❤")
         } else {
             healthText.setText("${" ".repeat(max(maxHealth.length - health.length, 0))}$health / $maxHealth ❤")
@@ -112,8 +121,8 @@ class BossHealthBar(
         updateState()
     }
 
-    fun updateEntity(entity: SkyblockEntity?) {
-        this.entity = entity
+    fun updateInfo(info: BossBarEntityInfo?) {
+        this.info = info
         updateState()
     }
 }
