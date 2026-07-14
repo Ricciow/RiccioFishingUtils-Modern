@@ -12,8 +12,6 @@ object AchievementCompleteAll : SimpleCommand("completeall") {
     override val description: String = "Forces completion of all achievements."
 
     override fun execute(context: CommandContext<FabricClientCommandSource>): Int {
-        if (!AchievementDebugUtils.checkDevMode(context.source)) return 1
-
         AchievementManager.getRegistry().values.forEach { it.debugComplete() }
         context.source.sendFeedback(TextUtils.rfuLiteral("Completed all achievements", TextStyle(TextColor.LIGHT_GREEN)))
         return 1

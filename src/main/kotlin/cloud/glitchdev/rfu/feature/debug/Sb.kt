@@ -3,7 +3,6 @@ package cloud.glitchdev.rfu.feature.debug
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.text.TextColor
-import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.data.mob.MobManager
 import cloud.glitchdev.rfu.events.managers.RenderEvents.registerRenderEvent
@@ -69,16 +68,6 @@ object Sb : SimpleCommand("sb"), Feature {
     }
 
     override fun execute(context: CommandContext<FabricClientCommandSource>): Int {
-        if (!DevSettings.devMode) {
-            context.source.sendFeedback(
-                TextUtils.rfuLiteral(
-                    "Must have developer mode on to use this feature!",
-                    TextStyle(TextColor.RED, TextEffects.BOLD)
-                )
-            )
-            return 1
-        }
-
         renderAll = !renderAll
 
         context.source.sendFeedback(

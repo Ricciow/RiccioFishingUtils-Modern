@@ -3,7 +3,6 @@ package cloud.glitchdev.rfu.feature.debug
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.text.TextColor
-import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.events.managers.RenderEvents.registerRenderEvent
 import cloud.glitchdev.rfu.feature.Feature
@@ -137,10 +136,6 @@ object Normal : Feature, AbstractCommand("normal") {
     }
 
     private fun executeToggleAll(context: CommandContext<FabricClientCommandSource>): Int {
-        if (!DevSettings.devMode) {
-            sendDevModeError(context)
-            return 1
-        }
         renderAll = !renderAll
         if (renderAll) {
             targetId = null
@@ -156,10 +151,6 @@ object Normal : Feature, AbstractCommand("normal") {
     }
 
     private fun executeSetAll(context: CommandContext<FabricClientCommandSource>): Int {
-        if (!DevSettings.devMode) {
-            sendDevModeError(context)
-            return 1
-        }
         val render = BoolArgumentType.getBool(context, "render")
         renderAll = render
         if (renderAll) {
@@ -176,10 +167,6 @@ object Normal : Feature, AbstractCommand("normal") {
     }
 
     private fun executeToggleId(context: CommandContext<FabricClientCommandSource>): Int {
-        if (!DevSettings.devMode) {
-            sendDevModeError(context)
-            return 1
-        }
         val id = IntegerArgumentType.getInteger(context, "id")
         if (targetId == id) {
             targetId = null
@@ -204,10 +191,6 @@ object Normal : Feature, AbstractCommand("normal") {
     }
 
     private fun executeSetId(context: CommandContext<FabricClientCommandSource>): Int {
-        if (!DevSettings.devMode) {
-            sendDevModeError(context)
-            return 1
-        }
         val id = IntegerArgumentType.getInteger(context, "id")
         val render = BoolArgumentType.getBool(context, "render")
         if (render) {
@@ -235,10 +218,6 @@ object Normal : Feature, AbstractCommand("normal") {
     }
 
     private fun executeSetFilter(context: CommandContext<FabricClientCommandSource>): Int {
-        if (!DevSettings.devMode) {
-            sendDevModeError(context)
-            return 1
-        }
         val f = StringArgumentType.getString(context, "filter")
         val render = BoolArgumentType.getBool(context, "render")
         if (render) {
@@ -264,14 +243,5 @@ object Normal : Feature, AbstractCommand("normal") {
             )
         }
         return 1
-    }
-
-    private fun sendDevModeError(context: CommandContext<FabricClientCommandSource>) {
-        context.source.sendFeedback(
-            TextUtils.rfuLiteral(
-                "Must have developer mode on to use this feature!",
-                TextStyle(TextColor.RED, TextEffects.BOLD)
-            )
-        )
     }
 }

@@ -12,8 +12,6 @@ object AchievementResetAll : SimpleCommand("resetall") {
     override val description: String = "Resets all achievements progress."
 
     override fun execute(context: CommandContext<FabricClientCommandSource>): Int {
-        if (!AchievementDebugUtils.checkDevMode(context.source)) return 1
-
         AchievementManager.getRegistry().values.forEach { it.debugReset() }
         context.source.sendFeedback(TextUtils.rfuLiteral("Reset all achievements", TextStyle(TextColor.LIGHT_GREEN)))
         return 1

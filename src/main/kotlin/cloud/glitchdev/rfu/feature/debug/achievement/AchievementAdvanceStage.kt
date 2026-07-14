@@ -18,8 +18,6 @@ object AchievementAdvanceStage : AbstractCommand("advancestage") {
         builder.then(
             arg("id", StringListArgumentType(AchievementDebugUtils.getStageIds()))
                 .executes { context ->
-                    if (!AchievementDebugUtils.checkDevMode(context.source)) return@executes 1
-
                     val id = StringArgumentType.getString(context, "id")
                     val achievement = AchievementManager.getAchievement(id)
 

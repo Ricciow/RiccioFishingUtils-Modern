@@ -1,12 +1,7 @@
 package cloud.glitchdev.rfu.feature.debug
 
-import cloud.glitchdev.rfu.config.categories.DevSettings
-import cloud.glitchdev.rfu.constants.text.TextColor
-import cloud.glitchdev.rfu.constants.text.TextEffects
-import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.gui.window.AnnouncementWindow
 import cloud.glitchdev.rfu.model.announcement.Announcement as ModelAnnouncement
-import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.command.AbstractCommand
 import cloud.glitchdev.rfu.utils.gui.Gui
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
@@ -18,16 +13,6 @@ object AnnouncementDebug : AbstractCommand("announcement") {
 
     override fun build(builder: LiteralArgumentBuilder<FabricClientCommandSource>) {
         builder.executes { context ->
-            if (!DevSettings.devMode) {
-                context.source.sendFeedback(
-                    TextUtils.rfuLiteral(
-                        "Must have developer mode on to use this feature!",
-                        TextStyle(TextColor.RED, TextEffects.BOLD)
-                    )
-                )
-                return@executes 1
-            }
-
             val mockAnnouncement = ModelAnnouncement(
                 id = "debug_announcement",
                 title = "RiccioFishingUtils v2.0.0 Update!",
