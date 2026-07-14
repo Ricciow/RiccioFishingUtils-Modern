@@ -25,7 +25,7 @@ import net.minecraft.world.phys.Vec3
 import java.awt.Color
 
 @RFUFeature
-object Alive : Feature, AbstractCommand("alive") {
+object Normal : Feature, AbstractCommand("normal") {
     override val description: String = "Toggles or sets rendering of info on top of currently alive entities"
 
     private var renderAll = false
@@ -93,7 +93,7 @@ object Alive : Feature, AbstractCommand("alive") {
                             text = lineText
                             color = Color.WHITE
                             scale = 0.025f
-                            seeThrough = false
+                            seeThrough = true
                             backgroundOpacity = 0.4f
                         }
                     }
