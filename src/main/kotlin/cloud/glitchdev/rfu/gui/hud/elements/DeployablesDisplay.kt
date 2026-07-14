@@ -16,8 +16,10 @@ import kotlin.time.Duration.Companion.milliseconds
 object DeployablesDisplay : AbstractTextHudElement("deployablesDisplay") {
     private var activeDeployables: Map<DeployableType, DeployableManager.Deployable> = emptyMap()
 
-    override val enabled: Boolean
-        get() = GeneralFishing.deployableDisplay && activeDeployables.any { (type, _) -> type.isDisplayEnabled() } || super.enabled
+    override val requirement: Boolean
+        get() = GeneralFishing.deployableDisplay
+    override val isElementActive: Boolean
+        get() = activeDeployables.any { (type, _) -> type.isDisplayEnabled() }
 
     override fun onUpdateState() {
         super.onUpdateState()

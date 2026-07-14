@@ -17,9 +17,10 @@ import gg.essential.elementa.dsl.width
 @HudElement
 object RodTimerDisplay : AbstractTextHudElement("rodTimer") {
     var rodTime : Float = -1f
-
-    override val enabled: Boolean
-        get() = GeneralFishing.rodTimerDisplay && (super.enabled || rodTime >= 0)
+    override val requirement: Boolean
+        get() = GeneralFishing.rodTimerDisplay
+    override val isElementActive: Boolean
+        get() = rodTime >= 0
 
     val container = UIContainer().constrain {
         x = CenterConstraint()

@@ -1,4 +1,4 @@
-﻿package cloud.glitchdev.rfu.gui.hud.elements
+package cloud.glitchdev.rfu.gui.hud.elements
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
@@ -10,7 +10,7 @@ import cloud.glitchdev.rfu.constants.text.TextColor.WHITE
 import cloud.glitchdev.rfu.constants.text.TextColor.GRAY
 import cloud.glitchdev.rfu.constants.text.TextEffects.BOLD
 import cloud.glitchdev.rfu.data.catches.CatchTracker
-import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
+import cloud.glitchdev.rfu.gui.hud.AbstractFishingHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 import cloud.glitchdev.rfu.utils.World
 import cloud.glitchdev.rfu.utils.dsl.hasDescriptionText
@@ -21,7 +21,6 @@ import net.minecraft.world.phys.Vec3
 import kotlin.math.ceil
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Clock
-
 import cloud.glitchdev.rfu.feature.fishing.FishingSession
 import cloud.glitchdev.rfu.events.managers.BaitEventManager
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
@@ -29,20 +28,23 @@ import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.events.managers.HotSpotEvents
 
 @HudElement
-object RareSCDisplay : AbstractTextHudElement("rareSCDisplay") {
-
-    private val isFishing: Boolean
-        get() = FishingSession.isFishing
+object RareSCDisplay : AbstractFishingHudElement("rareSCDisplay") {
+    override val displaysWhilePaused: Boolean = true
+    override val requiresFishing: Boolean
+        get() = SeaCreatureConfig.rareScOnlyWhenFishing
 
     private val armorSlots = arrayOf(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET)
 
-    override val enabled: Boolean
+    override val requirement: Boolean
         get() {
             val hasPeaceTreaty = mc.player?.let { player ->
                 armorSlots.any { slot -> player.getItemBySlot(slot).hasDescriptionText("Tiered Bonus: Peace Treaty (2/2)") }
             } == true
-            return !hasPeaceTreaty && SeaCreatureConfig.rareScDisplay && (super.enabled || !SeaCreatureConfig.rareScOnlyWhenFishing || (isFishing && FishingSession.pausedDuration < 1.minutes))
+            return !hasPeaceTreaty && SeaCreatureConfig.rareScDisplay
         }
+
+    override val isElementActive: Boolean
+        get() = !requiresFishing || FishingSession.pausedDuration < 1.minutes
 
     override fun onInitialize() {
         super.onInitialize()
@@ -97,7 +99,7 @@ object RareSCDisplay : AbstractTextHudElement("rareSCDisplay") {
             lastLiquid = currentIsland.availableLiquids.first()
         }
 
-        if (lastPos == Vec3.ZERO && !isFishing && !isEditing) {
+        if (lastPos == Vec3.ZERO && !FishingSession.isFishing && !isEditing) {
             text.setText("")
             return
         }

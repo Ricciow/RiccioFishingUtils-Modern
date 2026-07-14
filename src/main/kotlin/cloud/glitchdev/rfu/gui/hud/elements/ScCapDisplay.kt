@@ -5,15 +5,14 @@ import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.data.mob.MobManager
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
-import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
+import cloud.glitchdev.rfu.gui.hud.AbstractFishingHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
-import cloud.glitchdev.rfu.feature.fishing.FishingSession
 import gg.essential.universal.utils.toUnformattedString
 
 @HudElement
-object ScCapDisplay : AbstractTextHudElement("scCapDisplay") {
-    override val enabled: Boolean
-        get() = SeaCreatureConfig.scCapDisplay && (isEditing || FishingSession.isFishing)
+object ScCapDisplay : AbstractFishingHudElement("scCapDisplay") {
+    override val requirement: Boolean
+        get() = SeaCreatureConfig.scCapDisplay
 
     override fun onInitialize() {
         super.onInitialize()

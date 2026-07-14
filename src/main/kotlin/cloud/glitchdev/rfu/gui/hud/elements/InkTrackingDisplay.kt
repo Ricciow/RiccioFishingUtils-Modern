@@ -1,4 +1,4 @@
-﻿package cloud.glitchdev.rfu.gui.hud.elements
+package cloud.glitchdev.rfu.gui.hud.elements
 
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.constants.text.TextColor.CYAN
@@ -6,7 +6,7 @@ import cloud.glitchdev.rfu.constants.text.TextColor.YELLOW
 import cloud.glitchdev.rfu.constants.text.TextColor.LIGHT_GREEN
 import cloud.glitchdev.rfu.constants.text.TextEffects.BOLD
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
-import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
+import cloud.glitchdev.rfu.gui.hud.AbstractFishingHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 import cloud.glitchdev.rfu.utils.dsl.toReadableString
 import cloud.glitchdev.rfu.config.categories.InkFishing
@@ -25,14 +25,14 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 
 @HudElement
-object InkTrackingDisplay : AbstractTextHudElement("inktrackingdisplay") {
-
-    private val isFishing: Boolean
-        get() = FishingSession.isFishing
-
-    override val enabled: Boolean
-        get() = InkFishing.inkTrackingDisplay && (World.island == FishingIslands.PARK) && (super.enabled || !InkFishing.fishTrackingOnlyWhenFishing || (isFishing && FishingSession.pausedDuration < (1.minutes + GeneralFishing.fishingTime.minutes)))
-
+object InkTrackingDisplay : AbstractFishingHudElement("inktrackingdisplay") {
+    override val displaysWhilePaused: Boolean = true
+    override val requiresFishing: Boolean
+        get() = InkFishing.fishTrackingOnlyWhenFishing
+    override val requirement: Boolean
+        get() = InkFishing.inkTrackingDisplay && (World.island == FishingIslands.PARK)
+    override val isElementActive: Boolean
+        get() = !requiresFishing || FishingSession.pausedDuration < (1.minutes + GeneralFishing.fishingTime.minutes)
 
     override fun onInitialize() {
         super.onInitialize()

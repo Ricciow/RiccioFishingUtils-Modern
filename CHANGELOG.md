@@ -8,6 +8,7 @@
 
 ### Changes
 - Made the titanoboa and scuttler emojis bigger
+- Bobber display, personal cap display, and blizzard timer now automatically hide when the fishing session is paused
 
 ### Fixes
 - Made item models and custom tooltip styles fall back to vanilla defaults if 
