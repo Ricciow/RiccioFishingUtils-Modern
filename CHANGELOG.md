@@ -5,6 +5,7 @@
 - Added full inventory alert option
 - Added Personal Sea Creature Cap Display
 - Added option to merge bossbars for duplicate sea creatures (like Scuttlers)
+- Added /rfuchangelog command to view the mod changelog of your current version
 
 ### Changes
 - Made the titanoboa and scuttler emojis bigger
@@ -18,3 +19,4 @@ the resource pack is not active to prevent the missing textures with it not load
 
 ### Back-end
 - Added internal tracking to link sea creatures to their originating fishing bobber
+- Bundled the changelog file into the mod's built resources
