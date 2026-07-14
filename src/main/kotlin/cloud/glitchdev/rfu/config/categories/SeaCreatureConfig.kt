@@ -1,4 +1,4 @@
-﻿package cloud.glitchdev.rfu.config.categories
+package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.Category
@@ -278,5 +278,19 @@ object SeaCreatureConfig : Category("Sea Creatures") {
         name = Literal("Display Data Order")
         description = Literal("Drag to reorder the data shown for each sea creature.")
         condition = { rareScDisplay }
+    }
+
+    init {
+        dualSeparator {
+            title = "Barn Fishing"
+            description = "Features for barn fishers, please don't barn outside of crystal hollows :sob:"
+        }
+    }
+
+    var scCapDisplay by observable(boolean(false) {
+        name = Literal("Sea Creature Cap Display")
+        description = Literal("Displays the number of active sea creatures owned by you.")
+    }) { _, _ ->
+        reloadScreen()
     }
 }

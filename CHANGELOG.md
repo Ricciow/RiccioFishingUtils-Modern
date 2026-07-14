@@ -3,6 +3,7 @@
 ### Features
 - Added custom tooltip GUI scaling option (Just really missed that)
 - Added full inventory alert option
+- Added Personal Sea Creature Cap Display
 
 ### Fixes
 - Made item models and custom tooltip styles fall back to vanilla defaults if 
