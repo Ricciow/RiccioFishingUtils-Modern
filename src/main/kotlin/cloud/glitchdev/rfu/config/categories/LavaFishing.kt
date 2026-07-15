@@ -20,12 +20,10 @@ object LavaFishing : Category("Lava Fishing") {
         description = Literal("Sends an alert whenever someone dies to jawbus")
     }
 
-    var diedJawbusSound by observable(boolean(true) {
+    var diedJawbusSound by reloadableBoolean(true) {
         name = Literal("Jawbus Death Sound")
         description = Literal("Plays a sound whenever someone dies to jawbus")
         condition = { diedJawbusAlert }
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var diedJawbusVolume by float(1f) {

@@ -1,4 +1,4 @@
-﻿package cloud.glitchdev.rfu.config.categories
+package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
 import cloud.glitchdev.rfu.constants.fishing.HotspotType
@@ -16,13 +16,13 @@ object HotSpotSettings : Category("Hot Spots") {
         description = Literal("Makes hotspots highlighted and hides the particles")
     }
 
-    var hotspotPointer by observable(boolean(false) {
+    var hotspotPointer by reloadableBoolean(false) {
         name = Literal("Hotspot Pointer")
         description = Literal(
             "Points a line to the best hotspot when hotspot fishing.\n" +
                 "Only points to hotspots that have had their HOTSPOT text previously seen on screen or had their coordinates shared.\n" +
                 "Should be fine, but §cuse at your own risk!")
-    }) { _, _ -> reloadScreen() }
+    }
 
     var hotspotPointerPriority by draggable(
         HotspotType.DOUBLE_HOOK,
@@ -48,12 +48,10 @@ object HotSpotSettings : Category("Hot Spots") {
         description = Literal("Sends an alert when the hotspot you're fishing in expires!")
     }
 
-    var hotspotExpiredSound by observable(boolean(true) {
+    var hotspotExpiredSound by reloadableBoolean(true) {
         name = Literal("Hotspot Expired Sound")
         description = Literal("Plays a sound when the hotspot you're fishing in expires!")
         condition = { hotspotExpiredAlert }
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var hotspotExpiredVolume by float(1f) {
@@ -71,11 +69,9 @@ object HotSpotSettings : Category("Hot Spots") {
         }
     }
 
-    var shareHotspotAlert by observable(boolean(true) {
+    var shareHotspotAlert by reloadableBoolean(true) {
         name = Literal("Share Hotspot Alert")
         description = Literal("Sends a clickable chat message to share the hotspot with your party!")
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var autoShareHotspot by boolean(false) {

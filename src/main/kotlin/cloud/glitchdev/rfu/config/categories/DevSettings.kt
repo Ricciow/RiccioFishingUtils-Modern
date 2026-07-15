@@ -15,11 +15,9 @@ object DevSettings : Category("Developer") {
         }
     }
 
-    var devMode by observable(boolean(false) {
+    var devMode by reloadableBoolean(false) {
         name = Literal("Developer Mode")
         description = Literal("Enable developer mode.")
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var isInSkyblock by boolean(false) {
@@ -35,12 +33,10 @@ object DevSettings : Category("Developer") {
         }
     }
 
-    var useCustomBackend by observable(boolean(false) {
+    var useCustomBackend by reloadableBoolean(false) {
         name = Literal("Use Custom Backend")
         description = Literal("Enable to use a custom backend environment URL.")
         condition = { devMode }
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var backEndEnvironment by string("http://localhost:8080/api") {

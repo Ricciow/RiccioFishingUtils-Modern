@@ -1,4 +1,4 @@
-﻿package cloud.glitchdev.rfu.config.categories
+package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
 import cloud.glitchdev.rfu.constants.fishing.InkTrackingType
@@ -15,11 +15,9 @@ object InkFishing : Category("Ink Fishing") {
         }
     }
 
-    var inkTrackingDisplay by observable(boolean(true) {
+    var inkTrackingDisplay by reloadableBoolean(true) {
         name = Literal("Toggle")
         description = Literal("Enables the Ink Tracking display")
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var inkTrackingItems by enums(*InkTrackingType.entries.toTypedArray()) {
@@ -55,19 +53,15 @@ object InkFishing : Category("Ink Fishing") {
         }
     }
 
-    var rainAlert by observable(boolean(true) {
+    var rainAlert by reloadableBoolean(true) {
         name = Literal("Rain Alert")
         description = Literal("Show an alert when rain expires in the park")
-    }) { _, _ ->
-        reloadScreen()
     }
 
-    var rainAlertSound by observable(boolean(true) {
+    var rainAlertSound by reloadableBoolean(true) {
         name = Literal("Rain Alert Sound")
         description = Literal("Plays a sound when rain expires in the park")
         condition = { rainAlert }
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var rainAlertVolume by float(1f) {

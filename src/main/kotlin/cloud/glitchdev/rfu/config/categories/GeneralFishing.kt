@@ -42,11 +42,9 @@ object GeneralFishing : Category("General Fishing") {
         }
     }
 
-    var overrideFishingKeybinds by observable(boolean(false) {
+    var overrideFishingKeybinds by reloadableBoolean(false) {
         name = Literal("Override Fishing Keybinds")
         description = Literal("Enable custom keybinds when fishing.")
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var disableOnRareSC by boolean(true) {
@@ -54,7 +52,6 @@ object GeneralFishing : Category("General Fishing") {
         description = Literal("Disables custom keybind overrides when a rare sea creature is nearby.")
         condition = { overrideFishingKeybinds }
     }
-
 
     val customBinds by obj(CustomBinds) {
         name = Literal("Fishing Keybinds")
@@ -69,11 +66,9 @@ object GeneralFishing : Category("General Fishing") {
         }
     }
 
-    var fishTrackingDisplay by observable(boolean(true) {
+    var fishTrackingDisplay by reloadableBoolean(true) {
         name = Literal("Toggle")
         description = Literal("Enables the Fishing display")
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var fishTrackingItems by enums(*FishTrackingType.entries.toTypedArray()) {
@@ -95,11 +90,9 @@ object GeneralFishing : Category("General Fishing") {
         }
     }
 
-    var deployableDisplay by observable(boolean(true) {
+    var deployableDisplay by reloadableBoolean(true) {
         name = Literal("Deployable Display")
         description = Literal("Toggles the deployable display")
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var deployableTimerDisplay by enums(*DeployableType.entries.toTypedArray()) {
@@ -108,11 +101,9 @@ object GeneralFishing : Category("General Fishing") {
         condition = { deployableDisplay }
     }
 
-    var deployableExpiredAlert by observable(boolean(true) {
+    var deployableExpiredAlert by reloadableBoolean(true) {
         name = Literal("Deployable Expired Alert")
         description = Literal("Toggles the alert for expired deployables")
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var deployableAlertTypes by enums(*DeployableType.entries.toTypedArray()) {
@@ -121,12 +112,10 @@ object GeneralFishing : Category("General Fishing") {
         condition = { deployableDisplay }
     }
 
-    var deployableExpiredSound by observable(boolean(true) {
+    var deployableExpiredSound by reloadableBoolean(true) {
         name = Literal("Expired Sound")
         description = Literal("Plays a sound whenever a deployable expires.")
         condition = { deployableExpiredAlert }
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var deployableExpiredVolume by float(1f) {
@@ -144,11 +133,9 @@ object GeneralFishing : Category("General Fishing") {
         }
     }
 
-    var toggleDoubleHookMessages by observable(boolean(false) {
+    var toggleDoubleHookMessages by reloadableBoolean(false) {
         name = Literal("Toggle Double Hook Messages")
         description = Literal("Automatically send messages when you get a double hook!")
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var doubleHookMessages by strings(
@@ -193,12 +180,10 @@ object GeneralFishing : Category("General Fishing") {
         description = Literal("Sends an alert whenever a rod cast fails.")
     }
 
-    var failCastSound by observable(boolean(true) {
+    var failCastSound by reloadableBoolean(true) {
         name = Literal("Failed Cast Sound")
         description = Literal("Plays a sound whenever a cast fails.")
         condition = { failCastAlert }
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var failCastVolume by float(1f) {
@@ -241,10 +226,8 @@ object GeneralFishing : Category("General Fishing") {
         description = Literal("Plays a sound when the fishing stream approaches, increasing in pitch.")
     }
 
-    var bobbinTimeDisplay by observable(boolean(true) {
+    var bobbinTimeDisplay by reloadableBoolean(true) {
         name = Literal("Bobbin' Time Display")
         description = Literal("Display nearby bobbers and Bobbin' Time bonus on screen")
-    }) { _, _ ->
-        reloadScreen()
     }
 }

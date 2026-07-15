@@ -28,11 +28,9 @@ object OtherSettings : Category("Other") {
         description = Literal("Shows the currently tracked achievements.")
     }
 
-    var achievementSound by observable(boolean(true) {
+    var achievementSound by reloadableBoolean(true) {
         name = Literal("Achievement Sound")
         description = Literal("Plays a sound when you unlock an achievement.")
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var achievementVolume by float(1f) {
@@ -44,19 +42,15 @@ object OtherSettings : Category("Other") {
     }
 
 
-    var littlefootAlert by observable(boolean(false) {
+    var littlefootAlert by reloadableBoolean(false) {
         name = Literal("Littlefoot Alert")
         description = Literal("Sends an alert whenever a Littlefoot is found.")
-    }) { _, _ ->
-        reloadScreen()
     }
 
-    var littlefootSound by observable(boolean(true) {
+    var littlefootSound by reloadableBoolean(true) {
         name = Literal("Littlefoot Alert Sound")
         description = Literal("Plays a sound whenever a Littlefoot is found.")
         condition = { littlefootAlert }
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var littlefootVolume by float(1f) {
@@ -88,11 +82,9 @@ object OtherSettings : Category("Other") {
         description = Literal("Shows the currently equipped pet.")
     }
 
-    var petLevelUpAlert by observable(boolean(true) {
+    var petLevelUpAlert by reloadableBoolean(true) {
         name = Literal("Pet Level Up Alert")
         description = Literal("Shows an alert on screen when your pet levels up.")
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var petLevelUpMinLevel by int(100) {
@@ -109,19 +101,15 @@ object OtherSettings : Category("Other") {
         }
     }
 
-    var fullInventoryAlert by observable(boolean(true) {
+    var fullInventoryAlert by reloadableBoolean(true) {
         name = Literal("Full Inventory Alert")
         description = Literal("Shows an alert when your inventory becomes full.")
-    }) { _, _ ->
-        reloadScreen()
     }
 
-    var fullInventorySound by observable(boolean(true) {
+    var fullInventorySound by reloadableBoolean(true) {
         name = Literal("Full Inventory Sound")
         description = Literal("Plays a sound when your inventory becomes full.")
         condition = { fullInventoryAlert }
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var fullInventoryVolume by float(1f) {
@@ -194,11 +182,9 @@ object OtherSettings : Category("Other") {
         }
     }
 
-    var hideMessages by observable(boolean(false) {
+    var hideMessages by reloadableBoolean(false) {
         name = Literal("Enable message hiding")
         description = Literal("Just hides some selected messages")
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var hiddenMessageTypes by enums(*MessageTypes.entries.toTypedArray()) {
@@ -219,12 +205,10 @@ object OtherSettings : Category("Other") {
         }
     }
 
-    var autoAcceptResourcePacks by observable(boolean(true) {
+    var autoAcceptResourcePacks by reloadableBoolean(true) {
         name = Literal("Auto Accept Resource Packs")
         description = Literal("Automatically accept resource/texture packs sent by the server if you are on Hypixel.")
-    }, { _, _ ->
-        reloadScreen()
-    })
+    }
 
     var saveResourcePacks by boolean(true) {
         name = Literal("Save for future use")
