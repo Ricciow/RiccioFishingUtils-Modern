@@ -41,7 +41,9 @@ object DeployablesDisplay : AbstractTextHudElement("deployablesDisplay") {
     }
 
     private fun buildLine(type: DeployableType, deployable: DeployableManager.Deployable?, now: Long): String? {
-        val label = "${type.labelColor}${BOLD}${type.displayName}:"
+        val displayName = deployable?.customName?.takeIf { it.isNotEmpty() } ?: type.displayName
+        val labelColor = deployable?.labelColorOverride ?: type.labelColor
+        val label = "${labelColor}${BOLD}${displayName}:"
         if(deployable == null) {
             return if(isEditing && (activeDeployables.isEmpty() || activeDeployables.all { (_, value) -> !value.type.isDisplayEnabled() })) {
                 "$label ${YELLOW}0s"

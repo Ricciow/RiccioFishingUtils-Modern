@@ -7,6 +7,7 @@
 - Added option to merge bossbars for duplicate sea creatures (like Scuttlers)
 - Added /rfuchangelog command to view the mod changelog of your current version
 - Added custom fishing keybind overrides for hotbar slots 1-9, left click, and right click
+- Added tracking and HUD displays for power orb fluxes (Mana Flux, Overflux, Plasmaflux) with dynamic rarity coloring and stat boosts
 
 ### Changes
 - Made the titanoboa and scuttler emojis bigger

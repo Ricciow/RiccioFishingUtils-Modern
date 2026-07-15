@@ -19,6 +19,12 @@ enum class DeployableType(
         labelColor = TextColor.LIGHT_BLUE,
         expiredTitle = "§9§lUmberella Expired!",
         range = 30.0,
+    ),
+    FLUX(
+        displayName = "Flux",
+        labelColor = TextColor.MAGENTA,
+        expiredTitle = "§d§lFlux Expired!",
+        range = 18.0,
     );
 
     override fun toString(): String = displayName

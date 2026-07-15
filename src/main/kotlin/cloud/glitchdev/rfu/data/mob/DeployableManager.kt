@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.data.mob
 
+import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
@@ -25,13 +26,17 @@ object DeployableManager : RegisteredEvent {
         val posX: Double? = null,
         val posZ: Double? = null,
         val highestY: Double? = null,
+        val customName: String = "",
+        val labelColorOverride: TextColor? = null,
+        val rangeOverride: Double? = null,
     ) {
         fun isInRange(playerPos: Vec3): Boolean {
             if (posX == null || posZ == null || highestY == null) return true
             val dy = playerPos.y - (round(highestY * 2.0) / 2.0 + 0.35)
             val dx = playerPos.x - posX
             val dz = playerPos.z - posZ
-            return dx * dx + dy * dy + dz * dz <= type.range * type.range
+            val r = rangeOverride ?: type.range
+            return dx * dx + dy * dy + dz * dz <= r * r
         }
     }
 
@@ -45,6 +50,24 @@ object DeployableManager : RegisteredEvent {
     private val seenFlares = HashSet<Int>()
 
     private val umberellaRegex = """Umberella (\d+)s""".toRegex()
+    private val fluxRegex = """(?i)(Mana\s?Flux|Overflux|Plasmaflux) (\d+)s""".toRegex()
+
+    private data class FluxInfo(
+        val name: String,
+        val accentLabel: String,
+        val range: Double,
+        val labelColor: TextColor,
+    )
+
+    private fun getFluxInfo(matchedName: String): FluxInfo? {
+        val lower = matchedName.lowercase()
+        return when {
+            lower.contains("plasmaflux") -> FluxInfo("Plasmaflux", "+125%", 20.0, TextColor.MAGENTA)
+            lower.contains("overflux") -> FluxInfo("Overflux", "+100%", 18.0, TextColor.LIGHT_RED)
+            lower.contains("mana flux") || lower.contains("manaflux") -> FluxInfo("Mana Flux", "+50%", 18.0, TextColor.AQUAMARINE)
+            else -> null
+        }
+    }
 
     override fun register() {
         registerTickEvent(0, 10) { client ->
@@ -66,12 +89,26 @@ object DeployableManager : RegisteredEvent {
         var largestUmberellaSeconds: Double? = null
         var umberellaEntity: ArmorStand? = null
 
+        var largestFluxSeconds: Double? = null
+        var fluxEntity: ArmorStand? = null
+        var activeFluxInfo: FluxInfo? = null
+
         world.entitiesForRendering().forEach { entity ->
             if (entity is ArmorStand) {
                 val umbSeconds = checkUmberella(entity)
                 if (umbSeconds != null && umbSeconds > (largestUmberellaSeconds ?: 0.0)) {
                     largestUmberellaSeconds = umbSeconds
                     umberellaEntity = entity
+                }
+
+                val fluxPair = checkFlux(entity)
+                if (fluxPair != null) {
+                    val (info, seconds) = fluxPair
+                    if (seconds > (largestFluxSeconds ?: 0.0)) {
+                        largestFluxSeconds = seconds
+                        fluxEntity = entity
+                        activeFluxInfo = info
+                    }
                 }
             }
 
@@ -95,6 +132,22 @@ object DeployableManager : RegisteredEvent {
                 highestY = umberellaEntity.y,
             )
         }
+
+        if (largestFluxSeconds == null || fluxEntity == null || activeFluxInfo == null) {
+            resetFlux()
+        } else {
+            activeDeployables[DeployableType.FLUX] = Deployable(
+                type = DeployableType.FLUX,
+                endTimeMillis = System.currentTimeMillis() + (largestFluxSeconds * 1_000).toLong(),
+                accentLabel = activeFluxInfo.accentLabel,
+                posX = fluxEntity.x,
+                posZ = fluxEntity.z,
+                highestY = fluxEntity.y,
+                customName = activeFluxInfo.name,
+                labelColorOverride = activeFluxInfo.labelColor,
+                rangeOverride = activeFluxInfo.range,
+            )
+        }
     }
 
     fun resetFlare() {
@@ -104,6 +157,10 @@ object DeployableManager : RegisteredEvent {
 
     private fun resetUmberella() {
         activeDeployables.remove(DeployableType.UMBERELLA)
+    }
+
+    private fun resetFlux() {
+        activeDeployables.remove(DeployableType.FLUX)
     }
 
     private fun clearAll() {
@@ -116,6 +173,16 @@ object DeployableManager : RegisteredEvent {
         val name = entity.name.toUnformattedString()
         val result = umberellaRegex.find(name) ?: return null
         return result.groupValues.getOrNull(1)?.toDoubleOrNull()?.minus(entity.tickCount % 10 * 0.05)
+    }
+
+    private fun checkFlux(entity: ArmorStand): Pair<FluxInfo, Double>? {
+        if (!entity.hasCustomName()) return null
+        val name = entity.name.toUnformattedString()
+        val result = fluxRegex.find(name) ?: return null
+        val matchedName = result.groupValues.getOrNull(1) ?: return null
+        val seconds = result.groupValues.getOrNull(2)?.toDoubleOrNull() ?: return null
+        val info = getFluxInfo(matchedName) ?: return null
+        return Pair(info, seconds - (entity.tickCount % 10 * 0.05))
     }
 
     private fun checkFlare(entity: Entity): Boolean {
