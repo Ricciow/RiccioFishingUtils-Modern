@@ -1,4 +1,4 @@
-﻿package cloud.glitchdev.rfu.constants.text
+package cloud.glitchdev.rfu.constants.text
 
 
 object Emoji {
@@ -11,6 +11,9 @@ object Emoji {
         "\uE11B" to listOf("sob"),
         "\uE11C" to listOf("thumbsup"),
         "\uE11D" to listOf("eyes"),
+        "\uE11E" to listOf("angry"),
+        "\uE11F" to listOf("fire"),
+        "\uE120" to listOf("scream"),
 
         // Sea Creatures
         "\uE116" to listOf("abyssal_miner", "abyssalminer", "miner"),

@@ -52,7 +52,7 @@
     {
       "type": "bitmap",
       "file": "rfu:emoji/titanoboa.png",
-      "ascent": 11,
+      "ascent": 12,
       "height": 16,
       "chars": ["\uE107"]
     },
@@ -73,7 +73,7 @@
     {
       "type": "bitmap",
       "file": "rfu:emoji/fieryscuttler.png",
-      "ascent": 11,
+      "ascent": 12,
       "height": 16,
       "chars": ["\uE10A"]
     },
@@ -209,6 +209,27 @@
       "ascent": 7,
       "height": 8,
       "chars": ["\uE11D"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/angry.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE11E"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/fire.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE11F"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/scream.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE120"]
     }
   ]
 }
