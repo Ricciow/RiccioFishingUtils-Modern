@@ -1,24 +1,20 @@
 package cloud.glitchdev.rfu.data.mob
 
 import cloud.glitchdev.rfu.constants.text.TextColor
+import cloud.glitchdev.rfu.data.mob.strategies.FlareStrategy
+import cloud.glitchdev.rfu.data.mob.strategies.FluxStrategy
+import cloud.glitchdev.rfu.data.mob.strategies.UmberellaStrategy
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
-import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.client.multiplayer.ClientLevel
-import net.minecraft.core.component.DataComponents
 import net.minecraft.world.entity.Entity
-import net.minecraft.world.entity.EquipmentSlot
-import net.minecraft.world.entity.decoration.ArmorStand
-import net.minecraft.world.entity.projectile.FireworkRocketEntity
-import net.minecraft.world.item.PlayerHeadItem
 import net.minecraft.world.phys.Vec3
 import kotlin.math.round
 
 @AutoRegister
 object DeployableManager : RegisteredEvent {
-
     data class Deployable(
         val type: DeployableType,
         val endTimeMillis: Long,
@@ -40,34 +36,13 @@ object DeployableManager : RegisteredEvent {
         }
     }
 
-    private enum class FlareType(val accentLabel: String, val texture: String) {
-        SOS("+125%", "ewogICJ0aW1lc3RhbXAiIDogMTY2MjY4Mjc3NjUxNiwKICAicHJvZmlsZUlkIiA6ICI4YjgyM2E1YmU0Njk0YjhiOTE0NmE5MWRhMjk4ZTViNSIsCiAgInByb2ZpbGVOYW1lIiA6ICJTZXBoaXRpcyIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9jMDA2MmNjOThlYmRhNzJhNmE0Yjg5NzgzYWRjZWYyODE1YjQ4M2EwMWQ3M2VhODdiM2RmNzYwNzJhODlkMTNiIiwKICAgICAgIm1ldGFkYXRhIiA6IHsKICAgICAgICAibW9kZWwiIDogInNsaW0iCiAgICAgIH0KICAgIH0KICB9Cn0="),
-        ALERT("+50%", "ewogICJ0aW1lc3RhbXAiIDogMTcxOTg1MDQzMTY4MywKICAicHJvZmlsZUlkIiA6ICJmODg2ZDI3YjhjNzU0NjAyODYyYTM1M2NlYmYwZTgwZiIsCiAgInByb2ZpbGVOYW1lIiA6ICJOb2JpbkdaIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzlkMmJmOTg2NDcyMGQ4N2ZkMDZiODRlZmE4MGI3OTVjNDhlZDUzOWIxNjUyM2MzYjFmMTk5MGI0MGMwMDNmNmIiLAogICAgICAibWV0YWRhdGEiIDogewogICAgICAgICJtb2RlbCIgOiAic2xpbSIKICAgICAgfQogICAgfQogIH0KfQ=="),
-        UNDEFINED("", ""),
-    }
-
     private val activeDeployables = HashMap<DeployableType, Deployable>()
-    private val seenFlares = HashSet<Int>()
 
-    private val umberellaRegex = """Umberella (\d+)s""".toRegex()
-    private val fluxRegex = """(?i)(Mana\s?Flux|Overflux|Plasmaflux) (\d+)s""".toRegex()
-
-    private data class FluxInfo(
-        val name: String,
-        val accentLabel: String,
-        val range: Double,
-        val labelColor: TextColor,
+    private val strategies = listOf(
+        FlareStrategy(),
+        UmberellaStrategy(),
+        FluxStrategy()
     )
-
-    private fun getFluxInfo(matchedName: String): FluxInfo? {
-        val lower = matchedName.lowercase()
-        return when {
-            lower.contains("plasmaflux") -> FluxInfo("Plasmaflux", "+125%", 20.0, TextColor.MAGENTA)
-            lower.contains("overflux") -> FluxInfo("Overflux", "+100%", 18.0, TextColor.LIGHT_RED)
-            lower.contains("mana flux") || lower.contains("manaflux") -> FluxInfo("Mana Flux", "+50%", 18.0, TextColor.AQUAMARINE)
-            else -> null
-        }
-    }
 
     override fun register() {
         registerTickEvent(0, 10) { client ->
@@ -85,149 +60,26 @@ object DeployableManager : RegisteredEvent {
     fun getActiveDeployables(): Map<DeployableType, Deployable> = activeDeployables.toMap()
 
     fun update(world: ClientLevel) {
-        var foundAnyFlare = false
-        var largestUmberellaSeconds: Double? = null
-        var umberellaEntity: ArmorStand? = null
-
-        var largestFluxSeconds: Double? = null
-        var fluxEntity: ArmorStand? = null
-        var activeFluxInfo: FluxInfo? = null
+        strategies.forEach { it.startTick() }
 
         world.entitiesForRendering().forEach { entity ->
-            if (entity is ArmorStand) {
-                val umbSeconds = checkUmberella(entity)
-                if (umbSeconds != null && umbSeconds > (largestUmberellaSeconds ?: 0.0)) {
-                    largestUmberellaSeconds = umbSeconds
-                    umberellaEntity = entity
-                }
-
-                val fluxPair = checkFlux(entity)
-                if (fluxPair != null) {
-                    val (info, seconds) = fluxPair
-                    if (seconds > (largestFluxSeconds ?: 0.0)) {
-                        largestFluxSeconds = seconds
-                        fluxEntity = entity
-                        activeFluxInfo = info
-                    }
-                }
-            }
-
-            if (checkFlare(entity)) {
-                foundAnyFlare = true
+            strategies.forEach { strategy ->
+                strategy.processEntity(entity)
             }
         }
 
-        if (!foundAnyFlare) {
-            resetFlare()
+        strategies.forEach { strategy ->
+            val result = strategy.getResult()
+            if (result != null) {
+                activeDeployables[strategy.type] = result
+            } else {
+                activeDeployables.remove(strategy.type)
+            }
         }
-
-        if (largestUmberellaSeconds == null || umberellaEntity == null) {
-            resetUmberella()
-        } else {
-            activeDeployables[DeployableType.UMBERELLA] = Deployable(
-                type = DeployableType.UMBERELLA,
-                endTimeMillis = System.currentTimeMillis() + (largestUmberellaSeconds * 1_000).toLong(),
-                posX = umberellaEntity.x,
-                posZ = umberellaEntity.z,
-                highestY = umberellaEntity.y,
-            )
-        }
-
-        if (largestFluxSeconds == null || fluxEntity == null || activeFluxInfo == null) {
-            resetFlux()
-        } else {
-            activeDeployables[DeployableType.FLUX] = Deployable(
-                type = DeployableType.FLUX,
-                endTimeMillis = System.currentTimeMillis() + (largestFluxSeconds * 1_000).toLong(),
-                accentLabel = activeFluxInfo.accentLabel,
-                posX = fluxEntity.x,
-                posZ = fluxEntity.z,
-                highestY = fluxEntity.y,
-                customName = activeFluxInfo.name,
-                labelColorOverride = activeFluxInfo.labelColor,
-                rangeOverride = activeFluxInfo.range,
-            )
-        }
-    }
-
-    fun resetFlare() {
-        seenFlares.clear()
-        activeDeployables.remove(DeployableType.FLARE)
-    }
-
-    private fun resetUmberella() {
-        activeDeployables.remove(DeployableType.UMBERELLA)
-    }
-
-    private fun resetFlux() {
-        activeDeployables.remove(DeployableType.FLUX)
     }
 
     private fun clearAll() {
-        seenFlares.clear()
+        strategies.forEach { it.resetSession() }
         activeDeployables.clear()
-    }
-
-    private fun checkUmberella(entity: ArmorStand): Double? {
-        if (!entity.hasCustomName()) return null
-        val name = entity.name.toUnformattedString()
-        val result = umberellaRegex.find(name) ?: return null
-        return result.groupValues.getOrNull(1)?.toDoubleOrNull()?.minus(entity.tickCount % 10 * 0.05)
-    }
-
-    private fun checkFlux(entity: ArmorStand): Pair<FluxInfo, Double>? {
-        if (!entity.hasCustomName()) return null
-        val name = entity.name.toUnformattedString()
-        val result = fluxRegex.find(name) ?: return null
-        val matchedName = result.groupValues.getOrNull(1) ?: return null
-        val seconds = result.groupValues.getOrNull(2)?.toDoubleOrNull() ?: return null
-        val info = getFluxInfo(matchedName) ?: return null
-        return Pair(info, seconds - (entity.tickCount % 10 * 0.05))
-    }
-
-    private fun checkFlare(entity: Entity): Boolean {
-        if (entity !is ArmorStand) {
-            if (entity is FireworkRocketEntity) {
-                activeDeployables[DeployableType.FLARE] = Deployable(
-                    type = DeployableType.FLARE,
-                    endTimeMillis = System.currentTimeMillis() + 180_000,
-                    posX = entity.x,
-                    posZ = entity.z,
-                    highestY = entity.y,
-                )
-                return true
-            }
-            return false
-        }
-
-        val helmet = entity.getItemBySlot(EquipmentSlot.HEAD)
-        if (helmet.item !is PlayerHeadItem) return false
-
-        val component = helmet[DataComponents.PROFILE] ?: return false
-        val textures = component.partialProfile().properties["textures"].map { it.value }
-        val flareType = FlareType.entries.find { it != FlareType.UNDEFINED && textures.contains(it.texture) }
-            ?: return false
-
-        val current = activeDeployables[DeployableType.FLARE]
-        val highestY = maxOf(current?.highestY ?: 0.0, entity.y)
-
-        if (!seenFlares.contains(entity.id)) {
-            seenFlares.add(entity.id)
-            activeDeployables[DeployableType.FLARE] = Deployable(
-                type = DeployableType.FLARE,
-                endTimeMillis = System.currentTimeMillis() + 180_000,
-                accentLabel = flareType.accentLabel,
-                posX = entity.x,
-                posZ = entity.z,
-                highestY = highestY
-            )
-        } else if (current != null) {
-            activeDeployables[DeployableType.FLARE] = current.copy(
-                highestY = highestY,
-                posX = entity.x,
-                posZ = entity.z
-            )
-        }
-        return true
     }
 }
