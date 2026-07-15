@@ -9,9 +9,9 @@ import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.dsl.isFishingRod
+import cloud.glitchdev.rfu.utils.dsl.rfuKey
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
-import cloud.glitchdev.rfu.mixin.KeyMappingAccessor
 import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.KeyMapping
 
@@ -27,10 +27,8 @@ object FishingKeybindsHandler : Feature {
                 Chat.sendMessage(TextUtils.rfuLiteral("Custom fishing keybinds disabled.", TextColor.LIGHT_GREEN))
             }
         })
+        CustomBinds.rebuildCache()
     }
-
-    val KeyMapping.rfuKey: InputConstants.Key
-        get() = (this as KeyMappingAccessor).`rfu$GetKey`()
 
     fun isOverriding(): Boolean {
         if (!GeneralFishing.overrideFishingKeybinds) return false
@@ -51,7 +49,6 @@ object FishingKeybindsHandler : Feature {
 
         return false
     }
-
 
     fun handleKeySet(key: InputConstants.Key, state: Boolean): Boolean {
         if (isRedirecting) return false
@@ -105,57 +102,10 @@ object FishingKeybindsHandler : Feature {
     }
 
     private fun getRedirectedTargetKey(physicalKey: InputConstants.Key): InputConstants.Key? {
-        val options = mc.options
-        val customHotbars = arrayOf(
-            CustomBinds.fishingHotbar1,
-            CustomBinds.fishingHotbar2,
-            CustomBinds.fishingHotbar3,
-            CustomBinds.fishingHotbar4,
-            CustomBinds.fishingHotbar5,
-            CustomBinds.fishingHotbar6,
-            CustomBinds.fishingHotbar7,
-            CustomBinds.fishingHotbar8,
-            CustomBinds.fishingHotbar9
-        )
-
-        for (i in 0..8) {
-            val customKey = customHotbars[i]
-            if (customKey != 0 && matchesKeybind(physicalKey, customKey)) {
-                return options.keyHotbarSlots[i].rfuKey
-            }
-        }
-
-        val customLeft = CustomBinds.fishingLeftClick
-        if (customLeft != 0 && matchesKeybind(physicalKey, customLeft)) {
-            return options.keyAttack.rfuKey
-        }
-
-        val customRight = CustomBinds.fishingRightClick
-        if (customRight != 0 && matchesKeybind(physicalKey, customRight)) {
-            return options.keyUse.rfuKey
-        }
-
-        return null
-    }
-
-    private fun matchesKeybind(physicalKey: InputConstants.Key, configValue: Int): Boolean {
-        return if (configValue < 0) {
-            physicalKey.type == InputConstants.Type.MOUSE && physicalKey.value == (-configValue - 100)
-        } else {
-            physicalKey.type == InputConstants.Type.KEYSYM && physicalKey.value == configValue
-        }
+        return CustomBinds.redirectMap[physicalKey]
     }
 
     private fun isStandardOverriddenKey(key: InputConstants.Key): Boolean {
-        val options = mc.options ?: return false
-
-        for (i in 0..8) {
-            if (options.keyHotbarSlots[i].rfuKey == key) {
-                return true
-            }
-        }
-
-        return options.keyAttack.rfuKey == key || options.keyUse.rfuKey == key
+        return CustomBinds.standardKeys.contains(key)
     }
 }
-
