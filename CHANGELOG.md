@@ -6,6 +6,7 @@
 - Added Personal Sea Creature Cap Display
 - Added option to merge bossbars for duplicate sea creatures (like Scuttlers)
 - Added /rfuchangelog command to view the mod changelog of your current version
+- Added custom fishing keybind overrides for hotbar slots 1-9, left click, and right click
 
 ### Changes
 - Made the titanoboa and scuttler emojis bigger

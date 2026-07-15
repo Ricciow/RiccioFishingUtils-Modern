@@ -1,10 +1,11 @@
-﻿package cloud.glitchdev.rfu.config.categories
+package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
 import cloud.glitchdev.rfu.constants.fishing.FishTrackingType
 import cloud.glitchdev.rfu.data.mob.DeployableType
 import cloud.glitchdev.rfu.feature.fishing.DoubleHookMessages
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
+import com.teamresourceful.resourcefulconfigkt.api.ObjectKt
 
 object GeneralFishing : Category("General Fishing") {
     override val description: TranslatableValue
@@ -32,6 +33,32 @@ object GeneralFishing : Category("General Fishing") {
     var pauseKeybind by key(0) {
         name = Literal("Pause Keybind")
         description = Literal("Keybind to manually pause the fishing session.")
+    }
+
+    init {
+        dualSeparator {
+            title = "Custom Fishing Keybinds"
+            description = "Change your keybinds when fishing"
+        }
+    }
+
+    var overrideFishingKeybinds by observable(boolean(false) {
+        name = Literal("Override Fishing Keybinds")
+        description = Literal("Enable custom keybinds when fishing.")
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var disableOnJawbus by boolean(true) {
+        name = Literal("Disable on Jawbus")
+        description = Literal("Disables custom keybind overrides when a Lord Jawbus is nearby.")
+        condition = { overrideFishingKeybinds }
+    }
+
+    val customBinds by obj(CustomBinds) {
+        name = Literal("Fishing Keybinds")
+        description = Literal("Overrides hotbar 1-9 and left/right click keybinds while fishing.")
+        condition = { overrideFishingKeybinds }
     }
 
     init {
@@ -219,6 +246,4 @@ object GeneralFishing : Category("General Fishing") {
     }) { _, _ ->
         reloadScreen()
     }
-
 }
-
