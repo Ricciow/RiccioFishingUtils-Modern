@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.feature.fishing
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.config.categories.CustomBinds
+import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig.RARE_SC_REGEX
 import cloud.glitchdev.rfu.data.mob.MobManager
 import cloud.glitchdev.rfu.events.managers.KeyboardEvents.registerKeyboardEvent
 import cloud.glitchdev.rfu.utils.Chat
@@ -39,7 +40,7 @@ object FishingKeybindsHandler : Feature {
         //~}
         if (screen != null) return false
 
-        if (GeneralFishing.disableOnJawbus && MobManager.getEntities().any { it.sbName == "Lord Jawbus" }) {
+        if (GeneralFishing.disableOnRareSC && MobManager.getEntities().any { RARE_SC_REGEX.matches(it.sbName) }) {
             return false
         }
 

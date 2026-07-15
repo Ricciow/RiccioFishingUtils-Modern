@@ -49,11 +49,12 @@ object GeneralFishing : Category("General Fishing") {
         reloadScreen()
     }
 
-    var disableOnJawbus by boolean(true) {
-        name = Literal("Disable on Jawbus")
-        description = Literal("Disables custom keybind overrides when a Lord Jawbus is nearby.")
+    var disableOnRareSC by boolean(true) {
+        name = Literal("Disable on Rare SC")
+        description = Literal("Disables custom keybind overrides when a rare sea creature is nearby.")
         condition = { overrideFishingKeybinds }
     }
+
 
     val customBinds by obj(CustomBinds) {
         name = Literal("Fishing Keybinds")
