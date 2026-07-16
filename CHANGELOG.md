@@ -9,6 +9,7 @@
 - Added custom fishing keybind overrides for hotbar slots 1-9, left click, and right click
 - Added tracking and HUD displays for power orb fluxes (Mana Flux, Overflux, Plasmaflux) with dynamic rarity coloring and stat boosts
 - Added :angry:, :fire:, and :scream: emojis
+- Added option to delete old server-sent resource packs when they're changed (This was expected behavior before, but it didn't work so now its fixed, and it's optional if you want to keep the old textures)
 
 ### Changes
 - Bobber display, personal cap display, and blizzard timer now automatically hide when the fishing session is paused

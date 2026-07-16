@@ -221,4 +221,10 @@ object OtherSettings : Category("Other") {
         description = Literal("Automatically loads the server-sent resource packs. If disabled, packs are still accepted and saved but not loaded into the game.")
         condition = { autoAcceptResourcePacks }
     }
+
+    var deleteOldResourcePacks by boolean(true) {
+        name = Literal("Delete Old Resource Packs")
+        description = Literal("Deletes older versions of server resource packs when their hash changes to save disk space.")
+        condition = { autoAcceptResourcePacks && saveResourcePacks }
+    }
 }

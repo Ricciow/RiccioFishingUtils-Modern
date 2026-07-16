@@ -94,19 +94,43 @@ public abstract class DownloadedPackSourceMixin {
             Path resourcePacksDir = this.minecraft.gameDirectory.toPath().resolve("resourcepacks");
             if (Files.exists(resourcePacksDir)) {
                 String prefix = "Hypixel Server Pack - " + packId + " - ";
+                List<Path> toDelete = new ArrayList<>();
                 try (Stream<Path> stream = Files.list(resourcePacksDir)) {
                     stream.forEach(path -> {
                         String name = path.getFileName().toString();
                         if (name.startsWith(prefix) && name.endsWith(".zip") && !name.equals(currentFilename)) {
                             String optionName = "file/" + name;
                             this.minecraft.options.resourcePacks.remove(optionName);
-                            try {
-                                Files.deleteIfExists(path);
-                            } catch (IOException e) {
-                                path.toFile().deleteOnExit();
+                            if (OtherSettings.INSTANCE.getDeleteOldResourcePacks()) {
+                                toDelete.add(path);
                             }
                         }
                     });
+                }
+
+                if (!toDelete.isEmpty()) {
+                    new Thread(() -> {
+                        for (int attempt = 0; attempt < 10; attempt++) {
+                            try {
+                                Thread.sleep(2000);
+                            } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt();
+                                break;
+                            }
+                            
+                            boolean allDeleted = true;
+                            for (Path path : toDelete) {
+                                try {
+                                    Files.deleteIfExists(path);
+                                } catch (IOException e) {
+                                    allDeleted = false;
+                                }
+                            }
+                            if (allDeleted) {
+                                break;
+                            }
+                        }
+                    }).start();
                 }
             }
         } catch (Exception e) {

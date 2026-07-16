@@ -16,11 +16,15 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.io.IOException;
 import java.net.URL;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 @Mixin(ClientCommonPacketListenerImpl.class)
 public abstract class ClientCommonPacketListenerImplMixin {
@@ -45,7 +49,7 @@ public abstract class ClientCommonPacketListenerImplMixin {
                     
                     if (Files.exists(destPack)) {
                         if (!isSelected && OtherSettings.INSTANCE.getAutoLoadResourcePacks()) {
-                            rfu$cleanUpOldVersionsInOptions(packId, filename);
+                            rfu$cleanUpOldVersions(packId, filename);
                             this.minecraft.getResourcePackRepository().reload();
                             this.minecraft.options.resourcePacks.addFirst(packNameInOptions);
                             this.minecraft.options.loadSelectedResourcePacks(this.minecraft.getResourcePackRepository());
@@ -73,10 +77,55 @@ public abstract class ClientCommonPacketListenerImplMixin {
     }
 
     @Unique
-    private void rfu$cleanUpOldVersionsInOptions(UUID packId, String currentFilename) {
+    private void rfu$cleanUpOldVersions(UUID packId, String currentFilename) {
         String prefix = "file/Hypixel Server Pack - " + packId + " - ";
         String currentOptionName = "file/" + currentFilename;
         this.minecraft.options.resourcePacks.removeIf(name -> name.startsWith(prefix) && !name.equals(currentOptionName));
+
+        if (OtherSettings.INSTANCE.getDeleteOldResourcePacks()) {
+            try {
+                Path resourcePacksDir = this.minecraft.gameDirectory.toPath().resolve("resourcepacks");
+                if (Files.exists(resourcePacksDir)) {
+                    String filePrefix = "Hypixel Server Pack - " + packId + " - ";
+                    List<Path> toDelete = new ArrayList<>();
+                    try (Stream<Path> stream = Files.list(resourcePacksDir)) {
+                        stream.forEach(path -> {
+                            String name = path.getFileName().toString();
+                            if (name.startsWith(filePrefix) && name.endsWith(".zip") && !name.equals(currentFilename)) {
+                                toDelete.add(path);
+                            }
+                        });
+                    }
+
+                    if (!toDelete.isEmpty()) {
+                        new Thread(() -> {
+                            for (int attempt = 0; attempt < 10; attempt++) {
+                                try {
+                                    Thread.sleep(2000);
+                                } catch (InterruptedException e) {
+                                    Thread.currentThread().interrupt();
+                                    break;
+                                }
+                                
+                                boolean allDeleted = true;
+                                for (Path path : toDelete) {
+                                    try {
+                                        Files.deleteIfExists(path);
+                                    } catch (IOException e) {
+                                        allDeleted = false;
+                                    }
+                                }
+                                if (allDeleted) {
+                                    break;
+                                }
+                            }
+                        }).start();
+                    }
+                }
+            } catch (Exception e) {
+                // Ignore
+            }
+        }
     }
 
     @Unique
