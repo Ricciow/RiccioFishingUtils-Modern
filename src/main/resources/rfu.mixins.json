@@ -23,7 +23,9 @@
     "PlainTextLiteralContentsMixin",
     "TranslatableContentsMixin",
     "screen.PackSelectionScreenMixin",
-    "ItemModelResolverMixin"
+    "ItemModelResolverMixin",
+    "CommandSuggestionsMixin",
+    "SuggestionsListMixin"
   ],
   "injectors": {
     "defaultRequire": 1
