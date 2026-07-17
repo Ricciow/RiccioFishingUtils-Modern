@@ -16,6 +16,7 @@
 ### Changes
 - Bobber display, personal cap display, and blizzard timer now automatically hide when the fishing session is paused
 - Reformatted preview party messages to simulate standard party chat prefix and colors.
+- Renamed the saved server resource pack option to 'Hypixel Skyblock Server Pack' and removed long hashes from its display name.
 
 ### Fixes
 - Fixed current equipped pet tracking when equipping pets through loadouts.
@@ -30,3 +31,4 @@ the resource pack is not active to prevent the missing textures with it not load
 - Refactored developer commands to centralize developer mode checks using Brigadier requirements
 - Refactored configuration categories to use a unified reloadableBoolean helper to eliminate duplicate reloadScreen callbacks
 - Updated Render3D text renderer to natively support newlines and distance-based scaling
+- Refactored resourcepack mixins to delegate logic to a Kotlin class and act primarily as hooks
