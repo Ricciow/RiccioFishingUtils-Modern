@@ -74,6 +74,15 @@ SOFTWARE.
 ========================================================================
 
 ========================================================================
+5. Emojis (Twemoji)
+
+   Graphics from the Twemoji project.
+   Copyright 2020 Twitter, Inc and other contributors.
+   License: Creative Commons Attribution 4.0 International (CC-BY 4.0)
+   Source: https://github.com/twitter/twemoji
+   License Text: https://creativecommons.org/licenses/by/4.0/
+========================================================================
+
 
 LGPL v3 License Text (Applies to UniversalCraft and Elementa)
 
