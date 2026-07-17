@@ -10,7 +10,9 @@ import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.events.managers.SlotClickedEvents.registerSlotClickedEvent
 import cloud.glitchdev.rfu.utils.dsl.removeFormatting
 import gg.essential.universal.utils.toFormattedString
+import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+import net.minecraft.core.component.DataComponents
 
 object PetEvents {
     fun registerPetUpdateEvent(
@@ -24,6 +26,7 @@ object PetEvents {
     object PetUpdateEventManager : AbstractEventManager<(String?) -> Unit, PetUpdateEventManager.PetUpdateEvent>(), RegisteredEvent {
         const val SAVE_FIELD = "current_pet"
         val PETS_SCREEN_REGEX = """(\(\d+\/\d+\) )?Pets""".toRegex()
+        val LOADOUTS_SCREEN_REGEX = """\(\d+/\d+\)\s+Loadouts""".toRegex()
         const val PET_REGEX = """(?:⭐ )?\[Lvl (\d+)] (?:(\[\d+✦\]) )?(.+)(?: ✦)?"""
         val AUTOPET_REGEX = """Autopet equipped your $PET_REGEX! VIEW RULE""".toRegex()
         val COLORED_AUTOPET_REGEX = """§r§cAutopet §r§eequipped your (.+)§r§e! §r§a§lVIEW RULE""".toRegex()
@@ -54,10 +57,32 @@ object PetEvents {
                 //~ if >=26.2 'mc.screen' -> 'mc.gui.screen()' {
                 val screen = mc.gui.screen() as? AbstractContainerScreen<*> ?: return@registerSlotClickedEvent
                 //~}
-                if(!PETS_SCREEN_REGEX.matches(screen.title.string.trim())) return@registerSlotClickedEvent
-                val pet = slot.item.hoverName.toFormattedString()
-                if(!PET_REGEX.toRegex().matches(pet.removeFormatting())) return@registerSlotClickedEvent
-                updatePet(pet)
+                val screenTitle = screen.title.string.trim()
+                if (PETS_SCREEN_REGEX.matches(screenTitle)) {
+                    val pet = slot.item.hoverName.toFormattedString()
+                    if (!PET_REGEX.toRegex().matches(pet.removeFormatting())) return@registerSlotClickedEvent
+                    updatePet(pet)
+                } else if (LOADOUTS_SCREEN_REGEX.matches(screenTitle)) {
+                    if (slot.item.isEmpty) return@registerSlotClickedEvent
+                    val itemName = slot.item.hoverName.toUnformattedString().trim()
+                    if (!itemName.startsWith("Loadout")) return@registerSlotClickedEvent
+                    val lore = slot.item[DataComponents.LORE] ?: return@registerSlotClickedEvent
+                    var petLineFormatted: String? = null
+                    for (line in lore.lines) {
+                        val plain = line.toUnformattedString()
+                        if (plain.startsWith("Pet: ")) {
+                            val formattedLine = line.toFormattedString()
+                            petLineFormatted = formattedLine.substringAfter("Pet:").trim()
+                            break
+                        }
+                    }
+                    if (petLineFormatted != null) {
+                        val unformattedPet = petLineFormatted.removeFormatting().trim()
+                        if (!unformattedPet.equals("none", ignoreCase = true) && unformattedPet.isNotEmpty()) {
+                            updatePet(petLineFormatted)
+                        }
+                    }
+                }
             }
 
             registerGameEvent(AUTOPET_REGEX) { text, _, _ ->
