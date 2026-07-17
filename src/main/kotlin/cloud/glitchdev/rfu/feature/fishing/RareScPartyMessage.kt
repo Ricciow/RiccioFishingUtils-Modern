@@ -11,7 +11,6 @@ import cloud.glitchdev.rfu.data.catches.CatchTracker
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.dsl.formatTemplate
 import cloud.glitchdev.rfu.utils.dsl.toReadableString
-import net.minecraft.network.chat.Component
 import kotlin.time.Clock
 
 @RFUFeature
@@ -90,7 +89,7 @@ object RareScPartyMessage : Feature {
             "dh" to SeaCreatureConfig.dhText
         )
 
-        Chat.sendMessage(Component.literal(preview))
+        Chat.sendPreviewPartyMessage(preview)
     }
 
     fun previewCocoon() {
@@ -99,6 +98,6 @@ object RareScPartyMessage : Feature {
             "total" to "100"
         )
 
-        Chat.sendMessage(Component.literal(preview))
+        Chat.sendPreviewPartyMessage(preview)
     }
 }

@@ -14,6 +14,7 @@
 
 ### Changes
 - Bobber display, personal cap display, and blizzard timer now automatically hide when the fishing session is paused
+- Reformatted preview party messages to simulate standard party chat prefix and colors.
 
 ### Fixes
 - Made item models and custom tooltip styles fall back to vanilla defaults if 

@@ -3,14 +3,12 @@ package cloud.glitchdev.rfu.feature.fishing
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.LavaFishing
 import cloud.glitchdev.rfu.constants.fishing.FishingIslands
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerAnyChatEvent
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.dsl.formatTemplate
-import net.minecraft.network.chat.Component
 
 @RFUFeature
 object VanquisherPartyMessage : Feature {
@@ -49,7 +47,7 @@ object VanquisherPartyMessage : Feature {
             "coords" to coordsStr,
             "count" to "0"
         )
-        Chat.sendMessage(Component.literal(preview))
+        Chat.sendPreviewPartyMessage(preview)
     }
 
     fun previewFishing() {
@@ -59,6 +57,6 @@ object VanquisherPartyMessage : Feature {
             "coords" to coordsStr,
             "count" to "42"
         )
-        Chat.sendMessage(Component.literal(preview))
+        Chat.sendPreviewPartyMessage(preview)
     }
 }

@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.utils
 
 import net.minecraft.network.chat.Component
+import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
@@ -95,5 +96,11 @@ object Chat : RegisteredEvent {
                 isSendingModMessage = false
             }
         }
+    }
+
+    fun sendPreviewPartyMessage(message : String) {
+        val username = User.getUsername()
+        val formatted = "${TextColor.LIGHT_BLUE}Party ${TextColor.DARK_GRAY}> ${TextColor.GRAY}$username${TextColor.WHITE}: $message"
+        sendMessage(Component.literal(formatted))
     }
 }
