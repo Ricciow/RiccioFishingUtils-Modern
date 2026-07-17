@@ -29,3 +29,4 @@ the resource pack is not active to prevent the missing textures with it not load
 - Bundled the changelog file into the mod's built resources
 - Refactored developer commands to centralize developer mode checks using Brigadier requirements
 - Refactored configuration categories to use a unified reloadableBoolean helper to eliminate duplicate reloadScreen callbacks
+- Updated Render3D text renderer to natively support newlines and distance-based scaling

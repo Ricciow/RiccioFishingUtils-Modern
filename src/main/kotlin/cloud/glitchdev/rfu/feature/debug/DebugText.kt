@@ -1,6 +1,5 @@
 package cloud.glitchdev.rfu.feature.debug
 
-import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextStyle
@@ -31,7 +30,8 @@ object DebugText : Feature, AbstractCommand("text") {
         val color: Color,
         val expiresAt: Long,
         val scale: Float,
-        val seeThrough: Boolean
+        val seeThrough: Boolean,
+        val scaleWithDistance: Boolean
     )
 
     private val activeTexts = mutableListOf<FloatingText>()
@@ -53,6 +53,7 @@ object DebugText : Feature, AbstractCommand("text") {
                         color = t.color
                         scale = t.scale
                         seeThrough = t.seeThrough
+                        scaleWithDistance = t.scaleWithDistance
                         backgroundOpacity = 0.4f
                     }
                 }
@@ -74,6 +75,10 @@ object DebugText : Feature, AbstractCommand("text") {
                                     .then(
                                         arg("seeThrough", BoolArgumentType.bool())
                                             .executes { context -> executeSpawn(context) }
+                                            .then(
+                                                arg("scaleWithDistance", BoolArgumentType.bool())
+                                                    .executes { context -> executeSpawn(context) }
+                                            )
                                     )
                             )
                     )
@@ -95,7 +100,7 @@ object DebugText : Feature, AbstractCommand("text") {
 
     private fun executeSpawn(context: CommandContext<FabricClientCommandSource>): Int {
 
-        val message = StringArgumentType.getString(context, "message")
+        val message = StringArgumentType.getString(context, "message").replace("\\n", "\n")
 
         val durationSeconds = try {
             IntegerArgumentType.getInteger(context, "durationSeconds")
@@ -115,6 +120,12 @@ object DebugText : Feature, AbstractCommand("text") {
             false
         }
 
+        val scaleWithDistance = try {
+            BoolArgumentType.getBool(context, "scaleWithDistance")
+        } catch (e: IllegalArgumentException) {
+            false
+        }
+
         val cam = Render3D.camera
         val camPos = cam.position()
         val forward = cam.forwardVector()
@@ -129,13 +140,14 @@ object DebugText : Feature, AbstractCommand("text") {
                 color = Color.YELLOW,
                 expiresAt = expiresAt,
                 scale = scale,
-                seeThrough = seeThrough
+                seeThrough = seeThrough,
+                scaleWithDistance = scaleWithDistance
             )
         )
 
         context.source.sendFeedback(
             TextUtils.rfuLiteral(
-                "Spawned debug text '$message' at look position for ${durationSeconds}s (scale=$scale, seeThrough=$seeThrough)",
+                "Spawned debug text '${message.replace("\n", "\\n")}' at look position for ${durationSeconds}s (scale=$scale, seeThrough=$seeThrough, scaleWithDistance=$scaleWithDistance)",
                 TextStyle(TextColor.LIGHT_GREEN)
             )
         )

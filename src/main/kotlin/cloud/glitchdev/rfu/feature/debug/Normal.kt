@@ -20,7 +20,6 @@ import gg.essential.universal.utils.toUnformattedString
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.Display
-import net.minecraft.world.phys.Vec3
 import java.awt.Color
 
 @RFUFeature
@@ -85,16 +84,13 @@ object Normal : Feature, AbstractCommand("normal") {
                         }
                     }
 
-                    val startY = baseLoc.y + (lines.size - 1) * 0.175
-                    lines.forEachIndexed { index, lineText ->
-                        text {
-                            location = Vec3(baseLoc.x, startY - index * 0.35, baseLoc.z)
-                            text = lineText
-                            color = Color.WHITE
-                            scale = 0.025f
-                            seeThrough = true
-                            backgroundOpacity = 0.4f
-                        }
+                    text {
+                        location = baseLoc
+                        text = lines.joinToString("\n")
+                        color = Color.WHITE
+                        scale = 0.025f
+                        seeThrough = true
+                        backgroundOpacity = 0.4f
                     }
                 }
             }

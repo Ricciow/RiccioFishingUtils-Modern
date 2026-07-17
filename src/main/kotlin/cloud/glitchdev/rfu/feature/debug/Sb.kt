@@ -14,7 +14,6 @@ import cloud.glitchdev.rfu.utils.rendering.Render3D
 import cloud.glitchdev.rfu.utils.rendering.Render3DBuilder.Companion.text
 import com.mojang.brigadier.context.CommandContext
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
-import net.minecraft.world.phys.Vec3
 import java.awt.Color
 
 @RFUFeature
@@ -51,16 +50,13 @@ object Sb : SimpleCommand("sb"), Feature {
                         lines.add("§9Bobber: ${origin.entityId} (Owner: ${origin.ownerName ?: "Unknown"})")
                     }
 
-                    val startY = baseLoc.y + (lines.size - 1) * 0.175
-                    lines.forEachIndexed { index, lineText ->
-                        text {
-                            location = Vec3(baseLoc.x, startY - index * 0.35, baseLoc.z)
-                            text = lineText
-                            color = Color.WHITE
-                            scale = 0.025f
-                            seeThrough = true
-                            backgroundOpacity = 0.4f
-                        }
+                    text {
+                        location = baseLoc
+                        text = lines.joinToString("\n")
+                        color = Color.WHITE
+                        scale = 0.025f
+                        seeThrough = true
+                        backgroundOpacity = 0.4f
                     }
                 }
             }

@@ -372,7 +372,8 @@ object Render3D {
         scale: Float = 0.025f,
         seeThrough: Boolean = false,
         dropShadow: Boolean = false,
-        backgroundOpacity: Float = 0.25f
+        backgroundOpacity: Float = 0.25f,
+        scaleWithDistance: Boolean = false
     ) {
         if (text.isEmpty()) return
 
@@ -386,6 +387,13 @@ object Render3D {
 
         val camPos = camera.position()
         val vecToText = location.subtract(camPos)
+        val distance = vecToText.length()
+
+        val finalScale = if (scaleWithDistance) {
+            scale * maxOf(1f, distance.toFloat() / 10f)
+        } else {
+            scale
+        }
 
         matrixStack.pushPose()
         matrixStack.translate(
@@ -394,47 +402,52 @@ object Render3D {
             vecToText.z
         )
         matrixStack.mulPose(camera.rotation())
-        matrixStack.scale(scale, -scale, scale)
+        matrixStack.scale(finalScale, -finalScale, finalScale)
 
         val font = mc.font
-        val textComp = Component.literal(text)
-        val charSequence = textComp.getVisualOrderText()
-        val x = -font.width(textComp) / 2f
-        val y = 0f
+        val lines = text.lines()
+        val startY = -((lines.size - 1) * font.lineHeight) / 2f
 
         val backgroundAlpha = (backgroundOpacity * 255).toInt().coerceIn(0, 255)
         val backgroundColorInt = (backgroundAlpha shl 24) or 0x000000
 
-        //? if >=26.2 {
-        val displayMode = if (seeThrough) Font.DisplayMode.SEE_THROUGH else Font.DisplayMode.NORMAL
-        collector.submitText(
-            matrixStack,
-            x,
-            y,
-            charSequence,
-            dropShadow,
-            displayMode,
-            0xF000F0,
-            color.rgb,
-            backgroundColorInt,
-            0
-        )
-        //?} else {
-        /*val displayMode = if (seeThrough) Font.DisplayMode.SEE_THROUGH else Font.DisplayMode.NORMAL
-        val matrix = matrixStack.last().pose()
-        font.drawInBatch(
-            charSequence,
-            x,
-            y,
-            color.rgb,
-            dropShadow,
-            matrix,
-            consumers,
-            displayMode,
-            backgroundColorInt,
-            0xF000F0
-        )
-        *///?}
+        for ((index, line) in lines.withIndex()) {
+            val lineComp = Component.literal(line)
+            val charSequence = lineComp.getVisualOrderText()
+            val x = -font.width(lineComp) / 2f
+            val y = startY + index * font.lineHeight
+
+            //? if >=26.2 {
+            val displayMode = if (seeThrough) Font.DisplayMode.SEE_THROUGH else Font.DisplayMode.NORMAL
+            collector.submitText(
+                matrixStack,
+                x,
+                y,
+                charSequence,
+                dropShadow,
+                displayMode,
+                0xF000F0,
+                color.rgb,
+                backgroundColorInt,
+                0
+            )
+            //?} else {
+            /*val displayMode = if (seeThrough) Font.DisplayMode.SEE_THROUGH else Font.DisplayMode.NORMAL
+            val matrix = matrixStack.last().pose()
+            font.drawInBatch(
+                charSequence,
+                x,
+                y,
+                color.rgb,
+                dropShadow,
+                matrix,
+                consumers,
+                displayMode,
+                backgroundColorInt,
+                0xF000F0
+            )
+            *///?}
+        }
 
         matrixStack.popPose()
     }

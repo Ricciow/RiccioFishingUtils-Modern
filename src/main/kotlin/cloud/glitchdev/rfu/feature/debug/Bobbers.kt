@@ -1,6 +1,5 @@
 package cloud.glitchdev.rfu.feature.debug
 
-import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextStyle
@@ -60,16 +59,13 @@ object Bobbers : SimpleCommand("bobbers"), Feature {
     }
 
     private fun LevelRenderContext.renderLines(baseLoc: Vec3, lines: List<String>) {
-        val startY = baseLoc.y + (lines.size - 1) * 0.175
-        lines.forEachIndexed { index, lineText ->
-            text {
-                location = Vec3(baseLoc.x, startY - index * 0.35, baseLoc.z)
-                text = lineText
-                color = Color.WHITE
-                scale = 0.025f
-                seeThrough = true
-                backgroundOpacity = 0.4f
-            }
+        text {
+            location = baseLoc
+            text = lines.joinToString("\n")
+            color = Color.WHITE
+            scale = 0.025f
+            seeThrough = true
+            backgroundOpacity = 0.4f
         }
     }
 
