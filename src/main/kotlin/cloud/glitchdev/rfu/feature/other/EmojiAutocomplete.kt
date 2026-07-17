@@ -23,9 +23,15 @@ object EmojiAutocomplete {
             trigger.lowercase().startsWith(search)
         }
 
+        val uniqueMatches = matches.entries
+            .groupBy { it.value }
+            .mapNotNull { (_, entries) ->
+                entries.minByOrNull { it.key.length }
+            }
+
         val range = StringRange.between(lastWordIndex, cursorPosition)
-        val suggestionsList = matches.map { (trigger, replacement) ->
-            EmojiSuggestion(range, trigger, replacement)
+        val suggestionsList = uniqueMatches.map { entry ->
+            EmojiSuggestion(range, entry.key, entry.value)
         }
 
         return CompletableFuture.completedFuture(Suggestions(range, suggestionsList))
