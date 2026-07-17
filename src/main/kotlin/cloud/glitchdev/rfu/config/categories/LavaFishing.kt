@@ -38,7 +38,7 @@ object LavaFishing : Category("Lava Fishing") {
     init {
         dualSeparator {
             title = "Plhlegblast"
-            description = "Settings for the ellusive Plhlegblast"
+            description = "Settings for the elusive Plhlegblast"
         }
     }
 
