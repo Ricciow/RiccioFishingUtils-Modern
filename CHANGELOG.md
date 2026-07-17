@@ -32,3 +32,4 @@ the resource pack is not active to prevent the missing textures with it not load
 - Refactored configuration categories to use a unified reloadableBoolean helper to eliminate duplicate reloadScreen callbacks
 - Updated Render3D text renderer to natively support newlines and distance-based scaling
 - Refactored resourcepack mixins to delegate logic to a Kotlin class and act primarily as hooks
+- Refactored TrophyCatchEvents to use newly added TrophyFish and TrophyFrog enums instead of raw strings
