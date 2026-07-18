@@ -37,4 +37,9 @@ object TrophyFishing : Category("Trophy Fishing") {
         description = Literal("Select which trophy frogs should be shown on the pity display.")
         condition = { trophyPityDisplay }
     }
+
+    var appendPityToTrophyMessage by boolean(true) {
+        name = Literal("Append Pity to Trophy Message")
+        description = Literal("Appends the count before pity to the trophy catch message in chat (e.g. '(100)').")
+    }
 }
