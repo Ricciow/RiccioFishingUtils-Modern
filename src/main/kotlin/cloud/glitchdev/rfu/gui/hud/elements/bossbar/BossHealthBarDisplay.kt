@@ -47,6 +47,11 @@ object BossHealthBarDisplay : AbstractHudElement("bossHealthBar") {
     override fun onUpdateState() {
         if (isEditing) {
             getOrAddBar(0).forceRendering = true
+            bars.forEachIndexed { index, bar ->
+                if (index != 0) bar.forceRendering = false
+            }
+        } else {
+            bars.forEach { it.forceRendering = false }
         }
 
         // Group / Merge entities
