@@ -1,6 +1,7 @@
 # v1.15.0 - ???
 
 ### Features
+- Added two new achievements for hitting pity on trophy frogs and trophy fish
 - Added trophy pity displays
 - Added chat emoji autocompletion
 - Added Vanquisher party messages.
