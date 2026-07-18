@@ -1,6 +1,7 @@
 # v1.15.0 - ???
 
 ### Features
+- Added trophy pity displays
 - Added chat emoji autocompletion
 - Added Vanquisher party messages.
 - Added custom tooltip GUI scaling option (Just really missed that)
