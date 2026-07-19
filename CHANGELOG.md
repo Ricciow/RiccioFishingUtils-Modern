@@ -6,6 +6,8 @@
 - Added two new achievements for hitting pity on trophy frogs and trophy fish
 - Added trophy pity displays
 - Added chat emoji autocompletion
+- Fully written emoji triggers in chat text inputs are now visually replaced with the emoji visually
+- Added :angry:, :fire:, :thumbsdown:, :thumbsupcat: and :scream: emojis
 - Added Vanquisher party messages.
 - Added custom tooltip GUI scaling option (Just really missed that)
 - Added full inventory alert option
@@ -14,7 +16,6 @@
 - Added /rfuchangelog command to view the mod changelog of your current version
 - Added custom fishing keybind overrides for hotbar slots 1-9, left click, and right click
 - Added tracking and HUD displays for power orb fluxes (Mana Flux, Overflux, Plasmaflux) with dynamic rarity coloring and stat boosts
-- Added :angry:, :fire:, :thumbsdown:, :thumbsupcat: and :scream: emojis
 - Added option to delete old server-sent resource packs when they're changed (This was expected behavior before, but it didn't work so now its fixed, and it's optional if you want to keep the old textures)
 
 ### Changes

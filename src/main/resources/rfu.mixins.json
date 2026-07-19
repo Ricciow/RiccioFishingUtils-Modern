@@ -25,7 +25,8 @@
     "screen.PackSelectionScreenMixin",
     "ItemModelResolverMixin",
     "CommandSuggestionsMixin",
-    "SuggestionsListMixin"
+    "SuggestionsListMixin",
+    "EditBoxMixin"
   ],
   "injectors": {
     "defaultRequire": 1
