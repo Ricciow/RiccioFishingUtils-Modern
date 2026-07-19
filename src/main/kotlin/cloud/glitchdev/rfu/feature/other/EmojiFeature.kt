@@ -12,7 +12,12 @@ object EmojiFeature {
         aliases.map { ":${it.lowercase()}:" to cp }
     }.toMap()
 
-    private val EMOJI_STYLE: Style = Style.EMPTY.withColor(ChatFormatting.WHITE)
+    @JvmStatic
+    fun isEmojiCodepoint(codepoint: Int): Boolean {
+        return codepoint in 0xE100..0xE1FF
+    }
+
+    private val EMOJI_STYLE: Style = Style.EMPTY.withColor(ChatFormatting.WHITE).withShadowColor(0)
 
     /**
      * Replaces ALL registered emoji triggers (e.g., :dog:) with their PUA characters in a String.
@@ -31,7 +36,7 @@ object EmojiFeature {
 
     /**
      * Replaces emoji triggers in a FormattedCharSequence while preserving the original Style
-     * of all non-emoji characters, and setting the emoji character style to WHITE.
+     * of all non-emoji characters, and setting the emoji character style to WHITE without shadow.
      */
     fun replaceEmojisInCharSequence(sequence: FormattedCharSequence?): FormattedCharSequence? {
         if (sequence == null || !OtherSettings.emojis) return sequence

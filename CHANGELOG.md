@@ -7,6 +7,7 @@
 - Added trophy pity displays
 - Added chat emoji autocompletion
 - Fully written emoji triggers in chat text inputs are now visually replaced with the emoji visually
+- Removed shadows from emojis
 - Added :angry:, :fire:, :thumbsdown:, :thumbsupcat: and :scream: emojis
 - Added Vanquisher party messages.
 - Added custom tooltip GUI scaling option (Just really missed that)

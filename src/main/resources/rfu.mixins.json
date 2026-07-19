@@ -26,7 +26,8 @@
     "ItemModelResolverMixin",
     "CommandSuggestionsMixin",
     "SuggestionsListMixin",
-    "EditBoxMixin"
+    "EditBoxMixin",
+    "FontPreparedTextBuilderMixin"
   ],
   "injectors": {
     "defaultRequire": 1
