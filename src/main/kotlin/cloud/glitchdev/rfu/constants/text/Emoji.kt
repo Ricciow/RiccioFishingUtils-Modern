@@ -14,6 +14,8 @@ object Emoji {
         "\uE11E" to listOf("angry"),
         "\uE11F" to listOf("fire"),
         "\uE120" to listOf("scream"),
+        "\uE121" to listOf("thumbsupcat"),
+        "\uE122" to listOf("thumbsdown"),
 
         // Sea Creatures
         "\uE116" to listOf("abyssal_miner", "abyssalminer", "miner"),
