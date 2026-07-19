@@ -15,8 +15,7 @@ import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 import cloud.glitchdev.rfu.utils.World
-import gg.essential.universal.utils.toUnformattedString
-import net.minecraft.world.entity.EquipmentSlot
+import cloud.glitchdev.rfu.utils.dsl.isWearingTrophyHunterArmor
 
 @HudElement
 object TrophyPityDisplay : AbstractTextHudElement("trophyPity") {
@@ -176,27 +175,5 @@ object TrophyPityDisplay : AbstractTextHudElement("trophyPity") {
         }
 
         text.setText(lines.joinToString("\n"))
-    }
-
-    private fun isWearingTrophyHunterArmor(): Boolean {
-        val player = mc.player ?: return false
-        val armorSlots = arrayOf(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET)
-        return armorSlots.all { slot ->
-            val item = player.getItemBySlot(slot)
-            val customName = item.customName?.toUnformattedString() ?: return@all false
-            val expectedPieceName = when (slot) {
-                EquipmentSlot.HEAD -> "Hunter Helmet"
-                EquipmentSlot.CHEST -> "Hunter Chestplate"
-                EquipmentSlot.LEGS -> "Hunter Leggings"
-                EquipmentSlot.FEET -> "Hunter Boots"
-                else -> return@all false
-            }
-            customName.contains(expectedPieceName) && (
-                customName.contains("Bronze Hunter") ||
-                customName.contains("Silver Hunter") ||
-                customName.contains("Gold Hunter") ||
-                customName.contains("Diamond Hunter")
-            )
-        }
     }
 }

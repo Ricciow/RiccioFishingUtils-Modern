@@ -17,13 +17,13 @@ import net.minecraft.core.component.DataComponents
 object PetEvents {
     fun registerPetUpdateEvent(
         priority: Int = 20,
-        callback: (String?) -> Unit
+        callback: (pet: String?, petName: String?, petLevel: Int?) -> Unit
     ): PetUpdateEventManager.PetUpdateEvent {
         return PetUpdateEventManager.register(priority, callback)
     }
 
     @AutoRegister
-    object PetUpdateEventManager : AbstractEventManager<(String?) -> Unit, PetUpdateEventManager.PetUpdateEvent>(), RegisteredEvent {
+    object PetUpdateEventManager : AbstractEventManager<(pet: String?, petName: String?, petLevel: Int?) -> Unit, PetUpdateEventManager.PetUpdateEvent>(), RegisteredEvent {
         const val SAVE_FIELD = "current_pet"
         val PETS_SCREEN_REGEX = """(\(\d+\/\d+\) )?Pets""".toRegex()
         val LOADOUTS_SCREEN_REGEX = """\(\d+/\d+\)\s+Loadouts""".toRegex()
@@ -40,9 +40,12 @@ object PetEvents {
         val currentPetName: String?
             get() = currentPet?.removeFormatting()?.let { PET_REGEX.toRegex().find(it)?.groupValues?.getOrNull(3) }
 
-        override val runTasks: (String?) -> Unit = { pet ->
+        val currentPetLevel: Int?
+            get() = currentPet?.removeFormatting()?.let { PET_REGEX.toRegex().find(it)?.groupValues?.getOrNull(1) }?.toIntOrNull()
+
+        override val runTasks: (pet: String?, petName: String?, petLevel: Int?) -> Unit = { pet, petName, petLevel ->
             safeExecution {
-                tasks.forEach { task -> task.callback(pet) }
+                tasks.forEach { task -> task.callback(pet, petName, petLevel) }
             }
         }
 
@@ -109,20 +112,27 @@ object PetEvents {
             }
         }
 
+        override fun postInitialize() {
+            runTasks(currentPet, currentPetName, currentPetLevel)
+        }
+
         private fun updatePet(pet: String?) {
             currentPet = pet
             OtherManager.setField(SAVE_FIELD, StringEntry(pet))
-            runTasks(pet)
+            runTasks(pet, currentPetName, currentPetLevel)
         }
 
-        fun register(priority: Int = 20, callback: (String?) -> Unit): PetUpdateEvent {
+        fun register(
+            priority: Int = 20,
+            callback: (pet: String?, petName: String?, petLevel: Int?) -> Unit
+        ): PetUpdateEvent {
             return PetUpdateEvent(priority, callback).register()
         }
 
         class PetUpdateEvent(
             priority: Int = 20,
-            callback: (String?) -> Unit
-        ) : ManagedTask<(String?) -> Unit, PetUpdateEvent>(priority, callback) {
+            callback: (pet: String?, petName: String?, petLevel: Int?) -> Unit
+        ) : ManagedTask<(pet: String?, petName: String?, petLevel: Int?) -> Unit, PetUpdateEvent>(priority, callback) {
             override fun register() = submitTask(this)
             override fun unregister() = removeTask(this)
         }

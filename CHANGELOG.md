@@ -1,6 +1,7 @@
 # v1.15.0 - ???
 
 ### Features
+- Added slugfish timer
 - Added option to append the pity count and a PITY! suffix to trophy catch chat messages
 - Added two new achievements for hitting pity on trophy frogs and trophy fish
 - Added trophy pity displays
@@ -36,3 +37,4 @@ the resource pack is not active to prevent the missing textures with it not load
 - Updated Render3D text renderer to natively support newlines and distance-based scaling
 - Refactored resourcepack mixins to delegate logic to a Kotlin class and act primarily as hooks
 - Refactored TrophyCatchEvents to use newly added TrophyFish and TrophyFrog enums instead of raw strings
+- Refactored AbstractEventManager and PetEvents to support postInitialize and pass pet name and level in pet update callbacks

@@ -40,6 +40,12 @@ class FeatureProcessor(
                 requiredSuperType = "cloud.glitchdev.rfu.events.RegisteredEvent"
             ),
             GeneratorSpec(
+                annotation = "cloud.glitchdev.rfu.events.AutoRegister",
+                loaderFuncName = "postInitializeEvents",
+                methodToCall = "postInitialize",
+                requiredSuperType = "cloud.glitchdev.rfu.events.RegisteredEvent"
+            ),
+            GeneratorSpec(
                 annotation = "cloud.glitchdev.rfu.gui.hud.HudElement",
                 loaderFuncName = "registerHud",
                 methodToCall = "initialize",
