@@ -117,19 +117,13 @@ object EmojiFeature {
     }
 
     @JvmStatic
-    fun snapToEmojiBoundary(text: String?, pos: Int, currentPos: Int): Int {
+    fun snapToEmojiBoundary(text: String?, pos: Int, preferEnd: Boolean): Int {
         if (text == null || !OtherSettings.emojis) return pos
 
         val matches = findEmojiMatches(text)
         for (match in matches) {
             if (pos in (match.start + 1)..<match.end) {
-                return if (pos < currentPos) {
-                    match.start
-                } else if (pos > currentPos) {
-                    match.end
-                } else {
-                    if (pos - match.start >= match.end - match.start) match.end else match.start
-                }
+                return if (preferEnd) match.end else match.start
             }
         }
         return pos

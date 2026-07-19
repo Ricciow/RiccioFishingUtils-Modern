@@ -42,8 +42,8 @@ public abstract class EditBoxMixin {
             target = "Lnet/minecraft/client/gui/Font;width(Ljava/lang/String;)I"
         )
     )
-    private int rfu$redirectWidthInExtractWidgetRenderState(Font font, String text) {
-        FormattedCharSequence formatted = this.applyFormat(text, this.displayPos);
+    private int rfu$redirectWidthInExtractWidgetRenderState(Font font, String str) {
+        FormattedCharSequence formatted = this.applyFormat(str, this.displayPos);
         return font.width(formatted);
     }
 
@@ -57,11 +57,15 @@ public abstract class EditBoxMixin {
 
     @ModifyVariable(method = "setCursorPosition", at = @At("HEAD"), argsOnly = true, name = "pos")
     private int rfu$snapCursorPosition(int pos) {
-        return EmojiFeature.snapToEmojiBoundary(this.value, pos, this.cursorPos);
+        int refAnchor = (this.highlightPos != this.cursorPos) ? this.highlightPos : this.cursorPos;
+        boolean preferEnd = pos >= refAnchor;
+        return EmojiFeature.snapToEmojiBoundary(this.value, pos, preferEnd);
     }
 
     @ModifyVariable(method = "setHighlightPos", at = @At("HEAD"), argsOnly = true, name = "pos")
     private int rfu$snapHighlightPos(int pos) {
-        return EmojiFeature.snapToEmojiBoundary(this.value, pos, this.highlightPos);
+        int refAnchor = (this.highlightPos != this.cursorPos) ? this.cursorPos : this.highlightPos;
+        boolean preferEnd = pos >= refAnchor;
+        return EmojiFeature.snapToEmojiBoundary(this.value, pos, preferEnd);
     }
 }
