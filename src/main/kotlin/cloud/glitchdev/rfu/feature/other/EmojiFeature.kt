@@ -3,6 +3,8 @@ package cloud.glitchdev.rfu.feature.other
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.text.Emoji
 import net.minecraft.ChatFormatting
+import net.minecraft.client.gui.Font
+import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
 import net.minecraft.util.FormattedCharSequence
 
@@ -18,6 +20,34 @@ object EmojiFeature {
     }
 
     private val EMOJI_STYLE: Style = Style.EMPTY.withColor(ChatFormatting.WHITE).withShadowColor(0)
+
+    data class EmojiMatch(val start: Int, val end: Int, val emojiCodepoint: Int)
+
+    fun findEmojiMatches(text: String): List<EmojiMatch> {
+        if (!text.contains(":")) return emptyList()
+
+        val lowerText = text.lowercase()
+        val matches = mutableListOf<EmojiMatch>()
+        var searchIndex = 0
+
+        while (searchIndex < lowerText.length) {
+            val colonIndex = lowerText.indexOf(':', searchIndex)
+            if (colonIndex == -1) break
+
+            val nextColonIndex = lowerText.indexOf(':', colonIndex + 1)
+            if (nextColonIndex == -1) break
+
+            val candidate = lowerText.substring(colonIndex, nextColonIndex + 1)
+            val emojiCp = TRIGGER_TO_CODEPOINT[candidate]
+            if (emojiCp != null) {
+                matches.add(EmojiMatch(colonIndex, nextColonIndex + 1, emojiCp))
+                searchIndex = nextColonIndex + 1
+            } else {
+                searchIndex = colonIndex + 1
+            }
+        }
+        return matches
+    }
 
     /**
      * Replaces ALL registered emoji triggers (e.g., :dog:) with their PUA characters in a String.
@@ -54,31 +84,7 @@ object EmojiFeature {
             sb.appendCodePoint(c.codepoint)
         }
         val fullText = sb.toString()
-        if (!fullText.contains(":")) return sequence
-
-        val lowerText = fullText.lowercase()
-
-        class Match(val start: Int, val end: Int, val emojiCodepoint: Int)
-        val matches = mutableListOf<Match>()
-
-        var searchIndex = 0
-        while (searchIndex < lowerText.length) {
-            val colonIndex = lowerText.indexOf(':', searchIndex)
-            if (colonIndex == -1) break
-
-            val nextColonIndex = lowerText.indexOf(':', colonIndex + 1)
-            if (nextColonIndex == -1) break
-
-            val candidate = lowerText.substring(colonIndex, nextColonIndex + 1)
-            val emojiCp = TRIGGER_TO_CODEPOINT[candidate]
-            if (emojiCp != null) {
-                matches.add(Match(colonIndex, nextColonIndex + 1, emojiCp))
-                searchIndex = nextColonIndex + 1
-            } else {
-                searchIndex = colonIndex + 1
-            }
-        }
-
+        val matches = findEmojiMatches(fullText)
         if (matches.isEmpty()) return sequence
 
         val newChars = mutableListOf<StyledChar>()
@@ -108,5 +114,63 @@ object EmojiFeature {
             }
             true
         }
+    }
+
+    @JvmStatic
+    fun snapToEmojiBoundary(text: String?, pos: Int, currentPos: Int): Int {
+        if (text == null || !OtherSettings.emojis) return pos
+
+        val matches = findEmojiMatches(text)
+        for (match in matches) {
+            if (pos in (match.start + 1)..<match.end) {
+                return if (pos < currentPos) {
+                    match.start
+                } else if (pos > currentPos) {
+                    match.end
+                } else {
+                    if (pos - match.start >= match.end - match.start) match.end else match.start
+                }
+            }
+        }
+        return pos
+    }
+
+    @JvmStatic
+    fun getClickedRawPosition(font: Font, displayed: String, positionInText: Int): Int {
+        if (!OtherSettings.emojis || positionInText <= 0) {
+            return font.plainSubstrByWidth(displayed, positionInText).length
+        }
+
+        val matches = findEmojiMatches(displayed)
+        if (matches.isEmpty()) {
+            return font.plainSubstrByWidth(displayed, positionInText).length
+        }
+
+        var currentX = 0
+        var rawIdx = 0
+        while (rawIdx < displayed.length) {
+            val match = matches.firstOrNull { it.start == rawIdx }
+            if (match != null) {
+                val emojiStr = String(Character.toChars(match.emojiCodepoint))
+                val emojiCharSeq = Component.literal(emojiStr).getVisualOrderText()
+                val emojiWidth = font.width(emojiCharSeq)
+                if (positionInText < currentX + emojiWidth / 2) {
+                    return match.start
+                } else if (positionInText <= currentX + emojiWidth) {
+                    return match.end
+                }
+                currentX += emojiWidth
+                rawIdx = match.end
+            } else {
+                val charStr = displayed.substring(rawIdx, rawIdx + 1)
+                val charWidth = font.width(charStr)
+                if (positionInText < currentX + charWidth / 2) {
+                    return rawIdx
+                }
+                currentX += charWidth
+                rawIdx++
+            }
+        }
+        return displayed.length
     }
 }
