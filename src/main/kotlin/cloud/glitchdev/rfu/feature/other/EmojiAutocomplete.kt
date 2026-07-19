@@ -16,7 +16,7 @@ object EmojiAutocomplete {
         val lastWordIndex = if (lastSpace == -1) 0 else lastSpace + 1
         val lastWord = partial.substring(lastWordIndex)
 
-        if (!lastWord.startsWith(":") || lastWord.length < 2) return null
+        if (!lastWord.startsWith(":") || lastWord.endsWith(":") || lastWord.length < 2) return null
 
         val search = lastWord.lowercase()
         val matches = Emoji.ALL.filter { (trigger, _) ->
