@@ -84,7 +84,7 @@ object CustomBinds : ObjectKt() {
     fun rebuildCache() {
         redirectMap.clear()
         standardKeys.clear()
-        val options = mc.options ?: return
+        val options = mc.options
 
         val customHotbars = arrayOf(
             fishingHotbar1,
