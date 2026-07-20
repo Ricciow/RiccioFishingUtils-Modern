@@ -1,4 +1,4 @@
-# v1.15.0 - ???
+# v1.15.0 - Expressive & Empowered
 
 ### Features
 - Added slugfish timer
