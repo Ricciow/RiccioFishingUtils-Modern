@@ -41,6 +41,7 @@ object RiccioFishingUtils : ClientModInitializer {
             RFULoader.registerEvents()
             RFULoader.registerHud()
             RFULoader.registerAchievements()
+            RFULoader.postInitializeEvents()
         }
 
     }

@@ -5,9 +5,9 @@ import cloud.glitchdev.rfu.constants.text.TextColor.CYAN
 import cloud.glitchdev.rfu.constants.text.TextColor.LIGHT_RED
 import cloud.glitchdev.rfu.constants.text.TextColor.YELLOW
 import cloud.glitchdev.rfu.constants.text.TextEffects.BOLD
-import cloud.glitchdev.rfu.constants.FishTrackingType
+import cloud.glitchdev.rfu.constants.fishing.FishTrackingType
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
-import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
+import cloud.glitchdev.rfu.gui.hud.AbstractFishingHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 import cloud.glitchdev.rfu.utils.dsl.toReadableString
 import kotlin.time.Clock
@@ -18,13 +18,14 @@ import cloud.glitchdev.rfu.feature.fishing.FishingSession
 import kotlin.time.Duration.Companion.minutes
 
 @HudElement
-object FishTrackingDisplay : AbstractTextHudElement("fishTrackingDisplay") {
-
-    private val isFishing: Boolean
-        get() = FishingSession.isFishing
-
-    override val enabled: Boolean
-        get() = GeneralFishing.fishTrackingDisplay && (super.enabled || !GeneralFishing.fishTrackingOnlyWhenFishing || (isFishing && FishingSession.pausedDuration < (1.minutes + GeneralFishing.fishingTime.minutes)))
+object FishTrackingDisplay : AbstractFishingHudElement("fishTrackingDisplay") {
+    override val displaysWhilePaused: Boolean = true
+    override val requiresFishing: Boolean
+        get() = GeneralFishing.fishTrackingOnlyWhenFishing
+    override val requirement: Boolean
+        get() = GeneralFishing.fishTrackingDisplay
+    override val isElementActive: Boolean
+        get() = !requiresFishing || FishingSession.pausedDuration < (1.minutes + GeneralFishing.fishingTime.minutes)
 
     override fun onInitialize() {
         super.onInitialize()

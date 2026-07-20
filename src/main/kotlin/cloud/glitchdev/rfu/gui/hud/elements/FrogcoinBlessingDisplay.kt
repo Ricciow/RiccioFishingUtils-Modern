@@ -1,7 +1,7 @@
 package cloud.glitchdev.rfu.gui.hud.elements
 
 import cloud.glitchdev.rfu.config.categories.LotusAtollSettings
-import cloud.glitchdev.rfu.constants.FishingIslands
+import cloud.glitchdev.rfu.constants.fishing.FishingIslands
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
@@ -14,9 +14,10 @@ import kotlin.time.Duration.Companion.milliseconds
 
 @HudElement
 object FrogcoinBlessingDisplay : AbstractTextHudElement("frogcoinBlessing") {
-
-    override val enabled: Boolean
-        get() = LotusAtollSettings.frogcoinBlessingDisplay && (isEditing || (World.island == FishingIslands.ATOLL && FrogcoinBlessingFeature.activeBlessings.isNotEmpty()))
+    override val requirement: Boolean
+        get() = LotusAtollSettings.frogcoinBlessingDisplay
+    override val isElementActive: Boolean
+        get() = World.island == FishingIslands.ATOLL && FrogcoinBlessingFeature.activeBlessings.isNotEmpty()
 
     override fun onInitialize() {
         super.onInitialize()

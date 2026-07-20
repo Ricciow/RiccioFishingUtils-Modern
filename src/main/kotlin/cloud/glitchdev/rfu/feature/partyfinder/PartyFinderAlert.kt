@@ -24,7 +24,7 @@ object PartyFinderAlert : Feature {
 
     override fun onInitialize() {
         registerPartyListChangedEvent { parties ->
-            if (!World.isInSkyblock || World.isOnAlpha()) {
+            if (!World.isInSkyblock || World.isOnAlpha) {
                 isFirstFetch = true
                 lastParties.clear()
                 pendingAlerts.clear()
@@ -33,8 +33,8 @@ object PartyFinderAlert : Feature {
             processParties(parties)
         }
 
-        registerTickEvent(interval = 200) {
-            if (!World.isInSkyblock || World.isOnAlpha()) {
+        registerTickEvent(interval = 600L) {
+            if (!World.isInSkyblock || World.isOnAlpha) {
                 isFirstFetch = true
                 lastParties.clear()
                 pendingAlerts.clear()
@@ -57,7 +57,7 @@ object PartyFinderAlert : Feature {
         val now = System.currentTimeMillis()
 
         newUsers.forEach { user ->
-            pendingAlerts[user] = now + 30000
+            pendingAlerts[user] = now
         }
 
         pendingAlerts.keys.retainAll(currentPartiesUsers)
@@ -66,7 +66,7 @@ object PartyFinderAlert : Feature {
 
     private fun checkPending() {
         val now = System.currentTimeMillis()
-        val ready = pendingAlerts.filter { it.value <= now }.keys
+        val ready = pendingAlerts.filter { it.value <= now - 30000 }.keys
 
         if (ready.isNotEmpty()) {
             val count = ready.size

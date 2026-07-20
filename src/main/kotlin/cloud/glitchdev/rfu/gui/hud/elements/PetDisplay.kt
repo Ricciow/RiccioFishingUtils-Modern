@@ -9,15 +9,15 @@ import cloud.glitchdev.rfu.gui.hud.HudElement
 
 @HudElement
 object PetDisplay : AbstractTextHudElement("petDisplay") {
-    override val enabled: Boolean
-        get() = OtherSettings.petDisplay && (super.enabled || PetUpdateEventManager.currentPet != null)
+    override val requirement: Boolean
+        get() = OtherSettings.petDisplay
+    override val isElementActive: Boolean
+        get() = PetUpdateEventManager.currentPet != null
 
     private var currentPet : String? = null
 
     override fun onInitialize() {
-        currentPet = PetUpdateEventManager.currentPet
-
-        registerPetUpdateEvent { pet ->
+        registerPetUpdateEvent { pet, _, _ ->
             currentPet = pet
             updateState()
         }

@@ -13,8 +13,10 @@ import cloud.glitchdev.rfu.gui.hud.HudElement
 
 @HudElement
 object BestiaryHUD : AbstractTextHudElement("bestiaryHUD") {
-    override val enabled: Boolean
-        get() = OtherSettings.bestiaryDisplay && (super.enabled || BestiaryDisplay.bestiaries.isNotEmpty())
+    override val requirement: Boolean
+        get() = OtherSettings.bestiaryDisplay
+    override val isElementActive: Boolean
+        get() = BestiaryDisplay.bestiaries.isNotEmpty()
 
     override fun onUpdateState() {
         super.onUpdateState()

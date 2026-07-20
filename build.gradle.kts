@@ -184,6 +184,10 @@ tasks {
 
         val mixinJava = "JAVA_${requiredJava.majorVersion}"
         filesMatching("*.mixins.json") { expand("java" to mixinJava) }
+
+        from(rootProject.file("CHANGELOG.md")) {
+            rename { "changelog.md" }
+        }
     }
 
     clean {

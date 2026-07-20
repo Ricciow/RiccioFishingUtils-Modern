@@ -1,6 +1,6 @@
-package cloud.glitchdev.rfu.gui.components.seacreature
+﻿package cloud.glitchdev.rfu.gui.components.seacreature
 
-import cloud.glitchdev.rfu.constants.SeaCreatures
+import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.textinput.UIDecoratedTextInput
 import gg.essential.elementa.UIComponent

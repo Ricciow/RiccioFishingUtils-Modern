@@ -1,7 +1,7 @@
-package cloud.glitchdev.rfu.events.managers
+﻿package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
-import cloud.glitchdev.rfu.constants.SkillType
+import cloud.glitchdev.rfu.constants.skyblock.SkillType
 
 object SkillEvents : AbstractEventManager<(skill: SkillType, xp: Long) -> Unit, SkillEvents.SkillXpUpdateEvent>() {
     override val runTasks: (SkillType, Long) -> Unit = { skill, xp ->

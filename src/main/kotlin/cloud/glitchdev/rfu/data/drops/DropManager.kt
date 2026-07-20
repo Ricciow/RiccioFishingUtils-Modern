@@ -1,6 +1,6 @@
-package cloud.glitchdev.rfu.data.drops
+﻿package cloud.glitchdev.rfu.data.drops
 
-import cloud.glitchdev.rfu.constants.RareDrops
+import cloud.glitchdev.rfu.constants.fishing.RareDrops
 import cloud.glitchdev.rfu.events.managers.DropEvents
 import cloud.glitchdev.rfu.utils.JsonFile
 import cloud.glitchdev.rfu.events.AutoRegister

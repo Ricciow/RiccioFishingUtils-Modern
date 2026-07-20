@@ -1,9 +1,9 @@
-package cloud.glitchdev.rfu.data.fishing
+﻿package cloud.glitchdev.rfu.data.fishing
 
-import cloud.glitchdev.rfu.constants.FishingIslands
-import cloud.glitchdev.rfu.constants.HotSpotConstants
-import cloud.glitchdev.rfu.constants.HotspotType
-import cloud.glitchdev.rfu.constants.LiquidTypes
+import cloud.glitchdev.rfu.constants.fishing.FishingIslands
+import cloud.glitchdev.rfu.constants.fishing.HotSpotConstants
+import cloud.glitchdev.rfu.constants.fishing.HotspotType
+import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
 import cloud.glitchdev.rfu.utils.World
 import net.minecraft.core.BlockPos
 import net.minecraft.world.phys.Vec3

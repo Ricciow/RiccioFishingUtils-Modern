@@ -22,6 +22,7 @@ class Render3DBuilder(val shape: Shape, val context: LevelRenderContext) {
     var dropShadow: Boolean = false
     var backgroundOpacity: Float = 0.25f
     var scale: Float = 0.025f
+    var scaleWithDistance: Boolean = false
 
     var from: Vec3
         get() = startLocation
@@ -66,7 +67,7 @@ class Render3DBuilder(val shape: Shape, val context: LevelRenderContext) {
                 startLocation, location, color, context, lineWidth
             )
             Shape.TEXT -> Render3D.renderText(
-                location, text, color, context, scale, seeThrough, dropShadow, backgroundOpacity
+                location, text, color, context, scale, seeThrough, dropShadow, backgroundOpacity, scaleWithDistance
             )
         }
     }

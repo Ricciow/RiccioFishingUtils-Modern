@@ -1,6 +1,6 @@
-package cloud.glitchdev.rfu.gui
+﻿package cloud.glitchdev.rfu.gui
 
-import cloud.glitchdev.rfu.constants.FishingIslands
+import cloud.glitchdev.rfu.constants.fishing.FishingIslands
 import java.awt.Color
 
 object UIScheme {

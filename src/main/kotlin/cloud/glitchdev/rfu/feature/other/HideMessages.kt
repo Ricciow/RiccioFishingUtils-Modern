@@ -1,8 +1,8 @@
-package cloud.glitchdev.rfu.feature.other
+﻿package cloud.glitchdev.rfu.feature.other
 
 import cloud.glitchdev.rfu.config.categories.OtherSettings
-import cloud.glitchdev.rfu.constants.MessageTypes
-import cloud.glitchdev.rfu.constants.SeaCreatures
+import cloud.glitchdev.rfu.constants.chat.MessageTypes
+import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerAllowGameEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature

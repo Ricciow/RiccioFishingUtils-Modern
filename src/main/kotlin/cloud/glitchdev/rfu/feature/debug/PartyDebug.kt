@@ -1,6 +1,5 @@
 package cloud.glitchdev.rfu.feature.debug
 
-import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.constants.text.TextStyle
@@ -16,16 +15,6 @@ object PartyDebug : SimpleCommand("party") {
     override val description: String = "Shows current party information."
 
     override fun execute(context: CommandContext<FabricClientCommandSource>): Int {
-        if (!DevSettings.devMode) {
-            context.source.sendFeedback(
-                TextUtils.rfuLiteral(
-                    "Must have developer mode on to use this feature!",
-                    TextStyle(TextColor.RED, TextEffects.BOLD)
-                )
-            )
-            return 1
-        }
-
         val message = Component.literal("${TextColor.CYAN}${TextEffects.STRIKE}-----------------------------------------------------\n")
         message.append(TextUtils.rfuLiteral("Party Debug Info:\n", TextStyle(TextColor.GOLD, TextEffects.BOLD)))
         message.append(Component.literal("${TextColor.YELLOW}In Party: ${if (Party.inParty) "${TextColor.LIGHT_GREEN}Yes" else "${TextColor.LIGHT_RED}No"}\n"))

@@ -1,11 +1,11 @@
-package cloud.glitchdev.rfu.achievement.achievements.special.dyes
+﻿package cloud.glitchdev.rfu.achievement.achievements.special.dyes
 
 import cloud.glitchdev.rfu.achievement.Achievement
 import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.DyeAchievement
-import cloud.glitchdev.rfu.constants.Dyes
+import cloud.glitchdev.rfu.constants.skyblock.Dyes
 
 @Achievement
 object CrazyCarmineConnoisseurAchievement : DyeAchievement(Dyes.CARMINE) {

@@ -2,8 +2,8 @@ package cloud.glitchdev.rfu.gui.components.seacreature
 
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
 import cloud.glitchdev.rfu.config.seacreatures.SeaCreatureSettingsManager
-import cloud.glitchdev.rfu.constants.RareScDisplayDataType
-import cloud.glitchdev.rfu.constants.SeaCreatures
+import cloud.glitchdev.rfu.constants.fishing.RareScDisplayDataType
+import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.constants.text.TextColor.GRAY
 import cloud.glitchdev.rfu.constants.text.TextColor.WHITE
 import cloud.glitchdev.rfu.constants.text.TextColor.YELLOW
@@ -35,6 +35,7 @@ class UISeaCreatureEditor : UIContainer() {
     private lateinit var specialCheckbox: UICheckbox
     private lateinit var lsRangeCheckbox: UICheckbox
     private lateinit var bossbarCheckbox: UICheckbox
+    private lateinit var mergeBossbarHpCheckbox: UICheckbox
     private lateinit var gdragAlertCheckbox: UICheckbox
     private lateinit var rareSCAlertCheckbox: UICheckbox
     private lateinit var scDisplayColorInput: UIDecoratedTextInput
@@ -147,10 +148,20 @@ class UISeaCreatureEditor : UIContainer() {
             height = 15.pixels()
         } childOf parent
 
-        bossbarCheckbox = UICheckbox("Bossbar", false) { saveCurrent() }.constrain {
+        bossbarCheckbox = UICheckbox("Bossbar", false) {
+            refreshEnabledStates()
+            saveCurrent()
+        }.constrain {
             x = 15.pixels()
             y = SiblingConstraint(5f)
             width = 100.pixels()
+            height = 15.pixels()
+        } childOf parent
+
+        mergeBossbarHpCheckbox = UICheckbox("Merge Bossbar HP", false) { saveCurrent() }.constrain {
+            x = 15.pixels()
+            y = SiblingConstraint(5f)
+            width = 150.pixels()
             height = 15.pixels()
         } childOf parent
 
@@ -228,6 +239,7 @@ class UISeaCreatureEditor : UIContainer() {
         bossbarCheckbox.state = current.bossbar
         gdragAlertCheckbox.state = current.gdragAlert
         rareSCAlertCheckbox.state = current.rareSCAlert
+        mergeBossbarHpCheckbox.state = current.mergeBossbarHp
         scDisplayColorInput.setText(current.scDisplayColor.replace("§", "&"))
         rarePartyMessageInput.setText(current.rarePartyMessage)
         
@@ -237,11 +249,13 @@ class UISeaCreatureEditor : UIContainer() {
 
     private fun refreshEnabledStates() {
         val isRare = specialCheckbox.state
+        val hasBossbar = bossbarCheckbox.state
         lsRangeCheckbox.isEnabled = isRare
         bossbarCheckbox.isEnabled = isRare
         gdragAlertCheckbox.isEnabled = isRare
         rareSCAlertCheckbox.isEnabled = isRare
         rarePartyMessageInput.isEnabled = isRare
+        mergeBossbarHpCheckbox.isEnabled = isRare && hasBossbar
     }
 
     private fun updatePreviews() {
@@ -302,7 +316,8 @@ class UISeaCreatureEditor : UIContainer() {
                 gdragAlert = gdragAlertCheckbox.state,
                 rareSCAlert = rareSCAlertCheckbox.state,
                 scDisplayColor = scDisplayColorInput.getText().toMcCodes(),
-                rarePartyMessage = rarePartyMessageInput.getText()
+                rarePartyMessage = rarePartyMessageInput.getText(),
+                mergeBossbarHp = mergeBossbarHpCheckbox.state
             )
         }
         

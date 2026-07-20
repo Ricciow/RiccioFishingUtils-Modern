@@ -2,7 +2,6 @@ package cloud.glitchdev.rfu.feature.debug
 
 import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.text.TextColor
-import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.events.managers.HotSpotEvents
 import cloud.glitchdev.rfu.events.managers.RenderEvents.registerRenderEvent
@@ -51,16 +50,6 @@ object DebugHotspots : Feature {
         override val description: String = "Toggles the debug sphere for hotspots"
 
         override fun execute(context: CommandContext<FabricClientCommandSource>): Int {
-            if (!DevSettings.devMode) {
-                context.source.sendFeedback(
-                    TextUtils.rfuLiteral(
-                        "Must have developer mode on to use this feature!",
-                        TextStyle(TextColor.RED, TextEffects.BOLD)
-                    )
-                )
-                return 1
-            }
-
             showSphere = !showSphere
             context.source.sendFeedback(
                 TextUtils.rfuLiteral(

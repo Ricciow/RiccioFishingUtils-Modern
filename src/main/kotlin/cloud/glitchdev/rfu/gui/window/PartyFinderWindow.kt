@@ -121,7 +121,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
 
         registerKeyboardEvent(
             key = { OtherSettings.peekPartyFinderKeybind },
-            onPress = { if (!World.isOnAlpha()) isPeeking = true },
+            onPress = { if (!World.isOnAlpha) isPeeking = true },
             onRelease = { isPeeking = false }
         )
 

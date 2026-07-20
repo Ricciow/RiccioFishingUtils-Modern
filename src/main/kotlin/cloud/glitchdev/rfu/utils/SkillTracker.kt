@@ -1,7 +1,7 @@
-package cloud.glitchdev.rfu.utils
+﻿package cloud.glitchdev.rfu.utils
 
-import cloud.glitchdev.rfu.constants.SkillType
-import cloud.glitchdev.rfu.constants.Skills
+import cloud.glitchdev.rfu.constants.skyblock.SkillType
+import cloud.glitchdev.rfu.constants.skyblock.Skills
 import cloud.glitchdev.rfu.data.skills.SkillsData
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent

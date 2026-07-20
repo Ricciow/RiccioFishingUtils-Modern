@@ -14,11 +14,9 @@ object PartySettings : Category("Party") {
         }
     }
 
-    var togglePartyCommands by observable(boolean(true) {
+    var togglePartyCommands by reloadableBoolean(true) {
         name = Literal("Toggle Party Commands")
         description = Literal("Enables or disables all party commands triggered via chat.")
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var partyCommandPrefix by string("!") {

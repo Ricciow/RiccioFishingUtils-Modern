@@ -2,8 +2,8 @@ package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.Category
-import cloud.glitchdev.rfu.constants.RareScDisplayDataType
-import cloud.glitchdev.rfu.constants.SeaCreatures
+import cloud.glitchdev.rfu.constants.fishing.RareScDisplayDataType
+import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.feature.fishing.CatchMessageReplacer
 import cloud.glitchdev.rfu.feature.fishing.RareScPartyMessage
 import cloud.glitchdev.rfu.gui.window.SeaCreatureEditWindow
@@ -57,11 +57,9 @@ object SeaCreatureConfig : Category("Sea Creatures") {
         }
     }
 
-    var replaceCatchMessages by observable(boolean(true) {
+    var replaceCatchMessages by reloadableBoolean(true) {
         name = Literal("Replace Catch Messages")
         description = Literal("Replaces standard catch messages with custom ones")
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var catchMessageTemplate by string("&3&lSEA CREATURE! &eYou caught {article} {style}&l{name}") {
@@ -91,19 +89,15 @@ object SeaCreatureConfig : Category("Sea Creatures") {
         }
     }
 
-    var detectionAlert by observable(boolean(true) {
+    var detectionAlert by reloadableBoolean(true) {
         name = Literal("Rare Sc Alert")
         description = Literal("Sends an alert whenever a rare SC is found.")
-    }) { _, _ ->
-        reloadScreen()
     }
 
-    var rareScSound by observable(boolean(true) {
+    var rareScSound by reloadableBoolean(true) {
         name = Literal("Rare Sc Sound")
         description = Literal("Plays a sound whenever a rare SC is found.")
         condition = { detectionAlert }
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var rareScSoundVolume by float(1f) {
@@ -138,11 +132,9 @@ object SeaCreatureConfig : Category("Sea Creatures") {
         }
     }
 
-    var goldenDragonAlert by observable(boolean(true) {
+    var goldenDragonAlert by reloadableBoolean(true) {
         name = Literal("Golden Dragon Alert")
         description = Literal("Sends an alert when a rare SC is low health and you don't have Golden Dragon equipped.")
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var gdragAlertThreshold by int(20) {
@@ -153,12 +145,10 @@ object SeaCreatureConfig : Category("Sea Creatures") {
         condition = { goldenDragonAlert }
     }
 
-    var goldenDragonSound by observable(boolean(true) {
+    var goldenDragonSound by reloadableBoolean(true) {
         name = Literal("GDrag Alert Sound")
         description = Literal("Plays a sound when the alert triggers.")
         condition = { goldenDragonAlert }
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var goldenDragonVolume by float(1f) {
@@ -176,11 +166,9 @@ object SeaCreatureConfig : Category("Sea Creatures") {
         }
     }
 
-    var rarePartyMessages by observable(boolean(true) {
+    var rarePartyMessages by reloadableBoolean(true) {
         name = Literal("Party SC messages")
         description = Literal("Sends a party message whenever you catch a rare sea creature.")
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var rarePartyMessage by string("WOAH! A {name} just surfaced! {dh}Catch #{count} after {time}!") {
@@ -197,11 +185,9 @@ object SeaCreatureConfig : Category("Sea Creatures") {
         ) { rarePartyMessages }
     }
 
-    var rareCocoonPartyMessages by observable(boolean(true) {
+    var rareCocoonPartyMessages by reloadableBoolean(true) {
         name = Literal("Party Cocoon messages")
         description = Literal("Sends a party message whenever you cocoon a rare sea creature.")
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var rareCocoonPartyMessage by string("WOAH! A {name} was cocooned!") {
@@ -231,11 +217,9 @@ object SeaCreatureConfig : Category("Sea Creatures") {
         }
     }
 
-    var bossHealthBars by observable(boolean(true) {
+    var bossHealthBars by reloadableBoolean(true) {
         name = Literal("Boss Health Bars")
         description = Literal("Enable health bars that appear when there's a rare mob in sight")
-    }) { _, _ ->
-        reloadScreen()
     }
 
     val HEALTH_BAR_REGEX
@@ -261,11 +245,9 @@ object SeaCreatureConfig : Category("Sea Creatures") {
         }
     }
 
-    var rareScDisplay by observable(boolean(true) {
+    var rareScDisplay by reloadableBoolean(true) {
         name = Literal("Toggle")
         description = Literal("Enables the Rare SC display")
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var rareScOnlyWhenFishing by boolean(true) {
@@ -278,5 +260,17 @@ object SeaCreatureConfig : Category("Sea Creatures") {
         name = Literal("Display Data Order")
         description = Literal("Drag to reorder the data shown for each sea creature.")
         condition = { rareScDisplay }
+    }
+
+    init {
+        dualSeparator {
+            title = "Barn Fishing"
+            description = "Features for barn fishers, please don't barn outside of crystal hollows :sob:"
+        }
+    }
+
+    var scCapDisplay by reloadableBoolean(false) {
+        name = Literal("Sea Creature Cap Display")
+        description = Literal("Displays the number of active sea creatures owned by you.")
     }
 }

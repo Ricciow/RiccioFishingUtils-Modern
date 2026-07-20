@@ -1,7 +1,7 @@
-package cloud.glitchdev.rfu.feature.drops
+﻿package cloud.glitchdev.rfu.feature.drops
 
 import cloud.glitchdev.rfu.config.categories.DropsSettings
-import cloud.glitchdev.rfu.constants.IRareDrop
+import cloud.glitchdev.rfu.constants.fishing.IRareDrop
 import cloud.glitchdev.rfu.data.drops.DropManager
 import cloud.glitchdev.rfu.data.drops.DropRecord
 import cloud.glitchdev.rfu.events.managers.DropEvents

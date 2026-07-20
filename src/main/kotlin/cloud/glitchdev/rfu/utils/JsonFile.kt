@@ -87,7 +87,7 @@ class JsonFile<T : Any>(
     }
 
     fun save(triggerOnSave: Boolean = true) {
-        if (revertOnAlpha && World.isOnAlpha()) {
+        if (revertOnAlpha && World.isOnAlpha) {
             RFULogger.dev("[$filename] Skipping save: currently on alpha server.")
             return
         }

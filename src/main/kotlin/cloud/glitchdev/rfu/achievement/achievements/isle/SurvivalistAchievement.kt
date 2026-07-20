@@ -1,10 +1,10 @@
-package cloud.glitchdev.rfu.achievement.achievements.isle
+﻿package cloud.glitchdev.rfu.achievement.achievements.isle
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.achievement.*
 import cloud.glitchdev.rfu.achievement.types.StageAchievement
 import cloud.glitchdev.rfu.config.categories.LavaFishing
-import cloud.glitchdev.rfu.constants.SeaCreatures
+import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.data.mob.SkyblockEntity
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDetectEvent

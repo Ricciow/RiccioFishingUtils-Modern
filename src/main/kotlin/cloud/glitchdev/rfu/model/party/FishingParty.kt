@@ -1,9 +1,9 @@
-package cloud.glitchdev.rfu.model.party
+﻿package cloud.glitchdev.rfu.model.party
 
-import cloud.glitchdev.rfu.constants.FishingIslands
-import cloud.glitchdev.rfu.constants.LiquidTypes
-import cloud.glitchdev.rfu.constants.PartyTypes
-import cloud.glitchdev.rfu.constants.SeaCreatures
+import cloud.glitchdev.rfu.constants.fishing.FishingIslands
+import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
+import cloud.glitchdev.rfu.constants.chat.PartyTypes
+import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.World

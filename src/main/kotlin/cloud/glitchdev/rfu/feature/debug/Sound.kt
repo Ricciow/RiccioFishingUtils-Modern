@@ -1,9 +1,6 @@
 package cloud.glitchdev.rfu.feature.debug
 
-import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.text.TextColor
-import cloud.glitchdev.rfu.constants.text.TextEffects
-import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.utils.Sounds
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.command.AbstractCommand
@@ -26,16 +23,6 @@ object Sound : AbstractCommand("sound") {
                     .then(
                         arg("pitch", FloatArgumentType.floatArg())
                             .executes { context ->
-                                if (!DevSettings.devMode) {
-                                    context.source.sendFeedback(
-                                        TextUtils.rfuLiteral(
-                                            "Must have developer mode on to use this feature!",
-                                            TextStyle(TextColor.RED, TextEffects.BOLD)
-                                        )
-                                    )
-                                    return@executes 1
-                                }
-
                                 val id = StringArgumentType.getString(context, "id")
                                 val pitch = FloatArgumentType.getFloat(context, "pitch")
 
@@ -49,19 +36,9 @@ object Sound : AbstractCommand("sound") {
                             }
                     )
                     .executes { context ->
-                        if (!DevSettings.devMode) {
-                            context.source.sendFeedback(
-                                TextUtils.rfuLiteral(
-                                    "Must have developer mode on to use this feature!",
-                                    TextStyle(TextColor.RED, TextEffects.BOLD)
-                                )
-                            )
-                            return@executes 1
-                        }
+                        val id = StringArgumentType.getString(context, "id")
 
-                        val id = context.getArgument("id", String::class.java)
-
-                        Sounds.playSound(id)
+                        Sounds.playSound(id, 1.0f)
 
                         context.source.sendFeedback(
                             TextUtils.rfuLiteral("Played sound: ${TextColor.YELLOW}$id")

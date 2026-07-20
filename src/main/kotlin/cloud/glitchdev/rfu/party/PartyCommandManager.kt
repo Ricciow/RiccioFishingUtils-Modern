@@ -1,7 +1,7 @@
-package cloud.glitchdev.rfu.party
+﻿package cloud.glitchdev.rfu.party
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
-import cloud.glitchdev.rfu.constants.RegexConstants.PLAYER_REGEX
+import cloud.glitchdev.rfu.constants.chat.RegexConstants.PLAYER_REGEX
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerAllowGameEvent

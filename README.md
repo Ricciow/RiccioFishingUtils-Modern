@@ -9,7 +9,6 @@ Minecraft Mod for Hypixel SkyBlock
 <div align="center">
 
 [![Discord](https://img.shields.io/discord/1210734539186376774?label=discord&color=7289da&logo=discord&style=for-the-badge)](https://discord.gg/JfrXm6TqXz)
-[![Downloads](https://img.shields.io/github/downloads/ricciow/RiccioFishingUtils-Modern/total?label=downloads&color=055ca3&logo=github&style=for-the-badge)](https://github.com/ricciow/RiccioFishingUtils-Modern/releases)
 [![Modrinth](https://img.shields.io/modrinth/dt/rfu?style=for-the-badge&logo=Modrinth&color=17ad56)](https://modrinth.com/mod/rfu)
 </div>
 

@@ -4,7 +4,7 @@ import cloud.glitchdev.rfu.access.EntityAccess
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig.RARE_SC_REGEX
-import cloud.glitchdev.rfu.constants.SeaCreatures
+import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.events.managers.RenderEvents
 import cloud.glitchdev.rfu.events.managers.RenderEvents.registerRenderEvent
 import cloud.glitchdev.rfu.utils.RFULogger
@@ -17,6 +17,8 @@ import net.minecraft.world.entity.decoration.ArmorStand
 import java.awt.Color
 import kotlin.time.Clock
 import kotlin.time.Instant
+import cloud.glitchdev.rfu.data.fishing.BobberInfo
+import cloud.glitchdev.rfu.events.managers.BobberManager
 
 class SkyblockEntity(
     var nameTagEntity: ArmorStand,
@@ -27,8 +29,24 @@ class SkyblockEntity(
     var health: String = "0"
     var maxHealth: String = "0"
     var isShurikened: Boolean = false
+    var originBobber: BobberInfo? = null
 
     var renderEvent: RenderEvents.RenderEvent? = null
+
+    init {
+        updateEntityData()
+        linkToBobber()
+    }
+
+    private fun linkToBobber() {
+        if (::sbName.isInitialized) {
+            val sc = SeaCreatures.get(sbName)
+            if (sc != null) {
+                originBobber = BobberManager.getBobberForEntity(modelEntity.id)
+                    ?: BobberManager.findClosestBobber(modelEntity.position(), maxDistance = 1.0)
+            }
+        }
+    }
 
     fun getName(): String? {
         if (!::sbName.isInitialized) {
@@ -38,7 +56,8 @@ class SkyblockEntity(
     }
 
     override fun toString(): String {
-        return "$sbName ($health/$maxHealth) (renderEvent: ${renderEvent != null}) - ${nameTagEntity.x}, ${nameTagEntity.y}, ${nameTagEntity.z}"
+        val bobberInfo = originBobber?.let { " (bobberOwner: ${it.ownerName})" } ?: ""
+        return "$sbName ($health/$maxHealth) (renderEvent: ${renderEvent != null})$bobberInfo - ${nameTagEntity.x}, ${nameTagEntity.y}, ${nameTagEntity.z}"
     }
 
     fun isRemoved(): Boolean = nameTagEntity.isRemoved && modelEntity.isRemoved

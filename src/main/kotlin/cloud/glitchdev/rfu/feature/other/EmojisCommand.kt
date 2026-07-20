@@ -1,6 +1,6 @@
-package cloud.glitchdev.rfu.feature.other
+﻿package cloud.glitchdev.rfu.feature.other
 
-import cloud.glitchdev.rfu.constants.Emoji
+import cloud.glitchdev.rfu.constants.text.Emoji
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.command.Command

@@ -1,8 +1,8 @@
-package cloud.glitchdev.rfu.feature.ink
+﻿package cloud.glitchdev.rfu.feature.ink
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.InkFishing
-import cloud.glitchdev.rfu.constants.FishingIslands
+import cloud.glitchdev.rfu.constants.fishing.FishingIslands
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature

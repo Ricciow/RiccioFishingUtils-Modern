@@ -1,6 +1,6 @@
-package cloud.glitchdev.rfu.utils
+﻿package cloud.glitchdev.rfu.utils
 
-import cloud.glitchdev.rfu.constants.Mayors
+import cloud.glitchdev.rfu.constants.skyblock.Mayors
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent

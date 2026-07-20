@@ -1,10 +1,11 @@
 package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
-import cloud.glitchdev.rfu.constants.FishTrackingType
+import cloud.glitchdev.rfu.constants.fishing.FishTrackingType
 import cloud.glitchdev.rfu.data.mob.DeployableType
 import cloud.glitchdev.rfu.feature.fishing.DoubleHookMessages
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
+import com.teamresourceful.resourcefulconfigkt.api.ObjectKt
 
 object GeneralFishing : Category("General Fishing") {
     override val description: TranslatableValue
@@ -36,16 +37,38 @@ object GeneralFishing : Category("General Fishing") {
 
     init {
         dualSeparator {
+            title = "Custom Fishing Keybinds"
+            description = "Change your keybinds when fishing"
+        }
+    }
+
+    var overrideFishingKeybinds by reloadableBoolean(false) {
+        name = Literal("Override Fishing Keybinds")
+        description = Literal("Enable custom keybinds when fishing.")
+    }
+
+    var disableOnRareSC by boolean(true) {
+        name = Literal("Disable on Rare SC")
+        description = Literal("Disables custom keybind overrides when a rare sea creature is nearby.")
+        condition = { overrideFishingKeybinds }
+    }
+
+    val customBinds by obj(CustomBinds) {
+        name = Literal("Fishing Keybinds")
+        description = Literal("Overrides hotbar 1-9 and left/right click keybinds while fishing.")
+        condition = { overrideFishingKeybinds }
+    }
+
+    init {
+        dualSeparator {
             title = "Fishing Display"
             description = "Track your xp and scs!"
         }
     }
 
-    var fishTrackingDisplay by observable(boolean(true) {
+    var fishTrackingDisplay by reloadableBoolean(true) {
         name = Literal("Toggle")
         description = Literal("Enables the Fishing display")
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var fishTrackingItems by enums(*FishTrackingType.entries.toTypedArray()) {
@@ -67,11 +90,9 @@ object GeneralFishing : Category("General Fishing") {
         }
     }
 
-    var deployableDisplay by observable(boolean(true) {
+    var deployableDisplay by reloadableBoolean(true) {
         name = Literal("Deployable Display")
         description = Literal("Toggles the deployable display")
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var deployableTimerDisplay by enums(*DeployableType.entries.toTypedArray()) {
@@ -80,11 +101,9 @@ object GeneralFishing : Category("General Fishing") {
         condition = { deployableDisplay }
     }
 
-    var deployableExpiredAlert by observable(boolean(true) {
+    var deployableExpiredAlert by reloadableBoolean(true) {
         name = Literal("Deployable Expired Alert")
         description = Literal("Toggles the alert for expired deployables")
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var deployableAlertTypes by enums(*DeployableType.entries.toTypedArray()) {
@@ -93,12 +112,10 @@ object GeneralFishing : Category("General Fishing") {
         condition = { deployableDisplay }
     }
 
-    var deployableExpiredSound by observable(boolean(true) {
+    var deployableExpiredSound by reloadableBoolean(true) {
         name = Literal("Expired Sound")
         description = Literal("Plays a sound whenever a deployable expires.")
         condition = { deployableExpiredAlert }
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var deployableExpiredVolume by float(1f) {
@@ -116,11 +133,9 @@ object GeneralFishing : Category("General Fishing") {
         }
     }
 
-    var toggleDoubleHookMessages by observable(boolean(false) {
+    var toggleDoubleHookMessages by reloadableBoolean(false) {
         name = Literal("Toggle Double Hook Messages")
         description = Literal("Automatically send messages when you get a double hook!")
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var doubleHookMessages by strings(
@@ -165,12 +180,10 @@ object GeneralFishing : Category("General Fishing") {
         description = Literal("Sends an alert whenever a rod cast fails.")
     }
 
-    var failCastSound by observable(boolean(true) {
+    var failCastSound by reloadableBoolean(true) {
         name = Literal("Failed Cast Sound")
         description = Literal("Plays a sound whenever a cast fails.")
         condition = { failCastAlert }
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var failCastVolume by float(1f) {
@@ -213,12 +226,8 @@ object GeneralFishing : Category("General Fishing") {
         description = Literal("Plays a sound when the fishing stream approaches, increasing in pitch.")
     }
 
-    var bobbinTimeDisplay by observable(boolean(true) {
+    var bobbinTimeDisplay by reloadableBoolean(true) {
         name = Literal("Bobbin' Time Display")
         description = Literal("Display nearby bobbers and Bobbin' Time bonus on screen")
-    }) { _, _ ->
-        reloadScreen()
     }
-
 }
-

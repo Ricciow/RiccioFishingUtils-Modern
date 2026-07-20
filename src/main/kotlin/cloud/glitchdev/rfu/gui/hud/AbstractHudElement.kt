@@ -47,8 +47,10 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
 
     var currentX = defaultX
     var currentY = defaultY
-    open val enabled
-        get() = isEditing
+    open val requirement: Boolean = true
+    open val isElementActive: Boolean = true
+    open val enabled: Boolean
+        get() = requirement && (isEditing || isElementActive)
     open var scale = 1f
     open val skyblockOnly = true
 

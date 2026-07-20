@@ -4,6 +4,9 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "ConfigScreenMixin",
+    "KeyMappingMixin",
+    "KeyMappingAccessor",
+    "GuiGraphicsExtractorMixin",
     "ListWidgetMixin",
     "ClientPacketListenerMixin",
     "ClientCommonPacketListenerImplMixin",
@@ -19,7 +22,12 @@
     "SquidRenderStateMixin",
     "PlainTextLiteralContentsMixin",
     "TranslatableContentsMixin",
-    "screen.PackSelectionScreenMixin"
+    "screen.PackSelectionScreenMixin",
+    "ItemModelResolverMixin",
+    "CommandSuggestionsMixin",
+    "SuggestionsListMixin",
+    "EditBoxMixin",
+    "FontPreparedTextBuilderMixin"
   ],
   "injectors": {
     "defaultRequire": 1

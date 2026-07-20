@@ -1,7 +1,7 @@
-package cloud.glitchdev.rfu.feature.other
+﻿package cloud.glitchdev.rfu.feature.other
 
 import cloud.glitchdev.rfu.config.categories.BackendSettings
-import cloud.glitchdev.rfu.constants.Dyes as ConstDyes
+import cloud.glitchdev.rfu.constants.skyblock.Dyes as ConstDyes
 import cloud.glitchdev.rfu.constants.text.TextColor.*
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.utils.TextUtils

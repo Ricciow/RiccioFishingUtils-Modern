@@ -1,8 +1,8 @@
 package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
-import cloud.glitchdev.rfu.constants.Dyes
-import cloud.glitchdev.rfu.constants.RareDrops
+import cloud.glitchdev.rfu.constants.skyblock.Dyes
+import cloud.glitchdev.rfu.constants.fishing.RareDrops
 import cloud.glitchdev.rfu.feature.drops.RareDropAlert
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 
@@ -34,11 +34,9 @@ object DropsSettings : Category("Drops") {
         }
     }
 
-    var customRareDropMessage by observable(boolean(true) {
+    var customRareDropMessage by reloadableBoolean(true) {
         name = Literal("Enable Custom Rare Drop Message")
         description = Literal("Shows a custom message when you get a rare drop")
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var rareDropMessageFormat by string("&6&lRARE DROP! &e{drop} &b(+{magic_find} \uE01A Magic Find) &7(Took {count} catches, {time} since last)") {
@@ -73,11 +71,9 @@ object DropsSettings : Category("Drops") {
         }
     }
 
-    var rareDropTitleAlert by observable(boolean(true) {
+    var rareDropTitleAlert by reloadableBoolean(true) {
         name = Literal("Rare Drop Title Alert")
         description = Literal("Shows a title on screen when you get a rare drop")
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var rareDropTitleFormat by string("{dropcolor}&l{drop}") {

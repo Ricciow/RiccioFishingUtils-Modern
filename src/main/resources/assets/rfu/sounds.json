@@ -105,6 +105,18 @@
       }
     ]
   },
+  "inventory_full": {
+    "category": "player",
+    "subtitle": "Inventory Full",
+    "sounds": [
+      {
+        "name": "block.note_block.pling",
+        "type": "event",
+        "pitch": 0.5,
+        "volume": 1.0
+      }
+    ]
+  },
   "rod_timer": {
     "category": "player",
     "subtitle": "Rod Timer",

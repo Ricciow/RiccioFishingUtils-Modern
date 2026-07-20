@@ -1,8 +1,8 @@
-package cloud.glitchdev.rfu.feature.fishing
+﻿package cloud.glitchdev.rfu.feature.fishing
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.HotSpotSettings
-import cloud.glitchdev.rfu.constants.HotspotType
+import cloud.glitchdev.rfu.constants.fishing.HotspotType
 import cloud.glitchdev.rfu.data.fishing.Hotspot
 import cloud.glitchdev.rfu.events.managers.HotSpotEvents.registerHotSpotChangedEvent
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent

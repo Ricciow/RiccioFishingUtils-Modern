@@ -1,7 +1,8 @@
 package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
-import cloud.glitchdev.rfu.constants.MessageTypes
+import cloud.glitchdev.rfu.constants.chat.MessageTypes
+import cloud.glitchdev.rfu.constants.ui.TooltipGuiScale
 import cloud.glitchdev.rfu.constants.text.TextColor.LIGHT_RED
 
 object OtherSettings : Category("Other") {
@@ -27,11 +28,9 @@ object OtherSettings : Category("Other") {
         description = Literal("Shows the currently tracked achievements.")
     }
 
-    var achievementSound by observable(boolean(true) {
+    var achievementSound by reloadableBoolean(true) {
         name = Literal("Achievement Sound")
         description = Literal("Plays a sound when you unlock an achievement.")
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var achievementVolume by float(1f) {
@@ -43,19 +42,15 @@ object OtherSettings : Category("Other") {
     }
 
 
-    var littlefootAlert by observable(boolean(false) {
+    var littlefootAlert by reloadableBoolean(false) {
         name = Literal("Littlefoot Alert")
         description = Literal("Sends an alert whenever a Littlefoot is found.")
-    }) { _, _ ->
-        reloadScreen()
     }
 
-    var littlefootSound by observable(boolean(true) {
+    var littlefootSound by reloadableBoolean(true) {
         name = Literal("Littlefoot Alert Sound")
         description = Literal("Plays a sound whenever a Littlefoot is found.")
         condition = { littlefootAlert }
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var littlefootVolume by float(1f) {
@@ -71,6 +66,11 @@ object OtherSettings : Category("Other") {
         description = Literal("Zooms when etherwarping")
     }
 
+    var tooltipGuiScale by enum(TooltipGuiScale.DEFAULT) {
+        name = Literal("Tooltip GUI Scale")
+        description = Literal("The GUI scale for tooltips.")
+    }
+
     init {
         dualSeparator {
             title = "Pets"
@@ -82,11 +82,9 @@ object OtherSettings : Category("Other") {
         description = Literal("Shows the currently equipped pet.")
     }
 
-    var petLevelUpAlert by observable(boolean(true) {
+    var petLevelUpAlert by reloadableBoolean(true) {
         name = Literal("Pet Level Up Alert")
         description = Literal("Shows an alert on screen when your pet levels up.")
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var petLevelUpMinLevel by int(100) {
@@ -102,6 +100,26 @@ object OtherSettings : Category("Other") {
             title = "Party & Alerts"
         }
     }
+
+    var fullInventoryAlert by reloadableBoolean(true) {
+        name = Literal("Full Inventory Alert")
+        description = Literal("Shows an alert when your inventory becomes full.")
+    }
+
+    var fullInventorySound by reloadableBoolean(true) {
+        name = Literal("Full Inventory Sound")
+        description = Literal("Plays a sound when your inventory becomes full.")
+        condition = { fullInventoryAlert }
+    }
+
+    var fullInventoryVolume by float(1f) {
+        name = Literal("Sound Volume")
+        description = Literal("The volume for the full inventory alert sound.")
+        range = 0f..1f
+        slider = true
+        condition = { fullInventoryAlert && fullInventorySound }
+    }
+
 
     init {
         separator {
@@ -164,11 +182,9 @@ object OtherSettings : Category("Other") {
         }
     }
 
-    var hideMessages by observable(boolean(false) {
+    var hideMessages by reloadableBoolean(false) {
         name = Literal("Enable message hiding")
         description = Literal("Just hides some selected messages")
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var hiddenMessageTypes by enums(*MessageTypes.entries.toTypedArray()) {
@@ -189,12 +205,10 @@ object OtherSettings : Category("Other") {
         }
     }
 
-    var autoAcceptResourcePacks by observable(boolean(true) {
+    var autoAcceptResourcePacks by reloadableBoolean(true) {
         name = Literal("Auto Accept Resource Packs")
         description = Literal("Automatically accept resource/texture packs sent by the server if you are on Hypixel.")
-    }, { _, _ ->
-        reloadScreen()
-    })
+    }
 
     var saveResourcePacks by boolean(true) {
         name = Literal("Save for future use")
@@ -206,5 +220,11 @@ object OtherSettings : Category("Other") {
         name = Literal("Auto Load Resource Packs")
         description = Literal("Automatically loads the server-sent resource packs. If disabled, packs are still accepted and saved but not loaded into the game.")
         condition = { autoAcceptResourcePacks }
+    }
+
+    var deleteOldResourcePacks by boolean(true) {
+        name = Literal("Delete Old Resource Packs")
+        description = Literal("Deletes older versions of server resource packs when their hash changes to save disk space.")
+        condition = { autoAcceptResourcePacks && saveResourcePacks }
     }
 }

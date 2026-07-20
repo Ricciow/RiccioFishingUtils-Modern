@@ -27,8 +27,10 @@ import gg.essential.elementa.dsl.toConstraint
 
 @HudElement
 object AchievementTrackerDisplay : AbstractHudElement("achievementTrackerDisplay") {
-    override val enabled: Boolean
-        get() = OtherSettings.achievementTrackerDisplay && (isEditing || AchievementHandler.getTrackedAchievements().isNotEmpty())
+    override val requirement: Boolean
+        get() = OtherSettings.achievementTrackerDisplay
+    override val isElementActive: Boolean
+        get() = AchievementHandler.getTrackedAchievements().isNotEmpty()
 
     private val container = UIContainer().constrain {
         width = ChildBasedMaxSizeConstraint()

@@ -5,10 +5,10 @@ import cloud.glitchdev.rfu.events.InstantRegister
 import cloud.glitchdev.rfu.events.InstantRegisteredEvent
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.utils.JsonFile
-import cloud.glitchdev.rfu.constants.Bait
-import cloud.glitchdev.rfu.constants.LiquidTypes
-import cloud.glitchdev.rfu.constants.SeaCreatureCategory
-import cloud.glitchdev.rfu.constants.SeaCreatures
+import cloud.glitchdev.rfu.constants.fishing.Bait
+import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
+import cloud.glitchdev.rfu.constants.fishing.SeaCreatureCategory
+import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.data.fishing.Hotspot
 import cloud.glitchdev.rfu.utils.World
 import net.minecraft.world.phys.Vec3
@@ -55,6 +55,7 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
     fun isGdragAlert(scName: String): Boolean = isSpecial(scName) && (resolve(scName) { it.gdragAlert } ?: false)
     fun isRareSCAlert(scName: String): Boolean = isSpecial(scName) && (resolve(scName) { it.rareSCAlert } ?: false)
     fun isBossbarEnabled(scName: String): Boolean = isSpecial(scName) && (resolve(scName) { it.bossbar } ?: false)
+    fun isMergeBossbarHpEnabled(scName: String): Boolean = resolve(scName) { it.mergeBossbarHp } ?: scName.contains("Scuttler", ignoreCase = true)
     fun getScDisplayColor(scName: String): String = resolve(scName) { it.scDisplayColor } ?: "§f"
 
     fun save() {
@@ -136,6 +137,7 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
                 bossbar = isBossbarEnabled(scName),
                 gdragAlert = isGdragAlert(scName),
                 rareSCAlert = isRareSCAlert(scName),
+                mergeBossbarHp = isMergeBossbarHpEnabled(scName),
                 scDisplayColor = resolve(scName) { it.scDisplayColor } ?: "§f",
                 rarePartyMessage = resolve(scName) { it.rarePartyMessage } ?: ""
             )
@@ -190,7 +192,8 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
                                 catchMessage = backendSc.catchMessage,
                                 liquidType = backendSc.liquidType,
                                 category = backendSc.category,
-                                conditions = backendSc.conditions
+                                conditions = backendSc.conditions,
+                                mergeBossbarHp = currentSc.mergeBossbarHp ?: backendSc.mergeBossbarHp
                             )
                             if (updatedSc != currentSc) {
                                 mergedCreatures[scName] = updatedSc

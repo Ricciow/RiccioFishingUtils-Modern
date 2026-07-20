@@ -5,17 +5,18 @@ import cloud.glitchdev.rfu.constants.text.TextColor.AQUAMARINE
 import cloud.glitchdev.rfu.constants.text.TextColor.YELLOW
 import cloud.glitchdev.rfu.constants.text.TextEffects.BOLD
 import cloud.glitchdev.rfu.feature.fishing.BlizzardTimer
-import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
+import cloud.glitchdev.rfu.gui.hud.AbstractFishingHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 import cloud.glitchdev.rfu.utils.dsl.toReadableString
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
 @HudElement
-object BlizzardTimerDisplay : AbstractTextHudElement("blizzardTimer") {
-
-    override val enabled: Boolean
-        get() = JerryFishing.blizzardTimerDisplay && (super.enabled || BlizzardTimer.isActive)
+object BlizzardTimerDisplay : AbstractFishingHudElement("blizzardTimer") {
+    override val requirement: Boolean
+        get() = JerryFishing.blizzardTimerDisplay
+    override val isElementActive: Boolean
+        get() = BlizzardTimer.isActive
 
     override fun onUpdateState() {
         super.onUpdateState()

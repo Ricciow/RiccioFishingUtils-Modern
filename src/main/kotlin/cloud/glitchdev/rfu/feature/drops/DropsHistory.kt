@@ -1,7 +1,7 @@
-package cloud.glitchdev.rfu.feature.drops
+﻿package cloud.glitchdev.rfu.feature.drops
 
-import cloud.glitchdev.rfu.constants.Dyes
-import cloud.glitchdev.rfu.constants.RareDrops
+import cloud.glitchdev.rfu.constants.skyblock.Dyes
+import cloud.glitchdev.rfu.constants.fishing.RareDrops
 import cloud.glitchdev.rfu.constants.text.TextColor.*
 import cloud.glitchdev.rfu.constants.text.TextEffects.*
 import cloud.glitchdev.rfu.constants.text.TextStyle

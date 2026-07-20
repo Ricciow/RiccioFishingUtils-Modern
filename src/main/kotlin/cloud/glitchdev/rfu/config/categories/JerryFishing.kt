@@ -26,26 +26,20 @@ object JerryFishing : Category("Jerry Fishing") {
         }
     }
 
-    var blizzardTimerDisplay by observable(boolean(true) {
+    var blizzardTimerDisplay by reloadableBoolean(true) {
         name = Literal("Blizzard Timer Display")
         description = Literal("Display the current blizzard timer on screen")
-    }) { _, _ ->
-        reloadScreen()
     }
 
-    var blizzardExpiredAlert by observable(boolean(true) {
+    var blizzardExpiredAlert by reloadableBoolean(true) {
         name = Literal("Blizzard Expired Alert")
         description = Literal("Sends an alert whenever the blizzard expires.")
-    }) { _, _ ->
-        reloadScreen()
     }
 
-    var blizzardExpiredSound by observable(boolean(true) {
+    var blizzardExpiredSound by reloadableBoolean(true) {
         name = Literal("Blizzard Expired Sound")
         description = Literal("Plays a sound whenever the blizzard expires.")
         condition = { blizzardExpiredAlert }
-    }) { _, _ ->
-        reloadScreen()
     }
 
     var blizzardExpiredVolume by float(1f) {

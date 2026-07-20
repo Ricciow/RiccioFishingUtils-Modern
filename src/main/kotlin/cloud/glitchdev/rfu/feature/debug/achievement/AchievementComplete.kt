@@ -17,8 +17,6 @@ object AchievementComplete : AbstractCommand("complete") {
         builder.then(
             arg("id", StringListArgumentType(AchievementDebugUtils.getAllIds()))
                 .executes { context ->
-                    if (!AchievementDebugUtils.checkDevMode(context.source)) return@executes 1
-
                     val id = StringArgumentType.getString(context, "id")
                     val achievement = AchievementManager.getAchievement(id)
 

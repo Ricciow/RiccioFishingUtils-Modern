@@ -1,7 +1,7 @@
-package cloud.glitchdev.rfu.events.managers
+﻿package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
-import cloud.glitchdev.rfu.constants.SeaCreatures
+import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
@@ -11,7 +11,7 @@ import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.world.phys.Vec3
 
-import cloud.glitchdev.rfu.constants.Bait
+import cloud.glitchdev.rfu.constants.fishing.Bait
 import cloud.glitchdev.rfu.events.managers.BaitEventManager
 import cloud.glitchdev.rfu.data.fishing.Hotspot
 

@@ -16,11 +16,10 @@ object BackendSettings : Category("Backend Settings") {
         }
     }
 
-    var backendAccepted by observable(boolean(false) {
+    var backendAccepted by reloadableBoolean(false, {
         name = Literal("Connect to Backend")
         description = Literal("Allows the mod to connect to the RFU backend for features like party finder.")
     }) { _, newValue ->
-        reloadScreen()
         if (newValue) {
             decisionMade = true
             Network.authenticateUser()

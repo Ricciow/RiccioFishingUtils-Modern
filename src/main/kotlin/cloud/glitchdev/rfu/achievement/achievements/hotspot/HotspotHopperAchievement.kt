@@ -1,8 +1,8 @@
-package cloud.glitchdev.rfu.achievement.achievements.hotspot
+﻿package cloud.glitchdev.rfu.achievement.achievements.hotspot
 
 import cloud.glitchdev.rfu.achievement.*
 import cloud.glitchdev.rfu.achievement.types.NumericAchievement
-import cloud.glitchdev.rfu.constants.LiquidTypes
+import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import kotlin.time.Duration.Companion.minutes

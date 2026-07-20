@@ -6,15 +6,16 @@ import cloud.glitchdev.rfu.constants.text.TextColor.YELLOW
 import cloud.glitchdev.rfu.constants.text.TextColor.GRAY
 import cloud.glitchdev.rfu.constants.text.TextColor.LIGHT_BLUE
 import cloud.glitchdev.rfu.constants.text.TextEffects.BOLD
-import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
+import cloud.glitchdev.rfu.gui.hud.AbstractFishingHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 import cloud.glitchdev.rfu.feature.fishing.BobbinTime
-import cloud.glitchdev.rfu.feature.fishing.FishingSession
 
 @HudElement
-object BobbinTimeDisplay : AbstractTextHudElement("bobbinTime") {
-    override val enabled: Boolean
-        get() = GeneralFishing.bobbinTimeDisplay && (super.enabled || (BobbinTime.hasBobbinTimeArmor && FishingSession.isFishing))
+object BobbinTimeDisplay : AbstractFishingHudElement("bobbinTime") {
+    override val requirement: Boolean
+        get() = GeneralFishing.bobbinTimeDisplay
+    override val isElementActive: Boolean
+        get() = BobbinTime.hasBobbinTimeArmor
 
     override fun onUpdateState() {
         super.onUpdateState()

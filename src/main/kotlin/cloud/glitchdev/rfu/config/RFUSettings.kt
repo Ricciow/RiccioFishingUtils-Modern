@@ -14,6 +14,7 @@ import cloud.glitchdev.rfu.config.categories.LotusAtollSettings
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.config.categories.PartySettings
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
+import cloud.glitchdev.rfu.config.categories.TrophyFishing
 import cloud.glitchdev.rfu.config.migration.ConfigMigration
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.network.VersionHttp.isOutdated
@@ -36,7 +37,7 @@ object RFUSettings : ConfigKt("rfu/settings") {
         }
 
         separator {
-            title = "Your mod is outdated!"
+            title = "§cYour mod is outdated!"
             description = "You should update!"
             condition = { isOutdated }
         }
@@ -147,6 +148,7 @@ object RFUSettings : ConfigKt("rfu/settings") {
         category(InkFishing)
         category(JerryFishing)
         category(LotusAtollSettings)
+        category(TrophyFishing)
         category(SeaCreatureConfig)
         category(DropsSettings)
         category(PartySettings)

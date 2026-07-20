@@ -1,6 +1,6 @@
-package cloud.glitchdev.rfu.gui.window
+﻿package cloud.glitchdev.rfu.gui.window
 
-import cloud.glitchdev.rfu.constants.SeaCreatures
+import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.seacreature.UISeaCreatureEditor
 import cloud.glitchdev.rfu.gui.components.seacreature.UISeaCreatureList
