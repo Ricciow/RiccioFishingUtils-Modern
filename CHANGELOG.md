@@ -3,6 +3,7 @@
 ### Fixes
 - Fixed compatibility issue with pack disabler - @Noamm9
 - Fixed crash with skyblock enhancenements mod
+- Fixed skill xp tracking being inaccurate when at max level
 
 ### Back-end
 - Replaced `@Redirect` mixins with `@WrapOperation` to ensure compatibility with other mods modifying tooltips or UI widgets.
