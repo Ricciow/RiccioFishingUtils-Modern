@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.mixin;
 
+import cloud.glitchdev.rfu.constants.text.Emoji;
 import cloud.glitchdev.rfu.feature.other.EmojiAutocomplete;
 import cloud.glitchdev.rfu.feature.other.EmojiSuggestion;
 import com.mojang.brigadier.suggestion.Suggestion;
@@ -7,13 +8,14 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.CommandSuggestions;
 import net.minecraft.client.gui.components.EditBox;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import net.minecraft.client.gui.Font;
@@ -47,22 +49,25 @@ public abstract class CommandSuggestionsMixin {
         }
     }
 
-    @Redirect(
+    @WrapOperation(
         method = "showSuggestions",
         at = @At(value = "INVOKE", target = "Lcom/mojang/brigadier/suggestion/Suggestion;getText()Ljava/lang/String;")
     )
-    private String rfu$redirectGetTextInShowSuggestions(Suggestion suggestion) {
+    private String rfu$redirectGetTextInShowSuggestions(Suggestion suggestion, Operation<String> original) {
         if (suggestion instanceof EmojiSuggestion emojiSuggestion) {
             return emojiSuggestion.getDisplayText();
         }
-        return suggestion.getText();
+        return original.call(suggestion);
     }
 
-    @Redirect(
+    @WrapOperation(
         method = "showSuggestions",
         at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;width(Ljava/lang/String;)I")
     )
-    private int rfu$redirectWidthInShowSuggestions(Font font, String text) {
-        return font.width(FormattedText.of(text));
+    private int rfu$redirectWidthInShowSuggestions(Font font, String text, Operation<Integer> original) {
+        if (Emoji.containsAnEmoji(text)) {
+            return font.width(FormattedText.of(text));
+        }
+        return original.call(font, text);
     }
 }

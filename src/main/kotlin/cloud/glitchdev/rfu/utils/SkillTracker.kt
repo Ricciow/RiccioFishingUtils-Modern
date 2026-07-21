@@ -1,4 +1,4 @@
-﻿package cloud.glitchdev.rfu.utils
+package cloud.glitchdev.rfu.utils
 
 import cloud.glitchdev.rfu.constants.skyblock.SkillType
 import cloud.glitchdev.rfu.constants.skyblock.Skills
@@ -11,7 +11,6 @@ import cloud.glitchdev.rfu.events.managers.SkillEvents
 import cloud.glitchdev.rfu.utils.dsl.toSkillLevel
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.core.component.DataComponents
-import net.minecraft.world.item.ItemStack
 
 @AutoRegister
 object SkillTracker : RegisteredEvent {
@@ -38,18 +37,17 @@ object SkillTracker : RegisteredEvent {
             val skill = SkillType.fromName(skillName) ?: return@registerGameEvent
             val currentTotal = getSkillXp(skill)
 
-            val newTotal = if (!currentXpStr.isNullOrBlank() && !requiredXpStr.isNullOrBlank()) {
-                val cur = Skills.parseXp(currentXpStr)
-                val req = Skills.parseXp(requiredXpStr)
-                calculateTotalXp(cur, req)
+            val cur = if (!currentXpStr.isNullOrBlank()) Skills.parseXp(currentXpStr) else null
+            val req = if (!requiredXpStr.isNullOrBlank()) Skills.parseXp(requiredXpStr) else null
+            val gained = Skills.parseXp(gainedXpStr)
+
+            val newTotal = if (cur != null && req != null) {
+                calculateTotalXp(skill, cur, req)
             } else {
-                val gained = Skills.parseXp(gainedXpStr)
                 currentTotal + gained
             }
 
-            if (newTotal > currentTotal) {
-                setSkillXp(skill, newTotal)
-            }
+            setSkillXp(skill, newTotal)
         }
 
         registerContainerOpenEvent { _, items ->
@@ -168,9 +166,9 @@ object SkillTracker : RegisteredEvent {
         return 60
     }
 
-    private fun calculateTotalXp(currentXp: Long, neededXp: Long): Long {
+    private fun calculateTotalXp(skill: SkillType, currentXp: Long, neededXp: Long): Long {
         if (neededXp == 0L) {
-            return currentXp
+            return Skills.getTotalXpAtLevel(skill.maxLevel) + currentXp
         }
         val targetLevel = getLevelFromNextLevelXp(neededXp)
         return xpRequiredForLevel(targetLevel - 1) + currentXp

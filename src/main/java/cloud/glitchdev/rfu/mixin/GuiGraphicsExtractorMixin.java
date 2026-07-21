@@ -17,15 +17,14 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 import java.util.List;
-import java.util.function.UnaryOperator;
 
 @Mixin(GuiGraphicsExtractor.class)
 public abstract class GuiGraphicsExtractorMixin {
@@ -63,9 +62,6 @@ public abstract class GuiGraphicsExtractorMixin {
         }
 
         Window window = this.minecraft.getWindow();
-        if (window == null) {
-            return 1.0f;
-        }
         int currentGuiScale = window.getGuiScale();
         if (currentGuiScale <= 0) {
             return 1.0f;
@@ -118,23 +114,23 @@ public abstract class GuiGraphicsExtractorMixin {
         return yo;
     }
 
-    @Redirect(method = "tooltip", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;guiWidth()I"))
-    private int rfu$guiWidth(GuiGraphicsExtractor instance, Font font, List<ClientTooltipComponent> lines) {
+    @WrapOperation(method = "tooltip", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;guiWidth()I"))
+    private int rfu$guiWidth(GuiGraphicsExtractor instance, Operation<Integer> original, Font font, List<ClientTooltipComponent> lines) {
         if (rfu$isFixedCustomScaleActive()) {
-            return (int) (instance.guiWidth() / rfu$getTooltipScaleFactor(font, lines));
+            return (int) (original.call(instance) / rfu$getTooltipScaleFactor(font, lines));
         }
-        return instance.guiWidth();
+        return original.call(instance);
     }
 
-    @Redirect(method = "tooltip", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;guiHeight()I"))
-    private int rfu$guiHeight(GuiGraphicsExtractor instance, Font font, List<ClientTooltipComponent> lines) {
+    @WrapOperation(method = "tooltip", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;guiHeight()I"))
+    private int rfu$guiHeight(GuiGraphicsExtractor instance, Operation<Integer> original, Font font, List<ClientTooltipComponent> lines) {
         if (rfu$isFixedCustomScaleActive()) {
-            return (int) (instance.guiHeight() / rfu$getTooltipScaleFactor(font, lines));
+            return (int) (original.call(instance) / rfu$getTooltipScaleFactor(font, lines));
         }
-        return instance.guiHeight();
+        return original.call(instance);
     }
 
-    @Redirect(
+    @WrapOperation(
         method = "tooltip",
         at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;positionTooltip(IIIIII)Lorg/joml/Vector2ic;")
     )
@@ -146,13 +142,15 @@ public abstract class GuiGraphicsExtractorMixin {
             int yo,
             int textWidth,
             int tempHeight,
+            Operation<Vector2ic> original,
             Font font,
             List<ClientTooltipComponent> lines
     ) {
         if (OtherSettings.INSTANCE.getTooltipGuiScale() == TooltipGuiScale.DYNAMIC) {
             float scale = rfu$getTooltipScaleFactor(font, lines);
             int offset = Math.max(0, Math.round(12 * scale) - 3);
-            Vector2ic result = positioner.positionTooltip(
+            Vector2ic result = original.call(
+                    positioner,
                     screenWidth,
                     screenHeight - offset,
                     xo,
@@ -165,7 +163,7 @@ public abstract class GuiGraphicsExtractorMixin {
                     Math.round(result.y() / scale)
             );
         }
-        return positioner.positionTooltip(screenWidth, screenHeight, xo, yo, textWidth, tempHeight);
+        return original.call(positioner, screenWidth, screenHeight, xo, yo, textWidth, tempHeight);
     }
 
     @Inject(

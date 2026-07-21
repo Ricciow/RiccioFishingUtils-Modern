@@ -1,42 +1,9 @@
-# v1.15.0 - Expressive & Empowered
-
-### Features
-- Added slugfish timer
-- Added option to append the pity count and a PITY! suffix to trophy catch chat messages
-- Added two new achievements for hitting pity on trophy frogs and trophy fish
-- Added trophy pity displays
-- Added chat emoji autocompletion
-- Fully written emoji triggers in chat text inputs are now visually replaced with the emoji visually
-- Removed shadows from emojis
-- Added :angry:, :fire:, :thumbsdown:, :thumbsupcat: and :scream: emojis
-- Added Vanquisher party messages.
-- Added custom tooltip GUI scaling option (Just really missed that)
-- Added full inventory alert option
-- Added Personal Sea Creature Cap Display
-- Added option to merge bossbars for duplicate sea creatures (like Scuttlers)
-- Added /rfuchangelog command to view the mod changelog of your current version
-- Added custom fishing keybind overrides for hotbar slots 1-9, left click, and right click
-- Added tracking and HUD displays for power orb fluxes (Mana Flux, Overflux, Plasmaflux) with dynamic rarity coloring and stat boosts
-- Added option to delete old server-sent resource packs when they're changed (This was expected behavior before, but it didn't work so now its fixed, and it's optional if you want to keep the old textures)
-
-### Changes
-- Bobber display, personal cap display, and blizzard timer now automatically hide when the fishing session is paused
-- Reformatted preview party messages to simulate standard party chat prefix and colors.
-- Renamed the saved server resource pack option to 'Hypixel Skyblock Server Pack' and removed long hashes from its display name.
+# v1.15.1 - Expressive & Empowered Patches
 
 ### Fixes
-- Fixed current equipped pet tracking when equipping pets through loadouts.
-- Made item models and custom tooltip styles fall back to vanilla defaults if 
-the resource pack is not active to prevent the missing textures with it not loaded
-- Fixed infinite loading screen when downloading the server resource pack for the first time
-- Fixed resource pack triggering a reload even though it wasn't needed
+- Fixed compatibility issue with pack disabler - @Noamm9
+- Fixed crash with skyblock enhancenements mod
+- Fixed skill xp tracking being inaccurate when at max level
 
 ### Back-end
-- Added internal tracking to link sea creatures to their originating fishing bobber
-- Bundled the changelog file into the mod's built resources
-- Refactored developer commands to centralize developer mode checks using Brigadier requirements
-- Refactored configuration categories to use a unified reloadableBoolean helper to eliminate duplicate reloadScreen callbacks
-- Updated Render3D text renderer to natively support newlines and distance-based scaling
-- Refactored resourcepack mixins to delegate logic to a Kotlin class and act primarily as hooks
-- Refactored TrophyCatchEvents to use newly added TrophyFish and TrophyFrog enums instead of raw strings
-- Refactored AbstractEventManager and PetEvents to support postInitialize and pass pet name and level in pet update callbacks
+- Replaced `@Redirect` mixins with `@WrapOperation` to ensure compatibility with other mods modifying tooltips or UI widgets.
