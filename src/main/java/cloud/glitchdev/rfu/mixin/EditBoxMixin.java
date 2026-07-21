@@ -12,8 +12,9 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 
 @Mixin(EditBox.class)
 public abstract class EditBoxMixin {
@@ -35,14 +36,14 @@ public abstract class EditBoxMixin {
         }
     }
 
-    @Redirect(
+    @WrapOperation(
         method = "extractWidgetRenderState",
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/client/gui/Font;width(Ljava/lang/String;)I"
         )
     )
-    private int rfu$redirectWidthInExtractWidgetRenderState(Font font, String str) {
+    private int rfu$redirectWidthInExtractWidgetRenderState(Font font, String str, Operation<Integer> original) {
         FormattedCharSequence formatted = this.applyFormat(str, this.displayPos);
         return font.width(formatted);
     }
