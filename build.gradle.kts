@@ -59,7 +59,12 @@ val requiredJava = when {
     else -> JavaVersion.VERSION_25
 }
 
-val awFileName = "rfu-26.1.accesswidener"
+val awVersion = when {
+    stonecutter.eval(stonecutter.current.version, ">=26.2") -> "26.2"
+    stonecutter.eval(stonecutter.current.version, ">=26.1") -> "26.1"
+    else -> stonecutter.current.version
+}
+val awFileName = "rfu-$awVersion.accesswidener"
 
 repositories {
     /**
@@ -162,6 +167,7 @@ kotlin {
 
 tasks {
     processResources {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
         inputs.property("id", getProp("mod.id"))
         inputs.property("name", getProp("mod.name"))
         inputs.property("version", project.version)
@@ -187,6 +193,10 @@ tasks {
 
         from(rootProject.file("CHANGELOG.md")) {
             rename { "changelog.md" }
+        }
+
+        from(rootProject.file("src/main/resources/$awFileName")) {
+            rename { "rfu.accesswidener" }
         }
     }
 
