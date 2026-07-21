@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.mixin;
 
+import cloud.glitchdev.rfu.constants.text.Emoji;
 import cloud.glitchdev.rfu.feature.other.EmojiAutocomplete;
 import cloud.glitchdev.rfu.feature.other.EmojiSuggestion;
 import com.mojang.brigadier.suggestion.Suggestion;
@@ -64,6 +65,9 @@ public abstract class CommandSuggestionsMixin {
         at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;width(Ljava/lang/String;)I")
     )
     private int rfu$redirectWidthInShowSuggestions(Font font, String text, Operation<Integer> original) {
-        return font.width(FormattedText.of(text));
+        if (Emoji.containsAnEmoji(text)) {
+            return font.width(FormattedText.of(text));
+        }
+        return original.call(font, text);
     }
 }

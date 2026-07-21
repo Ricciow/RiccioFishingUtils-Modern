@@ -25,7 +25,6 @@ public abstract class EditBoxMixin {
     @Shadow private int textX;
     @Shadow @Final private Font font;
     @Shadow public abstract int getInnerWidth();
-    @Shadow protected abstract FormattedCharSequence applyFormat(String text, int offset);
 
     @Inject(method = "applyFormat", at = @At("RETURN"), cancellable = true)
     private void rfu$replaceEmojisInEditBox(String text, int offset, CallbackInfoReturnable<FormattedCharSequence> cir) {
@@ -44,8 +43,8 @@ public abstract class EditBoxMixin {
         )
     )
     private int rfu$redirectWidthInExtractWidgetRenderState(Font font, String str, Operation<Integer> original) {
-        FormattedCharSequence formatted = this.applyFormat(str, this.displayPos);
-        return font.width(formatted);
+        String replaced = EmojiFeature.INSTANCE.replaceEmojis(str);
+        return original.call(font, replaced != null ? replaced : str);
     }
 
     @Inject(method = "findClickedPositionInText", at = @At("HEAD"), cancellable = true)

@@ -49,4 +49,9 @@ object Emoji {
     fun String.whiteText() : String {
         return "${TextColor.WHITE}$this${TextEffects.RESET}"
     }
+
+    @JvmStatic
+    fun containsAnEmoji(string: String) : Boolean {
+        return string.any { char -> char.toString() in EMOJIS }
+    }
 }
