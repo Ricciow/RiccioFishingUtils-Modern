@@ -3,7 +3,6 @@ package cloud.glitchdev.rfu.feature.fishing
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.TrophyFishing
 import cloud.glitchdev.rfu.constants.text.TextColor
-import cloud.glitchdev.rfu.events.managers.PetEvents
 import cloud.glitchdev.rfu.events.managers.PetEvents.registerPetUpdateEvent
 import cloud.glitchdev.rfu.events.managers.RenderEvents.registerRenderEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent

@@ -12,7 +12,7 @@ import kotlin.io.path.readText
 import kotlin.io.path.writeText
 
 object ConfigMigration {
-    const val CURRENT_VERSION = 7
+    const val CURRENT_VERSION = 8
     const val VERSION_KEY = "rfuConfigVersion"
 
     private val logger = LoggerFactory.getLogger(ConfigMigration::class.java)
@@ -50,6 +50,7 @@ object ConfigMigration {
                 4 -> migrateV4toV5(json)
                 5 -> migrateV5toV6(json)
                 6 -> migrateV6toV7(json)
+                7 -> migrateV7toV8(json)
             }
         }
     }
@@ -193,6 +194,11 @@ object ConfigMigration {
                 items.add(drop)
             }
         }
+    }
+
+    private fun migrateV7toV8(json: JsonObject) {
+        val cat = getOrCreateCategory(json, "Other")
+        cat.addProperty("autoAcceptResourcePacks", false)
     }
 
     private fun deleteKey(json: JsonObject, category: String, key: String): JsonElement? {

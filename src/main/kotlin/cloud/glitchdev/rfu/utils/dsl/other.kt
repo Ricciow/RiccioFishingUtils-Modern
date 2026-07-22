@@ -16,24 +16,10 @@ fun parseResource(id :  String) : Identifier? {
     return result
 }
 
+private val armorSlots = arrayOf(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET)
+
 fun isWearingTrophyHunterArmor(): Boolean {
-    val player = mc.player ?: return false
-    val armorSlots = arrayOf(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET)
-    return armorSlots.all { slot ->
-        val item = player.getItemBySlot(slot)
-        val customName = item.customName?.toUnformattedString() ?: return@all false
-        val expectedPieceName = when (slot) {
-            EquipmentSlot.HEAD -> "Hunter Helmet"
-            EquipmentSlot.CHEST -> "Hunter Chestplate"
-            EquipmentSlot.LEGS -> "Hunter Leggings"
-            EquipmentSlot.FEET -> "Hunter Boots"
-            else -> return@all false
-        }
-        customName.contains(expectedPieceName) && (
-                customName.contains("Bronze Hunter") ||
-                        customName.contains("Silver Hunter") ||
-                        customName.contains("Gold Hunter") ||
-                        customName.contains("Diamond Hunter")
-                )
-    }
+    return mc.player?.let { player ->
+        armorSlots.any { slot -> player.getItemBySlot(slot).hasDescriptionText("Tiered Bonus: Peace Treaty (2/2)") }
+    } == true
 }

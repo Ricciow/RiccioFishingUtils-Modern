@@ -205,7 +205,7 @@ object OtherSettings : Category("Other") {
         }
     }
 
-    var autoAcceptResourcePacks by reloadableBoolean(true) {
+    var autoAcceptResourcePacks by reloadableBoolean(false) {
         name = Literal("Auto Accept Resource Packs")
         description = Literal("Automatically accept resource/texture packs sent by the server if you are on Hypixel.")
     }

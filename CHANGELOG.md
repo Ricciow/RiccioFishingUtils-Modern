@@ -1,9 +1,9 @@
-# v1.15.1 - Expressive & Empowered Patches
+# v1.15.2 - Expressive & Empowered Patches Part 2
 
 ### Fixes
-- Fixed compatibility issue with pack disabler - @Noamm9
-- Fixed crash with skyblock enhancenements mod
-- Fixed skill xp tracking being inaccurate when at max level
+- Fixed an issue causing missing item textures when using the resourcepack feature
+- Made pity display work with 2/4 trophy hunter armor
 
-### Back-end
-- Replaced `@Redirect` mixins with `@WrapOperation` to ensure compatibility with other mods modifying tooltips or UI widgets.
+### Changes
+- Made the resourcepack feature off by default
+  - Also will disable it for any player who had it on, so if you wish it back on, go turn it on manually

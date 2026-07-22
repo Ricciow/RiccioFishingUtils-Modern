@@ -55,12 +55,15 @@ object ResourcePackUtils {
                     val destPack = resourcePacksDir.resolve(filename)
                     val packNameInOptions = "file/$filename"
                     val isSelected = minecraft.options.resourcePacks.contains(packNameInOptions)
+                    val isLoaded = minecraft.resourcePackRepository.selectedPacks.any { it.id == packNameInOptions }
 
                     if (Files.exists(destPack) && getFileSHA1(destPack) == hash) {
-                        if (!isSelected && OtherSettings.autoLoadResourcePacks) {
+                        if ((!isSelected || !isLoaded) && OtherSettings.autoLoadResourcePacks) {
                             cleanUpOldVersions(minecraft, filename)
                             minecraft.resourcePackRepository.reload()
-                            minecraft.options.resourcePacks.addFirst(packNameInOptions)
+                            if (!minecraft.options.resourcePacks.contains(packNameInOptions)) {
+                                minecraft.options.resourcePacks.addFirst(packNameInOptions)
+                            }
                             minecraft.options.loadSelectedResourcePacks(minecraft.resourcePackRepository)
                             minecraft.options.save()
                             minecraft.reloadResourcePacks()
