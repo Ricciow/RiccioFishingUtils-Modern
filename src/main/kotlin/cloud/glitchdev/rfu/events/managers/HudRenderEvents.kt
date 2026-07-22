@@ -4,6 +4,7 @@ import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.utils.dsl.getResource
+import cloud.glitchdev.rfu.utils.RFULogger
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements
 import net.minecraft.client.gui.GuiGraphicsExtractor
@@ -18,11 +19,17 @@ object HudRenderEvents : AbstractEventManager<(GuiGraphicsExtractor, Float) -> U
     private val HUD_ID = getResource("hud_renderer")
 
     override fun register() {
-        HudElementRegistry.attachElementBefore(
-            VanillaHudElements.CHAT,
-            HUD_ID
-        ) { context, tick ->
-            runTasks(context, tick.getGameTimeDeltaPartialTick(true))
+        try {
+            HudElementRegistry.attachElementBefore(
+                VanillaHudElements.CHAT,
+                HUD_ID
+            ) { context, tick ->
+                runTasks(context, tick.getGameTimeDeltaPartialTick(true))
+            }
+        } catch (e: IllegalArgumentException) {
+            RFULogger.error("HUD layer with identifier $HUD_ID already exists or failed to register", e)
+        } catch (e: Exception) {
+            RFULogger.error("Failed to register HUD element", e)
         }
     }
 
