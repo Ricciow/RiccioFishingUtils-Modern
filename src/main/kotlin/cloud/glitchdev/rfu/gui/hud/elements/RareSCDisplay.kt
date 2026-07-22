@@ -26,6 +26,7 @@ import cloud.glitchdev.rfu.events.managers.BaitEventManager
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.events.managers.HotSpotEvents
+import cloud.glitchdev.rfu.utils.dsl.isWearingTrophyHunterArmor
 
 @HudElement
 object RareSCDisplay : AbstractFishingHudElement("rareSCDisplay") {
@@ -33,15 +34,8 @@ object RareSCDisplay : AbstractFishingHudElement("rareSCDisplay") {
     override val requiresFishing: Boolean
         get() = SeaCreatureConfig.rareScOnlyWhenFishing
 
-    private val armorSlots = arrayOf(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET)
-
     override val requirement: Boolean
-        get() {
-            val hasPeaceTreaty = mc.player?.let { player ->
-                armorSlots.any { slot -> player.getItemBySlot(slot).hasDescriptionText("Tiered Bonus: Peace Treaty (2/2)") }
-            } == true
-            return !hasPeaceTreaty && SeaCreatureConfig.rareScDisplay
-        }
+        get() = !isWearingTrophyHunterArmor() && SeaCreatureConfig.rareScDisplay
 
     override val isElementActive: Boolean
         get() = !requiresFishing || FishingSession.pausedDuration < 1.minutes

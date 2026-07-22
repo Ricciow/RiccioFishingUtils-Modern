@@ -2,6 +2,7 @@
 
 ### Fixes
 - Fixed an issue causing missing item textures when using the resourcepack feature
+- Made pity display work with 2/4 trophy hunter armor
 
 ### Changes
 - Made the resourcepack feature off by default
