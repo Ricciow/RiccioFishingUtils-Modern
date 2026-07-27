@@ -1,4 +1,4 @@
-﻿package cloud.glitchdev.rfu.achievement.achievements.trophy
+package cloud.glitchdev.rfu.achievement.achievements.trophy
 
 import cloud.glitchdev.rfu.achievement.Achievement
 import cloud.glitchdev.rfu.achievement.AchievementCategory
@@ -28,7 +28,7 @@ object VolcanicTwinsAchievement : StageAchievement() {
     }
 
     override fun setupListeners() {
-        activeListeners.add(registerTrophyFishCatchEvent { _, tier ->
+        activeListeners.add(registerTrophyFishCatchEvent { _, tier, amount ->
             val requiredTier = when (currentStage) {
                 1 -> TrophyTier.BRONZE
                 2 -> TrophyTier.SILVER
@@ -39,7 +39,7 @@ object VolcanicTwinsAchievement : StageAchievement() {
             
             val tierStr = tier.name
             if (tier == requiredTier) {
-                if (lastTrophyTier == tierStr) {
+                if (lastTrophyTier == tierStr || amount >= 2) {
                     lastTrophyTier = null
                     if (currentStage == 4) {
                         complete()

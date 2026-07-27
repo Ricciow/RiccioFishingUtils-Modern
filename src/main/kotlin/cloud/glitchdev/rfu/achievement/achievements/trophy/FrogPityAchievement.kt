@@ -19,7 +19,7 @@ object FrogPityAchievement : BaseAchievement() {
     override val category: AchievementCategory = AchievementCategory.TROPHY_FISHING
 
     override fun setupListeners() {
-        activeListeners.add(registerTrophyFrogCatchEvent(priority = 10) { frog, tier ->
+        activeListeners.add(registerTrophyFrogCatchEvent(priority = 10) { frog, tier, _ ->
             if (tier == TrophyTier.DIAMOND) {
                 val existing = TrophyDataManager.data.pity.frogPity[frog.name]
                 if (existing != null && existing.diamondProgress >= frog.diamondPity) {
