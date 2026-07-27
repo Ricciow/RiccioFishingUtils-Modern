@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.mixin;
 
+import cloud.glitchdev.rfu.config.categories.OtherSettings;
 import cloud.glitchdev.rfu.feature.other.EmojiSuggestion;
 import com.mojang.brigadier.suggestion.Suggestion;
 import net.minecraft.client.gui.components.CommandSuggestions;
@@ -25,7 +26,7 @@ public abstract class SuggestionsListMixin {
 
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
     private void rfu$onKeyPressed(KeyEvent event, CallbackInfoReturnable<Boolean> cir) {
-        if (event.isConfirmation()) {
+        if (event.isConfirmation() && OtherSettings.INSTANCE.getReturnCompletesEmoji()) {
             if (this.current >= 0 && this.current < this.suggestionList.size()) {
                 Suggestion suggestion = this.suggestionList.get(this.current);
                 if (suggestion instanceof EmojiSuggestion) {

@@ -77,6 +77,12 @@ object OtherSettings : Category("Other") {
         description = Literal("Replaces triggers like :dog: with the respective emoji. Use /rfuemojis to see all emojis!")
     }
 
+    var returnCompletesEmoji by boolean(true) {
+        name = Literal("Return Completes Emoji")
+        description = Literal("Pressing Return completes the emoji suggestion instead of sending the message.")
+        condition = { emojis }
+    }
+
     var requiredChars by int(2) {
         name = Literal("Matching Chars Requirement")
         description = Literal("Changes the minimum amount of matching chars required to display the suggestions")
