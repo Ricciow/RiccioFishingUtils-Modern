@@ -2,10 +2,11 @@ package cloud.glitchdev.rfu.feature.mob
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.LavaFishing
-import cloud.glitchdev.rfu.data.mob.MobManager
+import cloud.glitchdev.rfu.data.mob.SkyblockEntity
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDetectEvent
+import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDisposeEvent
 import cloud.glitchdev.rfu.events.managers.ShutdownEvents
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.gui.window.DeadWindow
@@ -17,6 +18,9 @@ import net.minecraft.CrashReport
 
 @RFUFeature
 object JawbusHardMode : Feature {
+    private var jawbusses : MutableSet<SkyblockEntity> = mutableSetOf()
+    private const val SC_NAME = "Lord Jawbus"
+
     override fun onInitialize() {
         registerGameEvent(" ☠ You were killed by Lord Jawbus.".toExactRegex()) { _, _, _ ->
             if(LavaFishing.jawbus_hard_mode) {
@@ -33,18 +37,23 @@ object JawbusHardMode : Feature {
             }
         }
 
-        registerTickEvent(interval = 10L) { client ->
-            val world = client.level
-            if (world == null || !LavaFishing.jawbus_hard_mode) {
-                HeartsUtil.disableHardcoreHearts()
-                return@registerTickEvent
-            }
-            if (MobManager.getEntities().any { it.sbName == "Lord Jawbus" }) {
-                HeartsUtil.enableHardcoreHearts()
-            } else {
-                HeartsUtil.disableHardcoreHearts()
-            }
+        registerMobDetectEvent { entities ->
+            jawbusses.addAll(entities.filter { it.sbName == SC_NAME })
+            updateHearts()
+        }
+
+        registerMobDisposeEvent { entities ->
+            jawbusses.removeIf { entities.contains(it) }
+            updateHearts()
+        }
+    }
+
+    private fun updateHearts() {
+        if(jawbusses.isNotEmpty()) {
+            HeartsUtil.enableHardcoreHearts()
+        } else {
+            HeartsUtil.disableHardcoreHearts()
         }
     }
 }
-
+
