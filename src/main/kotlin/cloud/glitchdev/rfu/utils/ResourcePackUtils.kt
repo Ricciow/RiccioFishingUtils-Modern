@@ -4,9 +4,7 @@ import cloud.glitchdev.rfu.config.categories.OtherSettings
 import net.minecraft.client.Minecraft
 import net.minecraft.network.Connection
 import net.minecraft.network.protocol.common.ServerboundResourcePackPacket
-import net.minecraft.server.packs.repository.Pack
 import java.io.IOException
-import java.io.InputStream
 import java.net.URI
 import java.net.URL
 import java.nio.file.Files
@@ -17,26 +15,30 @@ import java.util.UUID
 
 object ResourcePackUtils {
 
-    const val PACK_FILENAME = "Hypixel Skyblock Server Pack.zip"
+    const val BASE_PACK_NAME = "Hypixel Skyblock Server Pack"
+    const val PACK_FILENAME_A = "$BASE_PACK_NAME.zip"
+    const val PACK_FILENAME_B = "$BASE_PACK_NAME!.zip"
+
+    @JvmStatic
+    fun getNextPackFilename(minecraft: Minecraft): String {
+        val selected = minecraft.options.resourcePacks
+        val isASelected = selected.contains("file/$PACK_FILENAME_A")
+        return if (isASelected) PACK_FILENAME_B else PACK_FILENAME_A
+    }
 
     @JvmStatic
     fun isHypixelPackActive(): Boolean {
         val mc = Minecraft.getInstance()
         for (pack in mc.resourcePackRepository.selectedPacks) {
             val id = pack.id
-            if (id.startsWith("server/") || 
-                id.startsWith("file/Hypixel Server Pack - ") || 
-                id.startsWith("file/Hypixel Skyblock Server Pack")
+            if (id.startsWith("server/") ||
+                id.startsWith("file/Hypixel Server Pack") ||
+                id.startsWith("file/$BASE_PACK_NAME")
             ) {
                 return true
             }
         }
         return false
-    }
-
-    @JvmStatic
-    fun getPackFilename(): String {
-        return PACK_FILENAME
     }
 
     @JvmStatic
@@ -51,15 +53,22 @@ object ResourcePackUtils {
             minecraft.execute {
                 if (OtherSettings.saveResourcePacks) {
                     val resourcePacksDir = minecraft.gameDirectory.toPath().resolve("resourcepacks")
-                    val filename = PACK_FILENAME
-                    val destPack = resourcePacksDir.resolve(filename)
-                    val packNameInOptions = "file/$filename"
-                    val isSelected = minecraft.options.resourcePacks.contains(packNameInOptions)
-                    val isLoaded = minecraft.resourcePackRepository.selectedPacks.any { it.id == packNameInOptions }
 
-                    if (Files.exists(destPack) && getFileSHA1(destPack) == hash) {
-                        if ((!isSelected || !isLoaded) && OtherSettings.autoLoadResourcePacks) {
-                            cleanUpOldVersions(minecraft, filename)
+                    val pathA = resourcePacksDir.resolve(PACK_FILENAME_A)
+                    val pathB = resourcePacksDir.resolve(PACK_FILENAME_B)
+
+                    val matchingFilename = when {
+                        Files.exists(pathA) && getFileSHA1(pathA) == hash -> PACK_FILENAME_A
+                        Files.exists(pathB) && getFileSHA1(pathB) == hash -> PACK_FILENAME_B
+                        else -> null
+                    }
+
+                    if (matchingFilename != null) {
+                        val packNameInOptions = "file/$matchingFilename"
+                        val isSelected = minecraft.options.resourcePacks.contains(packNameInOptions)
+
+                        if (!isSelected && OtherSettings.autoLoadResourcePacks) {
+                            cleanUpOldVersions(minecraft, matchingFilename)
                             minecraft.resourcePackRepository.reload()
                             if (!minecraft.options.resourcePacks.contains(packNameInOptions)) {
                                 minecraft.options.resourcePacks.addFirst(packNameInOptions)
@@ -105,15 +114,14 @@ object ResourcePackUtils {
                 }
 
                 for (pack in packsToLoad) {
-                    val filename = PACK_FILENAME
-                    val destPack = resourcePacksDir.resolve(filename)
-
-                    cleanUpOldVersions(minecraft, filename)
+                    val targetFilename = getNextPackFilename(minecraft)
+                    val destPack = resourcePacksDir.resolve(targetFilename)
 
                     Files.copy(pack.path(), destPack, StandardCopyOption.REPLACE_EXISTING)
+                    cleanUpOldVersions(minecraft, targetFilename)
 
                     if (OtherSettings.autoLoadResourcePacks) {
-                        val packNameInOptions = "file/$filename"
+                        val packNameInOptions = "file/$targetFilename"
                         minecraft.resourcePackRepository.reload()
                         if (!minecraft.options.resourcePacks.contains(packNameInOptions)) {
                             minecraft.options.resourcePacks.addFirst(packNameInOptions)
@@ -134,8 +142,8 @@ object ResourcePackUtils {
     fun cleanUpOldVersions(minecraft: Minecraft, currentFilename: String) {
         val currentOptionName = "file/$currentFilename"
         minecraft.options.resourcePacks.removeIf { name ->
-            (name.startsWith("file/Hypixel Server Pack - ") || 
-             name.startsWith("file/Hypixel Skyblock Server Pack")) && name != currentOptionName
+            (name.startsWith("file/Hypixel Server Pack") ||
+                    name.startsWith("file/$BASE_PACK_NAME")) && name != currentOptionName
         }
 
         if (OtherSettings.deleteOldResourcePacks) {
@@ -147,9 +155,8 @@ object ResourcePackUtils {
                         stream.forEach { path ->
                             val name = path.fileName.toString()
                             if (name != currentFilename) {
-                                if ((name.startsWith("Hypixel Server Pack - ") && name.endsWith(".zip")) ||
-                                    name == "Hypixel Server Pack.zip" ||
-                                    (name.startsWith("Hypixel Skyblock Server Pack - ") && name.endsWith(".zip"))
+                                if ((name.startsWith("Hypixel Server Pack") && name.endsWith(".zip")) ||
+                                    (name.startsWith(BASE_PACK_NAME) && name.endsWith(".zip"))
                                 ) {
                                     toDelete.add(path)
                                 }
@@ -182,7 +189,7 @@ object ResourcePackUtils {
                     }
                 }
             } catch (e: Exception) {
-                // Ignore
+                RFULogger.error("Failed to clean up old resource pack versions", e)
             }
         }
     }
@@ -199,9 +206,9 @@ object ResourcePackUtils {
                 }
             }
             val hashBytes = digest.digest()
-            val sb = java.lang.StringBuilder()
+            val sb = StringBuilder()
             for (b in hashBytes) {
-                sb.append(java.lang.String.format("%02x", b))
+                sb.append(String.format("%02x", b))
             }
             return sb.toString()
         } catch (e: Exception) {

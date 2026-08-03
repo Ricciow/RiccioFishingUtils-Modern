@@ -59,15 +59,4 @@ public abstract class CommandSuggestionsMixin {
         }
         return original.call(suggestion);
     }
-
-    @WrapOperation(
-        method = "showSuggestions",
-        at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;width(Ljava/lang/String;)I")
-    )
-    private int rfu$redirectWidthInShowSuggestions(Font font, String text, Operation<Integer> original) {
-        if (Emoji.containsAnEmoji(text)) {
-            return font.width(FormattedText.of(text));
-        }
-        return original.call(font, text);
-    }
 }

@@ -36,12 +36,12 @@ object TrophyPityTracker : RegisteredEvent {
     var sessionTrophyCatches = 0
 
     override fun register() {
-        registerTrophyFrogCatchEvent { frog, tier ->
-            handleCatch(TrophyDataManager.data.pity.frogPity, frog.name, frog, tier)
+        registerTrophyFrogCatchEvent { frog, tier, amount ->
+            handleCatch(TrophyDataManager.data.pity.frogPity, frog.name, frog, tier, amount)
         }
 
-        registerTrophyFishCatchEvent { fish, tier ->
-            handleCatch(TrophyDataManager.data.pity.fishPity, fish.name, fish, tier)
+        registerTrophyFishCatchEvent { fish, tier, amount ->
+            handleCatch(TrophyDataManager.data.pity.fishPity, fish.name, fish, tier, amount)
         }
 
         registerContainerOpenEvent { _, items ->
@@ -103,15 +103,16 @@ object TrophyPityTracker : RegisteredEvent {
         pityMap: MutableMap<String, TrophyPityEntry>,
         key: String,
         trophy: Trophy,
-        tier: TrophyTier
+        tier: TrophyTier,
+        amount: Int = 1
     ) {
         val existing = pityMap[key] ?: TrophyPityEntry(trophy.displayName, 0, 0)
         lastCaughtTimes[key] = System.currentTimeMillis()
-        incrementPity(existing, trophy, tier)
+        incrementPity(existing, trophy, tier, amount)
         pityMap[key] = existing
         TrophyDataManager.save()
 
-        sessionTrophyCatches++
+        sessionTrophyCatches += amount
         if (!TrophyDataManager.data.hasSynced && sessionTrophyCatches <= 10) {
             sendSyncAlert()
         }
@@ -135,18 +136,18 @@ object TrophyPityTracker : RegisteredEvent {
         Chat.sendMessage(message)
     }
 
-    private fun incrementPity(existing: TrophyPityEntry, trophy: Trophy, tier: TrophyTier) {
+    private fun incrementPity(existing: TrophyPityEntry, trophy: Trophy, tier: TrophyTier, amount: Int = 1) {
         when (tier) {
             TrophyTier.BRONZE, TrophyTier.SILVER -> {
-                existing.goldProgress = minOf(existing.goldProgress + 1, trophy.goldPity)
-                existing.diamondProgress = minOf(existing.diamondProgress + 1, trophy.diamondPity)
+                existing.goldProgress = minOf(existing.goldProgress + amount, trophy.goldPity)
+                existing.diamondProgress = minOf(existing.diamondProgress + amount, trophy.diamondPity)
             }
             TrophyTier.GOLD -> {
                 existing.goldProgress = 0
-                existing.diamondProgress = minOf(existing.diamondProgress + 1, trophy.diamondPity)
+                existing.diamondProgress = minOf(existing.diamondProgress + amount, trophy.diamondPity)
             }
             TrophyTier.DIAMOND -> {
-                existing.goldProgress = minOf(existing.goldProgress + 1, trophy.goldPity)
+                existing.goldProgress = minOf(existing.goldProgress + amount, trophy.goldPity)
                 existing.diamondProgress = 0
             }
         }
