@@ -15,8 +15,14 @@ class DifficultyDisplay(
         this.setColor(string.second.toConstraint())
     }
 
-    private fun getStarString() : Pair<String, Color> {
-        return when(difficulty) {
+    fun updateDifficulty(newDiff: AchievementDifficulty) {
+        val string = getStarString(newDiff)
+        this.setText(string.first)
+        this.setColor(string.second.toConstraint())
+    }
+
+    private fun getStarString(diff: AchievementDifficulty = difficulty) : Pair<String, Color> {
+        return when(diff) {
             AchievementDifficulty.EASY -> "⭐☆☆☆☆ Easy" to UIScheme.easyDifficultyColor
             AchievementDifficulty.MEDIUM -> "⭐⭐☆☆☆ Medium" to UIScheme.mediumDifficultyColor
             AchievementDifficulty.HARD -> "⭐⭐⭐☆☆ Hard" to UIScheme.hardDifficultyColor

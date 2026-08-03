@@ -220,8 +220,9 @@ object AchievementWindow : BaseWindow() {
             .forEach { achievement ->
                 val existingCard = existingCardsMap[achievement.id]
                 val wasHovered = existingCard?.isHovered() ?: false
+                val savedViewingStage = existingCard?.viewingStage
                 
-                val component = Achievement(achievement, wasHovered).constrain {
+                val component = Achievement(achievement, wasHovered, savedViewingStage).constrain {
                     x = CenterConstraint()
                     y = SiblingConstraint(5f)
                     width = 100.percent()

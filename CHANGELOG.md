@@ -3,6 +3,7 @@
 ### Features
 - Added a setting to toggle showing only recently caught trophies on the Trophy Pity Display.
 - Added a setting to toggle whether Enter completes emoji suggestions.
+- Added navigation to view different achievement tiers on staged achievements in /rfuachievements.
 
 ### Fixes
 - Fixed command suggestion box width calculation conflict with SkyHanni for emojis.

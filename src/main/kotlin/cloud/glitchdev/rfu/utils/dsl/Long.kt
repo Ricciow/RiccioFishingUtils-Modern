@@ -1,14 +1,20 @@
-﻿package cloud.glitchdev.rfu.utils.dsl
+package cloud.glitchdev.rfu.utils.dsl
 
 import cloud.glitchdev.rfu.constants.skyblock.Skills
+import java.util.Locale
 
 fun Long.compact(): String {
     return when {
-        this >= 1_000_000_000L -> "${String.format("%.1f", this / 1_000_000_000.0)}B"
-        this >= 1_000_000L -> "${String.format("%.1f", this / 1_000_000.0)}M"
-        this >= 10_000L -> "${String.format("%.1f", this / 1_000.0)}k"
-        else -> "%,d".format(this)
-    }.replace(".0", "")
+        this >= 1_000_000_000L -> formatDecimal(this / 1_000_000_000.0) + "B"
+        this >= 1_000_000L -> formatDecimal(this / 1_000_000.0) + "M"
+        this >= 10_000L -> formatDecimal(this / 1_000.0) + "k"
+        else -> String.format(Locale.US, "%,d", this)
+    }
+}
+
+private fun formatDecimal(value: Double): String {
+    val s = String.format(Locale.US, "%.1f", value)
+    return if (s.endsWith(".0")) s.dropLast(2) else s
 }
 
 fun Long.toSkillLevel(): Int {
