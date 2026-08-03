@@ -15,3 +15,4 @@
 - Improved Search on the settings so it doesn't need to open the category
 - Set the minimum required number of chars to display the emoji suggestions to 2 and made it configurable on Other Settings.
 - Improved Pity Display to also update upon catching a fish instead of being on a 1s timer
+- Added more validation on party finder
