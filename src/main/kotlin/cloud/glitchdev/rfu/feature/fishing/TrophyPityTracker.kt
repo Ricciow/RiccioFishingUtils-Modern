@@ -44,7 +44,7 @@ object TrophyPityTracker : RegisteredEvent {
             handleCatch(TrophyDataManager.data.pity.fishPity, fish.name, fish, tier, amount)
         }
 
-        registerContainerOpenEvent { _, items ->
+        registerContainerOpenEvent { _, _, items ->
             var updated = false
             var syncedAny = false
             for (item in items) {

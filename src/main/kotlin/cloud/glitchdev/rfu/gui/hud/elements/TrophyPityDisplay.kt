@@ -33,7 +33,7 @@ object TrophyPityDisplay : AbstractTextHudElement("trophyPity") {
         super.onInitialize()
         registerTrophyFrogCatchEvent { _, _, _ -> updateState() }
         registerTrophyFishCatchEvent { _, _, _ -> updateState() }
-        registerContainerOpenEvent { _, _ -> updateState() }
+        registerContainerOpenEvent { _, _, _ -> updateState() }
         registerTickEvent(interval = 20) {
             updateState()
         }

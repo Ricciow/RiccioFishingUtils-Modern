@@ -40,7 +40,7 @@ object TrophyLureAchievement : BaseAchievement() {
             checkProgress()
         })
 
-        activeListeners.add(registerContainerOpenEvent { _, _ ->
+        activeListeners.add(registerContainerOpenEvent { _, _, _ ->
             checkProgress()
         })
     }
