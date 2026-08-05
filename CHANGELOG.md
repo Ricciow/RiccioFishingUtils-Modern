@@ -20,3 +20,4 @@
 - Improved Pity Display to also update upon catching a fish instead of being on a 1s timer
 - Added more validation on party finder
 - Changed Atoll color on party finder to a cherry blossom color
+- Made full inventory alert off by default

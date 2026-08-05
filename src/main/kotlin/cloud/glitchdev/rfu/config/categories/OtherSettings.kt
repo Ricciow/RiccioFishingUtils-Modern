@@ -121,7 +121,7 @@ object OtherSettings : Category("Other") {
         }
     }
 
-    var fullInventoryAlert by reloadableBoolean(true) {
+    var fullInventoryAlert by reloadableBoolean(false) {
         name = Literal("Full Inventory Alert")
         description = Literal("Shows an alert when your inventory becomes full.")
     }
