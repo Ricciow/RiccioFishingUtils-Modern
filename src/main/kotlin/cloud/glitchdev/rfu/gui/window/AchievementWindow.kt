@@ -209,13 +209,12 @@ object AchievementWindow : BaseWindow() {
             .sortedWith(compareBy(
                 {
                     when {
-                        it.type == AchievementType.OBFUSCATED -> 3
-                        it.isCompleted -> 2
+                        it.isCompleted -> 3
+                        it.type == AchievementType.OBFUSCATED -> 2
                         it.type == AchievementType.SECRET -> 1
                         else -> 0
                     }
                 },
-                { it.isCompleted },
                 { it.getDisplayDifficulty() }
             ))
             .forEach { achievement ->
