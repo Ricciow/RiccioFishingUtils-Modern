@@ -27,5 +27,6 @@ object DebugCommand : AbstractCommand("rfudebug") {
         append(Reauth)
         append(SkillsDebug)
         append(DebugText)
+        append(ReloadSeaCreatures)
     }
 }

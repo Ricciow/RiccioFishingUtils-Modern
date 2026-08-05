@@ -59,6 +59,11 @@ class SeaCreatures(
             registry[sc.scName] = sc
             displayNameRegistry[sc.scDisplayName.lowercase()] = sc
         }
+
+        fun clear() {
+            registry.clear()
+            displayNameRegistry.clear()
+        }
     }
 }
 

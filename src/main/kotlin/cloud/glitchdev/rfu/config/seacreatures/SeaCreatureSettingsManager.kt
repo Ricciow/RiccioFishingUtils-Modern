@@ -29,13 +29,12 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
         defaultFactory = { loadDefaults() }
     )
 
-    private val defaultConfig: SeaCreatureSettings by lazy { loadDefaults() }
+    private var defaultConfig: SeaCreatureSettings = loadDefaults()
     private val scConfig get() = seaCreatureConfigFile.data
 
     private fun loadDefaults(): SeaCreatureSettings {
-        val stream = Thread.currentThread()
-            .contextClassLoader
-            .getResourceAsStream("assets/rfu/defaults/sc-config.json")
+        val classLoader = Thread.currentThread().contextClassLoader ?: SeaCreatureSettingsManager::class.java.classLoader
+        val stream = classLoader?.getResourceAsStream("assets/rfu/defaults/sc-config.json")
             ?: return SeaCreatureSettings.empty()
 
         return try {
@@ -44,6 +43,34 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
             RFULogger.error("Failed to load Sea Creature defaults", e)
             SeaCreatureSettings.empty()
         }
+    }
+
+    fun reloadFromResources(): Int {
+        val newDefaults = loadDefaults()
+        defaultConfig = newDefaults
+
+        try {
+            val field: Field = JsonFile::class.java.getDeclaredField("data")
+            field.isAccessible = true
+            field.set(seaCreatureConfigFile, newDefaults)
+            seaCreatureConfigFile.save()
+        } catch (e: Exception) {
+            RFULogger.error("Failed to update seaCreatureConfigFile with resource defaults", e)
+        }
+
+        SeaCreatures.clear()
+
+        var count = 0
+        newDefaults.creatures.keys.forEach { scName ->
+            try {
+                registerCreature(scName)
+                count++
+            } catch (e: Exception) {
+                RFULogger.error("Failed to register Sea Creature from resources: $scName", e)
+            }
+        }
+        RFULogger.info("Reloaded $count Sea Creatures from resources.")
+        return count
     }
 
     fun getName(scName: String): String = resolve(scName) { it.name } ?: scName

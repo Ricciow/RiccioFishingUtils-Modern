@@ -5,6 +5,7 @@
 - Added a setting to toggle whether Enter completes emoji suggestions.
 - Added navigation to view different achievement tiers on staged achievements in /rfuachievements.
 - Added Torrhus Canyon to rfu party finder
+- Added Torrhus Canyon Sea Creatures
 
 ### Fixes
 - Fixed command suggestion box width calculation conflict with SkyHanni for emojis.
