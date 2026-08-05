@@ -1,4 +1,4 @@
-# v1.16.0 - ???
+# v1.16.0 - Torrhus Canyon
 
 ### Features
 - Added a setting to toggle showing only recently caught trophies on the Trophy Pity Display.
