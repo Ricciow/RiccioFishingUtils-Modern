@@ -11,7 +11,7 @@ object TouchGrassAchievement : BaseAchievement() {
     override val id: String = "touch_grass"
     override val name: String = "Touch Grass"
     override val description: String = "Ask yourself how long it has been since you touched grass."
-    override val type: AchievementType = AchievementType.HIDDEN
+    override val type: AchievementType = AchievementType.OBFUSCATED
     override val difficulty: AchievementDifficulty = AchievementDifficulty.EASY
     override val category: AchievementCategory = AchievementCategory.SPECIAL
 

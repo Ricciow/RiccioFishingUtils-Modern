@@ -13,7 +13,7 @@ object AchievementProvider {
             when (it.type) {
                 AchievementType.NORMAL -> true
                 AchievementType.SECRET -> true // Description masked by UI if not completed
-                AchievementType.HIDDEN -> it.isCompleted
+                AchievementType.OBFUSCATED -> true // Obfuscated by UI if not completed
             }
         }
     }

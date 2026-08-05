@@ -13,7 +13,7 @@ object TheCreatorAchievement : BaseAchievement() {
     override val id: String = "the_creator"
     override val name: String = "The Creator"
     override val description: String = "Be on the same lobby as ricciow, the creator."
-    override val type: AchievementType = AchievementType.HIDDEN
+    override val type: AchievementType = AchievementType.OBFUSCATED
     override val difficulty: AchievementDifficulty = AchievementDifficulty.MEDIUM
     override val category: AchievementCategory = AchievementCategory.SPECIAL
 

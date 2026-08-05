@@ -25,7 +25,6 @@ import gg.essential.elementa.constraints.AspectConstraint
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
 import gg.essential.elementa.constraints.FillConstraint
-import gg.essential.elementa.constraints.RelativeWindowConstraint
 import gg.essential.elementa.constraints.SiblingConstraint
 import gg.essential.elementa.constraints.ScaledTextConstraint
 import gg.essential.elementa.constraints.TextAspectConstraint
@@ -210,11 +209,13 @@ object AchievementWindow : BaseWindow() {
             .sortedWith(compareBy(
                 {
                     when {
+                        it.type == AchievementType.OBFUSCATED -> 3
                         it.isCompleted -> 2
                         it.type == AchievementType.SECRET -> 1
                         else -> 0
                     }
                 },
+                { it.isCompleted },
                 { it.getDisplayDifficulty() }
             ))
             .forEach { achievement ->

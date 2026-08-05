@@ -4,6 +4,7 @@ import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.interfaces.IAchievement
 import cloud.glitchdev.rfu.achievement.interfaces.IStageAchievement
 import cloud.glitchdev.rfu.config.categories.DevSettings
+import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.data.achievements.AchievementHandler
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.elementa.BoundingBoxConstraint
@@ -107,11 +108,18 @@ class Achievement(
             AchievementTrackerDisplay.updateState()
         }
 
+        val isObfuscatedAndUncompleted = achievement.type == AchievementType.OBFUSCATED && !achievement.isCompleted
+
         fun getDisplayName(): String {
-            return if (achievement is IStageAchievement) {
+            val rawName = if (achievement is IStageAchievement) {
                 achievement.getStageName(viewingStage) ?: achievement.name
             } else {
                 achievement.name
+            }
+            return if (isObfuscatedAndUncompleted) {
+                "${TextEffects.MAGIC}${rawName.replace(' ', 'a')}"
+            } else {
+                rawName
             }
         }
 
@@ -122,14 +130,16 @@ class Achievement(
         }
 
         fun getDisplayDescription(): String {
-            val rawDesc = if (achievement.isCompleted || achievement.type != AchievementType.SECRET) {
+            val isSecretOrObfuscated = achievement.type == AchievementType.SECRET || achievement.type == AchievementType.OBFUSCATED
+
+            val rawDesc = if (achievement.isCompleted || !isSecretOrObfuscated) {
                 achievement.description
             } else {
                 "???"
             }
 
             return if (achievement is IStageAchievement) {
-                if (achievement.type == AchievementType.SECRET && !achievement.isCompleted && viewingStage > achievement.currentStage) {
+                if (isSecretOrObfuscated && !achievement.isCompleted && viewingStage > achievement.currentStage) {
                     "???"
                 } else {
                     achievement.getStageDescription(viewingStage) ?: rawDesc

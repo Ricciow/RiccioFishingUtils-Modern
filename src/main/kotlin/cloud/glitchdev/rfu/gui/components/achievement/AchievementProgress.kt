@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.gui.components.achievement
 
+import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.interfaces.IAchievement
 import cloud.glitchdev.rfu.achievement.interfaces.IStageAchievement
 import cloud.glitchdev.rfu.constants.text.TextColor
@@ -74,6 +75,7 @@ class AchievementProgress(
 
             val progressText = when {
                 isStageCompleted -> "${TextColor.LIGHT_GREEN}✔"
+                achievement.type == AchievementType.OBFUSCATED -> "?/?"
                 isStageActive -> {
                     val currentStr = achievement.currentProgress.compact()
                     val targetStr = achievement.targetProgress.compact()
@@ -136,7 +138,11 @@ class AchievementProgress(
 
             val currentStr = achievement.currentProgress.compact()
             val targetStr = achievement.targetProgress.compact()
-            val progressText = if (achievement.isCompleted) "${TextColor.LIGHT_GREEN}✔" else "$currentStr/$targetStr"
+            val progressText = when {
+                achievement.isCompleted -> "${TextColor.LIGHT_GREEN}✔"
+                achievement.type == AchievementType.OBFUSCATED -> "?/?"
+                else -> "$currentStr/$targetStr"
+            }
 
             UIText(progressText).constrain {
                 x = 0.pixels(true)

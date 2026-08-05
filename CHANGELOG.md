@@ -21,3 +21,4 @@
 - Added more validation on party finder
 - Changed Atoll color on party finder to a cherry blossom color
 - Made full inventory alert off by default
+- Made hidden achievements visible on the achievement window but obfuscated.
