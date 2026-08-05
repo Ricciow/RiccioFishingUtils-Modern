@@ -5,6 +5,8 @@ import cloud.glitchdev.rfu.achievement.AchievementProvider
 abstract class NumericStageAchievement : StageAchievement() {
     abstract fun getTargetCountForStage(stage: Int): Long
 
+    override fun getStageTargetProgress(stage: Int): Long? = getTargetCountForStage(stage)
+
     open val resetCountOnStageAdvance: Boolean = true
 
     override fun onStageChanged(oldStage: Int, newStage: Int) {

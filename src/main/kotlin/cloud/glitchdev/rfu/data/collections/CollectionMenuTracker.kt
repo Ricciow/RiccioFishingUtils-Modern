@@ -16,9 +16,8 @@ object CollectionMenuTracker : RegisteredEvent {
     private var pollStartTick = 0L
 
     override fun register() {
-        registerContainerOpenEvent { _, _ ->
-            val title = mc.gui.screen()?.title?.string ?: return@registerContainerOpenEvent
-            if (title == "Collections") {
+        registerContainerOpenEvent { containerName, _, _ ->
+            if (containerName == "Collections") {
                 startPolling()
             }
         }

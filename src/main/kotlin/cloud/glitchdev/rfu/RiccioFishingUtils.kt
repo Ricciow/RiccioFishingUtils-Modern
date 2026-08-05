@@ -30,11 +30,13 @@ object RiccioFishingUtils : ClientModInitializer {
     }
 
     val settings = RFUSettings.register(configurator)
+    private var isInitialized = false
 
     override fun onInitializeClient() {
         RFULoader.registerInstantEvents()
 
         ClientLifecycleEvents.CLIENT_STARTED.register {
+            if (isInitialized) return@register
             RFULoader.loadFeatures()
             RFULoader.registerCommands()
             RFULoader.registerPartyCommands()
@@ -42,8 +44,8 @@ object RiccioFishingUtils : ClientModInitializer {
             RFULoader.registerHud()
             RFULoader.registerAchievements()
             RFULoader.postInitializeEvents()
+            isInitialized = true
         }
-
     }
 
     fun saveConfig() {

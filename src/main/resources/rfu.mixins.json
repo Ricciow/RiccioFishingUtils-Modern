@@ -16,7 +16,7 @@
     "EntityMixin",
     "FontMixin",
     "CameraMixin",
-    "ClientLevelDataMixin",
+    "GuiMixin",
     "SquidRendererMixin",
     "SquidMixin",
     "SquidRenderStateMixin",

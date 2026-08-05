@@ -1,8 +1,9 @@
-﻿package cloud.glitchdev.rfu.gui.components.partyfinder
+package cloud.glitchdev.rfu.gui.components.partyfinder
 
 import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.UIButton
+import cloud.glitchdev.rfu.gui.components.UIPopup
 import cloud.glitchdev.rfu.gui.components.colors
 import cloud.glitchdev.rfu.gui.window.PartyFinderWindow
 import cloud.glitchdev.rfu.model.party.FishingParty
@@ -12,6 +13,7 @@ import cloud.glitchdev.rfu.gui.components.elementa.CopyComponentSizeConstraint
 import cloud.glitchdev.rfu.gui.components.elementa.group.GroupMaxSizeConstraint
 import cloud.glitchdev.rfu.gui.components.elementa.TextWrappingConstraint
 import cloud.glitchdev.rfu.model.data.DataOption
+import cloud.glitchdev.rfu.party.PartyRequirementsManager
 import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.dsl.isUser
 import cloud.glitchdev.rfu.utils.network.PartyWebSocket
@@ -51,6 +53,7 @@ class UIPartyCard(
 ) : UIRoundedRectangle(radiusProps) {
     val borderWidth = UIScheme.pfCardBorderWidth
     val innerPadding = UIScheme.pfCardInnerPadding
+    private val joinErrorPopup: UIPopup get() = PartyFinderWindow.popup
     lateinit var titleText : UIText
     lateinit var innerContainer : UIContainer
     lateinit var levelBadge : UIPartyBadge
@@ -76,8 +79,6 @@ class UIPartyCard(
     }
 
     fun create() {
-        val joinErrorPopup = PartyFinderWindow.popup
-
         this.constrain {
             color = (if (wasHovered) UIScheme.pfCardBorderHovered else UIScheme.pfCardBorder).toConstraint()
             height = BoundingBoxConstraint() + borderWidth.pixels //Not 2x because bounding box accounts for padding
@@ -123,6 +124,11 @@ class UIPartyCard(
             } else if (PartyWebSocket.myParty != null) {
                 joinErrorPopup.show("You are already hosting a party! Please delete your current party listing before joining another.")
             } else {
+                val validation = PartyRequirementsManager.canJoinParty(party)
+                if (!validation.isSuccess) {
+                    joinErrorPopup.show(validation.getErrorMessage())
+                    return@onMouseClick
+                }
                 PartyWebSocket.joinParty(party.user)
             }
         }

@@ -9,4 +9,5 @@ interface IStageAchievement : IAchievement {
     fun getStageName(stage: Int): String? = null
     fun getStageDescription(stage: Int): String? = null
     fun getStageDifficulty(stage: Int): AchievementDifficulty? = null
+    fun getStageTargetProgress(stage: Int): Long? = null
 }

@@ -50,7 +50,7 @@ object SkillTracker : RegisteredEvent {
             setSkillXp(skill, newTotal)
         }
 
-        registerContainerOpenEvent { _, items ->
+        registerContainerOpenEvent { _, _, items ->
             for (item in items) {
                 val name = item.hoverName.toUnformattedString()
                 val match = SKILL_ITEM_NAME_REGEX.find(name) ?: continue

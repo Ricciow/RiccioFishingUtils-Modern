@@ -2,18 +2,21 @@ package cloud.glitchdev.rfu.gui.components
 
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.UIScheme.increaseOpacity
+import cloud.glitchdev.rfu.gui.components.elementa.TextWrappingConstraint
 import gg.essential.elementa.components.UIBlock
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIWrappedText
 import gg.essential.elementa.constraints.CenterConstraint
-import gg.essential.elementa.constraints.FillConstraint
+import gg.essential.elementa.constraints.ChildBasedSizeConstraint
 import gg.essential.elementa.constraints.RelativeWindowConstraint
+import gg.essential.elementa.constraints.SiblingConstraint
 import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.dsl.minus
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
+import gg.essential.elementa.dsl.plus
 import gg.essential.elementa.dsl.toConstraint
 import java.awt.Color
 
@@ -83,11 +86,14 @@ class UIPopup(
             it.stopPropagation()
         }
 
+        val padVal = 15f
+        val padding = padVal.pixels
+
         popupContainer = UIRoundedRectangle(radiusPopup).constrain {
             x = CenterConstraint()
             y = CenterConstraint()
-            width = 33.percent()
-            height = 33.percent()
+            width = 35.percent()
+            height = ChildBasedSizeConstraint() + (borderWidth * 2).pixels
             color = primaryColor
         } childOf this
 
@@ -96,7 +102,7 @@ class UIPopup(
                 x = CenterConstraint()
                 y = CenterConstraint()
                 width = 100.percent - (borderWidth * 2).pixels
-                height = 100.percent - (borderWidth * 2).pixels
+                height = ChildBasedSizeConstraint()
                 color = innerColor
             } childOf popupContainer
             innerBg
@@ -107,26 +113,41 @@ class UIPopup(
         val container = UIContainer().constrain {
             x = CenterConstraint()
             y = CenterConstraint()
-            width = 90.percent()
-            height = 90.percent()
+            width = 100.percent - (padVal * 2).pixels
+            height = ChildBasedSizeConstraint() + (padVal * 2).pixels
         } childOf contentParent
 
-        okButton = UIButton("Ok", 5f, isBordered = isBordered){
+        uiText = UIWrappedText(text).constrain {
+            x = CenterConstraint()
+            y = padding
+            width = 100.percent
+            height = TextWrappingConstraint()
+            color = textColor
+        } childOf container
+
+        val buttonWrapper = UIContainer().constrain {
+            x = CenterConstraint()
+            y = SiblingConstraint(12f)
+            width = 100.percent
+            height = 20.pixels
+        } childOf container
+
+        okButton = UIButton("Ok", 5f, isBordered = isBordered) {
             this@UIPopup.hide()
         }.constrain {
             x = CenterConstraint()
-            y = 100.percent() - 20.pixels()
-            width = 100.percent()
-            height = 20.pixels()
-        } childOf container
+            y = CenterConstraint()
+            width = 100.percent
+            height = 100.percent
+        } childOf buttonWrapper
         buttons.add(okButton)
 
         confirmCancelContainer = UIContainer().constrain {
             x = CenterConstraint()
-            y = 100.percent() - 20.pixels()
-            width = 100.percent()
-            height = 20.pixels()
-        } childOf container
+            y = CenterConstraint()
+            width = 100.percent
+            height = 100.percent
+        } childOf buttonWrapper
 
         val confirmButton = UIButton("Confirm", 5f, isBordered = isBordered) {
             this@UIPopup.onConfirm?.invoke()
@@ -139,10 +160,10 @@ class UIPopup(
                 this@UIPopup.hide()
             }
         }.constrain {
-            x = 0.pixels()
+            x = 0.pixels
             y = CenterConstraint()
-            width = 45.percent()
-            height = 100.percent()
+            width = 45.percent
+            height = 100.percent
         } childOf confirmCancelContainer
         buttons.add(confirmButton)
 
@@ -151,18 +172,10 @@ class UIPopup(
         }.constrain {
             x = 0.pixels(true)
             y = CenterConstraint()
-            width = 45.percent()
-            height = 100.percent()
+            width = 45.percent
+            height = 100.percent
         } childOf confirmCancelContainer
         buttons.add(cancelButton)
-
-        uiText = UIWrappedText(text).constrain {
-            x = CenterConstraint()
-            y = 0.pixels()
-            width = 100.percent()
-            height = FillConstraint() - 25.pixels()
-            color = textColor
-        } childOf container
 
         refreshButtonColors()
     }

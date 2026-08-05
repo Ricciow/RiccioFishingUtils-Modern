@@ -41,7 +41,10 @@ enum class FishingIslands(val island: String, val availableLiquids : List<Liquid
     HUB("Hub", listOf(LiquidTypes.WATER), Color(45, 75, 200)),
 
     @SerializedName("Lotus Atoll")
-    ATOLL("Lotus Atoll", listOf(LiquidTypes.WATER), Color(180, 100, 0)),
+    ATOLL("Lotus Atoll", listOf(LiquidTypes.WATER), Color(255, 183, 197)),
+
+    @SerializedName("Torrhus Canyon")
+    TORRHUS("Torrhus Canyon", listOf(LiquidTypes.WATER), Color(180, 100, 0)),
 
     @SerializedName("Other")
     OTHER("Other", listOf(), Color(100, 100, 100)),

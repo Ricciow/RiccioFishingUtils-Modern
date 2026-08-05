@@ -77,6 +77,10 @@ enum class SeaCreatureCategory(val islands: List<FishingIslands>, val partyTypes
     ATOLL(
         listOf(FishingIslands.ATOLL),
         listOf(PartyTypes.REGULAR, PartyTypes.HOTSPOT, PartyTypes.BARN)
+    ),
+    TORRHUS(
+        listOf(FishingIslands.TORRHUS),
+        listOf(PartyTypes.REGULAR, PartyTypes.HOTSPOT, PartyTypes.BARN)
     );
 
     val displayName: String

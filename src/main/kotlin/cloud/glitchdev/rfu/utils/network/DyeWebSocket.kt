@@ -49,14 +49,12 @@ object DyeWebSocket : RegisteredEvent {
         WebSocketClient.subscribe("/topic/dyes", callback)
         WebSocketClient.subscribe("/app/topic/dyes", callback)
 
-        registerContainerOpenEvent { _, itens ->
+        registerContainerOpenEvent { containerName, _, items ->
             if(!BackendSettings.shareDyeData) return@registerContainerOpenEvent
             if(!areDyesOutdated()) return@registerContainerOpenEvent
 
-            //~ if >=26.2 'screen' -> 'gui.screen()' {
-            if(mc.gui.screen()?.title?.string == "Dyes") {
-            //~}
-                val dyes = dyeIndexes.map { itens[it] }
+            if(containerName == "Dyes") {
+                val dyes = dyeIndexes.map { items[it] }
 
                 if(dyes.any { it.customName == null }) return@registerContainerOpenEvent
 

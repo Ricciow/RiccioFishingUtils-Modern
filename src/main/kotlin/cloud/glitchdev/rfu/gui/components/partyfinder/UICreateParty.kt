@@ -1,4 +1,4 @@
-﻿package cloud.glitchdev.rfu.gui.components.partyfinder
+package cloud.glitchdev.rfu.gui.components.partyfinder
 
 import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.fishing.FishingIslands
@@ -10,6 +10,7 @@ import cloud.glitchdev.rfu.gui.components.dropdown.UIDropdown
 import cloud.glitchdev.rfu.gui.components.textinput.UIWrappedDecoratedTextInput
 import cloud.glitchdev.rfu.model.data.DataOption
 import cloud.glitchdev.rfu.model.party.FishingParty
+import cloud.glitchdev.rfu.party.PartyRequirementsManager
 import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.network.PartyWebSocket
 import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
@@ -42,7 +43,7 @@ import gg.essential.elementa.dsl.toConstraint
 import gg.essential.elementa.effects.ScissorEffect
 
 class UICreateParty : UIContainer() {
-    private val popup: UIPopup = PartyFinderWindow.popup
+    private val popup: UIPopup get() = PartyFinderWindow.popup
     private var party: FishingParty = PartyWebSocket.myParty ?: FishingParty.blankParty()
 
     private lateinit var titleField: UIDecoratedTextInput
@@ -290,22 +291,40 @@ class UICreateParty : UIContainer() {
             y = CenterConstraint()
         } childOf reqContainer
 
-        endermanToggle = UIToggleCard(party.getRequisite("enderman_9", "Enderman 9").toDataOption(), party.getRequisite("enderman_9", "Enderman 9").value) {
-            updatePartyModel()
+        endermanToggle = UIToggleCard(party.getRequisite("enderman_9", "Enderman 9").toDataOption(), party.getRequisite("enderman_9", "Enderman 9").value) { selected ->
+            if (selected && !PartyRequirementsManager.hasEnderman9()) {
+                endermanToggle.selected = false
+                val result = PartyRequirementsManager.PartyValidationResult.MissingEnderman9
+                popup.show(result.getErrorMessage())
+            } else {
+                updatePartyModel()
+            }
         }.constrain {
             x = SiblingConstraint(5f)
             y = CenterConstraint()
         } childOf reqContainer
 
-        lootingToggle = UIToggleCard(party.getRequisite("looting_5", "Looting 5").toDataOption(), party.getRequisite("looting_5", "Looting 5").value) {
-            updatePartyModel()
+        lootingToggle = UIToggleCard(party.getRequisite("looting_5", "Looting 5").toDataOption(), party.getRequisite("looting_5", "Looting 5").value) { selected ->
+            if (selected && !PartyRequirementsManager.hasLooting5Weapon()) {
+                lootingToggle.selected = false
+                val result = PartyRequirementsManager.PartyValidationResult.MissingLooting5
+                popup.show(result.getErrorMessage())
+            } else {
+                updatePartyModel()
+            }
         }.constrain {
             x = SiblingConstraint(5f)
             y = CenterConstraint()
         } childOf reqContainer
 
-        brainFoodToggle = UIToggleCard(party.getRequisite("brain_food", "Brain Food").toDataOption(), party.getRequisite("brain_food", "Brain Food").value) {
-            updatePartyModel()
+        brainFoodToggle = UIToggleCard(party.getRequisite("brain_food", "Brain Food").toDataOption(), party.getRequisite("brain_food", "Brain Food").value) { selected ->
+            if (selected && !PartyRequirementsManager.hasBrainFood()) {
+                brainFoodToggle.selected = false
+                val result = PartyRequirementsManager.PartyValidationResult.MissingBrainFood
+                popup.show(result.getErrorMessage())
+            } else {
+                updatePartyModel()
+            }
         }.constrain {
             x = SiblingConstraint(5f)
             y = CenterConstraint()
@@ -319,8 +338,14 @@ class UICreateParty : UIContainer() {
                 return@UIButton
             }
 
+            updatePartyModel()
+            val validation = PartyRequirementsManager.canCreateParty(party)
+            if (!validation.isSuccess) {
+                popup.show(validation.getErrorMessage())
+                return@UIButton
+            }
+
             if (DevSettings.devMode && DevSettings.isInSkyblock) {
-                updatePartyModel()
                 PartyWebSocket.submitParty(party)
                 return@UIButton
             } else {
@@ -328,7 +353,6 @@ class UICreateParty : UIContainer() {
                     if (Party.inParty && !Party.isLeader) {
                         popup.show("You must be the party leader to do this!")
                     } else {
-                        updatePartyModel()
                         PartyWebSocket.submitParty(party)
                     }
                 }

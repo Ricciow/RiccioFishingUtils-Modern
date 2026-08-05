@@ -13,11 +13,6 @@ object OtherSettings : Category("Other") {
         }
     }
 
-    var emojis by boolean(true) {
-        name = Literal("Emojis")
-        description = Literal("Replaces triggers like :dog: with the respective emoji. Use /rfuemojis to see all emojis!")
-    }
-
     var lobbyTracking by boolean(true) {
         name = Literal("Enable lobby tracking")
         description = Literal("Sends a message whenever you're in a lobby you've been in before.")
@@ -73,6 +68,31 @@ object OtherSettings : Category("Other") {
 
     init {
         dualSeparator {
+            title = "Emojis"
+        }
+    }
+
+    var emojis by reloadableBoolean(true) {
+        name = Literal("Toggle Emojis")
+        description = Literal("Replaces triggers like :dog: with the respective emoji. Use /rfuemojis to see all emojis!")
+    }
+
+    var returnCompletesEmoji by boolean(true) {
+        name = Literal("Return Completes Emoji")
+        description = Literal("Pressing Return completes the emoji suggestion instead of sending the message.")
+        condition = { emojis }
+    }
+
+    var requiredChars by int(2) {
+        name = Literal("Matching Chars Requirement")
+        description = Literal("Changes the minimum amount of matching chars required to display the suggestions")
+        range = 1..3
+        condition = { emojis }
+        slider = true
+    }
+
+    init {
+        dualSeparator {
             title = "Pets"
         }
     }
@@ -101,7 +121,7 @@ object OtherSettings : Category("Other") {
         }
     }
 
-    var fullInventoryAlert by reloadableBoolean(true) {
+    var fullInventoryAlert by reloadableBoolean(false) {
         name = Literal("Full Inventory Alert")
         description = Literal("Shows an alert when your inventory becomes full.")
     }

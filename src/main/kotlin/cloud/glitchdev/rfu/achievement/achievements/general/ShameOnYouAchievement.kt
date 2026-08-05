@@ -16,7 +16,7 @@ object ShameOnYouAchievement : BaseAchievement() {
     override val id: String = "shame_on_you"
     override val name: String = "Shame on You!"
     override val description: String = "Go inside a hotspot wearing full Blaze or Frozen Blaze armor."
-    override val type: AchievementType = AchievementType.HIDDEN
+    override val type: AchievementType = AchievementType.OBFUSCATED
     override val difficulty: AchievementDifficulty = AchievementDifficulty.MEDIUM
     override val category: AchievementCategory = AchievementCategory.GENERAL
 

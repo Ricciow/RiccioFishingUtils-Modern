@@ -66,15 +66,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
     private var partyCards : MutableList<UIPartyCard> = mutableListOf()
     private var isPeeking = false
 
-    val popup: UIPopup = UIPopup(5f, "", isBordered = true).childOf(window).colors {
-        primaryColor = UIScheme.pfCardBorder.toConstraint()
-        innerColor = UIScheme.pfCardBg.toConstraint()
-        textColor = UIScheme.errorPopupColor.toConstraint()
-        buttonPrimaryColor = UIScheme.pfCardBorder.toConstraint()
-        buttonHoverColor = UIScheme.pfCardBorderHovered.toConstraint()
-        buttonHoverTextColor = UIScheme.pfCardTitleHoverColor.toConstraint()
-    }
-
+    lateinit var popup: UIPopup
     lateinit var filterButton : UIButton
     lateinit var refreshButton : UIButton
     lateinit var filterArea : UIContainer
@@ -162,6 +154,15 @@ object PartyFinderWindow : BaseWindow(false), Feature {
 
         createPartyCreationArea(contentWrapper)
         createPartyArea(contentWrapper)
+
+        popup = UIPopup(5f, "", isBordered = true).childOf(window).colors {
+            primaryColor = UIScheme.pfCardBorder.toConstraint()
+            innerColor = UIScheme.pfCardBg.toConstraint()
+            textColor = UIScheme.errorPopupColor.toConstraint()
+            buttonPrimaryColor = UIScheme.pfCardBorder.toConstraint()
+            buttonHoverColor = UIScheme.pfCardBorderHovered.toConstraint()
+            buttonHoverTextColor = UIScheme.pfCardTitleHoverColor.toConstraint()
+        }
     }
 
     fun createHeader(background: UIComponent) {

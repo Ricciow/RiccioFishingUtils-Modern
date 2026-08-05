@@ -25,7 +25,6 @@ import gg.essential.elementa.constraints.AspectConstraint
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
 import gg.essential.elementa.constraints.FillConstraint
-import gg.essential.elementa.constraints.RelativeWindowConstraint
 import gg.essential.elementa.constraints.SiblingConstraint
 import gg.essential.elementa.constraints.ScaledTextConstraint
 import gg.essential.elementa.constraints.TextAspectConstraint
@@ -210,7 +209,8 @@ object AchievementWindow : BaseWindow() {
             .sortedWith(compareBy(
                 {
                     when {
-                        it.isCompleted -> 2
+                        it.isCompleted -> 3
+                        it.type == AchievementType.OBFUSCATED -> 2
                         it.type == AchievementType.SECRET -> 1
                         else -> 0
                     }
@@ -220,8 +220,9 @@ object AchievementWindow : BaseWindow() {
             .forEach { achievement ->
                 val existingCard = existingCardsMap[achievement.id]
                 val wasHovered = existingCard?.isHovered() ?: false
+                val savedViewingStage = existingCard?.viewingStage
                 
-                val component = Achievement(achievement, wasHovered).constrain {
+                val component = Achievement(achievement, wasHovered, savedViewingStage).constrain {
                     x = CenterConstraint()
                     y = SiblingConstraint(5f)
                     width = 100.percent()

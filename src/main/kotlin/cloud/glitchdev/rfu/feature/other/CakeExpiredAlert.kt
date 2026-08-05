@@ -15,6 +15,8 @@ import cloud.glitchdev.rfu.utils.command.Command
 import cloud.glitchdev.rfu.utils.command.SimpleCommand
 import com.mojang.brigadier.context.CommandContext
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
+import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.HoverEvent
 
 @RFUFeature
 object CakeExpiredAlert : Feature {
@@ -33,7 +35,9 @@ object CakeExpiredAlert : Feature {
 
             val newOutDated = outdated.minus(lastOutdated)
             if(newOutDated.isNotEmpty()) {
+                val hoverText = buildHoverText(newOutDated)
                 val message = TextUtils.rfuLiteral("${newOutDated.size} ${TextColor.GOLD}of your cakes just expired!", TextColor.YELLOW)
+                    .withStyle { it.withHoverEvent(HoverEvent.ShowText(Component.literal(hoverText))) }
                 Chat.sendMessage(message)
             }
 
@@ -47,7 +51,9 @@ object CakeExpiredAlert : Feature {
             val outdated = cakes.getOutdatedCakes()
 
             if(outdated.isNotEmpty()) {
+                val hoverText = buildHoverText(outdated)
                 val message = TextUtils.rfuLiteral("You have ${TextColor.YELLOW}${outdated.size} ${TextColor.GOLD}expired cakes!", TextColor.GOLD)
+                    .withStyle { it.withHoverEvent(HoverEvent.ShowText(Component.literal(hoverText))) }
                 Chat.sendMessage(message)
             }
         }
@@ -56,6 +62,10 @@ object CakeExpiredAlert : Feature {
             val effect = match?.groupValues?.getOrNull(1) ?: return@registerGameEvent
             cakes.eatCake(effect)
         }
+    }
+
+    private fun buildHoverText(cakes: Collection<CakesEntry.Cake>): String {
+        return "${TextColor.GOLD}Expired Cakes:\n${cakes.joinToString("\n") { "${TextColor.GRAY}- ${TextColor.YELLOW}${it.name}" }}\n${TextColor.DARK_GRAY}If this is incorrect run /rfuclearcakes to reset the cake data."
     }
 
     @Command

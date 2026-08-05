@@ -21,6 +21,12 @@ object TrophyFishing : Category("Trophy Fishing") {
         description = Literal("Displays trophy pity progress on the screen.")
     }
 
+    var displayRecentTrophies by boolean(true) {
+        name = Literal("Display only recently caught trophies")
+        description = Literal("Makes the pity display only display recently caught trophies")
+        condition = { trophyPityDisplay }
+    }
+
     var showGoldPity by boolean(false) {
         name = Literal("Show Gold Pity")
         description = Literal("Displays progress towards Gold tier on the pity display.")
