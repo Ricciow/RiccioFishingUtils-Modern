@@ -6,6 +6,7 @@
 - Added navigation to view different achievement tiers on staged achievements in /rfuachievements.
 - Added Torrhus Canyon to rfu party finder
 - Added Torrhus Canyon Sea Creatures
+- Added a hover message to expired cake alerts showing which cakes expired and a note on how to reset if they're incorrect.
 
 ### Fixes
 - Fixed command suggestion box width calculation conflict with SkyHanni for emojis.
