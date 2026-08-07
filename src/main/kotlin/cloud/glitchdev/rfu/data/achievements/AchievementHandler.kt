@@ -1,17 +1,22 @@
 package cloud.glitchdev.rfu.data.achievements
 
+import cloud.glitchdev.rfu.RiccioFishingUtils
 import cloud.glitchdev.rfu.achievement.AchievementManager
+import cloud.glitchdev.rfu.achievement.migration.AchievementMigration
 import cloud.glitchdev.rfu.utils.JsonFile
 
 object AchievementHandler {
-    private val jsonFile = JsonFile(
-        filename = "achievements.json",
-        type = AchievementsData::class.java,
-        defaultFactory = { AchievementsData() },
-        onSave = { AchievementManager.saveAll() },
-        onReload = { AchievementManager.reloadAll() },
-        revertOnAlpha = true
-    )
+    private val jsonFile: JsonFile<AchievementsData> by lazy {
+        AchievementMigration.runMigrations(RiccioFishingUtils.CONFIG_DIR.resolve("rfu/data/achievements.json"))
+        JsonFile(
+            filename = "achievements.json",
+            type = AchievementsData::class.java,
+            defaultFactory = { AchievementsData(version = AchievementMigration.CURRENT_VERSION) },
+            onSave = { AchievementManager.saveAll() },
+            onReload = { AchievementManager.reloadAll() },
+            revertOnAlpha = true
+        )
+    }
     
     fun getAchievementData(id: String): AchievementsData.AchievementSaveData? {
         return jsonFile.data.achievements[id]
