@@ -50,7 +50,27 @@ object AchievementMigration {
     }
 
     private fun migrateV0toV1(json: JsonObject) {
-        
+        if (!json.has("achievements")) {
+            json.add("achievements", JsonObject())
+        }
+        if (!json.has("trackedAchievements")) {
+            json.add("trackedAchievements", JsonArray())
+        }
+
+        val achievements = json.getAsJsonObject("achievements")
+        if (achievements != null && achievements.has("survivalist")) {
+            val survivalist = achievements.getAsJsonObject("survivalist")
+            val isCompleted = survivalist.get("isCompleted")?.asBoolean ?: false
+            val progressData = survivalist.getAsJsonObject("progressData")
+            val currentStage = progressData?.get("currentStage")?.asInt ?: 1
+
+            if (isCompleted && currentStage <= 5) {
+                survivalist.addProperty("isCompleted", false)
+                if (progressData != null && currentStage < 5) {
+                    progressData.addProperty("currentStage", 5)
+                }
+            }
+        }
     }
 
     fun renameAchievement(root: JsonObject, oldId: String, newId: String) {
