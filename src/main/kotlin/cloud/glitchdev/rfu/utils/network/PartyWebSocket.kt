@@ -1,4 +1,4 @@
-﻿package cloud.glitchdev.rfu.utils.network
+package cloud.glitchdev.rfu.utils.network
 
 import cloud.glitchdev.rfu.constants.chat.RegexConstants.PLAYER_REGEX
 import cloud.glitchdev.rfu.events.AutoRegister

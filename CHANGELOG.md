@@ -5,5 +5,6 @@
 
 ### Fixes
 - Fixed other messages being counted as trophy catches when they shouldn't
+- Fixed togglewarp not auto re-joining the party
 
 ### Changes
