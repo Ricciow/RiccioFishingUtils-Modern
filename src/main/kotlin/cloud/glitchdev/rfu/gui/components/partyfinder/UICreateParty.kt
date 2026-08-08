@@ -59,6 +59,7 @@ class UICreateParty : UIContainer() {
     private lateinit var endermanToggle: UIToggleCard
     private lateinit var lootingToggle: UIToggleCard
     private lateinit var brainFoodToggle: UIToggleCard
+    private lateinit var bloodshotToggle: UIToggleCard
 
     private lateinit var submitButton: UIButton
 
@@ -329,6 +330,19 @@ class UICreateParty : UIContainer() {
             x = SiblingConstraint(5f)
             y = CenterConstraint()
         } childOf reqContainer
+
+        bloodshotToggle = UIToggleCard(party.getRequisite("bloodshot", "Bloodshot").toDataOption(), party.getRequisite("bloodshot", "Bloodshot").value) { selected ->
+            if (selected && !PartyRequirementsManager.hasBloodshotBelt()) {
+                bloodshotToggle.selected = false
+                val result = PartyRequirementsManager.PartyValidationResult.MissingBloodshot
+                popup.show(result.getErrorMessage())
+            } else {
+                updatePartyModel()
+            }
+        }.constrain {
+            x = SiblingConstraint(5f)
+            y = CenterConstraint()
+        } childOf reqContainer
     }
 
     private fun createSubmitButton(parent: UIContainer) {
@@ -426,6 +440,7 @@ class UICreateParty : UIContainer() {
         party.setRequisite("enderman_9", "Enderman 9", endermanToggle.selected)
         party.setRequisite("looting_5", "Looting 5", lootingToggle.selected)
         party.setRequisite("brain_food", "Brain Food", brainFoodToggle.selected)
+        party.setRequisite("bloodshot", "Bloodshot", bloodshotToggle.selected)
     }
 
     private fun updateFields() {
@@ -445,6 +460,7 @@ class UICreateParty : UIContainer() {
         endermanToggle.selected = party.getRequisite("enderman_9", "Enderman 9").value
         lootingToggle.selected = party.getRequisite("looting_5", "Looting 5").value
         brainFoodToggle.selected = party.getRequisite("brain_food", "Brain Food").value
+        bloodshotToggle.selected = party.getRequisite("bloodshot", "Bloodshot").value
 
         updateButtonLabel()
     }

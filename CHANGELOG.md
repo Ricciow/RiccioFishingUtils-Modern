@@ -4,6 +4,7 @@
 - Extended the survivalist achievement with 4 new stages
 - Added 1 new achievement!
 - Added a setting to adjust hotspot highlight border opacity
+- Added a new Bloodshot requirement in Party Finder
 
 ### Fixes
 - Fixed other messages being counted as trophy catches when they shouldn't

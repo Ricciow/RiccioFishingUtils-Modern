@@ -1,4 +1,4 @@
-﻿package cloud.glitchdev.rfu.model.party
+package cloud.glitchdev.rfu.model.party
 
 import cloud.glitchdev.rfu.constants.fishing.FishingIslands
 import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
@@ -61,6 +61,7 @@ data class FishingParty(
                     Requisite("enderman_9", "Enderman 9", false),
                     Requisite("looting_5", "Looting 5", false),
                     Requisite("brain_food", "Brain Food", false),
+                    Requisite("bloodshot", "Bloodshot", false),
                 ),
                 listOf(),
                 Players(maxOf(Party.memberCount, 1), 6)

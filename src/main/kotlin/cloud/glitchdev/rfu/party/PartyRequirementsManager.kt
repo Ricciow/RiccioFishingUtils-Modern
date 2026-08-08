@@ -5,6 +5,7 @@ import cloud.glitchdev.rfu.constants.skyblock.SkillType
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.data.other.OtherManager
 import cloud.glitchdev.rfu.data.other.data.BooleanEntry
+import cloud.glitchdev.rfu.events.managers.EquipmentEvents
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ContainerEvents.registerContainerOpenEvent
@@ -23,6 +24,7 @@ object PartyRequirementsManager : RegisteredEvent {
         object MissingLooting5 : PartyValidationResult()
         object MissingBrainFood : PartyValidationResult()
         object MissingEnderman9 : PartyValidationResult()
+        object MissingBloodshot : PartyValidationResult()
         data class MissingRequisite(val requisiteKey: String, val requisiteName: String) : PartyValidationResult()
 
         val isSuccess: Boolean get() = this is Success
@@ -35,6 +37,7 @@ object PartyRequirementsManager : RegisteredEvent {
                 is MissingLooting5 -> "You must have a Looting 5 weapon in your inventory!"
                 is MissingBrainFood -> "You must have 5 Brain Food!\n${TextColor.GRAY}If you already have it, open\n${TextColor.GRAY}Sb Menu->Skyblock Leveling->Ways to Level Up->Consumable Tasks"
                 is MissingEnderman9 -> "You must have Enderman Slayer 9!\n${TextColor.GRAY}If you already have it, open the maddox menu."
+                is MissingBloodshot -> "You must be wearing a Bloodshot belt!\n${TextColor.GRAY}If you already are, open your equipment menu."
                 is MissingRequisite -> "You do not meet the requirement: $requisiteName!"
             }
         }
@@ -117,6 +120,11 @@ object PartyRequirementsManager : RegisteredEvent {
         return hasEnderman9
     }
 
+    fun hasBloodshotBelt(): Boolean {
+        val belt = EquipmentEvents.currentEquipmentSet.belt
+        return belt.startsWith("Bloodshot", ignoreCase = true)
+    }
+
     fun validatePartyRequirements(party: FishingParty): PartyValidationResult {
         val failures = mutableListOf<PartyValidationResult>()
 
@@ -131,6 +139,7 @@ object PartyRequirementsManager : RegisteredEvent {
                 "looting_5" -> if (!hasLooting5Weapon()) failures.add(PartyValidationResult.MissingLooting5)
                 "brain_food" -> if (!hasBrainFood()) failures.add(PartyValidationResult.MissingBrainFood)
                 "enderman_9" -> if (!hasEnderman9()) failures.add(PartyValidationResult.MissingEnderman9)
+                "bloodshot" -> if (!hasBloodshotBelt()) failures.add(PartyValidationResult.MissingBloodshot)
             }
         }
 

@@ -35,6 +35,7 @@ class UIConditionCard(
                 "looting_5" -> UIScheme.pfConditionCardLooting5
                 "enderman_9" -> UIScheme.pfConditionCardEnderman9
                 "brain_food" -> UIScheme.pfConditionCardBrainFood
+                "bloodshot" -> UIScheme.pfConditionCardBloodshot
                 "location" -> UIScheme.getIslandColor(option.label)
                 else -> UIScheme.pfConditionCardUnknown
             }.toConstraint()
@@ -49,6 +50,7 @@ class UIConditionCard(
                 "looting_5" -> UIScheme.pfConditionCardLooting5Border
                 "enderman_9" -> UIScheme.pfConditionCardEnderman9Border
                 "brain_food" -> UIScheme.pfConditionCardBrainFoodBorder
+                "bloodshot" -> UIScheme.pfConditionCardBloodshotBorder
                 "location" -> UIScheme.getIslandBorderColor(option.label)
                 else -> UIScheme.pfConditionCardUnknownBorder
             }.toConstraint()
@@ -64,6 +66,7 @@ class UIConditionCard(
                 "looting_5" -> "/assets/rfu/ui/looting_5.png"
                 "enderman_9" -> "/assets/rfu/ui/enderman_9.png"
                 "brain_food" -> "/assets/rfu/ui/brain_food.png"
+                "bloodshot" -> "/assets/rfu/ui/water.png"
                 "location" -> "/assets/rfu/ui/location.png"
                 else -> "/assets/rfu/ui/unknown.png"
             }

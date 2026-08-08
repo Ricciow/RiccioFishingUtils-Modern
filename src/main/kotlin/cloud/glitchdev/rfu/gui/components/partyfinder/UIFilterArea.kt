@@ -1,4 +1,4 @@
-﻿package cloud.glitchdev.rfu.gui.components.partyfinder
+package cloud.glitchdev.rfu.gui.components.partyfinder
 
 import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
 import cloud.glitchdev.rfu.gui.UIScheme
@@ -30,6 +30,7 @@ class UIFilterArea(private val filterHeight : YConstraint, var onFilterChange: (
     lateinit var endermanToggle: UIToggleCard
     lateinit var lootingToggle: UIToggleCard
     lateinit var brainFoodToggle: UIToggleCard
+    lateinit var bloodshotToggle: UIToggleCard
 
     init {
         create()
@@ -125,6 +126,13 @@ class UIFilterArea(private val filterHeight : YConstraint, var onFilterChange: (
             x = CramSiblingConstraint(4f)
             y = CramSiblingConstraint()
         } childOf bottomArea
+
+        bloodshotToggle = UIToggleCard(DataOption("bloodshot", "Bloodshot")) {
+            onFilterChange()
+        }.constrain {
+            x = CramSiblingConstraint(4f)
+            y = CramSiblingConstraint()
+        } childOf bottomArea
     }
 
     fun createInteractions() {
@@ -156,6 +164,7 @@ class UIFilterArea(private val filterHeight : YConstraint, var onFilterChange: (
             if (endermanToggle.selected && !party.getRequisite("enderman_9", "Enderman 9").value) return@filter false
             if (lootingToggle.selected && !party.getRequisite("looting_5", "Looting 5").value) return@filter false
             if (brainFoodToggle.selected && !party.getRequisite("brain_food", "Brain Food").value) return@filter false
+            if (bloodshotToggle.selected && !party.getRequisite("bloodshot", "Bloodshot").value) return@filter false
 
             return@filter true
         } as MutableList<FishingParty>
