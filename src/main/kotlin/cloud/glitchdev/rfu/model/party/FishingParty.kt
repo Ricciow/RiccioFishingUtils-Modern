@@ -9,7 +9,6 @@ import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.World
 import cloud.glitchdev.rfu.model.data.DataOption
 import com.google.gson.annotations.SerializedName
-import com.google.gson.Gson
 
 data class FishingParty(
     @Transient

@@ -2,8 +2,6 @@ package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.data.EquipmentSet
 import cloud.glitchdev.rfu.events.AbstractEventManager
-import cloud.glitchdev.rfu.events.AutoRegister
-import cloud.glitchdev.rfu.events.RegisteredEvent
 
 object EquipmentEvents {
     val currentEquipmentSet: EquipmentSet
