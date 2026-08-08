@@ -27,6 +27,12 @@ object DevSettings : Category("Developer") {
         condition = { devMode }
     }
 
+    var copyContainerDataKeybind by key(InputConstants.KEY_RSHIFT) {
+        name = Literal("Copy Container Data Keybind")
+        description = Literal("Keybind to copy data of all items in the open container to clipboard.")
+        condition = { devMode }
+    }
+
     var isInSkyblock by boolean(false) {
         name = Literal("Force In Skyblock")
         description = Literal("Forces the mod to consider you're inside skyblock.")

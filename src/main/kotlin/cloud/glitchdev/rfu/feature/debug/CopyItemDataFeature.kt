@@ -13,8 +13,10 @@ import cloud.glitchdev.rfu.utils.TextUtils
 import com.google.gson.GsonBuilder
 import gg.essential.universal.utils.toFormattedString
 import gg.essential.universal.utils.toUnformattedString
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.item.ItemStack
 
 @RFUFeature
@@ -31,15 +33,27 @@ object CopyItemDataFeature : Feature {
                 }
             }
         )
+
+        registerKeyboardEvent(
+            key = { DevSettings.copyContainerDataKeybind },
+            onPress = {
+                //~ if >=26.2 'screen' -> 'gui.screen()' {
+                if (DevSettings.devMode && mc.gui.screen() == null) {
+                //~}
+                    copyContainerData()
+                }
+            }
+        )
     }
 
     @JvmStatic
     fun handleContainerKeyPress(key: Int) {
-        if (!DevSettings.devMode) return
-        val configKey = DevSettings.copyItemDataKeybind
-        if (configKey == 0 || key != configKey) return
-
-        copyCurrentItemData()
+        if (!DevSettings.devMode || key == 0) return
+        if (key == DevSettings.copyItemDataKeybind) {
+            copyCurrentItemData()
+        } else if (key == DevSettings.copyContainerDataKeybind) {
+            copyContainerData()
+        }
     }
 
     fun copyCurrentItemData() {
@@ -66,7 +80,62 @@ object CopyItemDataFeature : Feature {
         }
 
         val dataMap = LinkedHashMap<String, Any?>()
+        extractItemData(itemStack, dataMap)
 
+        val jsonString = GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create().toJson(dataMap)
+        mc.keyboardHandler.clipboard = jsonString
+
+        val displayName = itemStack.hoverName.toUnformattedString()
+        Chat.sendMessage(
+            TextUtils.rfuLiteral("Copied item data for '$displayName' to clipboard!", TextStyle(TextColor.LIGHT_GREEN))
+        )
+    }
+
+    fun copyContainerData() {
+        //~ if >=26.2 'screen' -> 'gui.screen()' {
+        val screen = mc.gui.screen() as? AbstractContainerScreen<*>
+        //~}
+        if (screen == null) {
+            Chat.sendMessage(
+                TextUtils.rfuLiteral("No container screen open to copy data from.", TextStyle(TextColor.LIGHT_RED))
+            )
+            return
+        }
+
+        val title = screen.title.toUnformattedString()
+        val formattedTitle = screen.title.toFormattedString()
+        val containerSlots = screen.menu.slots.filter { it.container !is Inventory && it.container != mc.player?.inventory }
+
+        val itemList = mutableListOf<Map<String, Any?>>()
+        var itemCount = 0
+
+        for (slot in containerSlots) {
+            val itemStack = slot.item
+            if (itemStack.isEmpty || isStainedGlassPane(itemStack)) continue
+            itemCount++
+
+            val itemData = LinkedHashMap<String, Any?>()
+            itemData["slot"] = slot.index
+            extractItemData(itemStack, itemData)
+            itemList.add(itemData)
+        }
+
+        val containerData = LinkedHashMap<String, Any?>()
+        containerData["containerTitle"] = title
+        containerData["formattedTitle"] = formattedTitle
+        containerData["totalSlots"] = containerSlots.size
+        containerData["itemCount"] = itemCount
+        containerData["items"] = itemList
+
+        val jsonString = GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create().toJson(containerData)
+        mc.keyboardHandler.clipboard = jsonString
+
+        Chat.sendMessage(
+            TextUtils.rfuLiteral("Copied container data ($itemCount items) for '$title' to clipboard!", TextStyle(TextColor.LIGHT_GREEN))
+        )
+    }
+
+    private fun extractItemData(itemStack: ItemStack, dataMap: MutableMap<String, Any?>) {
         val customData = itemStack[DataComponents.CUSTOM_DATA]
         val tag = customData?.copyTag()
         val extraAttributes = tag?.getCompound("ExtraAttributes")?.orElse(null)
@@ -88,14 +157,11 @@ object CopyItemDataFeature : Feature {
         if (tag != null && !tag.isEmpty) {
             dataMap["nbt"] = tag.toString()
         }
+    }
 
-        val jsonString = GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create().toJson(dataMap)
-
-        mc.keyboardHandler.clipboard = jsonString
-
-        val displayName = itemStack.hoverName.toUnformattedString()
-        Chat.sendMessage(
-            TextUtils.rfuLiteral("Copied item data for '$displayName' to clipboard!", TextStyle(TextColor.LIGHT_GREEN))
-        )
+    private fun isStainedGlassPane(itemStack: ItemStack): Boolean {
+        if (itemStack.isEmpty) return false
+        val id = BuiltInRegistries.ITEM.getKey(itemStack.item).toString()
+        return id.endsWith("_stained_glass_pane") || id == "minecraft:stained_glass_pane"
     }
 }
