@@ -6,10 +6,10 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.BaseAchievement
+import cloud.glitchdev.rfu.events.managers.ArmorEvents
+import cloud.glitchdev.rfu.events.managers.ArmorEvents.registerArmorChangeEvent
 import cloud.glitchdev.rfu.events.managers.HotSpotEvents
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
-import gg.essential.universal.utils.toUnformattedString
-import net.minecraft.world.entity.EquipmentSlot
 
 @Achievement
 object ShameOnYouAchievement : BaseAchievement() {
@@ -20,34 +20,22 @@ object ShameOnYouAchievement : BaseAchievement() {
     override val difficulty: AchievementDifficulty = AchievementDifficulty.MEDIUM
     override val category: AchievementCategory = AchievementCategory.GENERAL
 
-    private val armorSlots = arrayOf(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET)
-
     override fun setupListeners() {
+        activeListeners.add(registerArmorChangeEvent {
+            checkCondition()
+        })
         activeListeners.add(registerTickEvent(interval = 40) {
-            val player = mc.player ?: return@registerTickEvent
-            val userPos = player.position()
-            val userHotspot = HotSpotEvents.getHotspotAt(userPos) ?: return@registerTickEvent
-
-            val hasFullBlazeSet = armorSlots.all { slot ->
-                val item = player.getItemBySlot(slot)
-                val customName = item.customName?.toUnformattedString() ?: return@all false
-                isBlazePiece(customName, slot)
-            }
-
-            if (hasFullBlazeSet) {
-                complete()
-            }
+            checkCondition()
         })
     }
 
-    private fun isBlazePiece(itemName: String, slot: EquipmentSlot): Boolean {
-        val expectedPieceName = when (slot) {
-            EquipmentSlot.HEAD -> "Blaze Helmet"
-            EquipmentSlot.CHEST -> "Blaze Chestplate"
-            EquipmentSlot.LEGS -> "Blaze Leggings"
-            EquipmentSlot.FEET -> "Blaze Boots"
-            else -> return false
+    private fun checkCondition() {
+        val player = mc.player ?: return
+        val userPos = player.position()
+        HotSpotEvents.getHotspotAt(userPos) ?: return
+
+        if (ArmorEvents.currentArmorSet.isWearingBlazeArmorSet) {
+            complete()
         }
-        return itemName.contains(expectedPieceName)
     }
 }

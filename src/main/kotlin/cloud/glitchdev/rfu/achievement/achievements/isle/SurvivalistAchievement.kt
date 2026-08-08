@@ -6,6 +6,7 @@ import cloud.glitchdev.rfu.achievement.types.StageAchievement
 import cloud.glitchdev.rfu.config.categories.LavaFishing
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.data.mob.SkyblockEntity
+import cloud.glitchdev.rfu.events.managers.ArmorEvents
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDetectEvent
 import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDisposeEvent
@@ -13,7 +14,6 @@ import cloud.glitchdev.rfu.events.managers.PlayerEvents.registerPlayerDetectEven
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.utils.dsl.parseHealthValue
-import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.level.levelgen.Heightmap
 
 @Achievement
@@ -35,7 +35,6 @@ object SurvivalistAchievement : StageAchievement() {
     private var maxJawbusHealth = -1
     private var jawbusSpawnTime = 0L
 
-    private val armorSlots = arrayOf(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET)
     private val DEATH_REGEX = """ ☠ You """.toRegex()
     private val SEA_CREATURE = SeaCreatures.get("Lord Jawbus")!!
 
@@ -73,8 +72,7 @@ object SurvivalistAchievement : StageAchievement() {
                         maxJawbusHealth = currentHealth
                     }
 
-                    val player = mc.player
-                    val isWearingArmor = player != null && armorSlots.any { slot -> !player.getItemBySlot(slot).isEmpty }
+                    val isWearingArmor = ArmorEvents.currentArmorSet.isWearingAnyArmor
 
                     if (isWearingArmor && maxJawbusHealth > 0) {
                         val damageDealt = maxJawbusHealth - currentHealth
