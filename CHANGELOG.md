@@ -8,6 +8,7 @@
 - Fixed other messages being counted as trophy catches when they shouldn't
 - Fixed togglewarp not auto re-joining the party
 - Fixed an issue where pressing enter really fast would not complete the emoji properly
+- Fixed hotspot sea creature counts not couting properly on torrhus
 
 ### Changes
 - Reduced Squid Collection achievement to max out at 2M Collection
