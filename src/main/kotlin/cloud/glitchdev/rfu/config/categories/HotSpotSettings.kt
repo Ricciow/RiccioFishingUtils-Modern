@@ -11,9 +11,17 @@ object HotSpotSettings : Category("Hot Spots") {
         }
     }
 
-    var highlightHotSpots by boolean(true) {
+    var highlightHotSpots by reloadableBoolean(true) {
         name = Literal("Highlight Hot Spots")
         description = Literal("Makes hotspots highlighted and hides the particles")
+    }
+
+    var hotspotBorderOpacity by int(100) {
+        name = Literal("Border Opacity")
+        description = Literal("The opacity of the hotspot highlight border")
+        range = 0..255
+        slider = true
+        condition = { highlightHotSpots }
     }
 
     var hotspotPointer by reloadableBoolean(false) {
