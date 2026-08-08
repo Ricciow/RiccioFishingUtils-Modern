@@ -2,6 +2,7 @@
 
 ### Features
 - Extended the survivalist achievement with 4 new stages
+- Added 1 new achievement!
 
 ### Fixes
 - Fixed other messages being counted as trophy catches when they shouldn't
