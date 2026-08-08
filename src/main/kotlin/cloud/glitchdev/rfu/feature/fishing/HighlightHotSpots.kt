@@ -28,7 +28,7 @@ object HighlightHotSpots : Feature {
                 for (hotspot in HotSpotEvents.getAllHotspots()) {
                     val rad = if (hotspot.radius > 0) hotspot.radius else continue
                     val surfaceY = findSurfaceY(hotspot.center, world, hotspot.liquid.isLava())
-                    val renderPos = Vec3(hotspot.center.x, surfaceY + 0.01, hotspot.center.z)
+                    val renderPos = Vec3(hotspot.center.x, surfaceY + 0.1, hotspot.center.z)
 
                     val baseBorderColor = hotspot.color.darker()
                     val borderColor = Color(baseBorderColor.red, baseBorderColor.green, baseBorderColor.blue, hotspotBorderOpacity)
@@ -41,6 +41,7 @@ object HighlightHotSpots : Feature {
                         color = hotspot.color
                         this.borderColor = borderColor
                         lineWidth = 3.0f
+                        scaleWithDistance = true
                     }
                 }
             }

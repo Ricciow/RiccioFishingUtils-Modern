@@ -58,13 +58,13 @@ class Render3DBuilder(val shape: Shape, val context: LevelRenderContext) {
     fun render() {
         when (shape) {
             Shape.SPHERE -> Render3D.renderSphere(
-                location, radius, color, context, stacks, slices, lineWidth, filled, borderColor
+                location, radius, color, context, stacks, slices, lineWidth, filled, borderColor, scaleWithDistance
             )
             Shape.CYLINDER -> Render3D.renderCylinder(
-                location, radius, height, color, context, slices, borderColor, lineWidth
+                location, radius, height, color, context, slices, borderColor, lineWidth, scaleWithDistance
             )
             Shape.LINE -> Render3D.renderLine(
-                startLocation, location, color, context, lineWidth
+                startLocation, location, color, context, lineWidth, scaleWithDistance
             )
             Shape.TEXT -> Render3D.renderText(
                 location, text, color, context, scale, seeThrough, dropShadow, backgroundOpacity, scaleWithDistance
