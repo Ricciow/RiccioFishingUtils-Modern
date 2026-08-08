@@ -1,4 +1,4 @@
-# v1.16.1 - Torrhus Canyon Patches
+# v1.16.1 - ???
 
 ### Features
 - Extended the survivalist achievement with 4 new stages
@@ -14,3 +14,6 @@
 ### Changes
 - Reduced Squid Collection achievement to max out at 2M Collection
 - Reduced Ink Obsessed achievement to cap out at 100k
+
+### Back-end
+- Added current equipment tracking
