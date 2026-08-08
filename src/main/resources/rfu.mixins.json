@@ -25,6 +25,7 @@
     "screen.PackSelectionScreenMixin",
     "ItemModelResolverMixin",
     "CommandSuggestionsMixin",
+    "CommandSuggestionsAccessor",
     "SuggestionsListMixin",
     "EditBoxMixin",
     "FontPreparedTextBuilderMixin"
