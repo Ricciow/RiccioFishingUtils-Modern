@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
 import cloud.glitchdev.rfu.utils.network.Network
+import com.mojang.blaze3d.platform.InputConstants
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 
 object DevSettings : Category("Developer") {
@@ -18,6 +19,12 @@ object DevSettings : Category("Developer") {
     var devMode by reloadableBoolean(false) {
         name = Literal("Developer Mode")
         description = Literal("Enable developer mode.")
+    }
+
+    var copyItemDataKeybind by key(InputConstants.KEY_RCONTROL) {
+        name = Literal("Copy Item Data Keybind")
+        description = Literal("Keybind to copy relevant data of the hovered/held item to clipboard.")
+        condition = { devMode }
     }
 
     var isInSkyblock by boolean(false) {

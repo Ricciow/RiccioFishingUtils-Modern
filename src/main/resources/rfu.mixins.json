@@ -12,6 +12,7 @@
     "ClientCommonPacketListenerImplMixin",
     "DownloadedPackSourceMixin",
     "AbstractContainerScreenMixin",
+    "AbstractContainerScreenAccessor",
     "EntityRenderDispatcherMixin",
     "EntityMixin",
     "FontMixin",
