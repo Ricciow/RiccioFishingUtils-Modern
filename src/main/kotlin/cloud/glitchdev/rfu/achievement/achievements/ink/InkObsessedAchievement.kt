@@ -22,7 +22,7 @@ object InkObsessedAchievement: NumericStageAchievement() {
     override val resetCountOnStageAdvance: Boolean = false
 
     private val MILESTONES = listOf(
-        25_000L, 50_000L, 100_000L, 250_000L
+        25_000L, 50_000L, 75_000L, 100_000L
     )
 
     private val MILESTONE_NAMES = listOf(

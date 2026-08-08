@@ -9,3 +9,5 @@
 - Fixed an issue where pressing enter really fast would not complete the emoji properly
 
 ### Changes
+- Reduced Squid Collection achievement to max out at 2M Collection
+- Reduced Ink Obsessed achievement to cap out at 100k
