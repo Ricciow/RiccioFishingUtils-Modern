@@ -1,8 +1,6 @@
 package cloud.glitchdev.rfu.gui.components.streak
 
 import cloud.glitchdev.rfu.data.streak.DailyChallenge
-import cloud.glitchdev.rfu.feature.streak.challenge.ChallengeLevel
-import cloud.glitchdev.rfu.feature.streak.challenge.ChallengeRegistry
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.elementa.BoundingBoxConstraint
 import cloud.glitchdev.rfu.gui.components.elementa.TextWrappingConstraint
@@ -25,11 +23,9 @@ import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.plus
 import gg.essential.elementa.dsl.toConstraint
 import java.awt.Color
-
 import cloud.glitchdev.rfu.data.streak.DailyStreakManager
 import gg.essential.elementa.constraints.ChildBasedMaxSizeConstraint
 import gg.essential.elementa.dsl.max
-import gg.essential.elementa.dsl.min
 
 class UIDailyChallengeCard(
     val challenge: DailyChallenge,
@@ -90,7 +86,6 @@ class UIDailyChallengeCard(
             height = max(ChildBasedMaxSizeConstraint(), 20.pixels())
         } childOf innerContainer
 
-        val baseDef = challenge.baseDef
         val levelStr = challenge.getLevel().formattedName
 
         titleText = UIText("${index + 1}. ${challenge.getTitle()} §7[$levelStr§7]").constrain {
