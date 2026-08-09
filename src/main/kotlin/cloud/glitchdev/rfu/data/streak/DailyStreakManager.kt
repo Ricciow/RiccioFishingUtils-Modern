@@ -6,6 +6,7 @@ import cloud.glitchdev.rfu.feature.streak.challenge.BaseChallenge
 import cloud.glitchdev.rfu.feature.streak.challenge.ChallengeRegistry
 import cloud.glitchdev.rfu.feature.streak.challenge.challenges.general.DailyAnglerChallenge
 import cloud.glitchdev.rfu.utils.Chat
+import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.JsonFile
 import cloud.glitchdev.rfu.utils.Sounds
 import cloud.glitchdev.rfu.utils.TextUtils
@@ -50,7 +51,8 @@ object DailyStreakManager {
         data.hasRerolledToday = false
 
         val mandatory = ChallengeRegistry.getMandatoryChallenge() ?: DailyAnglerChallenge
-        val seed = today.hashCode().toLong()
+        val username = try { User.getUsername() } catch (e: Exception) { "" }
+        val seed = "$today:$username".hashCode().toLong()
         val poolChallenges = ChallengeRegistry.getSeededPoolChallenges(seed, 2)
 
         val challenge1 = DailyChallenge(mandatory.id)
