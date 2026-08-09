@@ -32,7 +32,7 @@ object DailyStreakManager {
         if (!DailyStreakSettings.dailyStreakEnabled) return
 
         val today = getTodayDateString()
-        val expectedCount = (1 + ChallengeRegistry.getPoolChallenges().size.coerceAtMost(2)).coerceAtLeast(1)
+        val expectedCount = ChallengeRegistry.getPoolChallenges().size.coerceAtMost(3).coerceAtLeast(1)
         if (data.currentDate == today && data.todayChallenges.size == expectedCount) {
             activateTodayListeners()
             return
@@ -50,16 +50,11 @@ object DailyStreakManager {
         data.currentDate = today
         data.hasRerolledToday = false
 
-        val mandatory = ChallengeRegistry.getMandatoryChallenge() ?: DailyAnglerChallenge
         val username = try { User.getUsername() } catch (e: Exception) { "" }
         val seed = "$today:$username".hashCode().toLong()
-        val poolChallenges = ChallengeRegistry.getSeededPoolChallenges(seed, 2)
+        val poolChallenges = ChallengeRegistry.getSeededPoolChallenges(seed, 3)
 
-        val challenge1 = DailyChallenge(mandatory.id)
-        val challenge2 = poolChallenges.getOrNull(0)?.let { DailyChallenge(it.id) }
-        val challenge3 = poolChallenges.getOrNull(1)?.let { DailyChallenge(it.id) }
-
-        data.todayChallenges = listOfNotNull(challenge1, challenge2, challenge3)
+        data.todayChallenges = poolChallenges.map { DailyChallenge(it.id) }
 
         listenersActivated = false
         saveData()
@@ -80,7 +75,6 @@ object DailyStreakManager {
     fun unregisterAllListeners() {
         listenersActivated = false
         ChallengeRegistry.getPoolChallenges().forEach { it.unregisterListeners() }
-        ChallengeRegistry.getMandatoryChallenge()?.unregisterListeners()
     }
 
     fun addProgressForChallenge(challengeId: String, amount: Int = 1) {
@@ -157,10 +151,6 @@ object DailyStreakManager {
         }
 
         val targetBase = ChallengeRegistry.getChallenge(targetChallenge.id)
-        if (targetBase?.isMandatoryBase == true) {
-            Chat.sendMessage(TextUtils.rfuLiteral("§cYou cannot reroll the mandatory daily challenge!"))
-            return false
-        }
 
         val activeBaseIds = data.todayChallenges.map { it.id }.toSet()
         val availablePool = ChallengeRegistry.getPoolChallenges().filter { it.id !in activeBaseIds }

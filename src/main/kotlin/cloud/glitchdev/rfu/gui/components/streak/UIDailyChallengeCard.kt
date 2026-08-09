@@ -112,7 +112,7 @@ class UIDailyChallengeCard(
             height = ChildBasedSizeConstraint()
         } childOf header
 
-        if (!challenge.isCompleted && baseDef?.isMandatoryBase != true && DailyStreakManager.canReroll()) {
+        if (!challenge.isCompleted && DailyStreakManager.canReroll()) {
             val rerollBtn = UIRoundedRectangle(3f).constrain {
                 x = 0.pixels()
                 y = CenterConstraint()

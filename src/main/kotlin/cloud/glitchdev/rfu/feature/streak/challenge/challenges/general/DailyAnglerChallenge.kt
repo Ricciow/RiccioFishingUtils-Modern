@@ -11,7 +11,7 @@ object DailyAnglerChallenge : BaseChallenge() {
     override val id = "daily_angler"
     override val title = "Daily Angler"
     override val description = "Fish for the required duration."
-    override val isMandatoryBase = true
+    override val weight = 1000
 
     override fun getTargetProgress(streakDays: Int): Int {
         return when {

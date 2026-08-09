@@ -9,12 +9,8 @@ object ChallengeRegistry {
         challengesMap[challenge.id] = challenge
     }
 
-    fun getMandatoryChallenge(): BaseChallenge? {
-        return challengesMap.values.find { it.isMandatoryBase } ?: challengesMap.values.firstOrNull()
-    }
-
     fun getPoolChallenges(): List<BaseChallenge> {
-        return challengesMap.values.filter { !it.isMandatoryBase }
+        return challengesMap.values.toList()
     }
 
     fun getWeightedRandomChallenge(candidates: List<BaseChallenge>, rng: Random = Random()): BaseChallenge? {
@@ -33,7 +29,7 @@ object ChallengeRegistry {
         return candidates.last()
     }
 
-    fun getSeededPoolChallenges(dateSeed: Long, count: Int = 2): List<BaseChallenge> {
+    fun getSeededPoolChallenges(dateSeed: Long, count: Int = 3): List<BaseChallenge> {
         val pool = getPoolChallenges().toMutableList()
         if (pool.isEmpty()) return emptyList()
         if (pool.size <= count) return pool
