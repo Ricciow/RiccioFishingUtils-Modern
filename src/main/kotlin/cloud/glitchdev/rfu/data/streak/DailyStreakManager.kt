@@ -20,6 +20,11 @@ object DailyStreakManager {
     fun getTodayDateString(): String = LocalDate.now(ZoneOffset.UTC).toString()
     fun getYesterdayDateString(): String = LocalDate.now(ZoneOffset.UTC).minusDays(1).toString()
 
+    fun saveData() {
+        file.save()
+        DailyStreakEvents.runTasks(data)
+    }
+
     private fun createChallengeData(base: BaseChallenge, today: String): DailyChallenge {
         val target = base.getTargetProgress(data.currentStreak)
         return DailyChallenge(
