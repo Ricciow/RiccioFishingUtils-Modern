@@ -2,15 +2,18 @@ package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.data.EquipmentSet
+import cloud.glitchdev.rfu.data.EquipmentSlotType
 import cloud.glitchdev.rfu.data.other.OtherManager
 import cloud.glitchdev.rfu.data.other.data.StringEntry
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ContainerEvents.registerContainerOpenEvent
+import cloud.glitchdev.rfu.events.managers.ItemUsedEvents.registerItemUsedEvent
 import cloud.glitchdev.rfu.events.managers.SetSlotEvents.registerSetSlotEvent
 import cloud.glitchdev.rfu.utils.Coroutines
 import gg.essential.universal.utils.toUnformattedString
 import kotlinx.coroutines.Job
+import net.minecraft.core.component.DataComponents
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.world.item.ItemStack
 
@@ -37,6 +40,10 @@ object EquipmentTracker : RegisteredEvent {
                 val items = player.containerMenu.slots.map { it.item }
                 handleContainerUpdate(title, items)
             }
+        }
+
+        registerItemUsedEvent { item ->
+            handleItemUsed(item)
         }
     }
 
@@ -98,6 +105,50 @@ object EquipmentTracker : RegisteredEvent {
         }
     }
 
+    private fun handleItemUsed(item: ItemStack) {
+        if (item.isEmpty) return
+        val lore = item[DataComponents.LORE]?.lines?.map { it.toUnformattedString() } ?: return
+
+        val isEquipable = lore.any { line ->
+            val lower = line.lowercase()
+            lower.contains("right-click to equip") || lower.contains("click to equip")
+        }
+        if (!isEquipable) return
+
+        val slotType = detectSlotTypeFromLore(lore) ?: return
+        val current = EquipmentEvents.currentEquipmentSet
+
+        val currentSlotEquipped = when (slotType) {
+            EquipmentSlotType.NECKLACE -> current.necklace
+            EquipmentSlotType.CLOAK -> current.cloak
+            EquipmentSlotType.BELT -> current.belt
+            EquipmentSlotType.GLOVES -> current.gloves
+        }
+        if (currentSlotEquipped.isNotEmpty()) return
+
+        val itemName = item.hoverName.toUnformattedString()
+        val newSet = when (slotType) {
+            EquipmentSlotType.NECKLACE -> current.copy(necklace = itemName)
+            EquipmentSlotType.CLOAK -> current.copy(cloak = itemName)
+            EquipmentSlotType.BELT -> current.copy(belt = itemName)
+            EquipmentSlotType.GLOVES -> current.copy(gloves = itemName)
+        }
+        updateIfChanged(newSet)
+    }
+
+    private fun detectSlotTypeFromLore(lore: List<String>): EquipmentSlotType? {
+        for (line in lore.asReversed()) {
+            val uppercaseLine = line.uppercase()
+            when {
+                uppercaseLine.contains("NECKLACE") -> return EquipmentSlotType.NECKLACE
+                uppercaseLine.contains("CLOAK") -> return EquipmentSlotType.CLOAK
+                uppercaseLine.contains("BELT") -> return EquipmentSlotType.BELT
+                uppercaseLine.contains("GLOVES") || uppercaseLine.contains("BRACELET") -> return EquipmentSlotType.GLOVES
+            }
+        }
+        return null
+    }
+
     private fun updateIfChanged(newSet: EquipmentSet) {
         if (EquipmentEvents.currentEquipmentSet.hasChanged(newSet)) {
             OtherManager.setField("equipment_necklace", StringEntry(newSet.necklace))
@@ -105,7 +156,6 @@ object EquipmentTracker : RegisteredEvent {
             OtherManager.setField("equipment_belt", StringEntry(newSet.belt))
             OtherManager.setField("equipment_gloves", StringEntry(newSet.gloves))
             OtherManager.file.save()
-
             EquipmentEvents.EquipmentChangeEventManager.updateEquipmentSet(newSet)
         }
     }
