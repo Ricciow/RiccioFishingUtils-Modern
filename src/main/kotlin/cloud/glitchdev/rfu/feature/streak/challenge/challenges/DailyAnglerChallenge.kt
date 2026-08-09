@@ -46,17 +46,30 @@ object DailyAnglerChallenge : BaseChallenge() {
         }
     }
 
-    private var secondsCount = 0
+    private var lastCheckTimestamp = 0L
+    private var accumulatedMs = 0L
 
     override fun setupListeners() {
-        secondsCount = 0
+        lastCheckTimestamp = 0L
+        accumulatedMs = 0L
+
         activeListeners.add(registerTickEvent(interval = 20) {
             if (FishingSession.isFishing && !FishingSession.isPaused) {
-                secondsCount++
-                if (secondsCount >= 60) {
-                    secondsCount = 0
-                    addProgress(1)
+                val now = System.currentTimeMillis()
+                if (lastCheckTimestamp > 0L) {
+                    val delta = now - lastCheckTimestamp
+                    if (delta in 1..10_000) {
+                        accumulatedMs += delta
+                        val minutes = (accumulatedMs / 60_000L).toInt()
+                        if (minutes > 0) {
+                            accumulatedMs %= 60_000L
+                            addProgress(minutes)
+                        }
+                    }
                 }
+                lastCheckTimestamp = now
+            } else {
+                lastCheckTimestamp = 0L
             }
         })
     }
