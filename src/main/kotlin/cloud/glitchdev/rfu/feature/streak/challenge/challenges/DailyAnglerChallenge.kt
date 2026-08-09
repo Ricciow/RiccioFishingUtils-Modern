@@ -14,8 +14,6 @@ object DailyAnglerChallenge : BaseChallenge() {
     override val description = "Fish for the required duration today."
     override val isMandatoryBase = true
 
-    private var secondCounter = 0
-
     override fun getTargetProgress(streakDays: Int): Int {
         return when {
             streakDays < 7 -> 15
@@ -48,16 +46,15 @@ object DailyAnglerChallenge : BaseChallenge() {
         }
     }
 
-    override fun setupListeners() {
-        unregisterListeners()
-        secondCounter = 0
-        activeListeners.add(registerTickEvent(interval = 20) {
-            if (!DailyStreakSettings.dailyStreakEnabled) return@registerTickEvent
+    private var secondsCount = 0
 
+    override fun setupListeners() {
+        secondsCount = 0
+        activeListeners.add(registerTickEvent(interval = 20) {
             if (FishingSession.isFishing && !FishingSession.isPaused) {
-                secondCounter++
-                if (secondCounter >= 60) {
-                    secondCounter = 0
+                secondsCount++
+                if (secondsCount >= 60) {
+                    secondsCount = 0
                     addProgress(1)
                 }
             }

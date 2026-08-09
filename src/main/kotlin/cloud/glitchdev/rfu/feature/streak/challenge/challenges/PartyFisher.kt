@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.feature.streak.challenge.challenges
 
+import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyJoinedEvent
 import cloud.glitchdev.rfu.feature.streak.challenge.BaseChallenge
 import cloud.glitchdev.rfu.feature.streak.challenge.RFUChallenge
 
@@ -11,5 +12,11 @@ object PartyFisher : BaseChallenge() {
 
     override fun getTargetProgress(streakDays: Int): Int {
         return 1
+    }
+
+    override fun setupListeners() {
+        activeListeners.add(registerPartyJoinedEvent {
+            addProgress(1)
+        })
     }
 }

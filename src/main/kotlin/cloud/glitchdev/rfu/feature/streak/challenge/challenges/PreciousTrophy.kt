@@ -1,5 +1,8 @@
 package cloud.glitchdev.rfu.feature.streak.challenge.challenges
 
+import cloud.glitchdev.rfu.constants.fishing.TrophyTier
+import cloud.glitchdev.rfu.events.managers.TrophyCatchEvents.registerTrophyFishCatchEvent
+import cloud.glitchdev.rfu.events.managers.TrophyCatchEvents.registerTrophyFrogCatchEvent
 import cloud.glitchdev.rfu.feature.streak.challenge.BaseChallenge
 import cloud.glitchdev.rfu.feature.streak.challenge.ChallengeLevel
 import cloud.glitchdev.rfu.feature.streak.challenge.RFUChallenge
@@ -41,5 +44,18 @@ object PreciousTrophy : BaseChallenge() {
             streakDays < 30 -> ChallengeLevel.ADVANCED
             else -> ChallengeLevel.ELITE
         }
+    }
+
+    override fun setupListeners() {
+        activeListeners.add(registerTrophyFishCatchEvent { _, tier, amount ->
+            if (tier == TrophyTier.GOLD || tier == TrophyTier.DIAMOND) {
+                addProgress(amount)
+            }
+        })
+        activeListeners.add(registerTrophyFrogCatchEvent { _, tier, amount ->
+            if (tier == TrophyTier.GOLD || tier == TrophyTier.DIAMOND) {
+                addProgress(amount)
+            }
+        })
     }
 }
