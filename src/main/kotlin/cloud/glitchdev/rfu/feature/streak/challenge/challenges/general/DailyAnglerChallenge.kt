@@ -1,6 +1,5 @@
-package cloud.glitchdev.rfu.feature.streak.challenge.challenges
+package cloud.glitchdev.rfu.feature.streak.challenge.challenges.general
 
-import cloud.glitchdev.rfu.config.categories.DailyStreakSettings
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.feature.fishing.FishingSession
 import cloud.glitchdev.rfu.feature.streak.challenge.BaseChallenge
@@ -11,7 +10,7 @@ import cloud.glitchdev.rfu.feature.streak.challenge.RFUChallenge
 object DailyAnglerChallenge : BaseChallenge() {
     override val id = "daily_angler"
     override val title = "Daily Angler"
-    override val description = "Fish for the required duration today."
+    override val description = "Fish for the required duration."
     override val isMandatoryBase = true
 
     override fun getTargetProgress(streakDays: Int): Int {
@@ -34,7 +33,7 @@ object DailyAnglerChallenge : BaseChallenge() {
 
     override fun getDescription(streakDays: Int): String {
         val target = getTargetProgress(streakDays)
-        return "Fish for $target minutes today."
+        return "Fish for $target minutes."
     }
 
     override fun getLevel(streakDays: Int): ChallengeLevel {

@@ -1,4 +1,4 @@
-package cloud.glitchdev.rfu.feature.streak.challenge.challenges
+package cloud.glitchdev.rfu.feature.streak.challenge.challenges.trophy
 
 import cloud.glitchdev.rfu.events.managers.TrophyCatchEvents.registerTrophyFishCatchEvent
 import cloud.glitchdev.rfu.events.managers.TrophyCatchEvents.registerTrophyFrogCatchEvent
@@ -11,14 +11,13 @@ object TrophyFinder : BaseChallenge() {
     override val id: String = "trophy_finder"
     override val title: String = "Trophy Finder"
     override val description: String = "Fish up trophy fishes/frogs"
-    override val weight: Int = 25
 
     override fun getTargetProgress(streakDays: Int): Int {
         return when {
-            streakDays < 7 -> 25
-            streakDays < 14 -> 50
-            streakDays < 21 -> 75
-            else -> 100
+            streakDays < 7 -> 10
+            streakDays < 14 -> 20
+            streakDays < 21 -> 35
+            else -> 50
         }
     }
 
