@@ -231,7 +231,15 @@ object DailyStreakWindow : BaseWindow(false) {
             val existingCard = existingCardsMap[challenge.id]
             val wasHovered = existingCard?.isHovered() ?: false
 
-            val card = UIDailyChallengeCard(challenge, index, wasHovered = wasHovered).constrain {
+            val card = UIDailyChallengeCard(
+                challenge,
+                index,
+                wasHovered = wasHovered,
+                onRerollClick = { c ->
+                    DailyStreakManager.rerollChallenge(c.id)
+                    refreshWindow()
+                }
+            ).constrain {
                 x = CenterConstraint()
                 y = SiblingConstraint(smallSpacing + 2f)
                 width = 100.percent()

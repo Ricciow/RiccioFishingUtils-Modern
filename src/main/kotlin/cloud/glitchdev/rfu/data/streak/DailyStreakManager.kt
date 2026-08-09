@@ -47,6 +47,7 @@ object DailyStreakManager {
         }
 
         data.currentDate = today
+        data.hasRerolledToday = false
 
         val mandatory = ChallengeRegistry.getMandatoryChallenge() ?: DailyAnglerChallenge
         val challenge1 = createChallengeData(mandatory, today)
@@ -123,5 +124,69 @@ object DailyStreakManager {
             file.save()
             DailyStreakEvents.runTasks(data)
         }
+    }
+
+    fun canReroll(): Boolean = !data.hasRerolledToday
+
+    fun rerollChallenge(challengeId: String): Boolean {
+        if (!DailyStreakSettings.dailyStreakEnabled) return false
+        checkDailyReset()
+
+        if (data.hasRerolledToday) {
+            Chat.sendMessage(TextUtils.rfuLiteral("§cYou have already used your daily challenge reroll today!"))
+            return false
+        }
+
+        val targetIndex = data.todayChallenges.indexOfFirst {
+            val baseId = it.id.substringBeforeLast("_")
+            baseId == challengeId || it.id == challengeId
+        }
+
+        if (targetIndex == -1) {
+            Chat.sendMessage(TextUtils.rfuLiteral("§cChallenge not found!"))
+            return false
+        }
+
+        val targetChallenge = data.todayChallenges[targetIndex]
+        if (targetChallenge.isCompleted) {
+            Chat.sendMessage(TextUtils.rfuLiteral("§cYou cannot reroll a completed challenge!"))
+            return false
+        }
+
+        val targetBaseId = targetChallenge.id.substringBeforeLast("_")
+        val targetBase = ChallengeRegistry.getChallenge(targetBaseId)
+        if (targetBase?.isMandatoryBase == true) {
+            Chat.sendMessage(TextUtils.rfuLiteral("§cYou cannot reroll the mandatory daily challenge!"))
+            return false
+        }
+
+        val activeBaseIds = data.todayChallenges.map { it.id.substringBeforeLast("_") }.toSet()
+        val availablePool = ChallengeRegistry.getPoolChallenges().filter { it.id !in activeBaseIds }
+
+        if (availablePool.isEmpty()) {
+            Chat.sendMessage(TextUtils.rfuLiteral("§cNo other daily challenges available to reroll into!"))
+            return false
+        }
+
+        val newBase = availablePool.random()
+        val today = data.currentDate
+        val newChallengeData = createChallengeData(newBase, today)
+
+        targetBase?.unregisterListeners()
+
+        val updatedList = data.todayChallenges.toMutableList()
+        updatedList[targetIndex] = newChallengeData
+        data.todayChallenges = updatedList
+        data.hasRerolledToday = true
+
+        file.save()
+        activateTodayListeners()
+        DailyStreakEvents.runTasks(data)
+
+        if (DailyStreakSettings.completionSound) {
+            Sounds.playSound("rfu:achievement", 1f, DailyStreakSettings.completionVolume)
+        }
+        Chat.sendMessage(TextUtils.rfuLiteral("§aRerolled challenge to: §e${newChallengeData.title}§a!"))
+        return true
     }
 }

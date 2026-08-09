@@ -25,10 +25,13 @@ import gg.essential.elementa.dsl.plus
 import gg.essential.elementa.dsl.toConstraint
 import java.awt.Color
 
+import cloud.glitchdev.rfu.data.streak.DailyStreakManager
+
 class UIDailyChallengeCard(
     val challenge: DailyChallenge,
     val index: Int,
-    val wasHovered: Boolean = false
+    val wasHovered: Boolean = false,
+    val onRerollClick: ((DailyChallenge) -> Unit)? = null
 ) : UIRoundedRectangle(5f) {
     private val borderWidth = UIScheme.pfCardBorderWidth
     private val innerPadding = UIScheme.pfCardInnerPadding
@@ -97,13 +100,65 @@ class UIDailyChallengeCard(
 
         val statusStr = if (challenge.isCompleted) "✔ COMPLETED" else "${challenge.currentProgress} / ${challenge.targetProgress}"
         val statusColor = if (challenge.isCompleted) UIScheme.achievementCompleteColor else Color(255, 170, 0)
-        UIText(statusStr).constrain {
+
+        val rightContainer = UIContainer().constrain {
             x = 0.pixels(true)
             y = CenterConstraint()
-            width = ScaledTextConstraint(1.0f)
-            height = TextAspectConstraint()
-            color = statusColor.toConstraint()
+            width = ChildBasedSizeConstraint()
+            height = ChildBasedSizeConstraint()
         } childOf header
+
+        if (!challenge.isCompleted && baseDef?.isMandatoryBase != true && DailyStreakManager.canReroll()) {
+            val rerollBtn = UIRoundedRectangle(3f).constrain {
+                x = 0.pixels()
+                y = CenterConstraint()
+                width = ChildBasedSizeConstraint() + 8.pixels()
+                height = ChildBasedSizeConstraint() + 4.pixels()
+                color = Color(50, 50, 60, 200).toConstraint()
+            } childOf rightContainer
+
+            val rerollText = UIText("🎲 Reroll").constrain {
+                x = CenterConstraint()
+                y = CenterConstraint()
+                width = ScaledTextConstraint(0.85f)
+                height = TextAspectConstraint()
+                color = Color(220, 220, 255).toConstraint()
+            } childOf rerollBtn
+
+            rerollBtn.onMouseEnter {
+                rerollBtn.animate {
+                    setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, Color(70, 70, 90, 240).toConstraint())
+                }
+                rerollText.animate {
+                    setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, Color(255, 255, 255).toConstraint())
+                }
+            }.onMouseLeave {
+                rerollBtn.animate {
+                    setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, Color(50, 50, 60, 200).toConstraint())
+                }
+                rerollText.animate {
+                    setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, Color(220, 220, 255).toConstraint())
+                }
+            }.onMouseClick {
+                onRerollClick?.invoke(challenge)
+            }
+
+            UIText(statusStr).constrain {
+                x = SiblingConstraint(8f)
+                y = CenterConstraint()
+                width = ScaledTextConstraint(1.0f)
+                height = TextAspectConstraint()
+                color = statusColor.toConstraint()
+            } childOf rightContainer
+        } else {
+            UIText(statusStr).constrain {
+                x = 0.pixels()
+                y = CenterConstraint()
+                width = ScaledTextConstraint(1.0f)
+                height = TextAspectConstraint()
+                color = statusColor.toConstraint()
+            } childOf rightContainer
+        }
 
         UIWrappedText(challenge.description).constrain {
             x = 0.pixels()

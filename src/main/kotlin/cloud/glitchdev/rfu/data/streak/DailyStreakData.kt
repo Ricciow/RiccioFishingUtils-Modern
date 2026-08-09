@@ -19,5 +19,6 @@ data class DailyStreakData(
     var totalDaysCompleted: Int = 0,
     var lastCompletedDate: String = "",
     var currentDate: String = "",
+    var hasRerolledToday: Boolean = false,
     var todayChallenges: List<DailyChallenge> = emptyList()
 )

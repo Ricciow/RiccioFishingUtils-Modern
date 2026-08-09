@@ -10,6 +10,8 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.minecraft.network.chat.Component
 
+import com.mojang.brigadier.arguments.IntegerArgumentType
+
 @Command
 object DailyStreakCommand : AbstractCommand("rfudailies") {
     override val description: String = "Opens the daily streaks and challenges window."
@@ -32,6 +34,22 @@ object DailyStreakCommand : AbstractCommand("rfudailies") {
                 }
                 1
             }
+        )
+
+        builder.then(
+            lit("reroll").then(
+                arg("index", IntegerArgumentType.integer(1, 3)).executes { context ->
+                    val index = IntegerArgumentType.getInteger(context, "index") - 1
+                    val data = DailyStreakManager.data
+                    val challenge = data.todayChallenges.getOrNull(index)
+                    if (challenge != null) {
+                        DailyStreakManager.rerollChallenge(challenge.id)
+                    } else {
+                        Chat.sendMessage(Component.literal("§cInvalid challenge number!"))
+                    }
+                    1
+                }
+            )
         )
     }
 }
