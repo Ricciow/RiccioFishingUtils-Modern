@@ -10,9 +10,11 @@ import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ContainerEvents.registerContainerOpenEvent
 import cloud.glitchdev.rfu.events.managers.ItemUsedEvents.registerItemUsedEvent
 import cloud.glitchdev.rfu.events.managers.SetSlotEvents.registerSetSlotEvent
+import cloud.glitchdev.rfu.events.managers.SlotClickedEvents.registerSlotClickedEvent
 import cloud.glitchdev.rfu.utils.Coroutines
 import gg.essential.universal.utils.toUnformattedString
 import kotlinx.coroutines.Job
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.world.item.ItemStack
@@ -39,6 +41,21 @@ object EquipmentTracker : RegisteredEvent {
                 val player = mc.player ?: return@scheduleDebouncedCheck
                 val items = player.containerMenu.slots.map { it.item }
                 handleContainerUpdate(title, items)
+            }
+        }
+
+        registerSlotClickedEvent { slot ->
+            //~ if >=26.2 'mc.screen' -> 'mc.gui.screen()' {
+            val screen = mc.gui.screen() as? AbstractContainerScreen<*> ?: return@registerSlotClickedEvent
+            //~}
+            val title = screen.title.toUnformattedString()
+            if (title.contains("Equipment Sets")) {
+                if (slot.index in 36..44) {
+                    val name = slot.item.hoverName.toUnformattedString()
+                    if ("Equipped" in name) {
+                        updateIfChanged(EquipmentSet())
+                    }
+                }
             }
         }
 
@@ -156,6 +173,7 @@ object EquipmentTracker : RegisteredEvent {
             OtherManager.setField("equipment_belt", StringEntry(newSet.belt))
             OtherManager.setField("equipment_gloves", StringEntry(newSet.gloves))
             OtherManager.file.save()
+            println("Changed ${newSet.necklace} | ${newSet.cloak} | ${newSet.belt} | ${newSet.gloves}")
             EquipmentEvents.EquipmentChangeEventManager.updateEquipmentSet(newSet)
         }
     }
