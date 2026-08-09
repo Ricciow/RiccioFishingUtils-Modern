@@ -13,6 +13,7 @@ import gg.essential.elementa.components.UIBlock
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
+import gg.essential.elementa.components.inspector.Inspector
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
 import gg.essential.elementa.constraints.FillConstraint
@@ -25,6 +26,7 @@ import gg.essential.elementa.dsl.effect
 import gg.essential.elementa.dsl.minus
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
+import gg.essential.elementa.dsl.times
 import gg.essential.elementa.dsl.toConstraint
 import gg.essential.elementa.effects.ScissorEffect
 import java.awt.Color
@@ -155,7 +157,7 @@ object DailyStreakWindow : BaseWindow(false) {
     private fun createChallengesHeader(background: UIContainer) {
         val challengesHeader = UIContainer().constrain {
             x = CenterConstraint()
-            y = SiblingConstraint(smallSpacing + 2f)
+            y = SiblingConstraint(smallSpacing)
             width = 100.percent() - (2 * spacing).pixels()
             height = 18.pixels()
         } childOf background
@@ -182,7 +184,7 @@ object DailyStreakWindow : BaseWindow(false) {
             x = CenterConstraint()
             y = SiblingConstraint(smallSpacing)
             width = 100.percent() - (2 * spacing).pixels()
-            height = FillConstraint()
+            height = FillConstraint() - smallSpacing.pixels * 2
         } childOf background effect ScissorEffect()
 
         val scrollbar = UIRoundedRectangle(5f).constrain {

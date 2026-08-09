@@ -26,6 +26,9 @@ import gg.essential.elementa.dsl.toConstraint
 import java.awt.Color
 
 import cloud.glitchdev.rfu.data.streak.DailyStreakManager
+import gg.essential.elementa.constraints.ChildBasedMaxSizeConstraint
+import gg.essential.elementa.dsl.max
+import gg.essential.elementa.dsl.min
 
 class UIDailyChallengeCard(
     val challenge: DailyChallenge,
@@ -83,7 +86,7 @@ class UIDailyChallengeCard(
             x = CenterConstraint()
             y = SiblingConstraint()
             width = 100.percent()
-            height = ChildBasedSizeConstraint()
+            height = max(ChildBasedMaxSizeConstraint(), 20.pixels())
         } childOf innerContainer
 
         val baseId = challenge.id.substringBeforeLast("_")
