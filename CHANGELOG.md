@@ -2,7 +2,7 @@
 
 ### Features
 - Extended the survivalist achievement with 4 new stages
-- Added 1 new achievement!
+- Added 1 new achievement
 - Added a setting to adjust hotspot highlight border opacity
 - Added a new Bloodshot requirement in Party Finder
 - Added :pod: :silk: :hog: :exploding_head: :boom: emojis
