@@ -7,7 +7,7 @@ import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
-import cloud.glitchdev.rfu.events.managers.SlotClickedEvents.registerSlotClickedEvent
+import cloud.glitchdev.rfu.events.managers.SlotClickedEvents.registerSlotClicked
 import cloud.glitchdev.rfu.utils.dsl.removeFormatting
 import gg.essential.universal.utils.toFormattedString
 import gg.essential.universal.utils.toUnformattedString
@@ -56,20 +56,17 @@ object PetEvents {
 
             currentPet = entry.value
 
-            registerSlotClickedEvent { slot ->
-                //~ if >=26.2 'mc.screen' -> 'mc.gui.screen()' {
-                val screen = mc.gui.screen() as? AbstractContainerScreen<*> ?: return@registerSlotClickedEvent
-                //~}
-                val screenTitle = screen.title.string.trim()
+            registerSlotClicked { slot, title ->
+                val screenTitle = title.trim()
                 if (PETS_SCREEN_REGEX.matches(screenTitle)) {
                     val pet = slot.item.hoverName.toFormattedString()
-                    if (!PET_REGEX.toRegex().matches(pet.removeFormatting())) return@registerSlotClickedEvent
+                    if (!PET_REGEX.toRegex().matches(pet.removeFormatting())) return@registerSlotClicked
                     updatePet(pet)
                 } else if (LOADOUTS_SCREEN_REGEX.matches(screenTitle)) {
-                    if (slot.item.isEmpty) return@registerSlotClickedEvent
+                    if (slot.item.isEmpty) return@registerSlotClicked
                     val itemName = slot.item.hoverName.toUnformattedString().trim()
-                    if (!itemName.startsWith("Loadout")) return@registerSlotClickedEvent
-                    val lore = slot.item[DataComponents.LORE] ?: return@registerSlotClickedEvent
+                    if (!itemName.startsWith("Loadout")) return@registerSlotClicked
+                    val lore = slot.item[DataComponents.LORE] ?: return@registerSlotClicked
                     var petLineFormatted: String? = null
                     for (line in lore.lines) {
                         val plain = line.toUnformattedString()

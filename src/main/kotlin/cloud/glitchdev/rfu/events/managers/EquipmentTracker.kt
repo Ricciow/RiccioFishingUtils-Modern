@@ -10,7 +10,7 @@ import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ContainerEvents.registerContainerOpenEvent
 import cloud.glitchdev.rfu.events.managers.ItemUsedEvents.registerItemUsedEvent
 import cloud.glitchdev.rfu.events.managers.SetSlotEvents.registerSetSlotEvent
-import cloud.glitchdev.rfu.events.managers.SlotClickedEvents.registerSlotClickedEvent
+import cloud.glitchdev.rfu.events.managers.SlotClickedEvents.registerSlotClicked
 import cloud.glitchdev.rfu.utils.Coroutines
 import gg.essential.universal.utils.toUnformattedString
 import kotlinx.coroutines.Job
@@ -44,11 +44,7 @@ object EquipmentTracker : RegisteredEvent {
             }
         }
 
-        registerSlotClickedEvent { slot ->
-            //~ if >=26.2 'mc.screen' -> 'mc.gui.screen()' {
-            val screen = mc.gui.screen() as? AbstractContainerScreen<*> ?: return@registerSlotClickedEvent
-            //~}
-            val title = screen.title.toUnformattedString()
+        registerSlotClicked { slot, title ->
             if (title.contains("Equipment Sets")) {
                 if (slot.index in 36..44) {
                     val name = slot.item.hoverName.toUnformattedString()
