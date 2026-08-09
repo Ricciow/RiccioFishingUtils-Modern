@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.gui.components.streak
 
 import cloud.glitchdev.rfu.data.streak.DailyChallenge
+import cloud.glitchdev.rfu.feature.streak.challenge.ChallengeLevel
 import cloud.glitchdev.rfu.feature.streak.challenge.ChallengeRegistry
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.elementa.BoundingBoxConstraint
@@ -91,7 +92,7 @@ class UIDailyChallengeCard(
 
         val baseId = challenge.id.substringBeforeLast("_")
         val baseDef = ChallengeRegistry.getChallenge(baseId)
-        val levelStr = baseDef?.level?.formattedName ?: "§aBasic"
+        val levelStr = challenge.level.formattedName
 
         titleText = UIText("${index + 1}. ${challenge.title} §7[$levelStr§7]").constrain {
             x = 0.pixels()

@@ -26,11 +26,16 @@ object DailyStreakManager {
     }
 
     private fun createChallengeData(base: BaseChallenge, today: String): DailyChallenge {
-        val target = base.getTargetProgress(data.currentStreak)
+        val streak = data.currentStreak
+        val target = base.getTargetProgress(streak)
+        val title = base.getTitle(streak)
+        val description = base.getDescription(streak)
+        val level = base.getLevel(streak)
         return DailyChallenge(
             id = "${base.id}_$today",
-            title = base.title,
-            description = base.description,
+            title = title,
+            description = description,
+            level = level,
             currentProgress = 0,
             targetProgress = target
         )

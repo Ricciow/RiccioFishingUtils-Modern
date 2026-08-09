@@ -1,9 +1,12 @@
 package cloud.glitchdev.rfu.data.streak
 
+import cloud.glitchdev.rfu.feature.streak.challenge.ChallengeLevel
+
 data class DailyChallenge(
     val id: String,
     val title: String,
     val description: String,
+    val level: ChallengeLevel = ChallengeLevel.BASIC,
     var currentProgress: Int = 0,
     val targetProgress: Int = 1,
     var isCompleted: Boolean = false

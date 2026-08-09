@@ -5,14 +5,20 @@ import cloud.glitchdev.rfu.events.AbstractEventManager
 
 abstract class BaseChallenge {
     abstract val id: String
-    abstract val title: String
-    abstract val description: String
+    open val title: String = ""
+    open val description: String = ""
     open val level: ChallengeLevel = ChallengeLevel.BASIC
     open val isMandatoryBase: Boolean = false
 
     protected val activeListeners = mutableListOf<AbstractEventManager.ManagedTask<*, *>>()
 
     abstract fun getTargetProgress(streakDays: Int): Int
+
+    open fun getTitle(streakDays: Int): String = title
+
+    open fun getDescription(streakDays: Int): String = description
+
+    open fun getLevel(streakDays: Int): ChallengeLevel = level
 
     fun register() {
         ChallengeRegistry.register(this)
