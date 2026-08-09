@@ -5,6 +5,7 @@
 - Added 1 new achievement!
 - Added a setting to adjust hotspot highlight border opacity
 - Added a new Bloodshot requirement in Party Finder
+- Added :pod: :silk: :hog: :exploding_head: :boom: emojis
 
 ### Fixes
 - Fixed other messages being counted as trophy catches when they shouldn't
