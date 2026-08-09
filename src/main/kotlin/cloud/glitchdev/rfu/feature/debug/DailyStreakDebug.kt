@@ -36,10 +36,9 @@ object DailyStreakDebug : AbstractCommand("dailies") {
                 lit("all").executes {
                     DailyStreakManager.data.todayChallenges.forEach { challenge ->
                         if (!challenge.isCompleted) {
-                            val baseId = challenge.id.substringBeforeLast("_")
-                            val needed = challenge.targetProgress - challenge.currentProgress
+                            val needed = challenge.getTargetProgress() - challenge.currentProgress
                             if (needed > 0) {
-                                DailyStreakManager.addProgressForChallenge(baseId, needed)
+                                DailyStreakManager.addProgressForChallenge(challenge.id, needed)
                             }
                         }
                     }
@@ -51,12 +50,11 @@ object DailyStreakDebug : AbstractCommand("dailies") {
                     val index = IntegerArgumentType.getInteger(context, "index") - 1
                     val challenge = DailyStreakManager.data.todayChallenges.getOrNull(index)
                     if (challenge != null) {
-                        val baseId = challenge.id.substringBeforeLast("_")
-                        val needed = challenge.targetProgress - challenge.currentProgress
+                        val needed = challenge.getTargetProgress() - challenge.currentProgress
                         if (needed > 0) {
-                            DailyStreakManager.addProgressForChallenge(baseId, needed)
+                            DailyStreakManager.addProgressForChallenge(challenge.id, needed)
                         }
-                        Chat.sendMessage(Component.literal("§b[RFU Debug] §aCompleted challenge #${index + 1}: ${challenge.title}"))
+                        Chat.sendMessage(Component.literal("§b[RFU Debug] §aCompleted challenge #${index + 1}: ${challenge.getTitle()}"))
                     } else {
                         Chat.sendMessage(Component.literal("§cInvalid challenge index!"))
                     }
@@ -73,9 +71,8 @@ object DailyStreakDebug : AbstractCommand("dailies") {
                         val amount = IntegerArgumentType.getInteger(context, "amount")
                         val challenge = DailyStreakManager.data.todayChallenges.getOrNull(index)
                         if (challenge != null) {
-                            val baseId = challenge.id.substringBeforeLast("_")
-                            DailyStreakManager.addProgressForChallenge(baseId, amount)
-                            Chat.sendMessage(Component.literal("§b[RFU Debug] §aAdded $amount progress to #${index + 1}: ${challenge.title}"))
+                            DailyStreakManager.addProgressForChallenge(challenge.id, amount)
+                            Chat.sendMessage(Component.literal("§b[RFU Debug] §aAdded $amount progress to #${index + 1}: ${challenge.getTitle()}"))
                         } else {
                             Chat.sendMessage(Component.literal("§cInvalid challenge index!"))
                         }

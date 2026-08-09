@@ -1,18 +1,33 @@
 package cloud.glitchdev.rfu.data.streak
 
+import cloud.glitchdev.rfu.feature.streak.challenge.BaseChallenge
 import cloud.glitchdev.rfu.feature.streak.challenge.ChallengeLevel
+import cloud.glitchdev.rfu.feature.streak.challenge.ChallengeRegistry
 
 data class DailyChallenge(
     val id: String,
-    val title: String,
-    val description: String,
-    val level: ChallengeLevel = ChallengeLevel.BASIC,
     var currentProgress: Int = 0,
-    val targetProgress: Int = 1,
     var isCompleted: Boolean = false
 ) {
-    val progressPercent: Float
-        get() = if (targetProgress > 0) (currentProgress.toFloat() / targetProgress.toFloat()).coerceIn(0f, 1f) else 1f
+    val baseDef: BaseChallenge?
+        get() = ChallengeRegistry.getChallenge(id)
+
+    fun getTitle(streakDays: Int = DailyStreakManager.data.currentStreak): String =
+        baseDef?.getTitle(streakDays) ?: ""
+
+    fun getDescription(streakDays: Int = DailyStreakManager.data.currentStreak): String =
+        baseDef?.getDescription(streakDays) ?: ""
+
+    fun getLevel(streakDays: Int = DailyStreakManager.data.currentStreak): ChallengeLevel =
+        baseDef?.getLevel(streakDays) ?: ChallengeLevel.BASIC
+
+    fun getTargetProgress(streakDays: Int = DailyStreakManager.data.currentStreak): Int =
+        baseDef?.getTargetProgress(streakDays) ?: 1
+
+    fun getProgressPercent(streakDays: Int = DailyStreakManager.data.currentStreak): Float {
+        val target = getTargetProgress(streakDays)
+        return if (target > 0) (currentProgress.toFloat() / target.toFloat()).coerceIn(0f, 1f) else 1f
+    }
 }
 
 data class DailyStreakData(

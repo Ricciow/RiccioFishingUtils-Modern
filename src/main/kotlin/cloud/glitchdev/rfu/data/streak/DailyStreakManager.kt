@@ -17,28 +17,14 @@ object DailyStreakManager {
     private val file = JsonFile("data", "daily_streak.json", DailyStreakData::class.java, { DailyStreakData() })
     val data: DailyStreakData get() = file.data
 
+    private var listenersActivated = false
+
     fun getTodayDateString(): String = LocalDate.now(ZoneOffset.UTC).toString()
     fun getYesterdayDateString(): String = LocalDate.now(ZoneOffset.UTC).minusDays(1).toString()
 
     fun saveData() {
         file.save()
         DailyStreakEvents.runTasks(data)
-    }
-
-    private fun createChallengeData(base: BaseChallenge, today: String): DailyChallenge {
-        val streak = data.currentStreak
-        val target = base.getTargetProgress(streak)
-        val title = base.getTitle(streak)
-        val description = base.getDescription(streak)
-        val level = base.getLevel(streak)
-        return DailyChallenge(
-            id = "${base.id}_$today",
-            title = title,
-            description = description,
-            level = level,
-            currentProgress = 0,
-            targetProgress = target
-        )
     }
 
     fun checkDailyReset() {
@@ -51,8 +37,12 @@ object DailyStreakManager {
             return
         }
 
+        performDailyReset(today)
+    }
+
+    private fun performDailyReset(today: String) {
         val yesterday = getYesterdayDateString()
-        if (data.lastCompletedDate != yesterday && data.lastCompletedDate != today && data.lastCompletedDate.isNotEmpty()) {
+        if (data.lastCompletedDate.isNotEmpty() && data.lastCompletedDate != yesterday && data.lastCompletedDate != today) {
             data.currentStreak = 0
         }
 
@@ -60,32 +50,33 @@ object DailyStreakManager {
         data.hasRerolledToday = false
 
         val mandatory = ChallengeRegistry.getMandatoryChallenge() ?: DailyAnglerChallenge
-        val challenge1 = createChallengeData(mandatory, today)
-
         val seed = today.hashCode().toLong()
         val poolChallenges = ChallengeRegistry.getSeededPoolChallenges(seed, 2)
 
-        val challenge2 = poolChallenges.getOrNull(0)?.let { createChallengeData(it, today) }
-        val challenge3 = poolChallenges.getOrNull(1)?.let { createChallengeData(it, today) }
+        val challenge1 = DailyChallenge(mandatory.id)
+        val challenge2 = poolChallenges.getOrNull(0)?.let { DailyChallenge(it.id) }
+        val challenge3 = poolChallenges.getOrNull(1)?.let { DailyChallenge(it.id) }
 
         data.todayChallenges = listOfNotNull(challenge1, challenge2, challenge3)
-        file.save()
 
+        listenersActivated = false
+        saveData()
         activateTodayListeners()
-        DailyStreakEvents.runTasks(data)
     }
 
     fun activateTodayListeners() {
+        if (listenersActivated) return
         unregisterAllListeners()
         data.todayChallenges.forEach { challengeData ->
             if (!challengeData.isCompleted) {
-                val baseId = challengeData.id.substringBeforeLast("_")
-                ChallengeRegistry.getChallenge(baseId)?.setupListeners()
+                ChallengeRegistry.getChallenge(challengeData.id)?.setupListeners()
             }
         }
+        listenersActivated = true
     }
 
     fun unregisterAllListeners() {
+        listenersActivated = false
         ChallengeRegistry.getPoolChallenges().forEach { it.unregisterListeners() }
         ChallengeRegistry.getMandatoryChallenge()?.unregisterListeners()
     }
@@ -95,44 +86,48 @@ object DailyStreakManager {
         checkDailyReset()
 
         var updated = false
+        val streak = data.currentStreak
 
         data.todayChallenges.forEach { challenge ->
-            val baseId = challenge.id.substringBeforeLast("_")
-            if (baseId == challengeId && !challenge.isCompleted) {
-                challenge.currentProgress = (challenge.currentProgress + amount).coerceAtMost(challenge.targetProgress)
+            if (challenge.id == challengeId && !challenge.isCompleted) {
+                val target = challenge.getTargetProgress(streak)
+                challenge.currentProgress = (challenge.currentProgress + amount).coerceAtMost(target)
                 updated = true
 
-                if (challenge.currentProgress >= challenge.targetProgress && !challenge.isCompleted) {
+                if (challenge.currentProgress >= target) {
                     challenge.isCompleted = true
                     data.totalChallengesCompleted++
 
-                    ChallengeRegistry.getChallenge(baseId)?.unregisterListeners()
+                    ChallengeRegistry.getChallenge(challenge.id)?.unregisterListeners()
 
                     if (DailyStreakSettings.completionSound) {
                         Sounds.playSound("rfu:achievement", 1f, DailyStreakSettings.completionVolume)
                     }
-                    Chat.sendMessage(TextUtils.rfuLiteral("Daily Challenge Completed: §e${challenge.title}§a!"))
+                    val title = challenge.getTitle(streak)
+                    Chat.sendMessage(TextUtils.rfuLiteral("Daily Challenge Completed: §e${title}§a!"))
                 }
             }
         }
 
         if (updated) {
-            if (data.todayChallenges.all { it.isCompleted } && data.lastCompletedDate != data.currentDate) {
-                data.lastCompletedDate = data.currentDate
-                data.currentStreak++
-                data.totalDaysCompleted++
-                if (data.currentStreak > data.highestStreak) {
-                    data.highestStreak = data.currentStreak
-                }
+            checkAllChallengesCompleted()
+            saveData()
+        }
+    }
 
-                if (DailyStreakSettings.completionSound) {
-                    Sounds.playSound("rfu:achievement", 1.2f, DailyStreakSettings.completionVolume)
-                }
-                Chat.sendMessage(Component.literal("§b§l[§f§lRFU§b§l] §f\uE11F§6 Daily Streak Maintained! §eCurrent Streak: ${data.currentStreak} Days! §f\uE11F"))
+    private fun checkAllChallengesCompleted() {
+        if (data.todayChallenges.all { it.isCompleted } && data.lastCompletedDate != data.currentDate) {
+            data.lastCompletedDate = data.currentDate
+            data.currentStreak++
+            data.totalDaysCompleted++
+            if (data.currentStreak > data.highestStreak) {
+                data.highestStreak = data.currentStreak
             }
 
-            file.save()
-            DailyStreakEvents.runTasks(data)
+            if (DailyStreakSettings.completionSound) {
+                Sounds.playSound("rfu:achievement", 1.2f, DailyStreakSettings.completionVolume)
+            }
+            Chat.sendMessage(Component.literal("§b§l[§f§lRFU§b§l] §f\uE11F§6 Daily Streak Maintained! §eCurrent Streak: ${data.currentStreak} Days! §f\uE11F"))
         }
     }
 
@@ -147,11 +142,7 @@ object DailyStreakManager {
             return false
         }
 
-        val targetIndex = data.todayChallenges.indexOfFirst {
-            val baseId = it.id.substringBeforeLast("_")
-            baseId == challengeId || it.id == challengeId
-        }
-
+        val targetIndex = data.todayChallenges.indexOfFirst { it.id == challengeId }
         if (targetIndex == -1) {
             Chat.sendMessage(TextUtils.rfuLiteral("§cChallenge not found!"))
             return false
@@ -163,14 +154,13 @@ object DailyStreakManager {
             return false
         }
 
-        val targetBaseId = targetChallenge.id.substringBeforeLast("_")
-        val targetBase = ChallengeRegistry.getChallenge(targetBaseId)
+        val targetBase = ChallengeRegistry.getChallenge(targetChallenge.id)
         if (targetBase?.isMandatoryBase == true) {
             Chat.sendMessage(TextUtils.rfuLiteral("§cYou cannot reroll the mandatory daily challenge!"))
             return false
         }
 
-        val activeBaseIds = data.todayChallenges.map { it.id.substringBeforeLast("_") }.toSet()
+        val activeBaseIds = data.todayChallenges.map { it.id }.toSet()
         val availablePool = ChallengeRegistry.getPoolChallenges().filter { it.id !in activeBaseIds }
 
         if (availablePool.isEmpty()) {
@@ -179,8 +169,7 @@ object DailyStreakManager {
         }
 
         val newBase = availablePool.random()
-        val today = data.currentDate
-        val newChallengeData = createChallengeData(newBase, today)
+        val newChallengeData = DailyChallenge(newBase.id)
 
         targetBase?.unregisterListeners()
 
@@ -189,14 +178,17 @@ object DailyStreakManager {
         data.todayChallenges = updatedList
         data.hasRerolledToday = true
 
-        file.save()
+        listenersActivated = false
+        saveData()
         activateTodayListeners()
-        DailyStreakEvents.runTasks(data)
+
+        val streak = data.currentStreak
+        val title = newChallengeData.getTitle(streak)
 
         if (DailyStreakSettings.completionSound) {
             Sounds.playSound("rfu:achievement", 1f, DailyStreakSettings.completionVolume)
         }
-        Chat.sendMessage(TextUtils.rfuLiteral("§aRerolled challenge to: §e${newChallengeData.title}§a!"))
+        Chat.sendMessage(TextUtils.rfuLiteral("§aRerolled challenge to: §e${title}§a!"))
         return true
     }
 }

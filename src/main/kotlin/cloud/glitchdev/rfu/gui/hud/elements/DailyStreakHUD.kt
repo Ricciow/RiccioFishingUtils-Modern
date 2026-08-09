@@ -61,12 +61,13 @@ object DailyStreakHUD : AbstractTextHudElement("dailyStreakDisplay") {
         } else {
             data.todayChallenges.forEach { challenge ->
                 val icon = if (challenge.isCompleted) "${LIGHT_GREEN}✔" else "${LIGHT_RED}✘"
+                val target = challenge.getTargetProgress()
                 val progressStr = if (challenge.isCompleted) {
-                    "${LIGHT_GREEN}${challenge.targetProgress}/${challenge.targetProgress}"
+                    "${LIGHT_GREEN}${target}/${target}"
                 } else {
-                    "${YELLOW}${challenge.currentProgress}/${challenge.targetProgress}"
+                    "${YELLOW}${challenge.currentProgress}/${target}"
                 }
-                lines.add("$icon ${GOLD}${challenge.title}: $progressStr")
+                lines.add("$icon ${GOLD}${challenge.getTitle()}: $progressStr")
             }
         }
 

@@ -29,8 +29,8 @@ object DailyStreakCommand : AbstractCommand("rfudailies") {
                 val data = DailyStreakManager.data
                 Chat.sendMessage(Component.literal("§b§l[§f§lRFU§b§l] §f\uE11F§6 Daily Streak: §e${data.currentStreak} Days §7(Highest: ${data.highestStreak})"))
                 data.todayChallenges.forEachIndexed { index, c ->
-                    val status = if (c.isCompleted) "§a✔" else "§c${c.currentProgress}/${c.targetProgress}"
-                    Chat.sendMessage(Component.literal("  §7[${index + 1}] §e${c.title}§7: ${c.description} - $status"))
+                    val status = if (c.isCompleted) "§a✔" else "§c${c.currentProgress}/${c.getTargetProgress()}"
+                    Chat.sendMessage(Component.literal("  §7[${index + 1}] §e${c.getTitle()}§7: ${c.getDescription()} - $status"))
                 }
                 1
             }

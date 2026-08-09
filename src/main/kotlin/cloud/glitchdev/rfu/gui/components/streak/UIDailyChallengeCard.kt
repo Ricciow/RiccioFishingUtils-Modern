@@ -90,11 +90,10 @@ class UIDailyChallengeCard(
             height = max(ChildBasedMaxSizeConstraint(), 20.pixels())
         } childOf innerContainer
 
-        val baseId = challenge.id.substringBeforeLast("_")
-        val baseDef = ChallengeRegistry.getChallenge(baseId)
-        val levelStr = challenge.level.formattedName
+        val baseDef = challenge.baseDef
+        val levelStr = challenge.getLevel().formattedName
 
-        titleText = UIText("${index + 1}. ${challenge.title} §7[$levelStr§7]").constrain {
+        titleText = UIText("${index + 1}. ${challenge.getTitle()} §7[$levelStr§7]").constrain {
             x = 0.pixels()
             y = CenterConstraint()
             width = ScaledTextConstraint(1.1f)
@@ -102,7 +101,8 @@ class UIDailyChallengeCard(
             color = (if (wasHovered) UIScheme.pfCardTitleHoverColor else normalTitleColor).toConstraint()
         } childOf header
 
-        val statusStr = if (challenge.isCompleted) "✔ COMPLETED" else "${challenge.currentProgress} / ${challenge.targetProgress}"
+        val target = challenge.getTargetProgress()
+        val statusStr = if (challenge.isCompleted) "✔ COMPLETED" else "${challenge.currentProgress} / $target"
         val statusColor = if (challenge.isCompleted) UIScheme.achievementCompleteColor else Color(255, 170, 0)
 
         val rightContainer = UIContainer().constrain {
@@ -164,7 +164,7 @@ class UIDailyChallengeCard(
             } childOf rightContainer
         }
 
-        UIWrappedText(challenge.description).constrain {
+        UIWrappedText(challenge.getDescription()).constrain {
             x = 0.pixels()
             y = SiblingConstraint(UIScheme.pfCardSmallPadding)
             width = 100.percent()
@@ -180,7 +180,7 @@ class UIDailyChallengeCard(
             color = Color(20, 20, 25, 220).toConstraint()
         } childOf innerContainer
 
-        val progressPct = challenge.progressPercent
+        val progressPct = challenge.getProgressPercent()
         if (progressPct > 0f) {
             val fillColor = if (challenge.isCompleted) UIScheme.achievementCompleteColor else UIScheme.primaryColor
             UIRoundedRectangle(3f).constrain {
