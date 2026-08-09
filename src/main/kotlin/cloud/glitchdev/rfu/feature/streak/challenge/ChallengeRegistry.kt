@@ -17,12 +17,37 @@ object ChallengeRegistry {
         return challengesMap.values.filter { !it.isMandatoryBase }
     }
 
+    fun getWeightedRandomChallenge(candidates: List<BaseChallenge>, rng: Random = Random()): BaseChallenge? {
+        if (candidates.isEmpty()) return null
+        if (candidates.size == 1) return candidates.first()
+
+        val totalWeight = candidates.sumOf { it.weight.coerceAtLeast(1) }
+        var roll = rng.nextInt(totalWeight)
+        for (challenge in candidates) {
+            val w = challenge.weight.coerceAtLeast(1)
+            if (roll < w) {
+                return challenge
+            }
+            roll -= w
+        }
+        return candidates.last()
+    }
+
     fun getSeededPoolChallenges(dateSeed: Long, count: Int = 2): List<BaseChallenge> {
-        val pool = getPoolChallenges()
+        val pool = getPoolChallenges().toMutableList()
         if (pool.isEmpty()) return emptyList()
         if (pool.size <= count) return pool
+
         val rng = Random(dateSeed)
-        return pool.shuffled(rng).take(count)
+        val selected = mutableListOf<BaseChallenge>()
+
+        repeat(count) {
+            val picked = getWeightedRandomChallenge(pool, rng) ?: return@repeat
+            selected.add(picked)
+            pool.remove(picked)
+        }
+
+        return selected
     }
 
     fun getChallenge(id: String): BaseChallenge? = challengesMap[id]

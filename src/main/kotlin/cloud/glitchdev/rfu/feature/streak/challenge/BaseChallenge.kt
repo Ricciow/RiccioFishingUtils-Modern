@@ -9,6 +9,7 @@ abstract class BaseChallenge {
     open val description: String = ""
     open val level: ChallengeLevel = ChallengeLevel.BASIC
     open val isMandatoryBase: Boolean = false
+    open val weight: Int = 100
 
     protected val activeListeners = mutableListOf<AbstractEventManager.ManagedTask<*, *>>()
 

@@ -168,7 +168,7 @@ object DailyStreakManager {
             return false
         }
 
-        val newBase = availablePool.random()
+        val newBase = ChallengeRegistry.getWeightedRandomChallenge(availablePool) ?: return false
         val newChallengeData = DailyChallenge(newBase.id)
 
         targetBase?.unregisterListeners()
