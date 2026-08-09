@@ -176,13 +176,13 @@ class UIDailyChallengeCard(
             x = 0.pixels()
             y = SiblingConstraint(UIScheme.pfCardSmallPadding + 2f)
             width = 100.percent()
-            height = 6.pixels()
-            color = Color(20, 20, 25, 220).toConstraint()
+            height = 4.pixels()
+            color = UIScheme.pfCardSeparator.toConstraint()
         } childOf innerContainer
 
         val progressPct = challenge.getProgressPercent()
         if (progressPct > 0f) {
-            val fillColor = if (challenge.isCompleted) UIScheme.achievementCompleteColor else UIScheme.primaryColor
+            val fillColor = if (challenge.isCompleted) UIScheme.achievementCompleteColor else UIScheme.pfCardSeparator
             UIRoundedRectangle(3f).constrain {
                 x = 0.pixels()
                 y = 0.pixels()
