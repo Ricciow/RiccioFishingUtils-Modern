@@ -68,6 +68,12 @@ class FeatureProcessor(
                 loaderFuncName = "registerPartyCommands",
                 methodToCall = "init",
                 requiredSuperType = "cloud.glitchdev.rfu.party.IPartyCommand"
+            ),
+            GeneratorSpec(
+                annotation = "cloud.glitchdev.rfu.feature.streak.challenge.RFUChallenge",
+                loaderFuncName = "registerChallenges",
+                methodToCall = "register",
+                requiredSuperType = "cloud.glitchdev.rfu.feature.streak.challenge.BaseChallenge"
             )
         )
 

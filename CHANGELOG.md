@@ -1,8 +1,9 @@
 # v1.16.1 - ???
 
 ### Features
+- Added a daily streak and challenges system with scaling targets, HUD overlay, and /rfudailies GUI
 - Extended the survivalist achievement with 4 new stages
-- Added 1 new achievement
+- Added 3 new achievements
 - Added a setting to adjust hotspot highlight border opacity
 - Added a new Bloodshot requirement in Party Finder
 - Added :pod: :silk: :hog: :exploding_head: :boom: emojis
