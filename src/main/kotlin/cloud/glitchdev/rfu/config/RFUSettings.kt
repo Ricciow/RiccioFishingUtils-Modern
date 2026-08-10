@@ -4,6 +4,7 @@ import cloud.glitchdev.rfu.RiccioFishingUtils.RFU_VERSION
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.BackendSettings
 import cloud.glitchdev.rfu.config.categories.DevSettings
+import cloud.glitchdev.rfu.config.categories.DailyStreakSettings
 import cloud.glitchdev.rfu.config.categories.DropsSettings
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.config.categories.HotSpotSettings
@@ -115,6 +116,20 @@ object RFUSettings : ConfigKt("rfu/settings") {
         }
 
         button {
+            title = "Daily Streaks"
+            description = "Click it or use /rfudailies!"
+            text = "Open"
+
+            onClick {
+                mc.schedule {
+                    mc.gui.setScreen(null)
+
+                    Chat.sendCommand("rfudailies")
+                }
+            }
+        }
+
+        button {
             title = "Move Hud"
             description = "Click it or use /rfumove!"
             text = "Move"
@@ -143,6 +158,7 @@ object RFUSettings : ConfigKt("rfu/settings") {
         }
 
         category(GeneralFishing)
+        category(DailyStreakSettings)
         category(LavaFishing)
         category(HotSpotSettings)
         category(InkFishing)

@@ -39,6 +39,7 @@ object RiccioFishingUtils : ClientModInitializer {
 
         ClientLifecycleEvents.CLIENT_STARTED.register {
             if (isInitialized) return@register
+            RFULoader.registerChallenges()
             RFULoader.loadFeatures()
             RFULoader.registerCommands()
             RFULoader.registerPartyCommands()
