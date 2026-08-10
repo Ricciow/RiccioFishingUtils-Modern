@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.data.streak
 
 import cloud.glitchdev.rfu.config.categories.DailyStreakSettings
+import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.events.managers.DailyStreakEvents
 import cloud.glitchdev.rfu.feature.streak.challenge.ChallengeRegistry
 import cloud.glitchdev.rfu.utils.Chat
@@ -93,12 +94,8 @@ object DailyStreakManager {
                     data.totalChallengesCompleted++
 
                     ChallengeRegistry.getChallenge(challenge.id)?.unregisterListeners()
-
-                    if (DailyStreakSettings.completionSound) {
-                        Sounds.playSound("rfu:achievement", 1f, DailyStreakSettings.completionVolume)
-                    }
                     val title = challenge.getTitle(streak)
-                    Chat.sendMessage(TextUtils.rfuLiteral("Daily Challenge Completed: §e${title}§a!"))
+                    Chat.sendMessage(TextUtils.rfuLiteral("${TextColor.LIGHT_GREEN}Daily Challenge Completed: ${TextColor.YELLOW}${title}${TextColor.LIGHT_GREEN}!"))
                 }
             }
         }
@@ -119,7 +116,7 @@ object DailyStreakManager {
             }
 
             if (DailyStreakSettings.completionSound) {
-                Sounds.playSound("rfu:achievement", 1.2f, DailyStreakSettings.completionVolume)
+                Sounds.playSound("rfu:daily_challenge", 1f, DailyStreakSettings.completionVolume)
             }
             Chat.sendMessage(Component.literal("§b§l[§f§lRFU§b§l] §f\uE11F§6 Daily Streak Maintained! §eCurrent Streak: ${data.currentStreak} Days! §f\uE11F"))
         }
@@ -175,9 +172,6 @@ object DailyStreakManager {
         val streak = data.currentStreak
         val title = newChallengeData.getTitle(streak)
 
-        if (DailyStreakSettings.completionSound) {
-            Sounds.playSound("rfu:achievement", 1f, DailyStreakSettings.completionVolume)
-        }
         Chat.sendMessage(TextUtils.rfuLiteral("§aRerolled challenge to: §e${title}§a!"))
         return true
     }

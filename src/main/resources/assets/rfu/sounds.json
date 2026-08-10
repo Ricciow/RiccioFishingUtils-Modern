@@ -126,5 +126,15 @@
         "type": "event"
       }
     ]
+  },
+  "daily_challenge" : {
+    "category": "player",
+    "subtitle": "Daily Challenge Completed",
+    "sounds": [
+      {
+        "name": "ui.toast.challenge_complete",
+        "type": "event"
+      }
+    ]
   }
 }
