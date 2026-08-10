@@ -3,7 +3,6 @@ package cloud.glitchdev.rfu.feature.streak.challenge.challenges.mythic
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.feature.streak.challenge.BaseChallenge
-import cloud.glitchdev.rfu.feature.streak.challenge.ChallengeLevel
 
 abstract class MythicSeaCreatureChallenge(
     override val id: String,
@@ -29,10 +28,6 @@ abstract class MythicSeaCreatureChallenge(
         } else {
             "Fish up $target $plural."
         }
-    }
-
-    override fun getLevel(streakDays: Int): ChallengeLevel {
-        return if (streakDays < 20) ChallengeLevel.ADVANCED else ChallengeLevel.ELITE
     }
 
     override fun setupListeners() {

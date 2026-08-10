@@ -3,7 +3,6 @@ package cloud.glitchdev.rfu.feature.streak.challenge.challenges.trophy
 import cloud.glitchdev.rfu.events.managers.TrophyCatchEvents.registerTrophyFishCatchEvent
 import cloud.glitchdev.rfu.events.managers.TrophyCatchEvents.registerTrophyFrogCatchEvent
 import cloud.glitchdev.rfu.feature.streak.challenge.BaseChallenge
-import cloud.glitchdev.rfu.feature.streak.challenge.ChallengeLevel
 import cloud.glitchdev.rfu.feature.streak.challenge.RFUChallenge
 
 @RFUChallenge
@@ -36,15 +35,6 @@ object TrophyFinder : BaseChallenge() {
             "Fish up a trophy fish/frog"
         } else {
             "Fish up $target trophy fishes/frogs"
-        }
-    }
-
-    override fun getLevel(streakDays: Int): ChallengeLevel {
-        return when {
-            streakDays < 7 -> ChallengeLevel.BASIC
-            streakDays < 14 -> ChallengeLevel.INTERMEDIATE
-            streakDays < 21 -> ChallengeLevel.ADVANCED
-            else -> ChallengeLevel.ELITE
         }
     }
 

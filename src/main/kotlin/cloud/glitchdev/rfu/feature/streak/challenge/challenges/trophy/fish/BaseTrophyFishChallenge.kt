@@ -4,7 +4,6 @@ import cloud.glitchdev.rfu.constants.fishing.TrophyFish
 import cloud.glitchdev.rfu.constants.skyblock.Rarity
 import cloud.glitchdev.rfu.events.managers.TrophyCatchEvents.registerTrophyFishCatchEvent
 import cloud.glitchdev.rfu.feature.streak.challenge.BaseChallenge
-import cloud.glitchdev.rfu.feature.streak.challenge.ChallengeLevel
 
 abstract class BaseTrophyFishChallenge(
     override val id: String,
@@ -65,15 +64,6 @@ abstract class BaseTrophyFishChallenge(
             "Fish up 1 $name (any tier) today."
         } else {
             "Fish up $target $name (any tier) today."
-        }
-    }
-
-    override fun getLevel(streakDays: Int): ChallengeLevel {
-        return when (trophyFish.rarity) {
-            Rarity.COMMON -> ChallengeLevel.BASIC
-            Rarity.UNCOMMON -> ChallengeLevel.INTERMEDIATE
-            Rarity.RARE -> ChallengeLevel.ADVANCED
-            else -> ChallengeLevel.ELITE
         }
     }
 

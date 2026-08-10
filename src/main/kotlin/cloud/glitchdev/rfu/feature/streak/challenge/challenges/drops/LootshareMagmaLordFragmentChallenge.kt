@@ -2,7 +2,6 @@ package cloud.glitchdev.rfu.feature.streak.challenge.challenges.drops
 
 import cloud.glitchdev.rfu.events.managers.LootshareEvents.registerLootshareEvent
 import cloud.glitchdev.rfu.feature.streak.challenge.BaseChallenge
-import cloud.glitchdev.rfu.feature.streak.challenge.ChallengeLevel
 import cloud.glitchdev.rfu.feature.streak.challenge.RFUChallenge
 import gg.essential.universal.utils.toUnformattedString
 
@@ -14,8 +13,6 @@ object LootshareMagmaLordFragmentChallenge : BaseChallenge() {
     override val weight: Int = 20
 
     override fun getTargetProgress(streakDays: Int): Int = 1
-
-    override fun getLevel(streakDays: Int): ChallengeLevel = ChallengeLevel.ADVANCED
 
     override fun setupListeners() {
         activeListeners.add(registerLootshareEvent { _, items ->

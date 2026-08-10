@@ -1,7 +1,6 @@
 package cloud.glitchdev.rfu.data.streak
 
 import cloud.glitchdev.rfu.feature.streak.challenge.BaseChallenge
-import cloud.glitchdev.rfu.feature.streak.challenge.ChallengeLevel
 import cloud.glitchdev.rfu.feature.streak.challenge.ChallengeRegistry
 
 data class DailyChallenge(
@@ -17,9 +16,6 @@ data class DailyChallenge(
 
     fun getDescription(streakDays: Int = DailyStreakManager.data.currentStreak): String =
         baseDef?.getDescription(streakDays) ?: ""
-
-    fun getLevel(streakDays: Int = DailyStreakManager.data.currentStreak): ChallengeLevel =
-        baseDef?.getLevel(streakDays) ?: ChallengeLevel.BASIC
 
     fun getTargetProgress(streakDays: Int = DailyStreakManager.data.currentStreak): Int =
         baseDef?.getTargetProgress(streakDays) ?: 1

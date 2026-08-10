@@ -86,9 +86,7 @@ class UIDailyChallengeCard(
             height = max(ChildBasedMaxSizeConstraint(), 20.pixels())
         } childOf innerContainer
 
-        val levelStr = challenge.getLevel().formattedName
-
-        titleText = UIText("${index + 1}. ${challenge.getTitle()} §7[$levelStr§7]").constrain {
+        titleText = UIText("${index + 1}. ${challenge.getTitle()}").constrain {
             x = 0.pixels()
             y = CenterConstraint()
             width = ScaledTextConstraint(1.1f)

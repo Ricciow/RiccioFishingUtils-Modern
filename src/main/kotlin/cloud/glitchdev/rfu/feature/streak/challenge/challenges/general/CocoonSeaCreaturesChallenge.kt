@@ -2,7 +2,6 @@ package cloud.glitchdev.rfu.feature.streak.challenge.challenges.general
 
 import cloud.glitchdev.rfu.events.managers.CocoonEvents.registerCocoonEvent
 import cloud.glitchdev.rfu.feature.streak.challenge.BaseChallenge
-import cloud.glitchdev.rfu.feature.streak.challenge.ChallengeLevel
 import cloud.glitchdev.rfu.feature.streak.challenge.RFUChallenge
 
 @RFUChallenge
@@ -23,14 +22,6 @@ object CocoonSeaCreaturesChallenge : BaseChallenge() {
     override fun getDescription(streakDays: Int): String {
         val target = getTargetProgress(streakDays)
         return "Cocoon $target sea creatures today."
-    }
-
-    override fun getLevel(streakDays: Int): ChallengeLevel {
-        return when {
-            streakDays < 14 -> ChallengeLevel.BASIC
-            streakDays < 28 -> ChallengeLevel.INTERMEDIATE
-            else -> ChallengeLevel.ADVANCED
-        }
     }
 
     override fun setupListeners() {
