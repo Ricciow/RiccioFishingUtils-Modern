@@ -1,4 +1,4 @@
-# v1.16.1 - ???
+# v1.17.0 - Daily Fishing
 
 ### Features
 - Added a daily streak and challenges system with scaling targets, HUD overlay, and /rfudailies GUI
