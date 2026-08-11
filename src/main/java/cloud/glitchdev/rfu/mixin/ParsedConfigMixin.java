@@ -1,6 +1,5 @@
 package cloud.glitchdev.rfu.mixin;
 
-import cloud.glitchdev.rfu.RiccioFishingUtils;
 import cloud.glitchdev.rfu.utils.BackupManager;
 import cloud.glitchdev.rfu.utils.RFULogger;
 import com.teamresourceful.resourcefulconfig.api.patching.ConfigPatchEvent;
@@ -8,8 +7,6 @@ import com.teamresourceful.resourcefulconfig.api.types.ResourcefulConfig;
 import com.teamresourceful.resourcefulconfig.common.loader.Loader;
 import com.teamresourceful.resourcefulconfig.common.loader.ParsedConfig;
 import com.teamresourceful.resourcefulconfig.common.loader.Writer;
-import org.jetbrains.annotations.NotNull;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
