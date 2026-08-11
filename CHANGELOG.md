@@ -13,6 +13,7 @@
 - Fixed togglewarp not auto re-joining the party
 - Fixed an issue where pressing enter really fast would not complete the emoji properly
 - Fixed hotspot sea creature counts not couting properly on torrhus
+- Fixed the dye achievements not triggering on vincent menu
 
 ### Changes
 - Reduced Squid Collection achievement to max out at 2M Collection
