@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.achievement.migration
 
+import cloud.glitchdev.rfu.utils.BackupManager
 import cloud.glitchdev.rfu.utils.RFULogger
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
@@ -27,6 +28,12 @@ object AchievementMigration {
 
         val currentVersion = root[VERSION_KEY]?.asInt ?: 0
         if (currentVersion >= CURRENT_VERSION) return
+
+        try {
+            BackupManager.saveGzBackup("data/achievements.json.gz", achievementsFile.readText())
+        } catch (e: Exception) {
+            RFULogger.warn("[AchievementMigration] Failed to save backup before achievements migration: ${e.message}")
+        }
 
         RFULogger.info("[AchievementMigration] Migrating achievements data from version $currentVersion to $CURRENT_VERSION")
 

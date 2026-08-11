@@ -9,80 +9,108 @@ import org.slf4j.event.Level
 object RFULogger {
     private val LOGGER: Logger = LoggerFactory.getLogger(MOD_ID)
 
-    fun dev(message: String) {
+    @JvmStatic
+    @JvmOverloads
+    fun dev(message: String, prefix: String? = "[RFU Dev]") {
         if (DevSettings.devMode) {
-            debug(message, "[RFU Dev]")
+            debug(message, prefix)
         }
     }
 
-    fun dev(message: String, exception: Throwable) {
+    @JvmStatic
+    @JvmOverloads
+    fun dev(message: String, exception: Throwable, prefix: String? = "[RFU Dev]") {
         if (DevSettings.devMode) {
-            debug(message, exception, "[RFU Dev]")
+            debug(message, exception, prefix)
         }
     }
 
+    @JvmStatic
+    @JvmOverloads
     fun info(message: String, prefix: String? = "[RFU]") {
         log(message, Level.INFO, prefix)
     }
 
+    @JvmStatic
+    @JvmOverloads
     fun warn(message: String, prefix: String? = "[RFU]") {
         log(message, Level.WARN, prefix)
     }
 
+    @JvmStatic
+    @JvmOverloads
     fun error(message: String, prefix: String? = "[RFU]") {
         log(message, Level.ERROR, prefix)
     }
 
+    @JvmStatic
+    @JvmOverloads
     fun debug(message: String, prefix: String? = "[RFU]") {
         log(message, Level.INFO, prefix)
     }
 
+    @JvmStatic
+    @JvmOverloads
     fun trace(message: String, prefix: String? = "[RFU]") {
         log(message, Level.TRACE, prefix)
     }
 
+    @JvmStatic
+    @JvmOverloads
     fun info(message: String, exception: Throwable, prefix: String? = "[RFU]") {
         log(message, exception, Level.INFO, prefix)
     }
 
+    @JvmStatic
+    @JvmOverloads
     fun warn(message: String, exception: Throwable, prefix: String? = "[RFU]") {
         log(message, exception, Level.WARN, prefix)
     }
 
+    @JvmStatic
+    @JvmOverloads
     fun error(message: String, exception: Throwable, prefix: String? = "[RFU]") {
         log(message, exception, Level.ERROR, prefix)
     }
 
+    @JvmStatic
+    @JvmOverloads
     fun debug(message: String, exception: Throwable, prefix: String? = "[RFU]") {
         log(message, exception, Level.DEBUG, prefix)
     }
 
+    @JvmStatic
+    @JvmOverloads
     fun trace(message: String, exception: Throwable, prefix: String? = "[RFU]") {
         log(message, exception, Level.TRACE, prefix)
     }
 
+    @JvmStatic
+    @JvmOverloads
     fun log(message: String, level: Level = Level.INFO, prefix: String? = "[RFU]") {
         if (DevSettings.devMode) {
-            val message = "$prefix $message"
+            val formattedMessage = "$prefix $message"
             when (level) {
-                Level.ERROR -> LOGGER.error(message)
-                Level.WARN -> LOGGER.warn(message)
-                Level.INFO -> LOGGER.info(message)
-                Level.DEBUG -> LOGGER.debug(message)
-                Level.TRACE -> LOGGER.trace(message)
+                Level.ERROR -> LOGGER.error(formattedMessage)
+                Level.WARN -> LOGGER.warn(formattedMessage)
+                Level.INFO -> LOGGER.info(formattedMessage)
+                Level.DEBUG -> LOGGER.debug(formattedMessage)
+                Level.TRACE -> LOGGER.trace(formattedMessage)
             }
         }
     }
 
+    @JvmStatic
+    @JvmOverloads
     fun log(message: String, exception: Throwable, level: Level = Level.INFO, prefix: String? = "[RFU]") {
         if (DevSettings.devMode) {
-            val message = "$prefix $message"
+            val formattedMessage = "$prefix $message"
             when (level) {
-                Level.ERROR -> LOGGER.error(message, exception)
-                Level.WARN -> LOGGER.warn(message, exception)
-                Level.INFO -> LOGGER.info(message, exception)
-                Level.DEBUG -> LOGGER.debug(message, exception)
-                Level.TRACE -> LOGGER.trace(message, exception)
+                Level.ERROR -> LOGGER.error(formattedMessage, exception)
+                Level.WARN -> LOGGER.warn(formattedMessage, exception)
+                Level.INFO -> LOGGER.info(formattedMessage, exception)
+                Level.DEBUG -> LOGGER.debug(formattedMessage, exception)
+                Level.TRACE -> LOGGER.trace(formattedMessage, exception)
             }
         }
     }

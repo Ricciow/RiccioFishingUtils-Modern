@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.config.migration
 
+import cloud.glitchdev.rfu.utils.BackupManager
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
@@ -29,6 +30,12 @@ object ConfigMigration {
 
         val currentVersion = root[VERSION_KEY]?.asInt ?: 0
         if (currentVersion >= CURRENT_VERSION) return
+
+        try {
+            BackupManager.saveGzBackup("settings.jsonc.gz", configFile.readText())
+        } catch (e: Exception) {
+            logger.warn("[RFU] Failed to save backup before config migration: ${e.message}")
+        }
 
         processVersionChain(root, currentVersion)
         root.addProperty(VERSION_KEY, CURRENT_VERSION)

@@ -20,3 +20,4 @@
 
 ### Back-end
 - Added current equipment tracking
+- Added automatic backups for config and data.
