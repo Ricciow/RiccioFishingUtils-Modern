@@ -175,7 +175,7 @@ class UIDailyChallengeCard(
 
         val progressPct = challenge.getProgressPercent()
         if (progressPct > 0f) {
-            val fillColor = if (challenge.isCompleted) UIScheme.achievementCompleteColor else UIScheme.pfCardSeparator
+            val fillColor = if (challenge.isCompleted) UIScheme.achievementCompleteColor else UIScheme.pfWindowSeparator
             UIRoundedRectangle(3f).constrain {
                 x = 0.pixels()
                 y = 0.pixels()
