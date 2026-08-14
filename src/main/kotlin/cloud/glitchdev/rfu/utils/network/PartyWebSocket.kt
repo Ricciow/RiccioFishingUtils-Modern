@@ -168,10 +168,12 @@ object PartyWebSocket : RegisteredEvent {
     }
 
     fun publishParty(party: FishingParty) {
+        party.profileId = User.profileId
         WebSocketClient.send("/app/party/publish", party)
     }
 
     fun editParty(party: FishingParty) {
+        party.profileId = User.profileId
         WebSocketClient.send("/app/party/edit", party)
     }
 
