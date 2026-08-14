@@ -25,4 +25,4 @@
 ### Back-end
 - Added current equipment tracking
 - Added automatic backups for config and data.
-- Removed Client-side Eman 9 and Looting 5 validations
+- Made requisites validation for Enderman 9 and Looting 5 come from back-end.

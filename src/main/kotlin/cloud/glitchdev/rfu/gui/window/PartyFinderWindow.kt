@@ -79,6 +79,11 @@ object PartyFinderWindow : BaseWindow(false), Feature {
     //To force initialization of gui
     override fun onInitialize() {}
 
+    override fun onOpenWindow() {
+        super.onOpenWindow()
+        PartyWebSocket.requestPlayerRequisites()
+    }
+
     init {
         create()
         onUpdate()

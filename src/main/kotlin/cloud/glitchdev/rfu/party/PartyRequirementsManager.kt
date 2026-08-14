@@ -12,9 +12,18 @@ import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.utils.SkillTracker
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.core.component.DataComponents
+import cloud.glitchdev.rfu.model.party.PlayerRequisitesResult
+import cloud.glitchdev.rfu.utils.User
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 @AutoRegister
 object PartyRequirementsManager : RegisteredEvent {
+    private var playerRequisites: PlayerRequisitesResult? = null
+    var lastRequisitesFetchTime: Instant? = null
+        private set
+    var cachedProfileId: String? = null
+        private set
 
     sealed class PartyValidationResult {
         object Success : PartyValidationResult()
@@ -36,6 +45,26 @@ object PartyRequirementsManager : RegisteredEvent {
                 is MissingRequisite -> "You do not meet the requirement: $requisiteName!"
             }
         }
+    }
+
+    fun updatePlayerRequisites(result: PlayerRequisitesResult, profileId: String? = User.profileId) {
+        playerRequisites = result
+        cachedProfileId = profileId
+        lastRequisitesFetchTime = Clock.System.now()
+    }
+
+    fun clearPlayerRequisites() {
+        playerRequisites = null
+        cachedProfileId = null
+        lastRequisitesFetchTime = null
+    }
+
+    fun hasEnderman9(): Boolean {
+        return playerRequisites?.requisites?.get("enderman_9") ?: false
+    }
+
+    fun hasLooting5(): Boolean {
+        return playerRequisites?.requisites?.get("looting_5") ?: false
     }
 
     var hasBrainFood: Boolean
@@ -91,6 +120,8 @@ object PartyRequirementsManager : RegisteredEvent {
             when (requisite.id) {
                 "brain_food" -> if (!hasBrainFood()) failures.add(PartyValidationResult.MissingBrainFood)
                 "bloodshot" -> if (!hasBloodshotBelt()) failures.add(PartyValidationResult.MissingBloodshot)
+                "enderman_9" -> if (!hasEnderman9()) failures.add(PartyValidationResult.MissingRequisite("enderman_9", requisite.name))
+                "looting_5" -> if (!hasLooting5()) failures.add(PartyValidationResult.MissingRequisite("looting_5", requisite.name))
             }
         }
 
@@ -107,3 +138,4 @@ object PartyRequirementsManager : RegisteredEvent {
 
     fun canJoinParty(party: FishingParty): PartyValidationResult = validatePartyRequirements(party)
 }
+

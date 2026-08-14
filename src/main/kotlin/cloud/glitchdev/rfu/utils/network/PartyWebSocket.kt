@@ -30,6 +30,11 @@ import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
+import cloud.glitchdev.rfu.model.party.PlayerRequisitesRequest
+import cloud.glitchdev.rfu.model.party.PlayerRequisitesResult
+import cloud.glitchdev.rfu.party.PartyRequirementsManager
+import kotlin.time.Duration.Companion.hours
+
 @AutoRegister
 object PartyWebSocket : RegisteredEvent {
     private val gson = Gson()
@@ -157,10 +162,37 @@ object PartyWebSocket : RegisteredEvent {
             }
         }
 
+        val requisitesCallback: (String) -> Unit = { msg ->
+            try {
+                val type = object : TypeToken<WebSocketEvent<PlayerRequisitesResult>>() {}.type
+                val event = gson.fromJson<WebSocketEvent<PlayerRequisitesResult>>(msg, type)
+                if (event.type == WebSocketEventType.SYNC && event.data != null) {
+                    PartyRequirementsManager.updatePlayerRequisites(event.data, User.profileId)
+                }
+            } catch (e: Exception) {
+                RFULogger.error("Error parsing player requisites sync: ", e)
+            }
+        }
+
         WebSocketClient.subscribe("/topic/parties", updateCallback)
         WebSocketClient.subscribe("/app/topic/parties", listCallback)
         WebSocketClient.subscribe("/user/queue/parties", listCallback)
         WebSocketClient.subscribe("/user/queue/join-requests", joinRequestCallback)
+        WebSocketClient.subscribe("/user/queue/party/requisites", requisitesCallback)
+    }
+
+    fun requestPlayerRequisites(profileId: String? = User.profileId, force: Boolean = false) {
+        if (!force) {
+            val cachedProfile = PartyRequirementsManager.cachedProfileId
+            val lastFetch = PartyRequirementsManager.lastRequisitesFetchTime
+            if (profileId == cachedProfile && lastFetch != null && (Clock.System.now() - lastFetch) < 1.hours) {
+                return
+            }
+        }
+        if (profileId != PartyRequirementsManager.cachedProfileId) {
+            PartyRequirementsManager.clearPlayerRequisites()
+        }
+        WebSocketClient.send("/app/party/requisites", PlayerRequisitesRequest(profileId))
     }
 
     fun syncParties() {
@@ -216,3 +248,4 @@ object PartyWebSocket : RegisteredEvent {
         WebSocketClient.send("/app/party/report", gson.toJson(user))
     }
 }
+

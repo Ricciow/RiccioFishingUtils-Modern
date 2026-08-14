@@ -294,19 +294,32 @@ class UICreateParty : UIContainer() {
             y = CenterConstraint()
         } childOf reqContainer
 
-        endermanToggle = UIToggleCard(party.getRequisite("enderman_9", "Enderman 9").toDataOption(), party.getRequisite("enderman_9", "Enderman 9").value) {
-            updatePartyModel()
+        endermanToggle = UIToggleCard(party.getRequisite("enderman_9", "Enderman 9").toDataOption(), party.getRequisite("enderman_9", "Enderman 9").value) { selected ->
+            if (selected && !PartyRequirementsManager.hasEnderman9()) {
+                endermanToggle.selected = false
+                val result = PartyRequirementsManager.PartyValidationResult.MissingRequisite("enderman_9", "Enderman 9")
+                popup.show(result.getErrorMessage())
+            } else {
+                updatePartyModel()
+            }
         }.constrain {
             x = SiblingConstraint(5f)
             y = CenterConstraint()
         } childOf reqContainer
 
-        lootingToggle = UIToggleCard(party.getRequisite("looting_5", "Looting 5").toDataOption(), party.getRequisite("looting_5", "Looting 5").value) {
-            updatePartyModel()
+        lootingToggle = UIToggleCard(party.getRequisite("looting_5", "Looting 5").toDataOption(), party.getRequisite("looting_5", "Looting 5").value) { selected ->
+            if (selected && !PartyRequirementsManager.hasLooting5()) {
+                lootingToggle.selected = false
+                val result = PartyRequirementsManager.PartyValidationResult.MissingRequisite("looting_5", "Looting 5")
+                popup.show(result.getErrorMessage())
+            } else {
+                updatePartyModel()
+            }
         }.constrain {
             x = SiblingConstraint(5f)
             y = CenterConstraint()
         } childOf reqContainer
+
 
         brainFoodToggle = UIToggleCard(party.getRequisite("brain_food", "Brain Food").toDataOption(), party.getRequisite("brain_food", "Brain Food").value) { selected ->
             if (selected && !PartyRequirementsManager.hasBrainFood()) {

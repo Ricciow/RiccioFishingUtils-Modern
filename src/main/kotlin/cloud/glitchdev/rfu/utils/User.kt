@@ -6,6 +6,7 @@ import cloud.glitchdev.rfu.data.other.data.StringEntry
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ChatEvents
+import cloud.glitchdev.rfu.party.PartyRequirementsManager
 
 @AutoRegister
 object User : RegisteredEvent {
@@ -20,6 +21,7 @@ object User : RegisteredEvent {
                 OtherManager.setField("profile_id", StringEntry(id))
                 OtherManager.file.save()
                 RFULogger.dev("Profile ID updated: $profileId")
+                PartyRequirementsManager.clearPlayerRequisites()
             }
         }
     }
