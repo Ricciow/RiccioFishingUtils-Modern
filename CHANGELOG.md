@@ -19,6 +19,8 @@
 - Reduced Squid Collection achievement to max out at 2M Collection
 - Reduced Ink Obsessed achievement to cap out at 100k
 - Added a 5s cooldown between creating party finder entries
+- Made the party finder alerts off by default
+  - Note: This was mostly meant for when there weren't many users of rfupf, since it is now somewhat relevant, this doesn't have much purpose anymore
 
 ### Back-end
 - Added current equipment tracking
