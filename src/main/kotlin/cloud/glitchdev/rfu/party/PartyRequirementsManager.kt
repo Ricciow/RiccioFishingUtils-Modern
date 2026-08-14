@@ -1,6 +1,5 @@
 package cloud.glitchdev.rfu.party
 
-import cloud.glitchdev.rfu.constants.skyblock.SkillType
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.data.other.OtherManager
 import cloud.glitchdev.rfu.data.other.data.BooleanEntry
@@ -9,7 +8,6 @@ import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ContainerEvents.registerContainerOpenEvent
 import cloud.glitchdev.rfu.model.party.FishingParty
-import cloud.glitchdev.rfu.utils.SkillTracker
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.core.component.DataComponents
 import cloud.glitchdev.rfu.model.party.PlayerRequisitesResult
@@ -28,7 +26,6 @@ object PartyRequirementsManager : RegisteredEvent {
     sealed class PartyValidationResult {
         object Success : PartyValidationResult()
         data class Invalid(val failures: List<PartyValidationResult>) : PartyValidationResult()
-        data class LevelTooLow(val requiredLevel: Int, val currentLevel: Int) : PartyValidationResult()
         object MissingBrainFood : PartyValidationResult()
         object MissingBloodshot : PartyValidationResult()
         data class MissingRequisite(val requisiteKey: String, val requisiteName: String) : PartyValidationResult()
@@ -39,7 +36,6 @@ object PartyRequirementsManager : RegisteredEvent {
             return when (this) {
                 is Success -> ""
                 is Invalid -> failures.joinToString("\n\n") { it.getErrorMessage() }
-                is LevelTooLow -> "Your Fishing level ($currentLevel) is lower than the required level ($requiredLevel)!\n${TextColor.GRAY}If you are higher level, open the skills tab."
                 is MissingBrainFood -> "You must have 5 Brain Food!\n${TextColor.GRAY}If you already have it, open\n${TextColor.GRAY}Sb Menu->Skyblock Leveling->Ways to Level Up->Consumable Tasks"
                 is MissingBloodshot -> "You must be wearing a Bloodshot belt!\n${TextColor.GRAY}If you already are, open your equipment menu."
                 is MissingRequisite -> "You do not meet the requirement: $requisiteName!"
@@ -93,11 +89,6 @@ object PartyRequirementsManager : RegisteredEvent {
         }
     }
 
-    fun isLevelSufficient(requiredLevel: Int): Boolean {
-        val currentLevel = SkillTracker.getSkillLevel(SkillType.FISHING)
-        return currentLevel >= requiredLevel
-    }
-
     fun hasBrainFood(): Boolean {
         return hasBrainFood
     }
@@ -109,11 +100,6 @@ object PartyRequirementsManager : RegisteredEvent {
 
     fun validatePartyRequirements(party: FishingParty): PartyValidationResult {
         val failures = mutableListOf<PartyValidationResult>()
-
-        val currentLevel = SkillTracker.getSkillLevel(SkillType.FISHING)
-        if (!isLevelSufficient(party.level)) {
-            failures.add(PartyValidationResult.LevelTooLow(party.level, currentLevel))
-        }
 
         for (requisite in party.requisites) {
             if (!requisite.value) continue

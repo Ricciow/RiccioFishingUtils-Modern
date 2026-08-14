@@ -25,4 +25,4 @@
 ### Back-end
 - Added current equipment tracking
 - Added automatic backups for config and data.
-- Made requisites validation for Enderman 9 and Looting 5 come from back-end.
+- Made requisites validation for Enderman 9, Looting 5 and Fishing Level come from back-end.
