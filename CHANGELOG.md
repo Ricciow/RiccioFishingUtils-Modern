@@ -18,6 +18,7 @@
 ### Changes
 - Reduced Squid Collection achievement to max out at 2M Collection
 - Reduced Ink Obsessed achievement to cap out at 100k
+- Added a 5s cooldown between creating party finder entries
 
 ### Back-end
 - Added current equipment tracking

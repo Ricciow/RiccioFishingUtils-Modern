@@ -17,6 +17,8 @@ import cloud.glitchdev.rfu.utils.network.PartyWebSocket
 import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerMyPartyChangedEvent
+import cloud.glitchdev.rfu.utils.Coroutines
+import kotlinx.coroutines.delay
 import kotlin.jvm.optionals.getOrNull
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.colors
@@ -52,22 +54,21 @@ class UICreateParty : UIContainer() {
     private lateinit var islandField: UIDropdown
     private lateinit var levelField: UIDecoratedTextInput
     private lateinit var maxPlayersField: UIDecoratedTextInput
-
     private lateinit var waterToggle: UIToggleCard
     private lateinit var lavaToggle: UIToggleCard
-
     private lateinit var killerToggle: UIToggleCard
     private lateinit var endermanToggle: UIToggleCard
     private lateinit var lootingToggle: UIToggleCard
     private lateinit var brainFoodToggle: UIToggleCard
     private lateinit var bloodshotToggle: UIToggleCard
-
     private lateinit var submitButton: UIButton
+    private var lastSubmitTime = 0L
 
     init {
         registerErrorMessageEvent { message, origin ->
             if (!this.isHidden() && (origin == "/app/party/publish" || origin == "/app/party/edit")) {
                 popup.show(message)
+                submitButton.disabled = false
             }
         }
 
@@ -336,6 +337,14 @@ class UICreateParty : UIContainer() {
 
     private fun createSubmitButton(parent: UIContainer) {
         submitButton = UIButton("Publish Party", 5f) {
+            val now = System.currentTimeMillis()
+            val elapsed = now - lastSubmitTime
+            if (elapsed < 5000L) {
+                val secondsLeft = ((5000L - elapsed) / 1000L) + 1
+                popup.show("Please wait ${secondsLeft}s before trying again!")
+                return@UIButton
+            }
+
             if (!WebSocketClient.isConnected) {
                 popup.show("Not connected to RFU Backend!")
                 return@UIButton
@@ -348,13 +357,21 @@ class UICreateParty : UIContainer() {
                 return@UIButton
             }
 
+            lastSubmitTime = now
+            submitButton.disabled = true
+
+            Coroutines.launch {
+                delay(5000)
+                submitButton.disabled = false
+            }
+
             if (DevSettings.devMode && DevSettings.isInSkyblock) {
                 PartyWebSocket.submitParty(party)
-                return@UIButton
             } else {
                 Party.requestPartyInfo {
                     if (Party.inParty && !Party.isLeader) {
                         popup.show("You must be the party leader to do this!")
+                        submitButton.disabled = false
                     } else {
                         PartyWebSocket.submitParty(party)
                     }
@@ -457,5 +474,6 @@ class UICreateParty : UIContainer() {
 
     private fun updateButtonLabel() {
         submitButton.updateText(if (PartyWebSocket.myParty == null) "Publish Party" else "Update Party")
+        submitButton.disabled = false
     }
 }
