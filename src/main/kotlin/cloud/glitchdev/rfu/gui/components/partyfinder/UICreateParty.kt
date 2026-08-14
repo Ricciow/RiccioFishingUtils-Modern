@@ -293,14 +293,8 @@ class UICreateParty : UIContainer() {
             y = CenterConstraint()
         } childOf reqContainer
 
-        endermanToggle = UIToggleCard(party.getRequisite("enderman_9", "Enderman 9").toDataOption(), party.getRequisite("enderman_9", "Enderman 9").value) { selected ->
-            if (selected && !PartyRequirementsManager.hasEnderman9()) {
-                endermanToggle.selected = false
-                val result = PartyRequirementsManager.PartyValidationResult.MissingEnderman9
-                popup.show(result.getErrorMessage())
-            } else {
-                updatePartyModel()
-            }
+        endermanToggle = UIToggleCard(party.getRequisite("enderman_9", "Enderman 9").toDataOption(), party.getRequisite("enderman_9", "Enderman 9").value) {
+            updatePartyModel()
         }.constrain {
             x = SiblingConstraint(5f)
             y = CenterConstraint()

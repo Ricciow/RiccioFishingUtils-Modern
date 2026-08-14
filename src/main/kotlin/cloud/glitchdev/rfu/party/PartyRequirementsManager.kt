@@ -23,7 +23,6 @@ object PartyRequirementsManager : RegisteredEvent {
         data class LevelTooLow(val requiredLevel: Int, val currentLevel: Int) : PartyValidationResult()
         object MissingLooting5 : PartyValidationResult()
         object MissingBrainFood : PartyValidationResult()
-        object MissingEnderman9 : PartyValidationResult()
         object MissingBloodshot : PartyValidationResult()
         data class MissingRequisite(val requisiteKey: String, val requisiteName: String) : PartyValidationResult()
 
@@ -36,7 +35,6 @@ object PartyRequirementsManager : RegisteredEvent {
                 is LevelTooLow -> "Your Fishing level ($currentLevel) is lower than the required level ($requiredLevel)!\n${TextColor.GRAY}If you are higher level, open the skills tab."
                 is MissingLooting5 -> "You must have a Looting 5 weapon in your inventory!"
                 is MissingBrainFood -> "You must have 5 Brain Food!\n${TextColor.GRAY}If you already have it, open\n${TextColor.GRAY}Sb Menu->Skyblock Leveling->Ways to Level Up->Consumable Tasks"
-                is MissingEnderman9 -> "You must have Enderman Slayer 9!\n${TextColor.GRAY}If you already have it, open the maddox menu."
                 is MissingBloodshot -> "You must be wearing a Bloodshot belt!\n${TextColor.GRAY}If you already are, open your equipment menu."
                 is MissingRequisite -> "You do not meet the requirement: $requisiteName!"
             }
@@ -47,13 +45,6 @@ object PartyRequirementsManager : RegisteredEvent {
         get() = (OtherManager.getField("brain_food") as? BooleanEntry)?.value ?: false
         set(value) {
             OtherManager.setField("brain_food", BooleanEntry(value))
-            OtherManager.file.save()
-        }
-
-    var hasEnderman9: Boolean
-        get() = (OtherManager.getField("enderman_9") as? BooleanEntry)?.value ?: false
-        set(value) {
-            OtherManager.setField("enderman_9", BooleanEntry(value))
             OtherManager.file.save()
         }
 
@@ -70,20 +61,6 @@ object PartyRequirementsManager : RegisteredEvent {
                             hasBrainFood = true
                         }
                         break
-                    }
-                }
-            } else if (containerName == "Slayer") {
-                for (item in items) {
-                    if (item.isEmpty) continue
-                    val lore = item[DataComponents.LORE] ?: continue
-                    for (line in lore.lines()) {
-                        val plainText = line.toUnformattedString()
-                        if (plainText.contains("Enderman Slayer: LVL 9", ignoreCase = true)) {
-                            if (!hasEnderman9) {
-                                hasEnderman9 = true
-                            }
-                            break
-                        }
                     }
                 }
             }
@@ -116,10 +93,6 @@ object PartyRequirementsManager : RegisteredEvent {
         return hasBrainFood
     }
 
-    fun hasEnderman9(): Boolean {
-        return hasEnderman9
-    }
-
     fun hasBloodshotBelt(): Boolean {
         val belt = EquipmentEvents.currentEquipmentSet.belt
         return belt.startsWith("Bloodshot", ignoreCase = true)
@@ -138,7 +111,6 @@ object PartyRequirementsManager : RegisteredEvent {
             when (requisite.id) {
                 "looting_5" -> if (!hasLooting5Weapon()) failures.add(PartyValidationResult.MissingLooting5)
                 "brain_food" -> if (!hasBrainFood()) failures.add(PartyValidationResult.MissingBrainFood)
-                "enderman_9" -> if (!hasEnderman9()) failures.add(PartyValidationResult.MissingEnderman9)
                 "bloodshot" -> if (!hasBloodshotBelt()) failures.add(PartyValidationResult.MissingBloodshot)
             }
         }
