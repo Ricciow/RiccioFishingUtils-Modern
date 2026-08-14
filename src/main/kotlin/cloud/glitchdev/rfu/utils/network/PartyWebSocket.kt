@@ -8,6 +8,7 @@ import cloud.glitchdev.rfu.model.network.WebSocketEvent
 import cloud.glitchdev.rfu.model.network.WebSocketEventType
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.model.party.JoinPartyNotification
+import cloud.glitchdev.rfu.model.party.JoinPartyRequest
 import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.Chat
@@ -42,6 +43,8 @@ object PartyWebSocket : RegisteredEvent {
 
     private var lastJoinTarget: String? = null
     private var lastJoinTime: Instant? = null
+    private var pendingJoinJob: Job? = null
+    private var pendingJoinHasError = false
 
     override fun register() {
         RFULogger.dev("Registering PartyWebSocket")
@@ -69,6 +72,10 @@ object PartyWebSocket : RegisteredEvent {
         }
 
         registerErrorMessageEvent { message, origin ->
+            if (origin == "/app/party/join" || origin.endsWith("/party/join")) {
+                pendingJoinHasError = true
+                pendingJoinJob?.cancel()
+            }
             if (message == "Target user is not currently connected to the WebSocket.") {
                 lastJoinTarget?.let { target ->
                     Party.requestEntry(target)
@@ -186,12 +193,21 @@ object PartyWebSocket : RegisteredEvent {
         }
     }
 
-    fun joinParty(targetUser: String) {
+    fun joinParty(targetUser: String, profileId: String? = User.profileId) {
         lastJoinTarget = targetUser
         lastJoinTime = Clock.System.now()
         Party.requestedUser = targetUser
-        WebSocketClient.send("/app/party/join", mapOf("targetUser" to targetUser))
-        Chat.sendMessage(TextUtils.rfupfLiteral("Sent a join request to $targetUser", TextColor.YELLOW))
+        pendingJoinHasError = false
+        
+        WebSocketClient.send("/app/party/join", JoinPartyRequest(targetUser, profileId))
+        
+        pendingJoinJob?.cancel()
+        pendingJoinJob = Coroutines.launch {
+            delay(500)
+            if (!pendingJoinHasError) {
+                Chat.sendMessage(TextUtils.rfupfLiteral("Sent a join request to $targetUser", TextColor.YELLOW))
+            }
+        }
     }
 
     fun reportParty(user: String) {

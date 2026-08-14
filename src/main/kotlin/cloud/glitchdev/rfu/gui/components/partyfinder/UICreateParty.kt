@@ -12,6 +12,7 @@ import cloud.glitchdev.rfu.model.data.DataOption
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.party.PartyRequirementsManager
 import cloud.glitchdev.rfu.utils.Party
+import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.network.PartyWebSocket
 import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
@@ -428,6 +429,7 @@ class UICreateParty : UIContainer() {
     }
 
     private fun updatePartyModel() {
+        party.profileId = User.profileId
         party.title = titleField.getText()
         party.description = descriptionField.getText()
         party.island = islandField.getSelectedItem().value as FishingIslands

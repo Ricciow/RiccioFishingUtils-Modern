@@ -14,6 +14,8 @@ data class FishingParty(
     @Transient
     var id: String? = "?",
     var user: String,
+    @SerializedName("profile_id")
+    var profileId: String? = User.profileId,
     var level: Int,
     var title: String,
     var description: String,
@@ -49,6 +51,7 @@ data class FishingParty(
             return FishingParty(
                 "?",
                 User.getUsername(),
+                User.profileId,
                 0,
                 "",
                 "",
