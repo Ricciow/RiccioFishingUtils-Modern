@@ -300,14 +300,8 @@ class UICreateParty : UIContainer() {
             y = CenterConstraint()
         } childOf reqContainer
 
-        lootingToggle = UIToggleCard(party.getRequisite("looting_5", "Looting 5").toDataOption(), party.getRequisite("looting_5", "Looting 5").value) { selected ->
-            if (selected && !PartyRequirementsManager.hasLooting5Weapon()) {
-                lootingToggle.selected = false
-                val result = PartyRequirementsManager.PartyValidationResult.MissingLooting5
-                popup.show(result.getErrorMessage())
-            } else {
-                updatePartyModel()
-            }
+        lootingToggle = UIToggleCard(party.getRequisite("looting_5", "Looting 5").toDataOption(), party.getRequisite("looting_5", "Looting 5").value) {
+            updatePartyModel()
         }.constrain {
             x = SiblingConstraint(5f)
             y = CenterConstraint()

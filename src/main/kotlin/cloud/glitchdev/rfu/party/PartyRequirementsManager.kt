@@ -1,6 +1,5 @@
 package cloud.glitchdev.rfu.party
 
-import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.constants.skyblock.SkillType
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.data.other.OtherManager
@@ -21,7 +20,6 @@ object PartyRequirementsManager : RegisteredEvent {
         object Success : PartyValidationResult()
         data class Invalid(val failures: List<PartyValidationResult>) : PartyValidationResult()
         data class LevelTooLow(val requiredLevel: Int, val currentLevel: Int) : PartyValidationResult()
-        object MissingLooting5 : PartyValidationResult()
         object MissingBrainFood : PartyValidationResult()
         object MissingBloodshot : PartyValidationResult()
         data class MissingRequisite(val requisiteKey: String, val requisiteName: String) : PartyValidationResult()
@@ -33,7 +31,6 @@ object PartyRequirementsManager : RegisteredEvent {
                 is Success -> ""
                 is Invalid -> failures.joinToString("\n\n") { it.getErrorMessage() }
                 is LevelTooLow -> "Your Fishing level ($currentLevel) is lower than the required level ($requiredLevel)!\n${TextColor.GRAY}If you are higher level, open the skills tab."
-                is MissingLooting5 -> "You must have a Looting 5 weapon in your inventory!"
                 is MissingBrainFood -> "You must have 5 Brain Food!\n${TextColor.GRAY}If you already have it, open\n${TextColor.GRAY}Sb Menu->Skyblock Leveling->Ways to Level Up->Consumable Tasks"
                 is MissingBloodshot -> "You must be wearing a Bloodshot belt!\n${TextColor.GRAY}If you already are, open your equipment menu."
                 is MissingRequisite -> "You do not meet the requirement: $requisiteName!"
@@ -72,23 +69,6 @@ object PartyRequirementsManager : RegisteredEvent {
         return currentLevel >= requiredLevel
     }
 
-    fun hasLooting5Weapon(): Boolean {
-        val player = mc.player ?: return false
-        val slots = player.containerMenu.slots
-        for (slot in slots) {
-            val item = slot.item
-            if (item.isEmpty) continue
-            val lore = item[DataComponents.LORE] ?: continue
-            for (line in lore.lines()) {
-                val plainText = line.toUnformattedString()
-                if (plainText.contains("Looting V", ignoreCase = true) || plainText.contains("Looting 5", ignoreCase = true)) {
-                    return true
-                }
-            }
-        }
-        return false
-    }
-
     fun hasBrainFood(): Boolean {
         return hasBrainFood
     }
@@ -109,7 +89,6 @@ object PartyRequirementsManager : RegisteredEvent {
         for (requisite in party.requisites) {
             if (!requisite.value) continue
             when (requisite.id) {
-                "looting_5" -> if (!hasLooting5Weapon()) failures.add(PartyValidationResult.MissingLooting5)
                 "brain_food" -> if (!hasBrainFood()) failures.add(PartyValidationResult.MissingBrainFood)
                 "bloodshot" -> if (!hasBloodshotBelt()) failures.add(PartyValidationResult.MissingBloodshot)
             }
