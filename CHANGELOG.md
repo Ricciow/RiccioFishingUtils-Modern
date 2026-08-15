@@ -21,6 +21,8 @@
 - Added a 5s cooldown between creating party finder entries
 - Made the party finder alerts off by default
   - Note: This was mostly meant for when there weren't many users of rfupf, since it is now somewhat relevant, this doesn't have much purpose anymore
+- Made outdated cake alert check the tablist on a fast loop to clear false expired cake entries when all cakes are active
+- Removed rfuresetcakes command alias
 
 ### Back-end
 - Added current equipment tracking
