@@ -15,48 +15,38 @@ object AnnouncementDebug : AbstractCommand("announcement") {
         builder.executes { context ->
             val mockAnnouncement = ModelAnnouncement(
                 id = "debug_announcement",
-                title = "RiccioFishingUtils v2.0.0 Update!",
-                message = "RFU v2.0.0 is now available! Check out the redesigned UI.",
+                title = "# v1.17.0 - Daily Fishing",
+                message = "",
                 content = """
-                    # RiccioFishingUtils v2.0.0 Release
+                    ### Features
+                    - Added a daily streak and challenges system with scaling targets, HUD overlay, and /rfudailies GUI
+                    - Extended the survivalist achievement with 4 new stages
+                    - Added 5 new achievements
+                    - Added a setting to adjust hotspot highlight border opacity
+                    - Added a new Bloodshot requirement in Party Finder
+                    - Added :pod: :silk: :hog: :exploding_head: :boom: emojis
                     
-                    Welcome to the **next generation** of *fishing utilities* for Hypixel SkyBlock! This update brings a complete redesign of the user interfaces to be more modern and consistent.
+                    ### Fixes
+                    - Fixed other messages being counted as trophy catches when they shouldn't
+                    - Fixed togglewarp not auto re-joining the party
+                    - Fixed an issue where pressing enter really fast would not complete the emoji properly
+                    - Fixed hotspot sea creature counts not couting properly on torrhus
+                    - Fixed the dye achievements not triggering on vincent menu
                     
-                    ## 🚀 Major Additions
+                    ### Changes
+                    - Reduced Squid Collection achievement to max out at 2M Collection
+                    - Reduced Ink Obsessed achievement to cap out at 100k
+                    - Added a 5s cooldown between creating party finder entries
+                    - Made the party finder alerts off by default
+                      - Note: This was mostly meant for when there weren't many users of rfupf, since it is now somewhat relevant, this doesn't have much purpose anymore
+                    - Made outdated cake alert check the tablist on a fast loop to clear false expired cake entries when all cakes are active
+                    - Removed rfuresetcakes command alias
+                    - Removed the bottom border of hotspot highlight
                     
-                    1. **Redesigned Announcement UI**
-                       - Styled to match Party Finder, Pets, and Achievements.
-                       - Clean layout with a dedicated scrollable viewport.
-                    2. **Performance Enhancements**
-                       - Optimized rendering pipelines using `Elementa`.
-                       - Fixed multiple memory leaks in connection and chat event handlers.
-                    
-                    ---
-                    
-                    ## 📦 Features Showcase
-                    
-                    > "This is by far the best fishing mod update in 2026!"
-                    > — *An avid SkyBlock Fisherman*
-                    
-                    ### 💻 Code Highlight
-                    Here is a snippet showing how easy it is to register new features:
-                    
-                    ```kotlin
-                    @RFUFeature
-                    object MyFeature : Feature {
-                        override fun onInitialize() {
-                            registerTickEvent(interval = 20) {
-                                // Your cool logic here!
-                            }
-                        }
-                    }
-                    ```
-                    
-                    ### 🔗 Useful Links
-                    * Join our [Discord Server](https://discord.gg/rfu)
-                    * Check out the [GitHub Repository](https://github.com/Ricciofishing/RicciosFinestUtilities)
-
-                    *Thank you for supporting RiccioFishingUtils! Good luck with your catches!*
+                    ### Back-end
+                    - Added current equipment tracking
+                    - Added automatic backups for config and data.
+                    - Made requisites validation for Enderman 9, Looting 5 and Fishing Level come from back-end.
                 """.trimIndent(),
                 issuedAt = Instant.now()
             )
