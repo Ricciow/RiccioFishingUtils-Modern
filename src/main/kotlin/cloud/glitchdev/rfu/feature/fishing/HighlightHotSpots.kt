@@ -42,6 +42,8 @@ object HighlightHotSpots : Feature {
                         this.borderColor = borderColor
                         lineWidth = 3.0f
                         scaleWithDistance = true
+                        topBorder = true
+                        bottomBorder = false
                     }
                 }
             }

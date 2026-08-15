@@ -23,6 +23,7 @@
   - Note: This was mostly meant for when there weren't many users of rfupf, since it is now somewhat relevant, this doesn't have much purpose anymore
 - Made outdated cake alert check the tablist on a fast loop to clear false expired cake entries when all cakes are active
 - Removed rfuresetcakes command alias
+- Removed the bottom border of hotspot highlight
 
 ### Back-end
 - Added current equipment tracking

@@ -163,7 +163,9 @@ object Render3D {
         slices: Int = 32,
         borderColor: Color? = null,
         lineWidth: Float = 2.0f,
-        scaleWithDistance: Boolean = false
+        scaleWithDistance: Boolean = false,
+        topBorder: Boolean = true,
+        bottomBorder: Boolean = true
     ) {
         if (!isVisible(buildCylinderBounds(location, radius, height))) {
             return
@@ -223,7 +225,7 @@ object Render3D {
             }
             //?}
 
-            if (borderColor != null) {
+            if (borderColor != null && (topBorder || bottomBorder)) {
                 val distance = vecToCylinder.length()
                 val finalLineWidth = if (scaleWithDistance) {
                     lineWidth * maxOf(1f, 10f / maxOf(1f, distance.toFloat()))
@@ -237,6 +239,9 @@ object Render3D {
                 /*val lineBuffer = consumers.getBuffer(RenderTypes.LINES)
                 *///?}
 
+                val topY = maxOf(0f, height)
+                val bottomY = minOf(0f, height)
+
                 for (i in 0 until slices) {
                     val angle0 = 2 * Math.PI * i.toDouble() / slices
                     val angle1 = 2 * Math.PI * (i + 1).toDouble() / slices
@@ -246,8 +251,12 @@ object Render3D {
                     val x1 = (cos(angle1) * radius).toFloat()
                     val z1 = (sin(angle1) * radius).toFloat()
 
-                    drawLine(lineBuffer, matrix, x0, height, z0, x1, height, z1, borderColor, finalLineWidth)
-                    drawLine(lineBuffer, matrix, x0, 0f, z0, x1, 0f, z1, borderColor, finalLineWidth)
+                    if (topBorder) {
+                        drawLine(lineBuffer, matrix, x0, topY, z0, x1, topY, z1, borderColor, finalLineWidth)
+                    }
+                    if (bottomBorder) {
+                        drawLine(lineBuffer, matrix, x0, bottomY, z0, x1, bottomY, z1, borderColor, finalLineWidth)
+                    }
                 }
                 //? if >=26.2 {
                 }

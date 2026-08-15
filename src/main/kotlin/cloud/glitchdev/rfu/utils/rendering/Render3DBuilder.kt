@@ -23,6 +23,8 @@ class Render3DBuilder(val shape: Shape, val context: LevelRenderContext) {
     var backgroundOpacity: Float = 0.25f
     var scale: Float = 0.025f
     var scaleWithDistance: Boolean = false
+    var topBorder: Boolean = true
+    var bottomBorder: Boolean = true
 
     var from: Vec3
         get() = startLocation
@@ -61,7 +63,7 @@ class Render3DBuilder(val shape: Shape, val context: LevelRenderContext) {
                 location, radius, color, context, stacks, slices, lineWidth, filled, borderColor, scaleWithDistance
             )
             Shape.CYLINDER -> Render3D.renderCylinder(
-                location, radius, height, color, context, slices, borderColor, lineWidth, scaleWithDistance
+                location, radius, height, color, context, slices, borderColor, lineWidth, scaleWithDistance, topBorder, bottomBorder
             )
             Shape.LINE -> Render3D.renderLine(
                 startLocation, location, color, context, lineWidth, scaleWithDistance
