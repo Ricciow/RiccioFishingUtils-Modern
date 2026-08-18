@@ -42,7 +42,8 @@ object Render3D {
         slices: Int = 16,
         lineWidth: Float = 2.0f,
         filled: Boolean = false,
-        borderColor: Color? = null
+        borderColor: Color? = null,
+        scaleWithDistance: Boolean = false
     ) {
         if (!isVisible(buildSphereBounds(location, radius))) {
             return
@@ -110,6 +111,13 @@ object Render3D {
         }
 
         if (borderColor != null) {
+            val distance = vecToSphere.length()
+            val finalLineWidth = if (scaleWithDistance) {
+                lineWidth * maxOf(1f, 10f / maxOf(1f, distance.toFloat()))
+            } else {
+                lineWidth
+            }
+
             //? if >=26.2 {
             context.submitNodeCollector().submitCustomGeometry(matrixStack, RenderTypes.LINES) { _, buffer ->
             //?} else {
@@ -134,11 +142,8 @@ object Render3D {
                     val x1 = cos(lng1)
                     val y1 = sin(lng1)
 
-                    drawVertex(buffer, matrix, (x0 * zr0).toFloat(), z0.toFloat(), (y0 * zr0).toFloat(), borderColor, lineWidth)
-                    drawVertex(buffer, matrix, (x0 * zr1).toFloat(), z1.toFloat(), (y0 * zr1).toFloat(), borderColor, lineWidth)
-
-                    drawVertex(buffer, matrix, (x0 * zr1).toFloat(), z1.toFloat(), (y0 * zr1).toFloat(), borderColor, lineWidth)
-                    drawVertex(buffer, matrix, (x1 * zr1).toFloat(), z1.toFloat(), (y1 * zr1).toFloat(), borderColor, lineWidth)
+                    drawLine(buffer, matrix, (x0 * zr0).toFloat(), z0.toFloat(), (y0 * zr0).toFloat(), (x0 * zr1).toFloat(), z1.toFloat(), (y0 * zr1).toFloat(), borderColor, finalLineWidth)
+                    drawLine(buffer, matrix, (x0 * zr1).toFloat(), z1.toFloat(), (y0 * zr1).toFloat(), (x1 * zr1).toFloat(), z1.toFloat(), (y1 * zr1).toFloat(), borderColor, finalLineWidth)
                 }
             }
             //? if >=26.2 {
@@ -157,7 +162,10 @@ object Render3D {
         context: LevelRenderContext,
         slices: Int = 32,
         borderColor: Color? = null,
-        lineWidth: Float = 2.0f
+        lineWidth: Float = 2.0f,
+        scaleWithDistance: Boolean = false,
+        topBorder: Boolean = true,
+        bottomBorder: Boolean = true
     ) {
         if (!isVisible(buildCylinderBounds(location, radius, height))) {
             return
@@ -217,12 +225,22 @@ object Render3D {
             }
             //?}
 
-            if (borderColor != null) {
+            if (borderColor != null && (topBorder || bottomBorder)) {
+                val distance = vecToCylinder.length()
+                val finalLineWidth = if (scaleWithDistance) {
+                    lineWidth * maxOf(1f, 10f / maxOf(1f, distance.toFloat()))
+                } else {
+                    lineWidth
+                }
+
                 //? if >=26.2 {
                 context.submitNodeCollector().submitCustomGeometry(matrixStack, RenderTypes.LINES) { _, lineBuffer ->
                 //?} else {
                 /*val lineBuffer = consumers.getBuffer(RenderTypes.LINES)
                 *///?}
+
+                val topY = maxOf(0f, height)
+                val bottomY = minOf(0f, height)
 
                 for (i in 0 until slices) {
                     val angle0 = 2 * Math.PI * i.toDouble() / slices
@@ -233,11 +251,12 @@ object Render3D {
                     val x1 = (cos(angle1) * radius).toFloat()
                     val z1 = (sin(angle1) * radius).toFloat()
 
-                    drawVertex(lineBuffer, matrix, x0, height, z0, borderColor, lineWidth)
-                    drawVertex(lineBuffer, matrix, x1, height, z1, borderColor, lineWidth)
-
-                    drawVertex(lineBuffer, matrix, x0, 0f, z0, borderColor, lineWidth)
-                    drawVertex(lineBuffer, matrix, x1, 0f, z1, borderColor, lineWidth)
+                    if (topBorder) {
+                        drawLine(lineBuffer, matrix, x0, topY, z0, x1, topY, z1, borderColor, finalLineWidth)
+                    }
+                    if (bottomBorder) {
+                        drawLine(lineBuffer, matrix, x0, bottomY, z0, x1, bottomY, z1, borderColor, finalLineWidth)
+                    }
                 }
                 //? if >=26.2 {
                 }
@@ -254,7 +273,8 @@ object Render3D {
         end: Vec3,
         color: Color,
         context: LevelRenderContext,
-        lineWidth: Float = 2.0f
+        lineWidth: Float = 2.0f,
+        scaleWithDistance: Boolean = false
     ) {
         //? if >=26.2 {
         val matrixStack = context.poseStack()
@@ -266,31 +286,48 @@ object Render3D {
         val camPos = camera.position()
         val relStart = start.subtract(camPos)
         val relEnd = end.subtract(camPos)
+        val mid = relStart.add(relEnd).scale(0.5)
+        val distance = mid.length()
 
-        val dx = (relEnd.x - relStart.x).toFloat()
-        val dy = (relEnd.y - relStart.y).toFloat()
-        val dz = (relEnd.z - relStart.z).toFloat()
-        val length = sqrt(dx * dx + dy * dy + dz * dz)
-
-        val nx = if (length != 0f) dx / length else 0f
-        val ny = if (length != 0f) dy / length else 1f
-        val nz = if (length != 0f) dz / length else 0f
+        val finalLineWidth = if (scaleWithDistance) {
+            lineWidth * maxOf(1f, 10f / maxOf(1f, distance.toFloat()))
+        } else {
+            lineWidth
+        }
 
         matrixStack.pushPose()
         val matrix = Matrix4f(matrixStack.last().pose())
         
         //? if >=26.2 {
         context.submitNodeCollector().submitCustomGeometry(matrixStack, RenderTypes.LINES) { _, buffer ->
-            drawVertex(buffer, matrix, relStart.x.toFloat(), relStart.y.toFloat(), relStart.z.toFloat(), color, lineWidth, nx, ny, nz)
-            drawVertex(buffer, matrix, relEnd.x.toFloat(), relEnd.y.toFloat(), relEnd.z.toFloat(), color, lineWidth, nx, ny, nz)
+            drawLine(buffer, matrix, relStart.x.toFloat(), relStart.y.toFloat(), relStart.z.toFloat(), relEnd.x.toFloat(), relEnd.y.toFloat(), relEnd.z.toFloat(), color, finalLineWidth)
         }
         //?} else {
         /*val buffer = consumers.getBuffer(RenderTypes.LINES)
-        drawVertex(buffer, matrix, relStart.x.toFloat(), relStart.y.toFloat(), relStart.z.toFloat(), color, lineWidth, nx, ny, nz)
-        drawVertex(buffer, matrix, relEnd.x.toFloat(), relEnd.y.toFloat(), relEnd.z.toFloat(), color, lineWidth, nx, ny, nz)
+        drawLine(buffer, matrix, relStart.x.toFloat(), relStart.y.toFloat(), relStart.z.toFloat(), relEnd.x.toFloat(), relEnd.y.toFloat(), relEnd.z.toFloat(), color, finalLineWidth)
         *///?}
 
         matrixStack.popPose()
+    }
+
+    private fun drawLine(
+        buffer: VertexConsumer,
+        matrix: Matrix4f,
+        x0: Float, y0: Float, z0: Float,
+        x1: Float, y1: Float, z1: Float,
+        color: Color,
+        lineWidth: Float
+    ) {
+        val dx = x1 - x0
+        val dy = y1 - y0
+        val dz = z1 - z0
+        val len = sqrt(dx * dx + dy * dy + dz * dz)
+        val nx = if (len != 0f) dx / len else 1f
+        val ny = if (len != 0f) dy / len else 0f
+        val nz = if (len != 0f) dz / len else 0f
+
+        drawVertex(buffer, matrix, x0, y0, z0, color, lineWidth, nx, ny, nz)
+        drawVertex(buffer, matrix, x1, y1, z1, color, lineWidth, nx, ny, nz)
     }
 
     private fun drawVertex(

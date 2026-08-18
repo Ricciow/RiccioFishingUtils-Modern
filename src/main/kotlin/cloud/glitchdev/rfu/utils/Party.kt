@@ -1,4 +1,4 @@
-﻿package cloud.glitchdev.rfu.utils
+package cloud.glitchdev.rfu.utils
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.constants.chat.RegexConstants.PLAYER_REGEX
@@ -192,7 +192,10 @@ object Party : RegisteredEvent {
             val currentParty: FishingParty? = PartyWebSocket.myParty
             if (currentParty != null) {
                 if (isLeader) {
-                    val updatedParty = currentParty.copy(players = currentParty.players.copy(current = memberCount))
+                    val updatedParty = currentParty.copy(
+                        players = currentParty.players.copy(current = memberCount),
+                        profileId = User.profileId
+                    )
                     PartyWebSocket.editParty(updatedParty)
                 } else {
                     PartyWebSocket.deleteParty(User.getUsername())

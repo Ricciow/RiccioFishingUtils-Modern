@@ -9,11 +9,12 @@ import cloud.glitchdev.rfu.constants.fishing.TrophyType
 import cloud.glitchdev.rfu.constants.fishing.Trophy
 import cloud.glitchdev.rfu.constants.fishing.TrophyFish
 import cloud.glitchdev.rfu.constants.fishing.TrophyFrog
+import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 
 @AutoRegister
 object TrophyCatchEvents : RegisteredEvent {
-    val TROPHY_FROG_REGEX = """(?:\s*)?TROPHY FROG! You caught (?:an? )?(.+?) (BRONZE|SILVER|GOLD|DIAMOND)(?:\s+x(\d+))?!""".toRegex(RegexOption.IGNORE_CASE)
-    val TROPHY_FISH_REGEX = """(?:\s*)?TROPHY FISH! You caught (?:an? )?(.+?) (BRONZE|SILVER|GOLD|DIAMOND)(?:\s+x(\d+))?!""".toRegex(RegexOption.IGNORE_CASE)
+    val TROPHY_FROG_REGEX = """(?:\s*)?TROPHY FROG! You caught (?:an? )?(.+?) (BRONZE|SILVER|GOLD|DIAMOND)(?:\s+x(\d+))?!""".toExactRegex()
+    val TROPHY_FISH_REGEX = """(?:\s*)?TROPHY FISH! You caught (?:an? )?(.+?) (BRONZE|SILVER|GOLD|DIAMOND)(?:\s+x(\d+))?!""".toExactRegex()
 
     override fun register() {
         registerGameEvent(TROPHY_FROG_REGEX) { _, _, matches ->

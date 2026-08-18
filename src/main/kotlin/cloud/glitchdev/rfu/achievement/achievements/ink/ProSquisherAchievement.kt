@@ -24,7 +24,7 @@ object ProSquisherAchievement: NumericStageAchievement() {
     override val resetCountOnStageAdvance: Boolean = false
 
     private val MILESTONES = listOf(
-        10_000L, 50_000L, 100_000L, 250_000L, 500_000L, 1_000_000L, 2_500_000L, 5_000_000L
+        10_000L, 50_000L, 100_000L, 250_000L, 500_000L, 1_000_000L, 1_500_000L, 2_000_000L
     )
 
     private val MILESTONE_NAMES = listOf(

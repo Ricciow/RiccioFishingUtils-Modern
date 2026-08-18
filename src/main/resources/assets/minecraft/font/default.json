@@ -244,6 +244,41 @@
       "ascent": 7,
       "height": 8,
       "chars": ["\uE122"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/giant_isopod.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE123"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/silkbreeze.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE124"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/hog.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE125"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/exploding_head.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE126"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/kaboom.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE127"]
     }
   ]
 }

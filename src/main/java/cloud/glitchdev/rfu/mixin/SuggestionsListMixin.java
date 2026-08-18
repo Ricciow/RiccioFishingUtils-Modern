@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import com.mojang.brigadier.suggestion.Suggestions;
 import java.util.List;
 
 @Mixin(targets = "net.minecraft.client.gui.components.CommandSuggestions$SuggestionsList")
@@ -32,6 +33,9 @@ public abstract class SuggestionsListMixin {
                 if (suggestion instanceof EmojiSuggestion) {
                     this.useSuggestion();
                     this$0.hide();
+                    CommandSuggestionsAccessor accessor = (CommandSuggestionsAccessor) this$0;
+                    accessor.rfu$getInput().setSuggestion(null);
+                    accessor.rfu$setPendingSuggestions(Suggestions.empty());
                     cir.setReturnValue(true);
                 }
             }

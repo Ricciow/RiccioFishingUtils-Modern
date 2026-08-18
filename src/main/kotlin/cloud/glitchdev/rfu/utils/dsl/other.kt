@@ -1,10 +1,8 @@
 package cloud.glitchdev.rfu.utils.dsl
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.MOD_ID
-import cloud.glitchdev.rfu.RiccioFishingUtils.mc
-import gg.essential.universal.utils.toUnformattedString
+import cloud.glitchdev.rfu.events.managers.ArmorEvents
 import net.minecraft.resources.Identifier
-import net.minecraft.world.entity.EquipmentSlot
 
 fun getResource(resource : String) : Identifier {
     val result = Identifier.fromNamespaceAndPath(MOD_ID, resource)
@@ -16,10 +14,4 @@ fun parseResource(id :  String) : Identifier? {
     return result
 }
 
-private val armorSlots = arrayOf(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET)
-
-fun isWearingTrophyHunterArmor(): Boolean {
-    return mc.player?.let { player ->
-        armorSlots.any { slot -> player.getItemBySlot(slot).hasDescriptionText("Tiered Bonus: Peace Treaty (2/2)") }
-    } == true
-}
+fun isWearingTrophyHunterArmor(): Boolean = ArmorEvents.currentArmorSet.isWearingTrophyHunterArmor

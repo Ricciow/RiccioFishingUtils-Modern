@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu
 
+import cloud.glitchdev.rfu.achievement.migration.AchievementMigration
 import cloud.glitchdev.rfu.config.RFUSettings
 import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.config.migration.ConfigMigration
@@ -27,6 +28,7 @@ object RiccioFishingUtils : ClientModInitializer {
 
     init {
         ConfigMigration.runMigrations(CONFIG_DIR.resolve("rfu/settings.jsonc"))
+        AchievementMigration.runMigrations(CONFIG_DIR.resolve("rfu/data/achievements.json"))
     }
 
     val settings = RFUSettings.register(configurator)
@@ -37,6 +39,7 @@ object RiccioFishingUtils : ClientModInitializer {
 
         ClientLifecycleEvents.CLIENT_STARTED.register {
             if (isInitialized) return@register
+            RFULoader.registerChallenges()
             RFULoader.loadFeatures()
             RFULoader.registerCommands()
             RFULoader.registerPartyCommands()

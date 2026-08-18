@@ -25,8 +25,8 @@ fun Duration.toReadableString(ms: Boolean = false): String {
         buildString {
             if (days > 0) append("${days}d ")
             if (hours > 0) append("${hours}h ")
-            if (minutes > 0) append("${minutes}m ")
-            if (seconds > 0 || isEmpty()) {
+            if (minutes > 0 && days == 0L) append("${minutes}m ")
+            if ((seconds > 0 && days == 0L) || isEmpty()) {
                 if (!ms || minutes > 1) {
                     append("${seconds}s")
                 } else {

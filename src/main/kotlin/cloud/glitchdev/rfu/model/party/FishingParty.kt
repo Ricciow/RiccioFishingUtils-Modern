@@ -1,4 +1,4 @@
-﻿package cloud.glitchdev.rfu.model.party
+package cloud.glitchdev.rfu.model.party
 
 import cloud.glitchdev.rfu.constants.fishing.FishingIslands
 import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
@@ -9,12 +9,13 @@ import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.World
 import cloud.glitchdev.rfu.model.data.DataOption
 import com.google.gson.annotations.SerializedName
-import com.google.gson.Gson
 
 data class FishingParty(
     @Transient
     var id: String? = "?",
     var user: String,
+    @SerializedName("profile_id")
+    var profileId: String? = User.profileId,
     var level: Int,
     var title: String,
     var description: String,
@@ -50,6 +51,7 @@ data class FishingParty(
             return FishingParty(
                 "?",
                 User.getUsername(),
+                User.profileId,
                 0,
                 "",
                 "",
@@ -61,6 +63,7 @@ data class FishingParty(
                     Requisite("enderman_9", "Enderman 9", false),
                     Requisite("looting_5", "Looting 5", false),
                     Requisite("brain_food", "Brain Food", false),
+                    Requisite("bloodshot", "Bloodshot", false),
                 ),
                 listOf(),
                 Players(maxOf(Party.memberCount, 1), 6)

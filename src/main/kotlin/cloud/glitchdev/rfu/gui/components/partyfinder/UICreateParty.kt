@@ -12,10 +12,13 @@ import cloud.glitchdev.rfu.model.data.DataOption
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.party.PartyRequirementsManager
 import cloud.glitchdev.rfu.utils.Party
+import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.network.PartyWebSocket
 import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerMyPartyChangedEvent
+import cloud.glitchdev.rfu.utils.Coroutines
+import kotlinx.coroutines.delay
 import kotlin.jvm.optionals.getOrNull
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.colors
@@ -51,21 +54,21 @@ class UICreateParty : UIContainer() {
     private lateinit var islandField: UIDropdown
     private lateinit var levelField: UIDecoratedTextInput
     private lateinit var maxPlayersField: UIDecoratedTextInput
-
     private lateinit var waterToggle: UIToggleCard
     private lateinit var lavaToggle: UIToggleCard
-
     private lateinit var killerToggle: UIToggleCard
     private lateinit var endermanToggle: UIToggleCard
     private lateinit var lootingToggle: UIToggleCard
     private lateinit var brainFoodToggle: UIToggleCard
-
+    private lateinit var bloodshotToggle: UIToggleCard
     private lateinit var submitButton: UIButton
+    private var lastSubmitTime = 0L
 
     init {
         registerErrorMessageEvent { message, origin ->
             if (!this.isHidden() && (origin == "/app/party/publish" || origin == "/app/party/edit")) {
                 popup.show(message)
+                submitButton.disabled = false
             }
         }
 
@@ -294,7 +297,7 @@ class UICreateParty : UIContainer() {
         endermanToggle = UIToggleCard(party.getRequisite("enderman_9", "Enderman 9").toDataOption(), party.getRequisite("enderman_9", "Enderman 9").value) { selected ->
             if (selected && !PartyRequirementsManager.hasEnderman9()) {
                 endermanToggle.selected = false
-                val result = PartyRequirementsManager.PartyValidationResult.MissingEnderman9
+                val result = PartyRequirementsManager.PartyValidationResult.MissingRequisite("enderman_9", "Enderman 9")
                 popup.show(result.getErrorMessage())
             } else {
                 updatePartyModel()
@@ -305,9 +308,9 @@ class UICreateParty : UIContainer() {
         } childOf reqContainer
 
         lootingToggle = UIToggleCard(party.getRequisite("looting_5", "Looting 5").toDataOption(), party.getRequisite("looting_5", "Looting 5").value) { selected ->
-            if (selected && !PartyRequirementsManager.hasLooting5Weapon()) {
+            if (selected && !PartyRequirementsManager.hasLooting5()) {
                 lootingToggle.selected = false
-                val result = PartyRequirementsManager.PartyValidationResult.MissingLooting5
+                val result = PartyRequirementsManager.PartyValidationResult.MissingRequisite("looting_5", "Looting 5")
                 popup.show(result.getErrorMessage())
             } else {
                 updatePartyModel()
@@ -316,6 +319,7 @@ class UICreateParty : UIContainer() {
             x = SiblingConstraint(5f)
             y = CenterConstraint()
         } childOf reqContainer
+
 
         brainFoodToggle = UIToggleCard(party.getRequisite("brain_food", "Brain Food").toDataOption(), party.getRequisite("brain_food", "Brain Food").value) { selected ->
             if (selected && !PartyRequirementsManager.hasBrainFood()) {
@@ -329,10 +333,31 @@ class UICreateParty : UIContainer() {
             x = SiblingConstraint(5f)
             y = CenterConstraint()
         } childOf reqContainer
+
+        bloodshotToggle = UIToggleCard(party.getRequisite("bloodshot", "Bloodshot").toDataOption(), party.getRequisite("bloodshot", "Bloodshot").value) { selected ->
+            if (selected && !PartyRequirementsManager.hasBloodshotBelt()) {
+                bloodshotToggle.selected = false
+                val result = PartyRequirementsManager.PartyValidationResult.MissingBloodshot
+                popup.show(result.getErrorMessage())
+            } else {
+                updatePartyModel()
+            }
+        }.constrain {
+            x = SiblingConstraint(5f)
+            y = CenterConstraint()
+        } childOf reqContainer
     }
 
     private fun createSubmitButton(parent: UIContainer) {
         submitButton = UIButton("Publish Party", 5f) {
+            val now = System.currentTimeMillis()
+            val elapsed = now - lastSubmitTime
+            if (elapsed < 5000L) {
+                val secondsLeft = ((5000L - elapsed) / 1000L) + 1
+                popup.show("Please wait ${secondsLeft}s before trying again!")
+                return@UIButton
+            }
+
             if (!WebSocketClient.isConnected) {
                 popup.show("Not connected to RFU Backend!")
                 return@UIButton
@@ -345,13 +370,21 @@ class UICreateParty : UIContainer() {
                 return@UIButton
             }
 
+            lastSubmitTime = now
+            submitButton.disabled = true
+
+            Coroutines.launch {
+                delay(5000)
+                submitButton.disabled = false
+            }
+
             if (DevSettings.devMode && DevSettings.isInSkyblock) {
                 PartyWebSocket.submitParty(party)
-                return@UIButton
             } else {
                 Party.requestPartyInfo {
                     if (Party.inParty && !Party.isLeader) {
                         popup.show("You must be the party leader to do this!")
+                        submitButton.disabled = false
                     } else {
                         PartyWebSocket.submitParty(party)
                     }
@@ -414,6 +447,7 @@ class UICreateParty : UIContainer() {
     }
 
     private fun updatePartyModel() {
+        party.profileId = User.profileId
         party.title = titleField.getText()
         party.description = descriptionField.getText()
         party.island = islandField.getSelectedItem().value as FishingIslands
@@ -426,6 +460,7 @@ class UICreateParty : UIContainer() {
         party.setRequisite("enderman_9", "Enderman 9", endermanToggle.selected)
         party.setRequisite("looting_5", "Looting 5", lootingToggle.selected)
         party.setRequisite("brain_food", "Brain Food", brainFoodToggle.selected)
+        party.setRequisite("bloodshot", "Bloodshot", bloodshotToggle.selected)
     }
 
     private fun updateFields() {
@@ -445,11 +480,13 @@ class UICreateParty : UIContainer() {
         endermanToggle.selected = party.getRequisite("enderman_9", "Enderman 9").value
         lootingToggle.selected = party.getRequisite("looting_5", "Looting 5").value
         brainFoodToggle.selected = party.getRequisite("brain_food", "Brain Food").value
+        bloodshotToggle.selected = party.getRequisite("bloodshot", "Bloodshot").value
 
         updateButtonLabel()
     }
 
     private fun updateButtonLabel() {
         submitButton.updateText(if (PartyWebSocket.myParty == null) "Publish Party" else "Update Party")
+        submitButton.disabled = false
     }
 }

@@ -15,8 +15,8 @@ object Coroutines {
         return scope.launch(context, start, block)
     }
 
-    fun setTimeout(timeout: Long, callback: () -> Unit) {
-        launch {
+    fun setTimeout(timeout: Long, callback: () -> Unit): Job {
+        return launch {
             delay(timeout)
             callback()
         }

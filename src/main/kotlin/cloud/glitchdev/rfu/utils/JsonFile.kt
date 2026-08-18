@@ -2,7 +2,7 @@ package cloud.glitchdev.rfu.utils
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.CONFIG_DIR
 import cloud.glitchdev.rfu.RiccioFishingUtils.MOD_ID
-import cloud.glitchdev.rfu.RiccioFishingUtils.mc
+import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
@@ -10,12 +10,11 @@ import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import com.google.gson.*
 import java.io.File
 import java.io.FileReader
-import java.io.FileWriter
 import kotlin.time.Instant
 
 /**
  * A generic manager for loading and saving JSON data using Gson.
- * Modified to support kotlinx.datetime.Instant serialization.
+ * Modified to support atomic writes and GZ backups.
  */
 class JsonFile<T : Any>(
     directory: String = "data",
@@ -39,6 +38,7 @@ class JsonFile<T : Any>(
     )
 
     private val file: File = CONFIG_DIR.resolve(MOD_ID).resolve(directory).resolve(filename).toFile()
+    private val backupFileName: String = if (directory.isBlank()) "$filename.gz" else "$directory/$filename.gz"
 
     var data: T = defaultFactory()
         private set
@@ -65,20 +65,54 @@ class JsonFile<T : Any>(
     }
 
     fun load() {
-        if (file.exists()) {
+        var loadedData: T? = null
+        val hadFile = file.exists()
+
+        if (hadFile) {
             try {
                 FileReader(file).use { reader ->
-                    val loaded = gson.fromJson(reader, type)
-                    data = loaded ?: defaultFactory()
+                    loadedData = gson.fromJson(reader, type)
                 }
             } catch (e: Exception) {
-                RFULogger.warn("[$filename] Failed to load json file. Using defaults.", e)
-                data = defaultFactory()
-                save(false)
+                RFULogger.warn("[$filename] Failed to parse primary JSON file. Attempting recovery...", e)
             }
-        } else {
-            save(false)
         }
+
+        if (loadedData != null) {
+            data = loadedData
+        } else {
+            val backupContent = BackupManager.readGzBackup(backupFileName)
+            var backupData: T? = null
+
+            if (backupContent != null) {
+                try {
+                    backupData = gson.fromJson(backupContent, type)
+                } catch (e: Exception) {
+                    RFULogger.warn("[$filename] Backup GZ file $backupFileName was also corrupted.", e)
+                }
+            }
+
+            if (backupData != null) {
+                data = backupData
+                try {
+                    val jsonString = gson.toJson(data)
+                    BackupManager.writeAtomically(file) { writer -> writer.write(jsonString) }
+                } catch (e: Exception) {
+                    RFULogger.warn("[$filename] Failed to write restored backup back to primary file", e)
+                }
+                BackupManager.queueNotification("${TextColor.LIGHT_RED}Corrupted ${TextColor.YELLOW}${filename}${TextColor.LIGHT_RED} detected. Restored successfully from ${TextColor.LIGHT_GREEN}backups/$backupFileName${TextColor.LIGHT_RED}.")
+                RFULogger.info("[$filename] Successfully restored from backup $backupFileName")
+            } else {
+                data = defaultFactory()
+                if (hadFile) {
+                    BackupManager.quarantineCorruptFile(file)
+                    BackupManager.queueNotification("${TextColor.LIGHT_RED}Failed to load ${TextColor.YELLOW}${filename}${TextColor.LIGHT_RED} and its backup. Initialized defaults. Corrupted file saved to corrupted folder.")
+                } else {
+                    save(false)
+                }
+            }
+        }
+
         try {
             onReload()
         } catch (e: Exception) {
@@ -94,9 +128,10 @@ class JsonFile<T : Any>(
         if (triggerOnSave) onSave()
         try {
             RFULogger.dev("Saved to ${file.absolutePath}")
-            file.parentFile.mkdirs()
-            FileWriter(file).use { writer ->
-                gson.toJson(data, writer)
+            val jsonString = gson.toJson(data)
+            BackupManager.saveGzBackup(backupFileName, jsonString)
+            BackupManager.writeAtomically(file) { writer ->
+                writer.write(jsonString)
             }
         } catch (e: Exception) {
             RFULogger.warn("[$filename] Failed to save json file.", e)

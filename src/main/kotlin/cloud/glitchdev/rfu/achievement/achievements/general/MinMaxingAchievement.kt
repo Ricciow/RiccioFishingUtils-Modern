@@ -6,11 +6,12 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.BaseAchievement
+import cloud.glitchdev.rfu.events.managers.ArmorEvents
+import cloud.glitchdev.rfu.events.managers.ArmorEvents.registerArmorChangeEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.contents.PlainTextContents
-import net.minecraft.world.entity.EquipmentSlot
 
 @Achievement
 object MinMaxingAchievement : BaseAchievement() {
@@ -21,24 +22,22 @@ object MinMaxingAchievement : BaseAchievement() {
     override val difficulty: AchievementDifficulty = AchievementDifficulty.HARD
     override val category: AchievementCategory = AchievementCategory.GENERAL
 
-    private val armorSlots = arrayOf(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET)
-
     override fun setupListeners() {
-        activeListeners.add(registerTickEvent(interval = 100) {
-            val player = mc.player ?: return@registerTickEvent
-
-            val mainHand = player.mainHandItem.customName ?: return@registerTickEvent
-            if (!mainHand.isValidTarget("Hellfire Rod")) return@registerTickEvent
-
-            val hasFullSet = armorSlots.all { slot ->
-                val armorName = player.getItemBySlot(slot).customName ?: return@all false
-                armorName.isValidTarget("Magma Lord")
-            }
-
-            if (hasFullSet) {
-                complete()
-            }
+        activeListeners.add(registerArmorChangeEvent {
+            checkCompletion()
         })
+        activeListeners.add(registerTickEvent(interval = 40) {
+            checkCompletion()
+        })
+    }
+
+    private fun checkCompletion() {
+        val player = mc.player ?: return
+        val mainHand = player.mainHandItem.customName ?: return
+
+        if (mainHand.isValidTarget("Hellfire Rod") && ArmorEvents.currentArmorSet.isWearingMagmaLord10StarredSet) {
+            complete()
+        }
     }
 
     private const val STAR_COLOR = 0xFF55FF

@@ -150,7 +150,7 @@ object OtherSettings : Category("Other") {
     }
 
 
-    var partyFinderAlert by boolean(true) {
+    var partyFinderAlert by boolean(false) {
         name = Literal("Party Finder Alert")
         description = Literal("Sends a message in chat if there are new parties in the party finder.")
         condition = { BackendSettings.backendAccepted }

@@ -6,9 +6,8 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
-import net.minecraft.core.component.DataComponents
-import net.minecraft.world.entity.EquipmentSlot
+import cloud.glitchdev.rfu.events.managers.ArmorEvents
+import cloud.glitchdev.rfu.events.managers.ArmorEvents.registerArmorChangeEvent
 
 @Achievement
 object FriendlyFisherAchievement : NumericStageAchievement() {
@@ -20,9 +19,6 @@ object FriendlyFisherAchievement : NumericStageAchievement() {
     override val category: AchievementCategory = AchievementCategory.GENERAL
     override val targetStage: Int = 3
 
-    private val armorSlots = arrayOf(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET)
-    private val bobbinRegex = Regex("""Bobbin'\s*Time\s+(III|IV|V|3|4|5)""", RegexOption.IGNORE_CASE)
-
     init {
         addStageInfo(1, "Polite Fisher", "Equip a Bobbin' Time 3+ full armor set.", AchievementDifficulty.EASY)
         addStageInfo(2, "Neighbourly Fisher", "Equip a Bobbin' Time 4+ full armor set.", AchievementDifficulty.MEDIUM)
@@ -30,41 +26,18 @@ object FriendlyFisherAchievement : NumericStageAchievement() {
     }
 
     override fun setupListeners() {
-        activeListeners.add(registerTickEvent(interval = 100) {
+        activeListeners.add(registerArmorChangeEvent {
             checkAll()
         })
+        checkAll()
     }
 
     private fun checkAll() {
         while (!isCompleted) {
-            val count = getValidBobbinCount().toLong()
+            val targetLevel = getTargetBobbinLevelForStage(currentStage)
+            val count = ArmorEvents.currentArmorSet.getValidBobbinCount(targetLevel).toLong()
             currentCount = count
             if (count < targetCount) break
-        }
-    }
-
-    private fun getValidBobbinCount(): Int {
-        val player = mc.player ?: return 0
-
-        return armorSlots.count { slot ->
-            val armorPiece = player.getItemBySlot(slot)
-            if (armorPiece.isEmpty) return@count false
-
-            val lore = armorPiece[DataComponents.LORE] ?: return@count false
-
-            lore.lines.any { lineComponent ->
-                getBobbinLevelFromString(lineComponent.string) >= getTargetBobbinLevelForStage(currentStage)
-            }
-        }
-    }
-
-    private fun getBobbinLevelFromString(text: String): Int {
-        val match = bobbinRegex.find(text) ?: return 0
-        return when (val numeral = match.groupValues[1].uppercase()) {
-            "III" -> 3
-            "IV"  -> 4
-            "V"   -> 5
-            else  -> numeral.toIntOrNull() ?: 0
         }
     }
 

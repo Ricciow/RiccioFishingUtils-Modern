@@ -6,9 +6,8 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.StageAchievement
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
-import gg.essential.universal.utils.toUnformattedString
-import net.minecraft.world.entity.EquipmentSlot
+import cloud.glitchdev.rfu.events.managers.ArmorEvents
+import cloud.glitchdev.rfu.events.managers.ArmorEvents.registerArmorChangeEvent
 
 @Achievement
 object DiamondTrophyHunterAchievement : StageAchievement() {
@@ -20,8 +19,6 @@ object DiamondTrophyHunterAchievement : StageAchievement() {
     override val category: AchievementCategory = AchievementCategory.TROPHY_FISHING
     override val targetStage: Int = 4
 
-    private val armorSlots = arrayOf(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET)
-
     init {
         addStageInfo(1, "Bronze Trophy Hunter", "Equip a full set of Bronze Hunter armor (or higher).", AchievementDifficulty.EASY)
         addStageInfo(2, "Silver Trophy Hunter", "Equip a full set of Silver Hunter armor (or higher).", AchievementDifficulty.MEDIUM)
@@ -30,54 +27,18 @@ object DiamondTrophyHunterAchievement : StageAchievement() {
     }
 
     override fun setupListeners() {
-        activeListeners.add(registerTickEvent(interval = 40) {
-            val player = mc.player ?: return@registerTickEvent
-
-            var minTier = 4
-            var hasFullSet = true
-
-            for (slot in armorSlots) {
-                val item = player.getItemBySlot(slot)
-                val customName = item.customName?.toUnformattedString()
-                if (customName == null) {
-                    hasFullSet = false
-                    break
-                }
-                
-                val tier = getHunterPieceTier(customName, slot)
-                if (tier == 0) {
-                    hasFullSet = false
-                    break
-                }
-                if (tier < minTier) {
-                    minTier = tier
-                }
-            }
-
-            if (hasFullSet && minTier > 0) {
-                while (minTier >= currentStage && !isCompleted) {
-                    advanceStage()
-                }
-            }
+        activeListeners.add(registerArmorChangeEvent {
+            checkArmor()
         })
+        checkArmor()
     }
 
-    private fun getHunterPieceTier(itemName: String, slot: EquipmentSlot): Int {
-        val expectedPieceName = when (slot) {
-            EquipmentSlot.HEAD -> "Hunter Helmet"
-            EquipmentSlot.CHEST -> "Hunter Chestplate"
-            EquipmentSlot.LEGS -> "Hunter Leggings"
-            EquipmentSlot.FEET -> "Hunter Boots"
-            else -> return 0
-        }
-        if (!itemName.contains(expectedPieceName)) return 0
-
-        return when {
-            itemName.contains("Diamond Hunter") -> 4
-            itemName.contains("Gold Hunter") -> 3
-            itemName.contains("Silver Hunter") -> 2
-            itemName.contains("Bronze Hunter") -> 1
-            else -> 0
+    private fun checkArmor() {
+        val minTier = ArmorEvents.currentArmorSet.trophyHunterArmorTier
+        if (minTier > 0) {
+            while (minTier >= currentStage && !isCompleted) {
+                advanceStage()
+            }
         }
     }
 }

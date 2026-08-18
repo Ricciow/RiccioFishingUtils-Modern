@@ -16,6 +16,9 @@ object Emoji {
         "\uE120" to listOf("scream"),
         "\uE121" to listOf("thumbsupcat"),
         "\uE122" to listOf("thumbsdown"),
+        "\uE125" to listOf("hog"),
+        "\uE126" to listOf("exploding_head"),
+        "\uE127" to listOf("kaboom", "boom"),
 
         // Sea Creatures
         "\uE116" to listOf("abyssal_miner", "abyssalminer", "miner"),
@@ -37,9 +40,11 @@ object Emoji {
         "\uE107" to listOf("titanoboa", "boa"),
         "\uE10C" to listOf("water_hydra", "waterhydra", "hydra"),
         "\uE106" to listOf("wiki_tiki", "wikitiki", "tiki"),
-        "\uE108" to listOf("yeti")
+        "\uE108" to listOf("yeti"),
+        "\uE123" to listOf("giant_isopod", "isopod", "pod"),
+        "\uE124" to listOf("silkbreeze", "silk")
 
-        //\uE1FF next
+        //\uE128 next
     )
 
     val ALL = EMOJIS.flatMap { (unicode, aliases) ->
