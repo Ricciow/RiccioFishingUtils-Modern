@@ -55,6 +55,7 @@ object Announcements : Feature {
     }
 
     private fun sendAnnouncementMessage(announcement: Announcement) {
+        println("Announced")
         if (announcement.id == lastShownId) return
         lastShownId = announcement.id
 

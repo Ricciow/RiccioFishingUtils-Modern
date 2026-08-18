@@ -1,32 +1,9 @@
-# v1.17.0 - Daily Fishing
+# v1.17.1 - Daily Fishing Patches
 
 ### Features
-- Added a daily streak and challenges system with scaling targets, HUD overlay, and /rfudailies GUI
-- Extended the survivalist achievement with 4 new stages
-- Added 5 new achievements
-- Added a setting to adjust hotspot highlight border opacity
-- Added a new Bloodshot requirement in Party Finder
-- Added :pod: :silk: :hog: :exploding_head: :boom: emojis
 
 ### Fixes
-- Fixed other messages being counted as trophy catches when they shouldn't
-- Fixed togglewarp not auto re-joining the party
-- Fixed an issue where pressing enter really fast would not complete the emoji properly
-- Fixed hotspot sea creature counts not couting properly on torrhus
-- Fixed the dye achievements not triggering on vincent menu
 
 ### Changes
-- Reduced Squid Collection achievement to max out at 2M Collection
-- Reduced Ink Obsessed achievement to cap out at 100k
-- Added a 5s cooldown between creating party finder entries
-- Made the party finder alerts off by default
-  - Note: This was mostly meant for when there weren't many users of rfupf, since it is now somewhat relevant, this doesn't have much purpose anymore
-- Made outdated cake alert check the tablist on a fast loop to clear false expired cake entries when all cakes are active
-- Removed rfuresetcakes command alias
-- Removed the bottom border of hotspot highlight
-- Hid the minute and seconds on most timers if the days value is present
 
 ### Back-end
-- Added current equipment tracking
-- Added automatic backups for config and data.
-- Made requisites validation for Enderman 9, Looting 5 and Fishing Level come from back-end.
