@@ -24,6 +24,7 @@
 - Made outdated cake alert check the tablist on a fast loop to clear false expired cake entries when all cakes are active
 - Removed rfuresetcakes command alias
 - Removed the bottom border of hotspot highlight
+- Hid the minute and seconds on most timers if the days value is present
 
 ### Back-end
 - Added current equipment tracking
