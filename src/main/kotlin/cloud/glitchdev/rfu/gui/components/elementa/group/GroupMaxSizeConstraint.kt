@@ -1,6 +1,5 @@
 package cloud.glitchdev.rfu.gui.components.elementa.group
 
-import cloud.glitchdev.rfu.utils.gui.isDeepHidden
 import gg.essential.elementa.UIComponent
 import gg.essential.elementa.components.Window
 import gg.essential.elementa.constraints.ConstraintType
@@ -27,16 +26,12 @@ class GroupMaxSizeConstraint(
     }
 
     private fun getMaxValue(component: UIComponent, type: ConstraintType): Float {
-        val window = Window.ofOrNull(component) ?: return getBaseValue(component, type)
+        val baseValue = getBaseValue(component, type)
+        val window = Window.ofOrNull(component) ?: return baseValue
         val frameTime = window.animationTimeMs
 
         val group = GroupManager.getOrCreateGroup(groupKey)
-
-        if (!component.isDeepHidden()) {
-            group.register(this, component)
-        }
-
-        return group.getMaxValue(type, frameTime, this, component)
+        return group.getMaxValue(type, frameTime, baseValue)
     }
 
     internal fun getBaseValue(component: UIComponent, type: ConstraintType): Float {

@@ -16,6 +16,7 @@ import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.colors
 import cloud.glitchdev.rfu.gui.components.elementa.JustifiedCramSiblingConstraint
+import cloud.glitchdev.rfu.gui.components.elementa.group.GroupManager
 import cloud.glitchdev.rfu.gui.components.partyfinder.UICreateParty
 import cloud.glitchdev.rfu.gui.components.partyfinder.UIFilterArea
 import cloud.glitchdev.rfu.gui.components.partyfinder.UIPartyCard
@@ -329,6 +330,8 @@ object PartyFinderWindow : BaseWindow(false), Feature {
 
         if (newCards != partyCards) {
             scrollArea.clearChildren()
+            GroupManager.clearGroup("PartyCardDescription")
+            GroupManager.clearGroup("PartyCardTags")
             newCards.forEach { it childOf scrollArea }
 
             partyCards.clear()
