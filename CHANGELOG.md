@@ -9,5 +9,6 @@
 
 ### Changes
 - Fixed an error that would sometimes happen on rfupf window leading it to close
+- Made the announcement notification trigger upon joining SkyBlock instead of upon joining the server
 
 ### Back-end

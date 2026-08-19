@@ -1,16 +1,18 @@
 package cloud.glitchdev.rfu.feature.announcements
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.API_URL
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.events.managers.AnnouncementEvents.registerAnnouncementUpdateEvent
-import cloud.glitchdev.rfu.feature.RFUFeature
+import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.feature.Feature
+import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.feature.announcements.command.Open
 import cloud.glitchdev.rfu.model.announcement.Announcement
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.RFULogger
-import cloud.glitchdev.rfu.utils.command.Command
+import cloud.glitchdev.rfu.utils.World
 import cloud.glitchdev.rfu.utils.command.AbstractCommand
+import cloud.glitchdev.rfu.utils.command.Command
 import cloud.glitchdev.rfu.utils.dsl.toInteractiveText
 import cloud.glitchdev.rfu.utils.network.Network
 import cloud.glitchdev.rfu.utils.network.WebSocketClient
@@ -26,6 +28,7 @@ import java.time.Instant
 object Announcements : Feature {
     var announcement: Announcement? = null
     private var lastShownId: String? = null
+    var wasInSkyblock = false
 
     val gson: Gson = GsonBuilder()
         .registerTypeAdapter(Instant::class.java, InstantTypeAdapter())
@@ -41,8 +44,8 @@ object Announcements : Feature {
             announcement = newAnnouncement
         }
 
-        registerJoinEvent(delayMillis = 3000) { wasConnected ->
-            if (!wasConnected) {
+        registerJoinEvent(delayMillis = 1000) { _ ->
+            if (!wasInSkyblock && World.isInSkyblock) {
                 if (!WebSocketClient.isConnected) {
                     fetchLatestAnnouncement { fetched ->
                         fetched?.let { sendAnnouncementMessage(it) }
@@ -51,11 +54,15 @@ object Announcements : Feature {
                     announcement?.let { sendAnnouncementMessage(it) }
                 }
             }
+            wasInSkyblock = World.isInSkyblock
+        }
+
+        registerDisconnectEvent {
+            wasInSkyblock = false
         }
     }
 
     private fun sendAnnouncementMessage(announcement: Announcement) {
-        println("Announced")
         if (announcement.id == lastShownId) return
         lastShownId = announcement.id
 
