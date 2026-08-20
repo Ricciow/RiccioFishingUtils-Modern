@@ -8,4 +8,6 @@ object DwarvenIslandCatchChallenge : BaseIslandCatchChallenge(
     id = "sc_island_dwarven",
     island = FishingIslands.DWARVEN,
     title = "Dwarven Angler"
-)
+) {
+    override val weight: Int = 5
+}

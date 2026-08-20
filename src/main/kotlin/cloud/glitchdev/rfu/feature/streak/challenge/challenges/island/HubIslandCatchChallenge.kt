@@ -8,4 +8,6 @@ object HubIslandCatchChallenge : BaseIslandCatchChallenge(
     id = "sc_island_hub",
     island = FishingIslands.HUB,
     title = "Hub Angler"
-)
+) {
+    override val weight: Int = 5
+}

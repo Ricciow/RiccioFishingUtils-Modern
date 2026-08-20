@@ -9,7 +9,7 @@ object CocoonSeaCreaturesChallenge : BaseChallenge() {
     override val id: String = "cocoon_sea_creatures"
     override val title: String = "Cocoon Master"
     override val description: String = "Cocoon sea creatures today."
-    override val weight: Int = 25
+    override val weight: Int = 50
 
     override fun getTargetProgress(streakDays: Int): Int {
         return when {

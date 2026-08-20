@@ -10,7 +10,7 @@ abstract class BaseIslandCatchChallenge(
     val island: FishingIslands,
     override val title: String
 ) : BaseChallenge() {
-    override val weight: Int = 10
+    override val weight: Int = 20
 
     override fun getTargetProgress(streakDays: Int): Int {
         return when {

@@ -9,6 +9,7 @@ object PartyFisher : BaseChallenge() {
     override val id: String = "party_fisher"
     override val title: String = "Party Fisher"
     override val description: String = "Create a party and have someone join you with rfu party finder or Join a party through rfu party finder"
+    override val weight: Int = 35
 
     override fun getTargetProgress(streakDays: Int): Int {
         return 1
