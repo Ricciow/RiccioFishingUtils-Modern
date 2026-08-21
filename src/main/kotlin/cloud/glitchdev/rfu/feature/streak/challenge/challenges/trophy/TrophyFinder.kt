@@ -10,6 +10,7 @@ object TrophyFinder : BaseChallenge() {
     override val id: String = "trophy_finder"
     override val title: String = "Trophy Finder"
     override val description: String = "Fish up trophy fishes/frogs"
+    override val weight : Int = 50
 
     override fun getTargetProgress(streakDays: Int): Int {
         return when {

@@ -15,6 +15,7 @@
   - Sea Creature Hunter: 50 → 75
   - Coccon Master: 25 → 50
   - Precious Trophy: 100 → 25
+  - Trophy Finder: 100 → 50
   - Hotspot Hunter: 50 → 75
   - All Island Tasks 10 → 20
     - Exceptions:
