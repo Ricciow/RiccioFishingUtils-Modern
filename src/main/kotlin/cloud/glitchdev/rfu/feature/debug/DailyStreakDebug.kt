@@ -7,7 +7,9 @@ import cloud.glitchdev.rfu.feature.streak.challenge.ChallengeRegistry
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.command.AbstractCommand
+import cloud.glitchdev.rfu.utils.command.arguments.StringListArgumentType
 import com.mojang.brigadier.arguments.IntegerArgumentType
+import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.minecraft.network.chat.Component
@@ -20,6 +22,66 @@ object DailyStreakDebug : AbstractCommand("dailies") {
     override val description: String = "Debug commands for daily streaks and challenges."
 
     override fun build(builder: LiteralArgumentBuilder<FabricClientCommandSource>) {
+        setup(builder)
+    }
+
+    internal fun setup(builder: LiteralArgumentBuilder<FabricClientCommandSource>) {
+        val setAction = { id: String, index: Int ->
+            DailyStreakManager.checkDailyReset()
+            val challengeBase = ChallengeRegistry.getChallenge(id)
+            if (challengeBase == null) {
+                Chat.sendMessage(Component.literal("§b[RFU Debug] §cChallenge not found: $id!"))
+            } else {
+                val success = DailyStreakManager.setChallenge(id, index)
+                if (success) {
+                    val streak = DailyStreakManager.data.currentStreak
+                    val title = challengeBase.getTitle(streak)
+                    Chat.sendMessage(Component.literal("§b[RFU Debug] §aSet daily challenge #${index + 1} to: §e$title §7($id)§a!"))
+                } else {
+                    Chat.sendMessage(Component.literal("§b[RFU Debug] §cFailed to set challenge $id!"))
+                }
+            }
+            1
+        }
+
+        val challengeIds = ChallengeRegistry.getPoolChallenges().map { it.id }
+
+        builder.then(
+            lit("set").then(
+                arg("id", StringListArgumentType(challengeIds))
+                    .executes { context ->
+                        val id = StringArgumentType.getString(context, "id")
+                        setAction(id, 0)
+                    }
+                    .then(
+                        arg("index", IntegerArgumentType.integer(1, 3))
+                            .executes { context ->
+                                val id = StringArgumentType.getString(context, "id")
+                                val index = IntegerArgumentType.getInteger(context, "index") - 1
+                                setAction(id, index)
+                            }
+                    )
+            )
+        )
+
+        builder.then(
+            lit("setchallenge").then(
+                arg("id", StringListArgumentType(challengeIds))
+                    .executes { context ->
+                        val id = StringArgumentType.getString(context, "id")
+                        setAction(id, 0)
+                    }
+                    .then(
+                        arg("index", IntegerArgumentType.integer(1, 3))
+                            .executes { context ->
+                                val id = StringArgumentType.getString(context, "id")
+                                val index = IntegerArgumentType.getInteger(context, "index") - 1
+                                setAction(id, index)
+                            }
+                    )
+            )
+        )
+
         builder.then(
             lit("reset").executes {
                 DailyStreakManager.data.currentDate = ""
@@ -411,4 +473,14 @@ object DailyStreakDebug : AbstractCommand("dailies") {
         }
     }
 }
+
+object DailyStreakDailyDebug : AbstractCommand("daily") {
+    override val description: String = DailyStreakDebug.description
+
+    override fun build(builder: LiteralArgumentBuilder<FabricClientCommandSource>) {
+        DailyStreakDebug.setup(builder)
+    }
+}
+
+
 

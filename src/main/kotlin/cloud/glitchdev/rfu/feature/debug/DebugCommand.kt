@@ -29,5 +29,6 @@ object DebugCommand : AbstractCommand("rfudebug") {
         append(DebugText)
         append(ReloadSeaCreatures)
         append(DailyStreakDebug)
+        append(DailyStreakDailyDebug)
     }
-}
+}
