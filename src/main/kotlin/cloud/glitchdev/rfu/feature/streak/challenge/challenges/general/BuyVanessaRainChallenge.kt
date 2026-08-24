@@ -12,7 +12,7 @@ object BuyVanessaRainChallenge : BaseChallenge() {
     override val description: String = "Buy rain minutes at Vanessa."
     override val weight: Int = 25
 
-    private val RAIN_REGEX = """You added (?:a|(\d+)) minutes? of rain""".toExactRegex()
+    private val RAIN_REGEX = """You added a minute of rain! \d+ minutes? until it's sunny!""".toExactRegex()
 
     override fun getTargetProgress(streakDays: Int): Int {
         return when {

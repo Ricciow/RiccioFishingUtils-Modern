@@ -6,6 +6,7 @@ import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
+import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 
 @Achievement
 object VanessaFanAchievement: NumericStageAchievement() {
@@ -19,7 +20,7 @@ object VanessaFanAchievement: NumericStageAchievement() {
     override val targetStage: Int = 4
     override val resetCountOnStageAdvance: Boolean = false
 
-    private var RAIN_REGEX = """You added a minute of rain""".toRegex()
+    private var RAIN_REGEX = """You added a minute of rain! \d+ minutes? until it's sunny!""".toExactRegex()
 
     private val MILESTONES = listOf(
         5L * 60, 25L * 60, 50L * 60, 75L * 60

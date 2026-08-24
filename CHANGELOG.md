@@ -6,6 +6,7 @@
 ### Fixes
 - Made the daily streak settings be hidden if they're disabled
 - Made /rfudailies command send a message if dailies are disabled
+- Fixed Vanessa Rain daily challenge not counting
 
 ### Changes
 - Fixed an error that would sometimes happen on rfupf window leading it to close
