@@ -23,6 +23,7 @@ object DailyStreakHUD : AbstractTextHudElement("dailyStreakDisplay") {
     override val isElementActive: Boolean
         get() {
             if (!DailyStreakSettings.dailyStreakEnabled) return false
+            if (!DailyStreakSettings.dailyStreakHudEnabled) return false
             if (isEditing) return true
             if (!ArmorEvents.currentArmorSet.isWearingFishingArmor) return false
             if (DailyStreakSettings.autoHideCompletedHud) {

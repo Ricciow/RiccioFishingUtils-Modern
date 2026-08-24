@@ -7,9 +7,14 @@ object DailyStreakSettings : Category("Daily Streaks") {
     override val description: TranslatableValue
         get() = Literal("Settings for daily fishing streaks and daily challenges.")
 
-    var dailyStreakEnabled by boolean(true) {
+    var dailyStreakEnabled by reloadableBoolean(true) {
         name = Literal("Enable Daily Streaks")
         description = Literal("Tracks your daily fishing streak and daily challenges.")
+    }
+
+    var dailyStreakHudEnabled by boolean(true) {
+        name = Literal("Daily Streak HUD")
+        description = Literal("Toggle whether the daily streak hud is displayed")
     }
 
     var showLoginNotification by boolean(true) {

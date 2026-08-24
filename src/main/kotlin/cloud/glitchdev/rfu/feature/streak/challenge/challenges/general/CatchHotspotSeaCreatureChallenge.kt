@@ -9,7 +9,7 @@ object CatchHotspotSeaCreatureChallenge : BaseChallenge() {
     override val id: String = "catch_hotspot_sea_creature"
     override val title: String = "Hotspot Hunter"
     override val description: String = "Catch sea creatures in Hotspots."
-    override val weight: Int = 50
+    override val weight: Int = 75
 
     override fun getTargetProgress(streakDays: Int): Int {
         return when {

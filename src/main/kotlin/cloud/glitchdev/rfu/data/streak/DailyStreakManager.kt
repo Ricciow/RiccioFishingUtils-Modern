@@ -175,4 +175,28 @@ object DailyStreakManager {
         Chat.sendMessage(TextUtils.rfuLiteral("§aRerolled challenge to: §e${title}§a!"))
         return true
     }
+
+    fun setChallenge(challengeId: String, index: Int = 0): Boolean {
+        checkDailyReset()
+        val targetBase = ChallengeRegistry.getChallenge(challengeId) ?: return false
+
+        val updatedList = data.todayChallenges.toMutableList()
+        val oldChallenge = updatedList.getOrNull(index)
+        if (oldChallenge != null) {
+            ChallengeRegistry.getChallenge(oldChallenge.id)?.unregisterListeners()
+        }
+
+        val newChallengeData = DailyChallenge(targetBase.id)
+        if (index in updatedList.indices) {
+            updatedList[index] = newChallengeData
+        } else {
+            updatedList.add(newChallengeData)
+        }
+
+        data.todayChallenges = updatedList
+        listenersActivated = false
+        saveData()
+        activateTodayListeners()
+        return true
+    }
 }
