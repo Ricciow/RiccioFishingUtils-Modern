@@ -39,10 +39,6 @@ object MobManager : RegisteredEvent {
         }
     }
 
-    fun boostDetectionRate(state : Boolean) {
-        if(::detectionEvent.isInitialized) detectionEvent.interval = if(state) 2 else 10
-    }
-
     fun getEntities() : Set<SkyblockEntity> {
         return uniqueSbEntities.toSet()
     }
