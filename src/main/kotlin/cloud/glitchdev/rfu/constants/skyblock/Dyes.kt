@@ -1,4 +1,4 @@
-﻿package cloud.glitchdev.rfu.constants.skyblock
+package cloud.glitchdev.rfu.constants.skyblock
 import cloud.glitchdev.rfu.constants.fishing.IRareDrop
 import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatureCategory
@@ -50,7 +50,7 @@ enum class Dyes(val dyeName: String, val hex: String, val relatedScNames : List<
 
     override val displayName: String get() = dyeName
 
-    val relatedScs: List<SeaCreatures>
+    override val relatedScs: List<SeaCreatures>
         get() = when {
             relatedScNames.contains("WATER_LIQUID") -> SeaCreatures.entries.filter { it.liquidType == LiquidTypes.WATER }
             relatedScNames.contains("LAVA_LIQUID") -> SeaCreatures.entries.filter { it.liquidType == LiquidTypes.LAVA }
