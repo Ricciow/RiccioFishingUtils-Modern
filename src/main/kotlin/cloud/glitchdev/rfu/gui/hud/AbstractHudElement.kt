@@ -271,8 +271,8 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
                 color = currentColor()
                 x = currentX.pixels()
                 y = currentY.pixels()
-                width = ChildBasedSizeConstraint() - if(scaleTextEnabled) scaleText.getWidth().pixels() else 0.pixels()
-                height = ChildBasedSizeConstraint() - if(scaleTextEnabled) scaleText.getHeight().pixels() else 0.pixels()
+                width = if (scaleTextEnabled) ChildBasedSizeConstraint() - scaleText.getWidth().pixels() else ChildBasedSizeConstraint()
+                height = if (scaleTextEnabled) ChildBasedSizeConstraint() - scaleText.getHeight().pixels() else ChildBasedSizeConstraint()
             }
 
             this.setHidden(!enabled || skyblockOnly && !World.isInSkyblock)

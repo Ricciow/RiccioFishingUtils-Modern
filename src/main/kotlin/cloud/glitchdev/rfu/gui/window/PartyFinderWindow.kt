@@ -169,6 +169,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             buttonHoverColor = UIScheme.pfCardBorderHovered.toConstraint()
             buttonHoverTextColor = UIScheme.pfCardTitleHoverColor.toConstraint()
         }
+        popup.hide(instantly = true)
     }
 
     fun createHeader(background: UIComponent) {

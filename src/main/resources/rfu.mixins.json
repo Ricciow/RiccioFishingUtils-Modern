@@ -30,7 +30,11 @@
     "CommandSuggestionsAccessor",
     "SuggestionsListMixin",
     "EditBoxMixin",
-    "FontPreparedTextBuilderMixin"
+    "FontPreparedTextBuilderMixin",
+    "elementa.UIComponentMixin",
+    "elementa.MappedStateMixin",
+    "elementa.AnimatingConstraintsMixin",
+    "elementa.WindowScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

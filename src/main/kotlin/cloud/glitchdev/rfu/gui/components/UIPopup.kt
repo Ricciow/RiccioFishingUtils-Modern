@@ -47,7 +47,6 @@ class UIPopup(
     var postConfirmationText: String? = null
 
     init {
-        this.hide()
         create()
     }
 

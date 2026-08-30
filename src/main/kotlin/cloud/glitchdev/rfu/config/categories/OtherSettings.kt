@@ -247,4 +247,15 @@ object OtherSettings : Category("Other") {
         description = Literal("Deletes older versions of server resource packs when their hash changes to save disk space.")
         condition = { autoAcceptResourcePacks && saveResourcePacks }
     }
+
+    init {
+        dualSeparator {
+            title = "Fixes & Performance"
+        }
+    }
+
+    var patchElementaMemoryLeaks by boolean(true) {
+        name = Literal("Patch Elementa Memory Leaks")
+        description = Literal("Patches memory leaks in Elementa")
+    }
 }
