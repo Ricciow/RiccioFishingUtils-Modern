@@ -1,4 +1,4 @@
-﻿package cloud.glitchdev.rfu.data.drops
+package cloud.glitchdev.rfu.data.drops
 
 import cloud.glitchdev.rfu.constants.skyblock.Dyes
 import cloud.glitchdev.rfu.constants.fishing.RareDrops

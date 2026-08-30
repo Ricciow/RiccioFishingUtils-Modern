@@ -88,4 +88,16 @@ object PartySettings : Category("Party") {
         description = Literal("Enables or disables the !sch party command.")
         condition = { togglePartyCommands }
     }
+
+    var toggleScCommand by boolean(true) {
+        name = Literal("Enable SC Command")
+        description = Literal("Enables or disables the !sc party command.")
+        condition = { togglePartyCommands }
+    }
+
+    var toggleDropCommand by boolean(true) {
+        name = Literal("Enable Drop Command")
+        description = Literal("Enables or disables the !drop party command.")
+        condition = { togglePartyCommands }
+    }
 }
