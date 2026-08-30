@@ -1,4 +1,4 @@
-﻿package cloud.glitchdev.rfu.feature.other
+package cloud.glitchdev.rfu.feature.other
 
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.chat.MessageTypes
@@ -21,6 +21,8 @@ object HideMessages : Feature {
     val THUNDER_SPARK_REGEX = """Try clicking this Thunder Spark with an Empty Thunder Bottle to collect it!""".toExactRegex()
     val COCOON_REGEX = """CAUGHT! You cocooned (?:an? )?(.+)!""".toExactRegex()
     val SACKS_REGEX = """\[Sacks\] \+\d+ items?\. \(Last \d+s\.\)""".toExactRegex()
+    val CHARM_REGEX = """CHARM! You charmed .+ and received .+""".toExactRegex()
+    val HURRICANE_BOTTLE_REGEX = """(?:> )?Your (?:Empty )?Hurricane (?:in a )?Bottle has absorbed .+""".toExactRegex()
 
     override fun onInitialize() {
         registerAllowGameEvent(SC_MESSAGE_REGEX) { _, _, _ ->
@@ -72,6 +74,16 @@ object HideMessages : Feature {
         registerAllowGameEvent(SACKS_REGEX) { _, _, _ ->
             return@registerAllowGameEvent !(OtherSettings.hideMessages &&
                     OtherSettings.hiddenMessageTypes.contains(MessageTypes.SACKS))
+        }
+
+        registerAllowGameEvent(CHARM_REGEX) { _, _, _ ->
+            return@registerAllowGameEvent !(OtherSettings.hideMessages &&
+                    OtherSettings.hiddenMessageTypes.contains(MessageTypes.CHARM))
+        }
+
+        registerAllowGameEvent(HURRICANE_BOTTLE_REGEX) { _, _, _ ->
+            return@registerAllowGameEvent !(OtherSettings.hideMessages &&
+                    OtherSettings.hiddenMessageTypes.contains(MessageTypes.HURRICANE_BOTTLE))
         }
     }
 }

@@ -3,6 +3,7 @@
 ### Features
 - Added the !sc party command with more detailed info about scs
 - Added the !drop party command with detailed info about rare drops and dyes
+- Added message hiding options for Charm and Hurricane in a Bottle messages
 
 ### Fixes
 - Added Elementa memory leak patch (toggleable in Other settings if it causes conflicts)
