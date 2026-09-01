@@ -24,6 +24,7 @@ import gg.essential.elementa.dsl.plus
 import gg.essential.elementa.dsl.toConstraint
 import java.awt.Color
 import cloud.glitchdev.rfu.data.streak.DailyStreakManager
+import cloud.glitchdev.rfu.utils.dsl.compact
 import gg.essential.elementa.constraints.ChildBasedMaxSizeConstraint
 import gg.essential.elementa.dsl.max
 
@@ -95,7 +96,7 @@ class UIDailyChallengeCard(
         } childOf header
 
         val target = challenge.getTargetProgress()
-        val statusStr = if (challenge.isCompleted) "✔ COMPLETED" else "${challenge.currentProgress} / $target"
+        val statusStr = if (challenge.isCompleted) "✔ COMPLETED" else "${challenge.currentProgress.compact()} / ${target.compact()}"
         val statusColor = if (challenge.isCompleted) UIScheme.achievementCompleteColor else Color(255, 170, 0)
 
         val rightContainer = UIContainer().constrain {

@@ -14,6 +14,7 @@ import cloud.glitchdev.rfu.events.managers.DailyStreakEvents.registerStreakUpdat
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
+import cloud.glitchdev.rfu.utils.dsl.compact
 
 @HudElement
 object DailyStreakHUD : AbstractTextHudElement("dailyStreakDisplay") {
@@ -63,10 +64,12 @@ object DailyStreakHUD : AbstractTextHudElement("dailyStreakDisplay") {
             data.todayChallenges.forEach { challenge ->
                 val icon = if (challenge.isCompleted) "${LIGHT_GREEN}✔" else "${LIGHT_RED}✘"
                 val target = challenge.getTargetProgress()
+                val targetStr = target.compact()
+                val currentStr = challenge.currentProgress.compact()
                 val progressStr = if (challenge.isCompleted) {
-                    "${LIGHT_GREEN}${target}/${target}"
+                    "${LIGHT_GREEN}$targetStr/$targetStr"
                 } else {
-                    "${YELLOW}${challenge.currentProgress}/${target}"
+                    "${YELLOW}$currentStr/$targetStr"
                 }
                 lines.add("$icon ${GOLD}${challenge.getTitle()}: $progressStr")
             }
