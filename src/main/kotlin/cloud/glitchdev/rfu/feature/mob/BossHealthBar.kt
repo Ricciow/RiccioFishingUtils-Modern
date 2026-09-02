@@ -3,7 +3,8 @@ package cloud.glitchdev.rfu.feature.mob
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig.HEALTH_BAR_REGEX
 import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDetectEvent
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDisposeEvent
+import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobUpdateEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.gui.hud.elements.bossbar.BossHealthBarDisplay
@@ -20,12 +21,16 @@ object BossHealthBar : Feature {
             BossHealthBarDisplay.updateEntities(filteredEntities.toSet())
         }
 
-        registerTickEvent(interval = 1L) {
-            if (!SeaCreatureConfig.bossHealthBars || BossHealthBarDisplay.entities.isEmpty()) return@registerTickEvent
+        registerMobDisposeEvent { entities ->
+            if (BossHealthBarDisplay.entities.removeAll(entities)) {
+                BossHealthBarDisplay.updateState()
+            }
+        }
 
-            BossHealthBarDisplay.entities.removeIf { it.isRemoved() }
-            BossHealthBarDisplay.entities.forEach { it.updateEntityData() }
-            BossHealthBarDisplay.updateState()
+        registerMobUpdateEvent { entity ->
+            if (BossHealthBarDisplay.entities.contains(entity)) {
+                BossHealthBarDisplay.updateState()
+            }
         }
     }
 }

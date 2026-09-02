@@ -37,6 +37,7 @@ object MobManager : RegisteredEvent {
                 val trackedEntity = sbEntities[entity.id]
                 if (trackedEntity != null) {
                     trackedEntity.updateEntityData()
+                    MobEvents.MobUpdateEventManager.runTasks(trackedEntity)
                 } else {
                     val world = entity.level() as? ClientLevel ?: return@registerEntityDataEvent
                     if (checkSbEntity(entity, world)) {

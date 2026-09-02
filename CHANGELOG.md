@@ -12,8 +12,7 @@
 
 ### Changes
 - Changed the !since command to display only simple info
-- Removed Boost Polling rate setting and changed the display itself to update every 1 tick instead of all mobs
-updating every 2 ticks when with a rare sc
+- Removed Boost Polling rate setting and changed the display itself to update when the entity is updated
 - Daily Streak HUD and Daily Challenge cards now format large progress numbers compactly
 
 ### Back-end
