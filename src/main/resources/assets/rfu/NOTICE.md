@@ -76,10 +76,13 @@ SOFTWARE.
 ========================================================================
 5. Emojis (Twemoji)
 
-   Graphics from the Twemoji project.
+   Graphics from the Twemoji project (originally by Twitter, Inc., maintained by jdecked & contributors).
    Copyright 2020 Twitter, Inc and other contributors.
+   Copyright 2023-present Twemoji contributors (jdecked).
    License: Creative Commons Attribution 4.0 International (CC-BY 4.0)
-   Source: https://github.com/twitter/twemoji
+   Source:
+     - https://github.com/twitter/twemoji
+     - https://github.com/jdecked/twemoji
    License Text: https://creativecommons.org/licenses/by/4.0/
 ========================================================================
 

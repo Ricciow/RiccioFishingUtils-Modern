@@ -19,6 +19,10 @@ object Emoji {
         "\uE125" to listOf("hog"),
         "\uE126" to listOf("exploding_head"),
         "\uE127" to listOf("kaboom", "boom"),
+        "\uE128" to listOf("carrot"),
+        "\uE129" to listOf("shark"),
+        "\uE12A" to listOf("fish"),
+        "\uE12B" to listOf("face_holding_back_tears", "fhbt"),
 
         // Sea Creatures
         "\uE116" to listOf("abyssal_miner", "abyssalminer", "miner"),
