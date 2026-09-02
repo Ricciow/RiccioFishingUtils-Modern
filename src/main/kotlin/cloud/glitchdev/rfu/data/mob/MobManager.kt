@@ -3,10 +3,12 @@ package cloud.glitchdev.rfu.data.mob
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.MobEvents
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
-import cloud.glitchdev.rfu.events.managers.TickEvents
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.EntityAddedEvents.registerEntityAddedEvent
+import cloud.glitchdev.rfu.events.managers.EntityDataEvents.registerEntityDataEvent
+import cloud.glitchdev.rfu.events.managers.EntityRemovedEvents.registerEntityRemovedEvent
+import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.MobEvents
 import cloud.glitchdev.rfu.utils.Tablist.getPlayerNames
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.client.multiplayer.ClientLevel
@@ -19,15 +21,43 @@ import net.minecraft.world.phys.AABB
 object MobManager : RegisteredEvent {
     private val sbEntities = HashMap<Int, SkyblockEntity>()
     private val uniqueSbEntities = HashSet<SkyblockEntity>()
-    private lateinit var detectionEvent : TickEvents.TickEvent
 
     override fun register() {
-        detectionEvent = registerTickEvent(0, 10) { client ->
-            val world = client.level ?: return@registerTickEvent
-            scanEntities(world)
-            reverifyModels(world)
-            validateCurrentEntities()
-            MobEvents.MobDetectEventManager.runTasks(uniqueSbEntities.toSet())
+        registerEntityAddedEvent { entity ->
+            if (entity is ArmorStand) {
+                val world = entity.level() as? ClientLevel ?: return@registerEntityAddedEvent
+                if (checkSbEntity(entity, world)) {
+                    MobEvents.MobDetectEventManager.runTasks(uniqueSbEntities.toSet())
+                }
+            }
+        }
+
+        registerEntityDataEvent { entity ->
+            if (entity is ArmorStand) {
+                val trackedEntity = sbEntities[entity.id]
+                if (trackedEntity != null) {
+                    trackedEntity.updateEntityData()
+                } else {
+                    val world = entity.level() as? ClientLevel ?: return@registerEntityDataEvent
+                    if (checkSbEntity(entity, world)) {
+                        MobEvents.MobDetectEventManager.runTasks(uniqueSbEntities.toSet())
+                    }
+                }
+            }
+        }
+
+        registerEntityRemovedEvent { entityId ->
+            val sbEntity = sbEntities[entityId] ?: return@registerEntityRemovedEvent
+            if (entityId == sbEntity.nameTagEntity.id) {
+                sbEntities.remove(entityId)
+            } else if (entityId == sbEntity.modelEntity.id) {
+                removeEntity(sbEntity)
+                MobEvents.MobDisposeEventManager.runTasks(setOf(sbEntity))
+            }
+        }
+
+        registerLocationEvent {
+            clearAll()
         }
 
         registerJoinEvent {
@@ -47,21 +77,13 @@ object MobManager : RegisteredEvent {
         return sbEntities[id]
     }
 
-    private fun scanEntities(world: ClientLevel) {
-        world.entitiesForRendering().forEach { entity ->
-            if (entity is ArmorStand) {
-                checkSbEntity(entity, world)
-            }
-        }
-    }
-
-    private fun checkSbEntity(entity: ArmorStand, world: ClientLevel) {
+    private fun checkSbEntity(entity: ArmorStand, world: ClientLevel): Boolean {
         val trackedEntity = sbEntities[entity.id]
-        if (trackedEntity != null && !trackedEntity.nameTagEntity.isRemoved) return
+        if (trackedEntity != null && !trackedEntity.nameTagEntity.isRemoved) return false
 
-        if (!entity.isInvisible) return
+        if (!entity.isInvisible) return false
 
-        if (!SkyblockEntity.isNameTagEntity(entity)) return
+        if (!SkyblockEntity.isNameTagEntity(entity)) return false
 
         val foundModel = findModelForNametag(entity, world)
 
@@ -73,56 +95,17 @@ object MobManager : RegisteredEvent {
                     sbEntities.remove(existingLink.nameTagEntity.id)
                     existingLink.updateNametag(entity)
                     sbEntities[entity.id] = existingLink
+                    return true
                 }
             } else {
                 val sbEntity = SkyblockEntity(entity, foundModel)
                 sbEntities[entity.id] = sbEntity
                 sbEntities[foundModel.id] = sbEntity
                 uniqueSbEntities.add(sbEntity)
+                return true
             }
         }
-    }
-
-    private fun validateCurrentEntities() {
-        val toRemove = uniqueSbEntities.filter {
-            it.updateEntityData()
-            it.isRemoved()
-        }
-        MobEvents.MobDisposeEventManager.runTasks(toRemove.toSet())
-        toRemove.forEach { removeEntity(it) }
-    }
-
-    private fun reverifyModels(world: ClientLevel) {
-        uniqueSbEntities.forEach { sbEntity ->
-            val nametag = sbEntity.nameTagEntity
-            if (nametag.isRemoved) return@forEach
-
-            val searchBox = AABB(
-                nametag.x - 0.5, nametag.y - 4.0, nametag.z - 0.5,
-                nametag.x + 0.5, nametag.y + 0.5, nametag.z + 0.5
-            )
-
-            val candidates = world.getEntities(nametag, searchBox) { candidate ->
-                if (candidate !is LivingEntity || candidate is ArmorStand) return@getEntities false
-                if (candidate.type != sbEntity.modelEntity.type) return@getEntities false
-                if (candidate is Player && getPlayerNames().contains(candidate.name.toUnformattedString())) return@getEntities false
-
-                val existingLink = sbEntities[candidate.id]
-                existingLink == null || existingLink.nameTagEntity.isRemoved || existingLink == sbEntity
-            }.toList()
-
-            val bestModel = candidates.minByOrNull { candidate ->
-                val dx = nametag.x - candidate.x
-                val dz = nametag.z - candidate.z
-                dx * dx + dz * dz
-            } as? LivingEntity
-
-            if (bestModel != null && bestModel.id != sbEntity.modelEntity.id) {
-                sbEntities.remove(sbEntity.modelEntity.id)
-                sbEntity.modelEntity = bestModel
-                sbEntities[bestModel.id] = sbEntity
-            }
-        }
+        return false
     }
 
     private fun findModelForNametag(nametag: ArmorStand, world: ClientLevel): LivingEntity? {
@@ -153,11 +136,15 @@ object MobManager : RegisteredEvent {
     }
 
     fun clearAll() {
-        MobEvents.MobDisposeEventManager.runTasks(uniqueSbEntities)
+        val oldEntities = uniqueSbEntities.toSet()
         sbEntities.clear()
         uniqueSbEntities.forEach {
             it.dispose()
         }
         uniqueSbEntities.clear()
+        if (oldEntities.isNotEmpty()) {
+            MobEvents.MobDisposeEventManager.runTasks(oldEntities)
+        }
+        MobEvents.MobDetectEventManager.runTasks(emptySet())
     }
 }

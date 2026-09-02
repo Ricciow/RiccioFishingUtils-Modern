@@ -16,6 +16,7 @@ import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.decoration.ArmorStand
 import java.awt.Color
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Instant
 import cloud.glitchdev.rfu.data.fishing.BobberInfo
 import cloud.glitchdev.rfu.events.managers.BobberManager
@@ -25,7 +26,7 @@ class SkyblockEntity(
     var modelEntity: LivingEntity,
 ) {
     lateinit var sbName: String
-    val createdAt : Instant = Clock.System.now()
+    val createdAt : Instant = Clock.System.now() - (modelEntity.tickCount * 50L).milliseconds
     var health: String = "0"
     var maxHealth: String = "0"
     var isShurikened: Boolean = false

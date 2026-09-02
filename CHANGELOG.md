@@ -17,3 +17,4 @@ updating every 2 ticks when with a rare sc
 - Daily Streak HUD and Daily Challenge cards now format large progress numbers compactly
 
 ### Back-end
+- Made the mob tracking event driven, making it faster and improving Time to Kill accuracy.
