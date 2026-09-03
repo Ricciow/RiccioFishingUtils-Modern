@@ -7,11 +7,13 @@ import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.events.managers.EntityAddedEvents.registerEntityAddedEvent
 import cloud.glitchdev.rfu.events.managers.EntityDataEvents.registerEntityDataEvent
 import cloud.glitchdev.rfu.events.managers.EntityRemovedEvents.registerEntityRemovedEvent
+import cloud.glitchdev.rfu.events.managers.EntityStatusEvents.registerEntityStatusEvent
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
 import cloud.glitchdev.rfu.events.managers.MobEvents
 import cloud.glitchdev.rfu.utils.Tablist.getPlayerNames
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.client.multiplayer.ClientLevel
+import net.minecraft.world.entity.EntityEvent
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.entity.player.Player
@@ -54,6 +56,17 @@ object MobManager : RegisteredEvent {
             } else if (entityId == sbEntity.modelEntity.id) {
                 removeEntity(sbEntity)
                 MobEvents.MobDisposeEventManager.runTasks(setOf(sbEntity))
+            }
+        }
+
+        registerEntityStatusEvent { entity, status ->
+            if (status == EntityEvent.DEATH) {
+                val sbEntity = sbEntities[entity.id] ?: return@registerEntityStatusEvent
+                if (entity.id == sbEntity.modelEntity.id) {
+                    removeEntity(sbEntity)
+                    MobEvents.MobDeathEventManager.runTasks(setOf(sbEntity))
+                    MobEvents.MobDisposeEventManager.runTasks(setOf(sbEntity))
+                }
             }
         }
 

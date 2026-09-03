@@ -4,7 +4,7 @@ import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig.RARE_SC_REGEX
 import cloud.glitchdev.rfu.constants.text.TextColor
-import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDisposeEvent
+import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDeathEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat
@@ -15,8 +15,8 @@ import kotlin.time.Clock
 @RFUFeature
 object TimeToKill : Feature {
     override fun onInitialize() {
-        registerMobDisposeEvent { entities ->
-            if(!SeaCreatureConfig.timeToKill) return@registerMobDisposeEvent
+        registerMobDeathEvent { entities ->
+            if(!SeaCreatureConfig.timeToKill) return@registerMobDeathEvent
             val entities = entities.filter { RARE_SC_REGEX.matches(it.sbName) }
             entities.forEach { entity ->
                 val player = mc.player ?: return@forEach
