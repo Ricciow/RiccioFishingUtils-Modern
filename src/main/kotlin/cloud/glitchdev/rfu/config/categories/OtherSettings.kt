@@ -258,4 +258,9 @@ object OtherSettings : Category("Other") {
         name = Literal("Patch Elementa Memory Leaks")
         description = Literal("Patches memory leaks in Elementa")
     }
+
+    var fixFailedCasts by boolean(false) {
+        name = Literal("Fix failed casts")
+        description = Literal("Fixes failed casts caused by duplicate interaction packets when holding a fishing rod.\n${LIGHT_RED}Use at your own risk!")
+    }
 }

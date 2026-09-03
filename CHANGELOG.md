@@ -7,6 +7,8 @@
 - Added 3 new daily challenges
 - Added :carrot: :shark: :fish: :fhbt: emojis
 - Updated /rfudrophistory with pages and added /rfudrophistory add and /rfudrophistory remove commands
+- Added a fix for failed casts
+  - Uses Packet Canceling for this so use at your own risk! (Same as SkyHanni)
 
 ### Fixes
 - Added Elementa memory leak patch (toggleable in Other settings if it causes conflicts)
