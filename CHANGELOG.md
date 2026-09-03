@@ -6,6 +6,7 @@
 - Added message hiding options for Charm and Hurricane in a Bottle messages
 - Added 3 new daily challenges
 - Added :carrot: :shark: :fish: :fhbt: emojis
+- Updated /rfudrophistory with pages and added /rfudrophistory add and /rfudrophistory remove commands
 
 ### Fixes
 - Added Elementa memory leak patch (toggleable in Other settings if it causes conflicts)

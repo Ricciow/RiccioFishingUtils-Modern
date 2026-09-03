@@ -3,6 +3,8 @@ package cloud.glitchdev.rfu.data.drops
 import cloud.glitchdev.rfu.constants.skyblock.Dyes
 import cloud.glitchdev.rfu.constants.fishing.RareDrops
 import cloud.glitchdev.rfu.data.catches.CatchTracker.catchHistory
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 class DropHistory {
     var drops : MutableList<DropEntry> = mutableListOf()
@@ -26,14 +28,14 @@ class DropHistory {
         return newEntry
     }
 
-    fun registerDrop(drop : RareDrops, magicFind: Int? = null) {
+    fun registerDrop(drop : RareDrops, magicFind: Int? = null, date: Instant = Clock.System.now()) {
         val dropEntry = getOrAdd(drop)
 
         val count = if (drop.relatedScs.isEmpty()) null else drop.relatedScs.sumOf { sc ->
             catchHistory.getOrAdd(sc).total
         }
 
-        dropEntry.addDrop(count, magicFind)
+        dropEntry.addDrop(count, magicFind, date)
     }
 
     fun getOrAdd(drop : Dyes): DyeDropEntry {
@@ -55,7 +57,7 @@ class DropHistory {
         return newEntry
     }
 
-    fun registerDrop(drop : Dyes, magicFind: Int? = null) {
+    fun registerDrop(drop : Dyes, magicFind: Int? = null, date: Instant = Clock.System.now()) {
         @Suppress("SENSELESS_COMPARISON")
         if (dyeDrops == null) dyeDrops = mutableListOf()
         val dropEntry = getOrAdd(drop)
@@ -64,36 +66,37 @@ class DropHistory {
             catchHistory.getOrAdd(sc).total
         }
 
-        dropEntry.addDrop(count, magicFind)
+        dropEntry.addDrop(count, magicFind, date)
     }
 
     interface IDropEntry {
         val history: MutableList<DropRecord>
+
+        fun addDrop(count : Int?, magicFind : Int? = null, date: Instant = Clock.System.now(), sinceCount: Int? = null) {
+            val lastCount = history.lastOrNull()?.totalCount ?: 0
+            val calculatedSince = sinceCount ?: count?.let { it - lastCount }
+            val record = DropRecord(count ?: ((history.lastOrNull()?.totalCount ?: 0) + (sinceCount ?: 0)), calculatedSince, magicFind)
+            record.date = date
+            history.add(record)
+            history.sortBy { it.date }
+        }
+
+        fun removeDrop(displayIndex: Int): DropRecord? {
+            if (displayIndex !in 1..history.size) return null
+            val targetIndex = history.size - displayIndex
+            return history.removeAt(targetIndex)
+        }
     }
 
     class DropEntry(
         var type : RareDrops,
     ) : IDropEntry {
         override var history: MutableList<DropRecord> = mutableListOf()
-
-        fun addDrop(count : Int?, magicFind : Int? = null) {
-            val lastCount = history.lastOrNull()?.totalCount ?: 0
-            val sinceCount = count?.let { it - lastCount }
-
-            history.add(DropRecord(count ?: 0, sinceCount, magicFind))
-        }
     }
 
     class DyeDropEntry(
         var type : Dyes,
     ) : IDropEntry {
         override var history: MutableList<DropRecord> = mutableListOf()
-
-        fun addDrop(count : Int?, magicFind : Int? = null) {
-            val lastCount = history.lastOrNull()?.totalCount ?: 0
-            val sinceCount = count?.let { it - lastCount }
-
-            history.add(DropRecord(count ?: 0, sinceCount, magicFind))
-        }
     }
-}
+}
