@@ -74,10 +74,10 @@ object EmojiFeature {
         return result
     }
 
-    fun clearAndApplyPostStyle(text: String?, style: TextStyle): String? {
+    fun clearAndApplyPostStyle(text: String?, style: TextStyle?): String? {
         var result = text
         Emoji.ALL.forEach { (_, replacement) ->
-            result = result?.replace(replacement, "${TextColor.WHITE}$replacement${TextEffects.RESET}$style", true)
+            result = result?.replace(replacement, "${TextColor.WHITE}$replacement${TextEffects.RESET}${style?:""}", true)
         }
         return result
     }

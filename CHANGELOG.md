@@ -9,6 +9,7 @@
 - Updated /rfudrophistory with pages and added /rfudrophistory add and /rfudrophistory remove commands
 - Added a fix for failed casts
   - Uses Packet Canceling for this so use at your own risk! (Same as SkyHanni)
+- Added Party Finder party presets system
 
 ### Fixes
 - Added Elementa memory leak patch (toggleable in Other settings if it causes conflicts)
@@ -20,6 +21,7 @@
 - Daily Streak HUD and Daily Challenge cards now format large progress numbers compactly
 - Renamed Galatea to Moonglade Marsh
 - Made the emojis in party finder be sent in emoji form so it only occupies 1 char
+- Made party finder creation window save between sessions
 
 ### Back-end
 - Made the mob tracking event driven, making it faster and improving Time to Kill accuracy.

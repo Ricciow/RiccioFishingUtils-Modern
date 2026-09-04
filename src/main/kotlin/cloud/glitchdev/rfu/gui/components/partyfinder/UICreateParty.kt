@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.gui.components.partyfinder
 import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.fishing.FishingIslands
 import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
+import cloud.glitchdev.rfu.data.other.data.PartyPresetData
 import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.UIPopup
 import cloud.glitchdev.rfu.gui.components.textinput.UIDecoratedTextInput
@@ -48,7 +49,24 @@ import gg.essential.elementa.effects.ScissorEffect
 
 class UICreateParty : UIContainer() {
     private val popup: UIPopup get() = PartyFinderWindow.popup
-    private var party: FishingParty = PartyWebSocket.myParty ?: FishingParty.blankParty()
+    private var party: FishingParty = PartyWebSocket.myParty ?: loadInitialParty()
+
+    private fun loadInitialParty(): FishingParty {
+        val blank = FishingParty.blankParty()
+        val entry = UIPartyPresetsModal.getPresetsEntry()
+        entry.lastPartyState?.applyTo(blank)
+        return blank
+    }
+
+    fun saveSessionState() {
+        if (!::titleField.isInitialized) return
+        updatePartyModel()
+        val entry = UIPartyPresetsModal.getPresetsEntry()
+        val state = entry.lastPartyState ?: PartyPresetData()
+        state.copyFrom(party, "last_session")
+        entry.lastPartyState = state
+        UIPartyPresetsModal.savePresetsEntry(entry)
+    }
 
     private lateinit var titleField: UIDecoratedTextInput
     private lateinit var descriptionField: UIWrappedDecoratedTextInput
@@ -350,6 +368,31 @@ class UICreateParty : UIContainer() {
     }
 
     private fun createSubmitButton(parent: UIContainer) {
+        val buttonWrapper = UIContainer().constrain {
+            x = CenterConstraint()
+            y = SiblingConstraint(12f)
+            width = 50.percent()
+            height = UIScheme.pfInputHeight.pixels()
+        } childOf parent
+
+        UIButton("Presets", 5f) {
+            saveSessionState()
+            PartyFinderWindow.presetsModal.show(party) { selectedPreset ->
+                selectedPreset.applyTo(party)
+                updateFields()
+                saveSessionState()
+            }
+        }.constrain {
+            x = 0.pixels()
+            y = CenterConstraint()
+            width = 28.percent()
+            height = 100.percent()
+        }.colors {
+            primaryColor = UIScheme.pfCardBorder.toConstraint()
+            hoverColor = UIScheme.pfCardBorderHovered.toConstraint()
+            hoverTextColor = UIScheme.pfCardTitleHoverColor.toConstraint()
+        } childOf buttonWrapper
+
         submitButton = UIButton("Publish Party", 5f) {
             val now = System.currentTimeMillis()
             val elapsed = now - lastSubmitTime
@@ -365,6 +408,7 @@ class UICreateParty : UIContainer() {
             }
 
             updatePartyModel()
+            saveSessionState()
             val validation = PartyRequirementsManager.canCreateParty(party)
             if (!validation.isSuccess) {
                 popup.show(validation.getErrorMessage())
@@ -393,15 +437,15 @@ class UICreateParty : UIContainer() {
             }
 
         }.constrain {
-            x = CenterConstraint()
-            y = SiblingConstraint(12f)
-            width = 40.percent()
-            height = UIScheme.pfInputHeight.pixels()
+            x = SiblingConstraint(6f)
+            y = CenterConstraint()
+            width = 100.percent() - 28.percent() - 6.pixels()
+            height = 100.percent()
         }.colors {
             primaryColor = UIScheme.pfCardBorder.toConstraint()
             hoverColor = UIScheme.pfCardBorderHovered.toConstraint()
             hoverTextColor = UIScheme.pfCardTitleHoverColor.toConstraint()
-        } childOf parent
+        } childOf buttonWrapper
     }
 
     private fun createLabel(text: String, parent: UIContainer, topPadding: Float): UIText {

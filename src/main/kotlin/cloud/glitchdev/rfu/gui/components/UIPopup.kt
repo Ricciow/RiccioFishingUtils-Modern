@@ -68,6 +68,12 @@ class UIPopup(
             confirmCancelContainer.unhide()
         }
 
+        if (hasParent) {
+            val p = parent
+            p.removeChild(this)
+            this childOf p
+        }
+
         unhide()
     }
 
