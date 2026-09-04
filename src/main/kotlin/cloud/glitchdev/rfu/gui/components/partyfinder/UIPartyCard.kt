@@ -1,6 +1,9 @@
 package cloud.glitchdev.rfu.gui.components.partyfinder
 
 import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
+import cloud.glitchdev.rfu.constants.text.TextEffects
+import cloud.glitchdev.rfu.constants.text.TextStyle
+import cloud.glitchdev.rfu.feature.other.EmojiFeature
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.UIPopup
@@ -181,9 +184,12 @@ class UIPartyCard(
         } childOf header
 
         val userText = UIText(party.user) childOf textContainer
-        val title = party.title.ifEmpty { party.island.island }
+        val title = party.title
+            .takeIf { it.isNotEmpty() }
+            ?.let { TextEffects.BOLD.toString() + EmojiFeature.clearAndApplyPostStyle(it, TextStyle(TextEffects.BOLD)) }
+            ?: party.island.island
 
-        titleText = UIText("§l$title").constrain {
+        titleText = UIText(title).constrain {
             x = 0.pixels
             y = SiblingConstraint(UIScheme.pfCardSmallPadding)
             width = MinConstraint(ScaledTextConstraint(1f), 70.percent)
@@ -228,7 +234,10 @@ class UIPartyCard(
 
         descriptionSeparator = UIBlock() childOf descriptionContainer
 
-        val descriptionText = party.description.ifEmpty { "${party.island.island} fishing." }
+        val descriptionText = party.description
+            .takeIf { it.isNotEmpty() }
+            ?.let { EmojiFeature.clearAndApplyPostStyle(it, TextStyle()) }
+            ?: "${party.island.island} fishing."
 
         val description = UIWrappedText(descriptionText).constrain {
             x = SiblingConstraint(UIScheme.pfCardSmallPadding)

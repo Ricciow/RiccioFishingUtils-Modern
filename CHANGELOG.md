@@ -19,6 +19,7 @@
 - Removed Boost Polling rate setting and changed the display itself to update when the entity is updated
 - Daily Streak HUD and Daily Challenge cards now format large progress numbers compactly
 - Renamed Galatea to Moonglade Marsh
+- Made the emojis in party finder be sent in emoji form so it only occupies 1 char
 
 ### Back-end
 - Made the mob tracking event driven, making it faster and improving Time to Kill accuracy.

@@ -17,6 +17,7 @@ import cloud.glitchdev.rfu.utils.network.PartyWebSocket
 import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerMyPartyChangedEvent
+import cloud.glitchdev.rfu.feature.other.EmojiFeature
 import cloud.glitchdev.rfu.utils.Coroutines
 import kotlinx.coroutines.delay
 import kotlin.jvm.optionals.getOrNull
@@ -448,8 +449,8 @@ class UICreateParty : UIContainer() {
 
     private fun updatePartyModel() {
         party.profileId = User.profileId
-        party.title = titleField.getText()
-        party.description = descriptionField.getText()
+        party.title = EmojiFeature.replaceEmojisUnformatted(titleField.getText()).toString()
+        party.description = EmojiFeature.replaceEmojisUnformatted(descriptionField.getText()).toString()
         party.island = islandField.getSelectedItem().value as FishingIslands
         party.liquid = if (waterToggle.selected) LiquidTypes.WATER else LiquidTypes.LAVA
         party.level = levelField.getText().toIntOrNull() ?: 0

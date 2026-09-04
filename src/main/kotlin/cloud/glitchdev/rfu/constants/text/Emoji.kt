@@ -52,7 +52,7 @@ object Emoji {
     )
 
     val ALL = EMOJIS.flatMap { (unicode, aliases) ->
-        aliases.map { ":$it:" to unicode.whiteText() }
+        aliases.map { ":$it:" to unicode }
     }.toMap()
 
     fun String.whiteText() : String {
