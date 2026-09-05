@@ -1,6 +1,7 @@
-﻿package cloud.glitchdev.rfu.data.drops
+package cloud.glitchdev.rfu.data.drops
 
 import cloud.glitchdev.rfu.constants.fishing.RareDrops
+import cloud.glitchdev.rfu.constants.skyblock.Dyes
 import cloud.glitchdev.rfu.events.managers.DropEvents
 import cloud.glitchdev.rfu.utils.JsonFile
 import cloud.glitchdev.rfu.events.AutoRegister
@@ -25,7 +26,31 @@ object DropManager : RegisteredEvent {
                     val entry = DropHistory.DropEntry(drop)
                     obj["history"]?.asJsonArray?.forEach { el ->
                         val record = context.deserialize<DropRecord>(el, DropRecord::class.java)
-                        if (record != null) entry.history.add(record)
+                        if (record != null) {
+                            if (record.mobName == null && drop.relatedScs.size == 1) {
+                                record.mobName = drop.relatedScs.first().scName
+                            }
+                            entry.history.add(record)
+                        }
+                    }
+                    entry
+                }
+            ).registerTypeAdapter(DropHistory.DyeDropEntry::class.java,
+                JsonDeserializer { json, _, context ->
+                    val obj = json.asJsonObject
+                    val typeName = obj["type"]?.asString ?: return@JsonDeserializer null
+                    val drop = runCatching {
+                        enumValueOf<Dyes>(typeName)
+                    }.getOrNull() ?: return@JsonDeserializer null
+                    val entry = DropHistory.DyeDropEntry(drop)
+                    obj["history"]?.asJsonArray?.forEach { el ->
+                        val record = context.deserialize<DropRecord>(el, DropRecord::class.java)
+                        if (record != null) {
+                            if (record.mobName == null && drop.relatedScs.size == 1) {
+                                record.mobName = drop.relatedScs.first().scName
+                            }
+                            entry.history.add(record)
+                        }
                     }
                     entry
                 }
@@ -37,13 +62,15 @@ object DropManager : RegisteredEvent {
     val dropHistory get() = dropsFile.data
 
     override fun register() {
-        DropEvents.registerRareDropEvent(0) { rareDrop, magicFind ->
-            dropHistory.registerDrop(rareDrop, magicFind)
+        DropEvents.registerRareDropEvent(0) { rareDrop, magicFind, mobName ->
+            dropHistory.registerDrop(rareDrop, magicFind, mobName)
+            dropsFile.save()
             true
         }
 
-        DropEvents.registerDyeDropEvent(0) { dyeDrop, magicFind ->
-            dropHistory.registerDrop(dyeDrop, magicFind)
+        DropEvents.registerDyeDropEvent(0) { dyeDrop, magicFind, mobName ->
+            dropHistory.registerDrop(dyeDrop, magicFind, mobName)
+            dropsFile.save()
         }
     }
 }

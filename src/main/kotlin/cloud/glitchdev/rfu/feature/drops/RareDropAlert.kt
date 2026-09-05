@@ -1,9 +1,11 @@
-﻿package cloud.glitchdev.rfu.feature.drops
+package cloud.glitchdev.rfu.feature.drops
 
 import cloud.glitchdev.rfu.config.categories.DropsSettings
 import cloud.glitchdev.rfu.constants.fishing.IRareDrop
+import cloud.glitchdev.rfu.constants.fishing.RareDrops
 import cloud.glitchdev.rfu.data.drops.DropManager
 import cloud.glitchdev.rfu.data.drops.DropRecord
+import cloud.glitchdev.rfu.events.managers.ChatEvents.registerAllowGameEvent
 import cloud.glitchdev.rfu.events.managers.DropEvents
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
@@ -20,16 +22,22 @@ import net.minecraft.network.chat.Component
 @RFUFeature
 object RareDropAlert : Feature {
     override fun onInitialize() {
-        DropEvents.registerRareDropEvent { rareDrop, magicFind ->
+        registerAllowGameEvent(DropEvents.RARE_DROP_REGEX) { _, _, matches ->
+            val dropName = matches?.groupValues?.getOrNull(1) ?: return@registerAllowGameEvent true
+            val rareDrop = RareDrops.getRelatedDrop(dropName) ?: return@registerAllowGameEvent true
+            !(DropsSettings.customRareDropMessage && rareDrop in DropsSettings.rareDrops)
+        }
+
+        DropEvents.registerRareDropEvent { rareDrop, magicFind, _ ->
             if (rareDrop !in DropsSettings.rareDrops) return@registerRareDropEvent true
             
             val history = DropManager.dropHistory.getOrAdd(rareDrop).history
             handleAlert(rareDrop, history, magicFind)
             
-            return@registerRareDropEvent !DropsSettings.customRareDropMessage
+            true
         }
 
-        DropEvents.registerDyeDropEvent { dyeDrop, magicFind ->
+        DropEvents.registerDyeDropEvent { dyeDrop, magicFind, _ ->
             if (dyeDrop !in DropsSettings.dyeDrops) return@registerDyeDropEvent
             
             val history = DropManager.dropHistory.getOrAdd(dyeDrop).history

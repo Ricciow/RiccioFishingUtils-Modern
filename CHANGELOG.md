@@ -26,3 +26,4 @@
 
 ### Back-end
 - Made the mob tracking event driven, making it faster and improving Time to Kill accuracy.
+- Linked rare drops and dyes to mobs.

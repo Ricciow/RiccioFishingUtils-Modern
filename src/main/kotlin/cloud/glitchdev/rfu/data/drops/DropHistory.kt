@@ -28,14 +28,14 @@ class DropHistory {
         return newEntry
     }
 
-    fun registerDrop(drop : RareDrops, magicFind: Int? = null, date: Instant = Clock.System.now()) {
+    fun registerDrop(drop : RareDrops, magicFind: Int? = null, mobName: String? = null, date: Instant = Clock.System.now()) {
         val dropEntry = getOrAdd(drop)
 
         val count = if (drop.relatedScs.isEmpty()) null else drop.relatedScs.sumOf { sc ->
             catchHistory.getOrAdd(sc).total
         }
 
-        dropEntry.addDrop(count, magicFind, date)
+        dropEntry.addDrop(count, magicFind, date, mobName)
     }
 
     fun getOrAdd(drop : Dyes): DyeDropEntry {
@@ -57,7 +57,7 @@ class DropHistory {
         return newEntry
     }
 
-    fun registerDrop(drop : Dyes, magicFind: Int? = null, date: Instant = Clock.System.now()) {
+    fun registerDrop(drop : Dyes, magicFind: Int? = null, mobName: String? = null, date: Instant = Clock.System.now()) {
         @Suppress("SENSELESS_COMPARISON")
         if (dyeDrops == null) dyeDrops = mutableListOf()
         val dropEntry = getOrAdd(drop)
@@ -66,16 +66,16 @@ class DropHistory {
             catchHistory.getOrAdd(sc).total
         }
 
-        dropEntry.addDrop(count, magicFind, date)
+        dropEntry.addDrop(count, magicFind, date, mobName)
     }
 
     interface IDropEntry {
         val history: MutableList<DropRecord>
 
-        fun addDrop(count : Int?, magicFind : Int? = null, date: Instant = Clock.System.now(), sinceCount: Int? = null) {
+        fun addDrop(count : Int?, magicFind : Int? = null, date: Instant = Clock.System.now(), mobName: String? = null, sinceCount: Int? = null) {
             val lastCount = history.lastOrNull()?.totalCount ?: 0
             val calculatedSince = sinceCount ?: count?.let { it - lastCount }
-            val record = DropRecord(count ?: ((history.lastOrNull()?.totalCount ?: 0) + (sinceCount ?: 0)), calculatedSince, magicFind)
+            val record = DropRecord(count ?: ((history.lastOrNull()?.totalCount ?: 0) + (sinceCount ?: 0)), calculatedSince, magicFind, mobName)
             record.date = date
             history.add(record)
             history.sortBy { it.date }
@@ -99,4 +99,4 @@ class DropHistory {
     ) : IDropEntry {
         override var history: MutableList<DropRecord> = mutableListOf()
     }
-}
+}
