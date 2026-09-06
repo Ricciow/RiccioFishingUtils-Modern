@@ -1,7 +1,13 @@
 package cloud.glitchdev.rfu.constants.fishing
 import cloud.glitchdev.rfu.constants.skyblock.Rarity
 
-enum class RareDrops(val dropName : String, override val rarity: Rarity, val relatedScNames : List<String> = listOf(), val overrideRegex : String? = null) : IRareDrop {
+enum class RareDrops(
+    val dropName : String,
+    override val rarity: Rarity,
+    val relatedScNames : List<String> = listOf(),
+    val overrideRegex : String? = null,
+    override val displayName: String = dropName
+) : IRareDrop {
     //Drops
     BURNT_TEXTS("Burnt Texts", Rarity.LEGENDARY, listOf("Ragnarok")),
     RADIOACTIVE_VIAL("Radioactive Vial", Rarity.MYTHIC, listOf("Lord Jawbus")),
@@ -9,13 +15,11 @@ enum class RareDrops(val dropName : String, override val rarity: Rarity, val rel
     TITANOBOA_SHED("Titanoboa Shed", Rarity.LEGENDARY, listOf("Titanoboa")),
     SNAKE_EYES("Snake Eyes", Rarity.LEGENDARY, listOf("Titanoboa")),
     LUCKY_CLOVER_CORE("Lucky Clover Core", Rarity.EPIC, listOf("Carrot King")),
-    FLASH_BOOK("Enchanted Book (Flash I)", Rarity.COMMON, listOf("Thunder"), """Enchanted Book \(Flash (?:1|I)\)"""),
+    FLASH_BOOK("Enchanted Book (Flash I)", Rarity.COMMON, listOf("Thunder"), """Enchanted Book \(Flash (?:1|I)\)""", "Flash"),
     DEEP_SEA_ORB("Deep Sea Orb", Rarity.EPIC, listOf("Grim Reaper", "Phantom Fisher", "Werewolf")),
     PRINCE_CROWN_JEWEL("Prince's Crown Jewel", Rarity.LEGENDARY, listOf("Frog Prince")),
     SCUTTLER_SHELL("Scuttler Shell", Rarity.LEGENDARY, listOf("Fiery Scuttler")),
-    PYROCLASM_BOOK("Enchanted Book (Pyroclasm VI)", Rarity.COMMON, listOf("Magma Pillar"), """Enchanted Book \(Pyroclasm (?:6|VI)\)""");
-
-    override val displayName: String get() = dropName
+    PYROCLASM_BOOK("Enchanted Book (Pyroclasm VI)", Rarity.COMMON, listOf("Magma Pillar"), """Enchanted Book \(Pyroclasm (?:6|VI)\)""", "Pyroclasm");
 
     override val relatedScs: List<SeaCreatures>
         get() = relatedScNames.mapNotNull { SeaCreatures.get(it) }

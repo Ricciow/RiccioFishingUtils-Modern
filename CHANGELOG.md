@@ -11,6 +11,7 @@
   - Uses Packet Canceling for this so use at your own risk! (Same as SkyHanni)
 - Added Party Finder party presets system
 - Added {mob} variable to rare drop chat messages and title alerts
+- Added Rare Drops Display
 
 ### Fixes
 - Added Elementa memory leak patch (toggleable in Other settings if it causes conflicts)
