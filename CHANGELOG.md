@@ -16,6 +16,7 @@
 - Added Elementa memory leak patch (toggleable in Other settings if it causes conflicts)
 - Fixed Galatea stuff not being counted properly
 - Fixed Soul Fish not being properly tracked
+- Fixed renders moving when camera moves (Thanks Void)
 
 ### Changes
 - Changed the !since command to display only simple info

@@ -9,7 +9,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents
 @AutoRegister
 object RenderEvents : AbstractEventManager<(LevelRenderContext) -> Unit, RenderEvents.RenderEvent>(), RegisteredEvent {
     override fun register() {
-        LevelRenderEvents.AFTER_TRANSLUCENT_FEATURES.register { context ->
+        LevelRenderEvents.COLLECT_SUBMITS.register { context ->
             runTasks(context)
         }
     }
