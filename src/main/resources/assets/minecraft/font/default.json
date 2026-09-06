@@ -307,6 +307,13 @@
       "ascent": 7,
       "height": 8,
       "chars": ["\uE12B"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/rolling_eyes.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE12C"]
     }
   ]
 }

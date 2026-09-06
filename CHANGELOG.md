@@ -5,7 +5,7 @@
 - Added the !drop party command with detailed info about rare drops and dyes
 - Added message hiding options for Charm and Hurricane in a Bottle messages
 - Added 3 new daily challenges
-- Added :carrot: :shark: :fish: :fhbt: emojis
+- Added :carrot: :shark: :fish: :fhbt: :rolling_eyes: emojis
 - Updated /rfudrophistory with pages and added /rfudrophistory add and /rfudrophistory remove commands
 - Added a fix for failed casts
   - Uses Packet Canceling for this so use at your own risk! (Same as SkyHanni)

@@ -23,6 +23,7 @@ object Emoji {
         "\uE129" to listOf("shark"),
         "\uE12A" to listOf("fish"),
         "\uE12B" to listOf("face_holding_back_tears", "fhbt"),
+        "\uE12C" to listOf("rolling_eyes"),
 
         // Sea Creatures
         "\uE116" to listOf("abyssal_miner", "abyssalminer", "miner"),
