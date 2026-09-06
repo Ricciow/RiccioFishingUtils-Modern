@@ -46,7 +46,7 @@ object DropsHistory {
             val addBuilder = lit("add")
                 .executes { context ->
                     context.source.sendFeedback(
-                        TextUtils.rfuLiteral("Usage: /rfudrophistory add <dropName> [date] [mf] [count]", YELLOW)
+                        TextUtils.rfuLiteral("Usage: /rfudrophistory add <dropName> [date] [mf] [count] [mob]", YELLOW)
                     )
                     1
                 }
@@ -54,7 +54,7 @@ object DropsHistory {
                     arg("dropName", StringListArgumentType(dropSuggestions, greedy = false, exclusive = false))
                         .executes { context ->
                             val dropName = StringArgumentType.getString(context, "dropName")
-                            handleAddDrop(context.source, dropName, null, null, null)
+                            handleAddDrop(context.source, dropName, null, null, null, null)
                             1
                         }
                         .then(
@@ -62,7 +62,7 @@ object DropsHistory {
                                 .executes { context ->
                                     val dropName = StringArgumentType.getString(context, "dropName")
                                     val date = StringArgumentType.getString(context, "date")
-                                    handleAddDrop(context.source, dropName, date, null, null)
+                                    handleAddDrop(context.source, dropName, date, null, null, null)
                                     1
                                 }
                                 .then(
@@ -71,7 +71,7 @@ object DropsHistory {
                                             val dropName = StringArgumentType.getString(context, "dropName")
                                             val date = StringArgumentType.getString(context, "date")
                                             val mf = IntegerArgumentType.getInteger(context, "mf")
-                                            handleAddDrop(context.source, dropName, date, mf, null)
+                                            handleAddDrop(context.source, dropName, date, mf, null, null)
                                             1
                                         }
                                         .then(
@@ -81,9 +81,21 @@ object DropsHistory {
                                                     val date = StringArgumentType.getString(context, "date")
                                                     val mf = IntegerArgumentType.getInteger(context, "mf")
                                                     val count = IntegerArgumentType.getInteger(context, "count")
-                                                    handleAddDrop(context.source, dropName, date, mf, count)
+                                                    handleAddDrop(context.source, dropName, date, mf, count, null)
                                                     1
                                                 }
+                                                .then(
+                                                    arg("mob", StringArgumentType.greedyString())
+                                                        .executes { context ->
+                                                            val dropName = StringArgumentType.getString(context, "dropName")
+                                                            val date = StringArgumentType.getString(context, "date")
+                                                            val mf = IntegerArgumentType.getInteger(context, "mf")
+                                                            val count = IntegerArgumentType.getInteger(context, "count")
+                                                            val mob = StringArgumentType.getString(context, "mob")
+                                                            handleAddDrop(context.source, dropName, date, mf, count, mob)
+                                                            1
+                                                        }
+                                                )
                                         )
                                 )
                         )
@@ -160,7 +172,8 @@ object DropsHistory {
         dropName: String,
         dateStr: String?,
         magicFind: Int?,
-        customCount: Int?
+        customCount: Int?,
+        mobName: String? = null
     ) {
         val drop = findDrop(dropName)
         if (drop == null) {
@@ -194,10 +207,13 @@ object DropsHistory {
             CatchTracker.catchHistory.getOrAdd(sc).total
         }
 
-        entry.addDrop(count, magicFind = magicFind, date = parsedDate, sinceCount = customCount)
+        val resolvedMob = mobName ?: if (drop.relatedScs.size == 1) drop.relatedScs.first().scName else null
+
+        entry.addDrop(count, magicFind = magicFind, date = parsedDate, mobName = resolvedMob, sinceCount = customCount)
         DropManager.dropsFile.save()
 
         val extraInfo = buildString {
+            if (resolvedMob != null) append(" from $resolvedMob")
             if (magicFind != null) append(" ($magicFind% \uE01A)")
             if (customCount != null) append(" [count: $customCount]")
         }
@@ -237,8 +253,9 @@ object DropsHistory {
         }
 
         DropManager.dropsFile.save()
+        val mobPart = removed.mobName?.let { " from $it" } ?: ""
         source.sendFeedback(
-            TextUtils.rfuLiteral("Successfully removed drop #$index (${removed.date.toFormattedDate()}) for ${drop.displayName}.", LIGHT_GREEN)
+            TextUtils.rfuLiteral("Successfully removed drop #$index (${removed.date.toFormattedDate()}$mobPart) for ${drop.displayName}.", LIGHT_GREEN)
         )
     }
 
@@ -284,10 +301,19 @@ object DropsHistory {
                 val lastDrop = item.lastDrop
                 val sincePart = lastDrop.sinceCount?.let { " ($it)" } ?: ""
                 val mfPart = lastDrop.magicFind?.let { " $AQUAMARINE(${it}% \uE01A)" } ?: ""
+                val mobPart = lastDrop.mobName?.let { " $DARK_GRAY($GRAY$it$DARK_GRAY)" } ?: ""
                 val name = item.drop.displayName.uppercase().replace(" ", "_")
                 val itemCmd = "/rfudrophistory $name"
 
-                val line = Component.literal("\n $YELLOW$BOLD- $WHITE$itemName: $YELLOW$totalCount ${YELLOW}- Last: $WHITE${lastDrop.date.toFormattedDate()}$WHITE$sincePart$mfPart")
+                val breakdownStr = if (item.drop.relatedScs.size > 1) {
+                    val breakdown = item.drop.relatedScs.map { sc ->
+                        sc.scName to item.history.count { it.mobName.equals(sc.scName, ignoreCase = true) }
+                    }
+                    val relevant = if (item.drop.relatedScs.size <= 4) breakdown else breakdown.filter { it.second > 0 }
+                    if (relevant.isNotEmpty()) " $DARK_GRAY(${relevant.joinToString(", ") { "$GRAY${it.first}: $WHITE${it.second}" }}$DARK_GRAY)" else ""
+                } else ""
+
+                val line = Component.literal("\n $YELLOW$BOLD- $WHITE$itemName: $YELLOW$totalCount$breakdownStr ${YELLOW}- Last: $WHITE${lastDrop.date.toFormattedDate()}$WHITE$sincePart$mfPart$mobPart")
                     .setStyle(
                         Style.EMPTY
                             .withClickEvent(ClickEvent.RunCommand(itemCmd))
@@ -323,7 +349,15 @@ object DropsHistory {
             return text.append(Component.literal("\n $LIGHT_RED${BOLD}No drops :("))
         }
 
-        text.append(Component.literal("\n $YELLOW${BOLD}Total: $WHITE${history.size}"))
+        val breakdownStr = if (drop.relatedScs.size > 1) {
+            val breakdown = drop.relatedScs.map { sc ->
+                sc.scName to history.count { it.mobName.equals(sc.scName, ignoreCase = true) }
+            }
+            val relevant = if (drop.relatedScs.size <= 4) breakdown else breakdown.filter { it.second > 0 }
+            if (relevant.isNotEmpty()) " $DARK_GRAY(${relevant.joinToString(", ") { "$GRAY${it.first}: $WHITE${it.second}" }}$DARK_GRAY)" else ""
+        } else ""
+
+        text.append(Component.literal("\n $YELLOW${BOLD}Total: $WHITE${history.size}$breakdownStr"))
 
         val reversedHistory = history.asReversed()
         val totalPages = maxOf(1, ceil(reversedHistory.size.toDouble() / PAGE_SIZE).toInt())
@@ -335,8 +369,9 @@ object DropsHistory {
         pageItems.forEachIndexed { i, record ->
             val displayIndex = startIndex + i + 1
             val sincePart = record.sinceCount?.let { "$WHITE$it " } ?: ""
-            val mfPart = record.magicFind?.let { "$AQUAMARINE($it% \uE01A)" } ?: ""
-            text.append(Component.literal("\n $GRAY$displayIndex - $YELLOW${record.date.toFormattedDate()}$YELLOW: $sincePart$mfPart"))
+            val mfPart = record.magicFind?.let { "$AQUAMARINE($it% \uE01A) " } ?: ""
+            val mobPart = record.mobName?.let { "$GRAY($it) " } ?: ""
+            text.append(Component.literal("\n $GRAY$displayIndex - $YELLOW${record.date.toFormattedDate()}$YELLOW: $sincePart$mfPart$mobPart"))
         }
 
         val name = drop.displayName.uppercase().replace(" ", "_")

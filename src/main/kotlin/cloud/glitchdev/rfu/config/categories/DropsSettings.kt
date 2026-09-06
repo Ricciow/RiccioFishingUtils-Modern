@@ -41,7 +41,7 @@ object DropsSettings : Category("Drops") {
 
     var rareDropMessageFormat by string("&6&lRARE DROP! &e{drop} &b(+{magic_find} \uE01A Magic Find) &7(Took {count} catches, {time} since last)") {
         name = Literal("Custom Message Format")
-        description = Literal("Variables: {drop}, {magic_find}, {count}, {time}, {total}")
+        description = Literal("Variables: {drop}, {dropcolor}, {mob}, {magic_find}, {count}, {time}, {total}")
         condition = { customRareDropMessage }
     }
 
@@ -78,13 +78,13 @@ object DropsSettings : Category("Drops") {
 
     var rareDropTitleFormat by string("{dropcolor}&l{drop}") {
         name = Literal("Rare Drop Title Format")
-        description = Literal("The title to show on screen. Variables: {drop}, {dropcolor}, {magic_find}, {count}, {time}, {total}")
+        description = Literal("The title to show on screen. Variables: {drop}, {dropcolor}, {mob}, {magic_find}, {count}, {time}, {total}")
         condition = { rareDropTitleAlert }
     }
 
     var rareDropSubtitleFormat by string("&b(+{magic_find} \uE01A Magic Find)") {
         name = Literal("Rare Drop Subtitle Format")
-        description = Literal("The subtitle to show on screen. Variables: {drop}, {dropcolor}, {magic_find}, {count}, {time}, {total}")
+        description = Literal("The subtitle to show on screen. Variables: {drop}, {dropcolor}, {mob}, {magic_find}, {count}, {time}, {total}")
         condition = { rareDropTitleAlert }
     }
 

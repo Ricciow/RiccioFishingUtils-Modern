@@ -28,24 +28,24 @@ object RareDropAlert : Feature {
             !(DropsSettings.customRareDropMessage && rareDrop in DropsSettings.rareDrops)
         }
 
-        DropEvents.registerRareDropEvent { rareDrop, magicFind, _ ->
+        DropEvents.registerRareDropEvent { rareDrop, magicFind, mobName ->
             if (rareDrop !in DropsSettings.rareDrops) return@registerRareDropEvent true
             
             val history = DropManager.dropHistory.getOrAdd(rareDrop).history
-            handleAlert(rareDrop, history, magicFind)
+            handleAlert(rareDrop, history, magicFind, mobName)
             
             true
         }
 
-        DropEvents.registerDyeDropEvent { dyeDrop, magicFind, _ ->
+        DropEvents.registerDyeDropEvent { dyeDrop, magicFind, mobName ->
             if (dyeDrop !in DropsSettings.dyeDrops) return@registerDyeDropEvent
             
             val history = DropManager.dropHistory.getOrAdd(dyeDrop).history
-            handleAlert(dyeDrop, history, magicFind)
+            handleAlert(dyeDrop, history, magicFind, mobName)
         }
     }
 
-    private fun handleAlert(drop: IRareDrop, history: List<DropRecord>, magicFind: Int?) {
+    private fun handleAlert(drop: IRareDrop, history: List<DropRecord>, magicFind: Int?, mobName: String? = null) {
         val currentDrop = history.lastOrNull() ?: return
         val previousDrop = if (history.lastIndex - 1 >= 0) history[history.lastIndex - 1] else null
 
@@ -55,9 +55,12 @@ object RareDropAlert : Feature {
             "First Drop"
         }
 
+        val resolvedMob = mobName ?: currentDrop.mobName ?: drop.relatedScs.singleOrNull()?.scName ?: "Unknown"
+
         val placeholders = arrayOf(
             "drop" to drop.displayName,
             "dropcolor" to drop.rarity.color.code,
+            "mob" to resolvedMob,
             "magic_find" to (magicFind?.toString() ?: "0"),
             "count" to (currentDrop.sinceCount?.toString() ?: "N/A"),
             "time" to timeSinceLast,
@@ -99,6 +102,7 @@ object RareDropAlert : Feature {
         val placeholders = arrayOf(
             "drop" to "Radioactive Vial",
             "dropcolor" to "&d",
+            "mob" to "Lord Jawbus",
             "magic_find" to "350",
             "count" to "100",
             "time" to "5m 20s",

@@ -10,7 +10,7 @@ enum class RareDrops(val dropName : String, override val rarity: Rarity, val rel
     SNAKE_EYES("Snake Eyes", Rarity.LEGENDARY, listOf("Titanoboa")),
     LUCKY_CLOVER_CORE("Lucky Clover Core", Rarity.EPIC, listOf("Carrot King")),
     FLASH_BOOK("Enchanted Book (Flash I)", Rarity.COMMON, listOf("Thunder"), """Enchanted Book \(Flash (?:1|I)\)"""),
-    DEEP_SEA_ORB("Deep Sea Orb", Rarity.EPIC, listOf("Grim Reaper", "Phantom Fisher")),
+    DEEP_SEA_ORB("Deep Sea Orb", Rarity.EPIC, listOf("Grim Reaper", "Phantom Fisher", "Werewolf")),
     PRINCE_CROWN_JEWEL("Prince's Crown Jewel", Rarity.LEGENDARY, listOf("Frog Prince")),
     SCUTTLER_SHELL("Scuttler Shell", Rarity.LEGENDARY, listOf("Fiery Scuttler")),
     PYROCLASM_BOOK("Enchanted Book (Pyroclasm VI)", Rarity.COMMON, listOf("Magma Pillar"), """Enchanted Book \(Pyroclasm (?:6|VI)\)""");

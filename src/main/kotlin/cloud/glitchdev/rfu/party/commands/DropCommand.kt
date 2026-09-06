@@ -21,9 +21,11 @@ object DropCommand : AbstractPartyCommand(
     description = "Shows detailed drop stats about a specific rare drop or dye.",
     aliases = listOf("drops", "d"),
     responseTemplates = listOf(
+        "Drop {name}: Total: {total} ({breakdown}) | Count: {streak} sc | Avg: {avg} sc | Chance: {chance} | Last: {time} ago" to "&9&l{sender} &b- &6{1}&b:\n &eTotal: &f{2} &7({3}) &7| &eCount: &f{4} &esc &7| &eAvg: &f{5} &esc &7| &eChance: &f{6} &7| &eLast: &f{7} &eago",
         "Drop {name}: Total: {total} | Count: {streak} sc | Avg: {avg} sc | Chance: {chance} | Last: {time} ago" to "&9&l{sender} &b- &6{1}&b:\n &eTotal: &f{2} &7| &eCount: &f{3} &esc &7| &eAvg: &f{4} &esc &7| &eChance: &f{5} &7| &eLast: &f{6} &eago",
         "Drop '{name}' not found." to "&cDrop &6'{1}' &cnot found.",
         "Usage: !drop <item> [username]" to "&cUsage: &f!drop &e<item> [username]",
+        "Drop {name}: Total: {total} ({breakdown}) | Count: {streak} sc | Last: {time} ago" to "&9&l{sender} &b- &6{1}&b:\n &eTotal: &f{2} &7({3}) &7| &eCount: &f{4} &esc &7| &eLast: &f{5} &eago",
         "Drop {name}: Total: {total} | Count: {streak} sc | Last: {time} ago" to "&9&l{sender} &b- &6{1}&b:\n &eTotal: &f{2} &7| &eCount: &f{3} &esc &7| &eLast: &f{4} &eago",
         "Drop {name}: Total: 0 | Count: {streak} sc | Last: Never" to "&9&l{sender} &b- &6{1}&b:\n &eTotal: &f0 &7| &eCount: &f{2} &esc &7| &eLast: &cNever",
         "Drop {name}: Total: {total} | Last: {time} ago" to "&9&l{sender} &b- &6{1}&b:\n &eTotal: &f{2} &7| &eLast: &f{3} &eago",
@@ -31,6 +33,7 @@ object DropCommand : AbstractPartyCommand(
     ),
     permission = listOf(PartyCommandPermission.SELF_TRIGGER)
 ) {
+
     override fun isEnabled() = PartySettings.toggleDropCommand
 
     private fun findTarget(query: String): IRareDrop? {
@@ -45,7 +48,7 @@ object DropCommand : AbstractPartyCommand(
 
     override fun execute(sender: String, args: List<String>) {
         if (args.isEmpty()) {
-            sendPartyMessage(responseTemplates[2].first)
+            sendPartyMessage(responseTemplates[3].first)
             return
         }
 
@@ -73,7 +76,7 @@ object DropCommand : AbstractPartyCommand(
             val isForPlayer = args.size > 1 && myUsername.contains(args.last(), ignoreCase = true)
             if (args.size == 1 || isForPlayer) {
                 val notFoundName = if (isForPlayer) args.dropLast(1).joinToString(" ") else query
-                val response = formatResponse(responseTemplates[1].first, "name" to notFoundName)
+                val response = formatResponse(responseTemplates[2].first, "name" to notFoundName)
                 sendPartyMessage(response)
             }
             return
@@ -92,14 +95,14 @@ object DropCommand : AbstractPartyCommand(
             if (hasRelatedScs) {
                 val currentTotal = target.relatedScs.sumOf { sc -> CatchTracker.catchHistory.getOrAdd(sc).total }
                 val response = formatResponse(
-                    responseTemplates[4].first,
+                    responseTemplates[6].first,
                     "name" to target.displayName,
                     "streak" to currentTotal
                 )
                 sendPartyMessage(response)
             } else {
                 val response = formatResponse(
-                    responseTemplates[6].first,
+                    responseTemplates[8].first,
                     "name" to target.displayName
                 )
                 sendPartyMessage(response)
@@ -110,6 +113,20 @@ object DropCommand : AbstractPartyCommand(
         val duration = Clock.System.now() - lastDrop.date
         val timeString = duration.toReadableString()
         val totalDrops = entry.history.size
+
+        val breakdown = if (target.relatedScs.size > 1) {
+            val counts = target.relatedScs.map { sc ->
+                sc.scName to entry.history.count { it.mobName.equals(sc.scName, ignoreCase = true) }
+            }
+            val relevant = if (target.relatedScs.size <= 3) counts else counts.filter { it.second > 0 }
+            if (relevant.isNotEmpty()) {
+                relevant.joinToString(", ") { "${it.first}: ${it.second}" }
+            } else {
+                null
+            }
+        } else {
+            null
+        }
 
         if (hasRelatedScs) {
             val currentTotal = target.relatedScs.sumOf { sc -> CatchTracker.catchHistory.getOrAdd(sc).total }
@@ -123,29 +140,53 @@ object DropCommand : AbstractPartyCommand(
             }
 
             if (avg != null && chance != null) {
-                val response = formatResponse(
-                    responseTemplates[0].first,
-                    "name" to target.displayName,
-                    "total" to totalDrops,
-                    "streak" to scSince,
-                    "avg" to avg,
-                    "chance" to chance,
-                    "time" to timeString
-                )
+                val response = if (breakdown != null) {
+                    formatResponse(
+                        responseTemplates[0].first,
+                        "name" to target.displayName,
+                        "total" to totalDrops,
+                        "breakdown" to breakdown,
+                        "streak" to scSince,
+                        "avg" to avg,
+                        "chance" to chance,
+                        "time" to timeString
+                    )
+                } else {
+                    formatResponse(
+                        responseTemplates[1].first,
+                        "name" to target.displayName,
+                        "total" to totalDrops,
+                        "streak" to scSince,
+                        "avg" to avg,
+                        "chance" to chance,
+                        "time" to timeString
+                    )
+                }
                 sendPartyMessage(response)
             } else {
-                val response = formatResponse(
-                    responseTemplates[3].first,
-                    "name" to target.displayName,
-                    "total" to totalDrops,
-                    "streak" to scSince,
-                    "time" to timeString
-                )
+                val response = if (breakdown != null) {
+                    formatResponse(
+                        responseTemplates[4].first,
+                        "name" to target.displayName,
+                        "total" to totalDrops,
+                        "breakdown" to breakdown,
+                        "streak" to scSince,
+                        "time" to timeString
+                    )
+                } else {
+                    formatResponse(
+                        responseTemplates[5].first,
+                        "name" to target.displayName,
+                        "total" to totalDrops,
+                        "streak" to scSince,
+                        "time" to timeString
+                    )
+                }
                 sendPartyMessage(response)
             }
         } else {
             val response = formatResponse(
-                responseTemplates[5].first,
+                responseTemplates[7].first,
                 "name" to target.displayName,
                 "total" to totalDrops,
                 "time" to timeString
