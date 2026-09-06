@@ -49,8 +49,9 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
     var currentY = defaultY
     open val requirement: Boolean = true
     open val isElementActive: Boolean = true
+    var forcePreview: Boolean = false
     open val enabled: Boolean
-        get() = requirement && (isEditing || isElementActive)
+        get() = forcePreview || (requirement && (isEditing || isElementActive))
     open var scale = 1f
     open val skyblockOnly = true
 
@@ -275,19 +276,21 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
                 height = if (scaleTextEnabled) ChildBasedSizeConstraint() - scaleText.getHeight().pixels() else ChildBasedSizeConstraint()
             }
 
-            this.setHidden(!enabled || skyblockOnly && !World.isInSkyblock)
+            this.setHidden((!enabled || skyblockOnly && !World.isInSkyblock) && !forcePreview)
 
             onUpdateState()
         }
     }
 
-    fun openEdit() {
+    fun openEdit(preview: Boolean = false) {
+        forcePreview = preview
         isEditing = true
         updateState()
         onOpenEdit()
     }
 
     fun closeEdit() {
+        forcePreview = false
         isEditing = false
         scaleTextEnabled = false
         updateState()

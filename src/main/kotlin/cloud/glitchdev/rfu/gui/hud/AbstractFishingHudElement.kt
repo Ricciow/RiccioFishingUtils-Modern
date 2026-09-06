@@ -7,5 +7,5 @@ abstract class AbstractFishingHudElement(id: String) : AbstractTextHudElement(id
     open val displaysWhilePaused: Boolean = false
 
     override val enabled: Boolean
-        get() = requirement && (isEditing || (isElementActive && (!requiresFishing || FishingSession.isFishing) && (displaysWhilePaused || !FishingSession.isPaused)))
+        get() = forcePreview || (requirement && (isEditing || (isElementActive && (!requiresFishing || FishingSession.isFishing) && (displaysWhilePaused || !FishingSession.isPaused))))
 }

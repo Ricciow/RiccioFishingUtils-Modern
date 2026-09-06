@@ -21,7 +21,7 @@ object BossHealthBarDisplay : AbstractHudElement("bossHealthBar") {
     val bars : MutableList<BossHealthBar> = mutableListOf()
 
     override val enabled: Boolean
-        get() = (super.enabled || entities.isNotEmpty()) && SeaCreatureConfig.bossHealthBars
+        get() = forcePreview || ((super.enabled || entities.isNotEmpty()) && SeaCreatureConfig.bossHealthBars)
 
     val barsContainer = UIContainer().constrain {
         width = (400 * scale).pixels()
