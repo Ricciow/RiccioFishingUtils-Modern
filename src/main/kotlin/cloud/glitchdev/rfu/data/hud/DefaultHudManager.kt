@@ -59,11 +59,16 @@ object DefaultHudManager {
             return calculateFallbackPosition(element, screenWidth, screenHeight)
         }
 
+        if (screenWidth <= 0f || screenHeight <= 0f) {
+            return calculateFallbackPosition(element, screenWidth, screenHeight)
+        }
+
         val refW = if (defaultLayout.referenceWidth > 0f) defaultLayout.referenceWidth else 960f
         val refH = if (defaultLayout.referenceHeight > 0f) defaultLayout.referenceHeight else 540f
 
-        val scaleRatio = min(screenWidth / refW, screenHeight / refH).coerceIn(0.6f, 1.2f)
-        val finalScale = round((entry.scale * scaleRatio) * 1000f) / 1000f
+        val scaleRatio = min(screenWidth / refW, screenHeight / refH).coerceIn(0.5f, 1.0f)
+        val rawScale = round((entry.scale * scaleRatio) * 1000f) / 1000f
+        val finalScale = if (entry.scale > 0f) rawScale.coerceAtLeast(0.3f) else rawScale
 
         val scaleFactor = if (entry.scale > 0f) finalScale / entry.scale else 1f
         val actualW = if (entry.width > 0f) entry.width * scaleFactor else element.getWidth()
