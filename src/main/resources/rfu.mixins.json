@@ -5,8 +5,10 @@
   "mixins": [
     "ParsedConfigMixin",
     "ConfigScreenMixin",
-    "KeyMappingMixin",
+    "OptionsMixin",
     "KeyMappingAccessor",
+    "KeyboardHandlerMixin",
+    "MouseHandlerMixin",
     "GuiGraphicsExtractorMixin",
     "ListWidgetMixin",
     "ClientPacketListenerMixin",

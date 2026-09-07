@@ -1,7 +1,6 @@
 package cloud.glitchdev.rfu.mixin;
 
 import cloud.glitchdev.rfu.events.managers.SlotClickedEvents;
-import cloud.glitchdev.rfu.feature.debug.CopyItemDataFeature;
 import cloud.glitchdev.rfu.gui.window.HudWindow;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -60,10 +59,5 @@ public class AbstractContainerScreenMixin {
         if (slot != null && slotId >= 0) {
             SlotClickedEvents.INSTANCE.getRunTasks().invoke(slot, ((AbstractContainerScreen<?>) (Object) this));
         }
-    }
-
-    @Inject(method = "keyPressed", at = @At("HEAD"))
-    private void onKeyPressed(KeyEvent event, CallbackInfoReturnable<Boolean> cir) {
-        CopyItemDataFeature.handleContainerKeyPress(event.key());
     }
 }

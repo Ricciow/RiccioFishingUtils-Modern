@@ -1,40 +1,102 @@
 package cloud.glitchdev.rfu.feature.fishing
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
-import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.config.categories.CustomBinds
+import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig.RARE_SC_REGEX
-import cloud.glitchdev.rfu.data.mob.MobManager
-import cloud.glitchdev.rfu.events.managers.KeyboardEvents.registerKeyboardEvent
-import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.constants.text.TextColor
+import cloud.glitchdev.rfu.data.mob.MobManager
+import cloud.glitchdev.rfu.events.keybind.KeyContext
+import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.ItemUsedEvents.registerItemUsedEvent
+import cloud.glitchdev.rfu.events.managers.KeybindEvents.registerKeybind
+import cloud.glitchdev.rfu.events.managers.OptionsSaveEvents.registerAfterOptionsSave
+import cloud.glitchdev.rfu.events.managers.OptionsSaveEvents.registerBeforeOptionsSave
+import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
+import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.feature.Feature
+import cloud.glitchdev.rfu.feature.RFUFeature
+import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.dsl.isFishingRod
 import cloud.glitchdev.rfu.utils.dsl.rfuKey
-import cloud.glitchdev.rfu.feature.Feature
-import cloud.glitchdev.rfu.feature.RFUFeature
+import cloud.glitchdev.rfu.utils.dsl.toInputKey
 import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.KeyMapping
 
 @RFUFeature
 object FishingKeybindsHandler : Feature {
-    private var isRedirecting = false
-    var lastCastTime = 0L
+    private var lastCastTime = 0L
+    var isTemporarilySuspended = false
+        private set
+    var isApplied = false
+        private set
+
+    private var wasSavedWhileApplied = false
+    private val originalKeys = mutableMapOf<KeyMapping, InputConstants.Key>()
 
     override fun onInitialize() {
-        registerKeyboardEvent({ CustomBinds.resetBindsKeybind }, onPress = {
-            if (GeneralFishing.overrideFishingKeybinds) {
-                GeneralFishing.overrideFishingKeybinds = false
-                Chat.sendMessage(TextUtils.rfuLiteral("Custom fishing keybinds disabled.", TextColor.LIGHT_GREEN))
+        registerKeybind {
+            key = { CustomBinds.resetBindsKeybind }
+            priority = 100
+            context = KeyContext.ANY
+            onPress = {
+                if (GeneralFishing.overrideFishingKeybinds && !isTemporarilySuspended) {
+                    isTemporarilySuspended = true
+                    updateState()
+                    Chat.sendMessage(TextUtils.rfuLiteral("Disabled custom fishing keybinds", TextColor.LIGHT_GREEN))
+                }
             }
-        })
-        CustomBinds.rebuildCache()
+        }
+
+        registerItemUsedEvent { item ->
+            if (item.isFishingRod()) {
+                lastCastTime = System.currentTimeMillis()
+                updateState()
+            }
+        }
+
+        registerSeaCreatureCatchEvent { _, _, _, _, _ ->
+            if (isTemporarilySuspended) {
+                isTemporarilySuspended = false
+                updateState()
+            }
+        }
+
+        registerDisconnectEvent {
+            isTemporarilySuspended = false
+            revertKeybinds()
+        }
+
+        registerShutdownEvent {
+            revertKeybinds()
+        }
+
+        registerBeforeOptionsSave {
+            if (isApplied) {
+                wasSavedWhileApplied = true
+                revertKeybinds()
+            }
+        }
+
+        registerAfterOptionsSave {
+            if (wasSavedWhileApplied) {
+                wasSavedWhileApplied = false
+                updateState()
+            }
+        }
+
+        registerTickEvent(interval = 1) {
+            updateState()
+        }
     }
 
     fun isOverriding(): Boolean {
         if (!GeneralFishing.overrideFishingKeybinds) return false
+        if (isTemporarilySuspended) return false
         mc.player ?: return false
-        
+
         //~ if >=26.2 'mc.screen' -> 'mc.gui.screen()' {
         val screen = mc.gui.screen()
         //~}
@@ -51,62 +113,80 @@ object FishingKeybindsHandler : Feature {
         return false
     }
 
-    fun handleKeySet(key: InputConstants.Key, state: Boolean): Boolean {
-        if (isRedirecting) return false
+    @Synchronized
+    fun updateState() {
+        val shouldOverride = isOverriding()
+        if (shouldOverride && !isApplied) {
+            applyKeybinds()
+        } else if (!shouldOverride && isApplied) {
+            revertKeybinds()
+        }
+    }
+
+    @Synchronized
+    fun applyKeybinds() {
+        if (isApplied) return
         val options = mc.options
-        if (state && key == options.keyUse.rfuKey) {
-            val player = mc.player
-            if (player != null && player.mainHandItem.isFishingRod()) {
-                lastCastTime = System.currentTimeMillis()
+
+        originalKeys.clear()
+
+        val customHotbars = arrayOf(
+            CustomBinds.fishingHotbar1,
+            CustomBinds.fishingHotbar2,
+            CustomBinds.fishingHotbar3,
+            CustomBinds.fishingHotbar4,
+            CustomBinds.fishingHotbar5,
+            CustomBinds.fishingHotbar6,
+            CustomBinds.fishingHotbar7,
+            CustomBinds.fishingHotbar8,
+            CustomBinds.fishingHotbar9
+        )
+
+        for (i in 0..8) {
+            val mapping = options.keyHotbarSlots[i]
+            val customCode = customHotbars[i]
+            val customKey = customCode.toInputKey()
+            if (customKey != null) {
+                originalKeys[mapping] = mapping.rfuKey
+                mapping.setKey(customKey)
             }
         }
 
-        if (!isOverriding()) return false
-
-        val targetKey = getRedirectedTargetKey(key)
-        if (targetKey != null) {
-            isRedirecting = true
-            try {
-                KeyMapping.set(targetKey, state)
-            } finally {
-                isRedirecting = false
-            }
-            return true
+        val customLeft = CustomBinds.fishingLeftClick.toInputKey()
+        if (customLeft != null) {
+            originalKeys[options.keyAttack] = options.keyAttack.rfuKey
+            options.keyAttack.setKey(customLeft)
         }
 
-        if (isStandardOverriddenKey(key)) {
-            return true
+        val customRight = CustomBinds.fishingRightClick.toInputKey()
+        if (customRight != null) {
+            originalKeys[options.keyUse] = options.keyUse.rfuKey
+            options.keyUse.setKey(customRight)
         }
 
-        return false
+        if (originalKeys.isNotEmpty()) {
+            KeyMapping.resetMapping()
+            isApplied = true
+        }
     }
 
-    fun handleKeyClick(key: InputConstants.Key): Boolean {
-        if (isRedirecting) return false
-        if (!isOverriding()) return false
+    @Synchronized
+    fun revertKeybinds() {
+        if (!isApplied) return
 
-        val targetKey = getRedirectedTargetKey(key)
-        if (targetKey != null) {
-            isRedirecting = true
-            try {
-                KeyMapping.click(targetKey)
-            } finally {
-                isRedirecting = false
-            }
-            return true
+        for ((mapping, origKey) in originalKeys) {
+            mapping.isDown = false
+            mapping.setKey(origKey)
         }
-        if (isStandardOverriddenKey(key)) {
-            return true
-        }
-
-        return false
+        originalKeys.clear()
+        KeyMapping.resetMapping()
+        isApplied = false
     }
 
-    private fun getRedirectedTargetKey(physicalKey: InputConstants.Key): InputConstants.Key? {
-        return CustomBinds.redirectMap[physicalKey]
-    }
-
-    private fun isStandardOverriddenKey(key: InputConstants.Key): Boolean {
-        return CustomBinds.standardKeys.contains(key)
+    fun onConfigChanged() {
+        if (isApplied) {
+            revertKeybinds()
+            updateState()
+        }
     }
 }

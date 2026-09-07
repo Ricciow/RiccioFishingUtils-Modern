@@ -1,4 +1,4 @@
-﻿package cloud.glitchdev.rfu.feature.fishing
+package cloud.glitchdev.rfu.feature.fishing
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.HotSpotSettings
@@ -9,7 +9,7 @@ import cloud.glitchdev.rfu.data.fishing.Hotspot
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
 import cloud.glitchdev.rfu.events.managers.HotSpotEvents
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
-import cloud.glitchdev.rfu.events.managers.KeyboardEvents.registerKeyboardEvent
+import cloud.glitchdev.rfu.events.managers.KeybindEvents.registerKeybind
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
@@ -57,9 +57,10 @@ object HotspotSharer : Feature {
             notifiedHotspots.clear()
         }
 
-        registerKeyboardEvent({ HotSpotSettings.shareHotspotKey }, onPress = {
-            shareNearestHotspot()
-        })
+        registerKeybind {
+            key = { HotSpotSettings.shareHotspotKey }
+            onPress = { shareNearestHotspot() }
+        }
     }
 
     private fun shareNearestHotspot() {

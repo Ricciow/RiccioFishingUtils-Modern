@@ -4,7 +4,8 @@ import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextStyle
-import cloud.glitchdev.rfu.events.managers.KeyboardEvents.registerKeyboardEvent
+import cloud.glitchdev.rfu.events.keybind.KeyContext
+import cloud.glitchdev.rfu.events.managers.KeybindEvents.registerKeybind
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.mixin.AbstractContainerScreenAccessor
@@ -21,38 +22,19 @@ import net.minecraft.world.item.ItemStack
 
 @RFUFeature
 object CopyItemDataFeature : Feature {
-
     override fun onInitialize() {
-        registerKeyboardEvent(
-            key = { DevSettings.copyItemDataKeybind },
-            onPress = {
-                //~ if >=26.2 'screen' -> 'gui.screen()' {
-                if (DevSettings.devMode && mc.gui.screen() == null) {
-                //~}
-                    copyCurrentItemData()
-                }
-            }
-        )
+        registerKeybind {
+            key = { DevSettings.copyItemDataKeybind }
+            context = KeyContext.ANY
+            condition = { DevSettings.devMode }
+            onPress = { copyCurrentItemData() }
+        }
 
-        registerKeyboardEvent(
-            key = { DevSettings.copyContainerDataKeybind },
-            onPress = {
-                //~ if >=26.2 'screen' -> 'gui.screen()' {
-                if (DevSettings.devMode && mc.gui.screen() == null) {
-                //~}
-                    copyContainerData()
-                }
-            }
-        )
-    }
-
-    @JvmStatic
-    fun handleContainerKeyPress(key: Int) {
-        if (!DevSettings.devMode || key == 0) return
-        if (key == DevSettings.copyItemDataKeybind) {
-            copyCurrentItemData()
-        } else if (key == DevSettings.copyContainerDataKeybind) {
-            copyContainerData()
+        registerKeybind {
+            key = { DevSettings.copyContainerDataKeybind }
+            context = KeyContext.ANY
+            condition = { DevSettings.devMode }
+            onPress = { copyContainerData() }
         }
     }
 

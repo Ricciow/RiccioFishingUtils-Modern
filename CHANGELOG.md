@@ -27,9 +27,11 @@
 - Renamed Galatea to Moonglade Marsh
 - Made the emojis in party finder be sent in emoji form so it only occupies 1 char
 - Made party finder creation window save between sessions
+- Made panic keybind for custom fishing keybinds not disable the feature entirely.
 
 ### Back-end
 - Made the mob tracking event driven, making it faster and improving Time to Kill accuracy.
 - Linked rare drops and dyes to mobs.
 - Added inventory support for hud elements
 - Added exponential backoff to Mayor API requests on failure.
+- Reworked the keybind system to be event-driven.

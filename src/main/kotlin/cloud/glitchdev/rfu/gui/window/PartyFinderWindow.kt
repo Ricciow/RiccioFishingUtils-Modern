@@ -3,7 +3,7 @@ package cloud.glitchdev.rfu.gui.window
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.events.managers.HudRenderEvents.registerHudRenderEvent
-import cloud.glitchdev.rfu.events.managers.KeyboardEvents.registerKeyboardEvent
+import cloud.glitchdev.rfu.events.managers.KeybindEvents.registerKeybind
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.UIPopup
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyListChangedEvent
@@ -120,11 +120,11 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             }
         }
 
-        registerKeyboardEvent(
-            key = { OtherSettings.peekPartyFinderKeybind },
-            onPress = { if (!World.isOnAlpha) isPeeking = true },
+        registerKeybind {
+            key = { OtherSettings.peekPartyFinderKeybind }
+            onPress = { if (!World.isOnAlpha) isPeeking = true }
             onRelease = { isPeeking = false }
-        )
+        }
 
         registerHudRenderEvent(50) { context, ticks ->
             if (isPeeking) {
