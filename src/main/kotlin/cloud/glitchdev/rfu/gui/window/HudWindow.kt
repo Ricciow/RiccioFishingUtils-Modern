@@ -14,6 +14,7 @@ import cloud.glitchdev.rfu.data.hud.HudManager
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.gui.Gui
+import cloud.glitchdev.rfu.utils.gui.isHidden
 import cloud.glitchdev.rfu.utils.gui.setHidden
 import gg.essential.elementa.components.UIBlock
 import gg.essential.elementa.components.UIContainer
@@ -27,6 +28,9 @@ import gg.essential.elementa.dsl.minus
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.toConstraint
+import cloud.glitchdev.rfu.config.categories.OtherSettings
+import net.minecraft.client.gui.GuiGraphicsExtractor
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import java.awt.Color
 
 object HudWindow : BaseWindow(false) {
@@ -35,6 +39,15 @@ object HudWindow : BaseWindow(false) {
     var isEditingOpen = false
     var isExportMode = false
     val hudElements : MutableList<AbstractHudElement> = mutableListOf()
+
+    var currentContainerScreen: AbstractContainerScreen<*>? = null
+        private set
+
+    val isOnInventory: Boolean
+        get() = currentContainerScreen != null
+
+    var isInteractingWithHud: Boolean = false
+        private set
 
     lateinit var vSnapLine: UIContainer
     lateinit var hSnapLine: UIContainer
@@ -45,12 +58,26 @@ object HudWindow : BaseWindow(false) {
     private var resetClickTimestamp = 0L
     private var isConfirmingReset = false
 
+    enum class RenderPass {
+        NONE,
+        HUD,
+        INVENTORY
+    }
+
+    var currentRenderPass: RenderPass = RenderPass.NONE
+        private set
+
     init {
         create()
 
         registerHudRenderEvent { context, ticks ->
-            if(!isEditingOpen) {
-                extractRenderState(context, 0, 0, ticks)
+            if (!isEditingOpen) {
+                currentRenderPass = RenderPass.HUD
+                try {
+                    extractRenderState(context, 0, 0, ticks)
+                } finally {
+                    currentRenderPass = RenderPass.NONE
+                }
             }
         }
 
@@ -101,6 +128,83 @@ object HudWindow : BaseWindow(false) {
         if (anyResolved) {
             HudManager.hudFile.save()
         }
+    }
+
+    fun onInventoryOpened(screen: AbstractContainerScreen<*>) {
+        currentContainerScreen = screen
+        isInteractingWithHud = false
+        for (element in hudElements) {
+            element.updateState()
+        }
+    }
+
+    fun onInventoryClosed() {
+        currentContainerScreen = null
+        isInteractingWithHud = false
+        if (OtherSettings.patchElementaMemoryLeaks) {
+            window.invalidateCachedConstraints()
+        }
+        for (element in hudElements) {
+            element.updateState()
+        }
+    }
+
+    fun renderOnInventory(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, deltaTicks: Float) {
+        if (isEditingOpen) return
+        currentRenderPass = RenderPass.INVENTORY
+        try {
+            extractRenderState(context, mouseX, mouseY, deltaTicks)
+        } finally {
+            currentRenderPass = RenderPass.NONE
+        }
+    }
+
+    fun getHoveredElement(x: Double, y: Double): AbstractHudElement? {
+        val fx = x.toFloat()
+        val fy = y.toFloat()
+        for (element in hudElements.asReversed()) {
+            if (element.enabled && element.renderOnInventory && !element.isHidden() && element.isPointInside(fx, fy)) {
+                return element
+            }
+        }
+        return null
+    }
+
+    fun handleMouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
+        if (isEditingOpen) return false
+        val hovered = getHoveredElement(mouseX, mouseY)
+        if (hovered != null && hovered.isClickableOnInventory) {
+            isInteractingWithHud = true
+            hovered.mouseClick(mouseX, mouseY, button)
+            return true
+        }
+        return false
+    }
+
+    fun handleMouseReleased(mouseX: Double, mouseY: Double, button: Int): Boolean {
+        if (isEditingOpen) return false
+        val wasInteracting = isInteractingWithHud
+        window.mouseRelease()
+        isInteractingWithHud = false
+        return wasInteracting
+    }
+
+    fun handleMouseDragged(mouseX: Double, mouseY: Double, button: Int, dx: Double, dy: Double): Boolean {
+        if (isEditingOpen) return false
+        if (isInteractingWithHud) {
+            return true
+        }
+        return false
+    }
+
+    fun handleMouseScrolled(mouseX: Double, mouseY: Double, scrollX: Double, scrollY: Double): Boolean {
+        if (isEditingOpen) return false
+        val hovered = getHoveredElement(mouseX, mouseY)
+        if (hovered != null && hovered.isClickableOnInventory) {
+            hovered.mouseScroll(scrollX, scrollY)
+            return true
+        }
+        return false
     }
 
     fun openEditingGui() {

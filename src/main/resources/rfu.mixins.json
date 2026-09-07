@@ -35,7 +35,9 @@
     "elementa.UIComponentMixin",
     "elementa.MappedStateMixin",
     "elementa.AnimatingConstraintsMixin",
-    "elementa.WindowScreenMixin"
+    "elementa.WindowScreenMixin",
+    "ScreenMixin",
+    "universalcraft.UScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

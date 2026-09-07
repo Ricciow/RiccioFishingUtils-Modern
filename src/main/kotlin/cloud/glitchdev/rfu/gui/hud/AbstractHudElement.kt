@@ -22,6 +22,7 @@ import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.plus
 import gg.essential.elementa.dsl.toConstraint
 import gg.essential.universal.UKeyboard
+import gg.essential.universal.UMatrixStack
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.round
@@ -49,6 +50,11 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
     var currentY = defaultY
     open val requirement: Boolean = true
     open val isElementActive: Boolean = true
+    open val isOnInventory: Boolean
+        get() = HudWindow.isOnInventory
+    open val renderOnHud: Boolean = true
+    open val renderOnInventory: Boolean = false
+    open val isClickableOnInventory: Boolean = true
     var forcePreview: Boolean = false
     open val enabled: Boolean
         get() = forcePreview || (requirement && (isEditing || isElementActive))
@@ -81,19 +87,18 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
         scaleText.hide()
 
         this.onMouseClick { event ->
-            grabWindowFocus()
             if (HudWindow.isEditingOpen && isEditing) {
+                grabWindowFocus()
                 isDragging = true
                 dragOffsetX = event.absoluteX - this.getLeft()
                 dragOffsetY = event.absoluteY - this.getTop()
+                scaleTextEnabled = true
                 updateState()
             }
-
-            scaleTextEnabled = true
         }
 
         this.onMouseDrag { mouseX, mouseY, _ ->
-            if (isDragging) {
+            if (HudWindow.isEditingOpen && isEditing && isDragging) {
                 grabWindowFocus()
                 updatePosition(mouseX, mouseY)
                 scaleTextEnabled = true
@@ -101,23 +106,25 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
         }
 
         this.onMouseScroll { event ->
-            grabWindowFocus()
-            val shiftDown = UKeyboard.isShiftKeyDown()
-            val ctrlDown = UKeyboard.isCtrlKeyDown()
+            if (HudWindow.isEditingOpen && isEditing) {
+                grabWindowFocus()
+                val shiftDown = UKeyboard.isShiftKeyDown()
+                val ctrlDown = UKeyboard.isCtrlKeyDown()
 
-            var supression = when {
-                shiftDown && ctrlDown -> 1000
-                shiftDown || ctrlDown -> 100
-                else -> 10
+                var supression = when {
+                    shiftDown && ctrlDown -> 1000
+                    shiftDown || ctrlDown -> 100
+                    else -> 10
+                }
+
+                val effect = event.delta.toFloat() / supression
+
+                scale = round(max(0.3f, scale + effect) * 1000) / 1000
+
+                scaleTextEnabled = true
+
+                updateState()
             }
-
-            val effect = event.delta.toFloat() / supression
-
-            scale = round(max(0.3f, scale + effect) * 1000) / 1000
-
-            scaleTextEnabled = true
-
-            updateState()
         }
 
         this.onMouseRelease {
@@ -126,25 +133,30 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
                 HudWindow.showSnapLines(null, null)
             }
 
-            scaleTextEnabled = false
-
-            updateState()
+            if (scaleTextEnabled) {
+                scaleTextEnabled = false
+                updateState()
+            }
         }
 
         this.onFocus {
-            scaleTextEnabled = true
-            HudWindow.setInfotextState(false)
-            updateState()
+            if (HudWindow.isEditingOpen && isEditing) {
+                scaleTextEnabled = true
+                HudWindow.setInfotextState(false)
+                updateState()
+            }
         }
 
         this.onFocusLost {
             scaleTextEnabled = false
-            HudWindow.setInfotextState(true)
+            if (HudWindow.isEditingOpen && isEditing) {
+                HudWindow.setInfotextState(true)
+            }
             updateState()
         }
 
         this.onKeyType { _, id ->
-            if(id == UKeyboard.KEY_ESCAPE) {
+            if (HudWindow.isEditingOpen && isEditing && id == UKeyboard.KEY_ESCAPE) {
                 HudWindow.closeScreen()
             }
         }
@@ -302,6 +314,22 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
     open fun onUpdateState() {}
     open fun onOpenEdit() {}
     open fun onCloseEdit() {}
+
+    protected open fun shouldDrawInCurrentPass(): Boolean {
+        if (HudWindow.isEditingOpen && isEditing) return true
+        if (forcePreview) return true
+
+        return when (HudWindow.currentRenderPass) {
+            HudWindow.RenderPass.HUD -> renderOnHud
+            HudWindow.RenderPass.INVENTORY -> isOnInventory && renderOnInventory
+            HudWindow.RenderPass.NONE -> !isOnInventory && renderOnHud
+        }
+    }
+
+    override fun draw(matrixStack: UMatrixStack) {
+        if (!shouldDrawInCurrentPass()) return
+        super.draw(matrixStack)
+    }
 
     companion object {
         private const val Y_LIMIT = 8
