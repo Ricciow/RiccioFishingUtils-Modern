@@ -67,4 +67,28 @@ object TrophyFishing : Category("Trophy Fishing") {
         name = Literal("Slugfish Timer")
         description = Literal("Displays the 20s timer required to catch slugfish above the bobber, shorter if using slug pet.")
     }
+
+    init {
+        dualSeparator {
+            title = "Trophy Sacks"
+            description = "Features related to Trophy Fishing and Frog Sacks"
+        }
+    }
+
+    var trophySackDisplay by reloadableBoolean(true) {
+        name = Literal("Trophy Sack Value Display")
+        description = Literal("Displays fillet (Magmafish) and donation (Lotuses) rewards when opening Trophy Sacks.")
+    }
+
+    var trophySackShowBreakdown by boolean(true) {
+        name = Literal("Show Trophy Breakdown")
+        description = Literal("Displays each individual trophy stored in the sack alongside its reward.")
+        condition = { trophySackDisplay }
+    }
+
+    var trophySackShowEmpty by boolean(false) {
+        name = Literal("Show Empty Trophies")
+        description = Literal("Shows trophies with 0 stored count in the breakdown.")
+        condition = { trophySackDisplay && trophySackShowBreakdown }
+    }
 }

@@ -45,7 +45,7 @@
     "dailyStreakDisplay": {
       "anchor": "BOTTOM_LEFT",
       "x": 10.0,
-      "y": 110.5,
+      "y": 111.0,
       "scale": 1.0,
       "width": 123.0,
       "height": 36.0
@@ -72,7 +72,7 @@
       "y": 21.7,
       "scale": 1.0,
       "width": 78.0,
-      "height": 27.0
+      "height": 37.0
     },
     "frogcoinBlessing": {
       "anchor": "TOP_LEFT",
@@ -100,10 +100,10 @@
     },
     "rareDropsDisplay": {
       "anchor": "TOP_RIGHT",
-      "x": 15.0,
-      "y": 42.7,
+      "x": 10.7,
+      "y": 53.3,
       "scale": 1.0,
-      "width": 206.0,
+      "width": 228.0,
       "height": 27.0
     },
     "rareSCDisplay": {
@@ -111,7 +111,7 @@
       "x": 9.7,
       "y": -20.0,
       "scale": 1.0,
-      "width": 196.0,
+      "width": 197.0,
       "height": 27.0
     },
     "rodTimer": {
@@ -137,6 +137,14 @@
       "scale": 1.0,
       "width": 151.0,
       "height": 27.0
+    },
+    "trophySackDisplay": {
+      "anchor": "MIDDLE_RIGHT",
+      "x": 9.3,
+      "y": -44.0,
+      "scale": 1.0,
+      "width": 167.0,
+      "height": 79.0
     }
   }
 }

@@ -13,6 +13,7 @@
 - Added {mob} variable to rare drop chat messages and title alerts
 - Added Rare Drops Display
 - Added a better default HUD system and a reset button
+- Added Trophy Sack filleting and donation display on sacks
 
 ### Fixes
 - Added Elementa memory leak patch (toggleable in Other settings if it causes conflicts)
