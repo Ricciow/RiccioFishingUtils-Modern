@@ -1,4 +1,4 @@
-# v1.18.0 - ???
+# v1.18.0 - QoL & Polish
 
 ### Features
 - Added the !sc party command with more detailed info about scs
