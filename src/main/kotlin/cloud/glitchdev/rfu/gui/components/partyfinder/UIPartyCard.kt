@@ -301,9 +301,9 @@ class UIPartyCard(
         val icon = if(isUser) "delete" else "report"
         val image = UIImage.ofResource("/assets/rfu/ui/$icon.png")
         overlayButton = UIButton.withImage(image, 5f, isBordered = true) {
-            val action = if (isUser) "delete your party" else "report ${party.user}'s party"
+            val action = if (isUser) "delete your party?" else "report ${party.user}'s party?\nThis is only for the party finder listing, not what happens inside the party, use hypixel's reporting for that."
             val pcText = postConfirmationText ?: if (isUser) null else "Party reported"
-            PartyFinderWindow.popup.show("Are you sure you want to $action?", pcText) {
+            PartyFinderWindow.popup.show("Are you sure you want to $action", pcText) {
                 if (isUser) {
                     PartyWebSocket.deleteParty(party.user)
                 } else {
