@@ -54,4 +54,12 @@ public class ClientPacketListenerMixin {
         VoidCancelable cancelable = new VoidCancelable(ci);
         ParticleEvents.INSTANCE.getRunTasks().invoke(packet, cancelable);
     }
+
+    @Inject(method = "handleEntityEvent", at = @At("TAIL"))
+    private void onEntityEvent(ClientboundEntityEventPacket packet, CallbackInfo ci) {
+        Entity entity = packet.getEntity(this.level);
+        if (entity != null) {
+            EntityStatusEvents.INSTANCE.getRunTasks().invoke(entity, packet.getEventId());
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
+import cloud.glitchdev.rfu.constants.fishing.RareDropDisplayDataType
 import cloud.glitchdev.rfu.constants.skyblock.Dyes
 import cloud.glitchdev.rfu.constants.fishing.RareDrops
 import cloud.glitchdev.rfu.feature.drops.RareDropAlert
@@ -41,7 +42,7 @@ object DropsSettings : Category("Drops") {
 
     var rareDropMessageFormat by string("&6&lRARE DROP! &e{drop} &b(+{magic_find} \uE01A Magic Find) &7(Took {count} catches, {time} since last)") {
         name = Literal("Custom Message Format")
-        description = Literal("Variables: {drop}, {magic_find}, {count}, {time}, {total}")
+        description = Literal("Variables: {drop}, {dropcolor}, {mob}, {magic_find}, {count}, {time}, {total}")
         condition = { customRareDropMessage }
     }
 
@@ -78,13 +79,13 @@ object DropsSettings : Category("Drops") {
 
     var rareDropTitleFormat by string("{dropcolor}&l{drop}") {
         name = Literal("Rare Drop Title Format")
-        description = Literal("The title to show on screen. Variables: {drop}, {dropcolor}, {magic_find}, {count}, {time}, {total}")
+        description = Literal("The title to show on screen. Variables: {drop}, {dropcolor}, {mob}, {magic_find}, {count}, {time}, {total}")
         condition = { rareDropTitleAlert }
     }
 
     var rareDropSubtitleFormat by string("&b(+{magic_find} \uE01A Magic Find)") {
         name = Literal("Rare Drop Subtitle Format")
-        description = Literal("The subtitle to show on screen. Variables: {drop}, {dropcolor}, {magic_find}, {count}, {time}, {total}")
+        description = Literal("The subtitle to show on screen. Variables: {drop}, {dropcolor}, {mob}, {magic_find}, {count}, {time}, {total}")
         condition = { rareDropTitleAlert }
     }
 
@@ -94,5 +95,41 @@ object DropsSettings : Category("Drops") {
             "Preview Title",
             "Shows a preview of the rare drop title on screen."
         ) { rareDropTitleAlert }
+    }
+
+    init {
+        dualSeparator {
+            title = "Rare Drops Display"
+            description = "Track your rare drops!"
+        }
+    }
+
+    var rareDropsDisplay by reloadableBoolean(true) {
+        name = Literal("Toggle")
+        description = Literal("Enables the Rare Drops display")
+    }
+
+    var rareDropsOnlyWhenFishing by boolean(true) {
+        name = Literal("Only display when fishing")
+        description = Literal("Only show the rare drops when fishing")
+        condition = { rareDropsDisplay }
+    }
+
+    var rareDropsDisplayDyes by boolean(true) {
+        name = Literal("Include Dyes")
+        description = Literal("Include Dyes in the display")
+        condition = { rareDropsDisplay }
+    }
+
+    var displayedRareDrops by enums(*RareDrops.entries.toTypedArray()) {
+        name = Literal("Displayed Rare Drops")
+        description = Literal("Select which rare drops will appear on the display")
+        condition = { rareDropsDisplay }
+    }
+
+    var rareDropsDisplayDataOrder by draggable(*RareDropDisplayDataType.entries.toTypedArray()) {
+        name = Literal("Display Data Order")
+        description = Literal("Drag to reorder the data shown for each drop.")
+        condition = { rareDropsDisplay }
     }
 }

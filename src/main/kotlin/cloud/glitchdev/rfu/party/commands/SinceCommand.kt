@@ -1,4 +1,4 @@
-﻿package cloud.glitchdev.rfu.party.commands
+package cloud.glitchdev.rfu.party.commands
 
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.constants.fishing.RareDrops
@@ -25,8 +25,12 @@ object SinceCommand : AbstractPartyCommand(
         "Since {name}: {count} catches | Last catch: {time} ago" to "&9&l{sender} &b- &6{1}&b:\n &f{2} &ecatches &7| &f{3} &eago",
         "Target '{name}' not found." to "&cTarget &6'{1}' &cnot found.",
         "Usage: !since <target> [username]" to "&cUsage: &f!since &e<target> [username]",
-        "Since {name}: {count} drops | Last drop: {time} ago" to "&9&l{sender} &b- &6{1}&b:\n &f{2} &edrops &7| &f{3} &eago",
-        "Since Grass: 0 touches | Last touch: Never" to "&9&l{sender} &b- &aGrass&b:\n &c0 &etouches &7| &cNever"
+        "Since {name}: {count} sc | Last drop: {time} ago" to "&9&l{sender} &b- &6{1}&b:\n &f{2} &esc &7| &f{3} &eago",
+        "Since Grass: 0 touches | Last touch: Never" to "&9&l{sender} &b- &aGrass&b:\n &c0 &etouches &7| &cNever",
+        "Since {name}: {count} sea creatures | Last drop: Never" to "&9&l{sender} &b- &6{1}&b:\n &f{2} &esc &7| &cNever",
+        "Since {name}: {count} catches | Last catch: Never" to "&9&l{sender} &b- &6{1}&b:\n &f{2} &ecatches &7| &cNever",
+        //Backwards Compatibility
+        "Since {name}: {count} drops | Last drop: {time} ago" to "&9&l{sender} &b- &6{1}&b:\n &f{2} &edrops &7| &f{3} &eago"
     ),
     permission = listOf(PartyCommandPermission.SELF_TRIGGER)
 ) {
@@ -108,15 +112,23 @@ object SinceCommand : AbstractPartyCommand(
         when (target) {
             is SeaCreatures -> {
                 val record = CatchTracker.catchHistory.getOrAdd(target)
-                val duration = Clock.System.now() - record.time
-                
-                val response = formatResponse(
-                    responseTemplates[0].first,
-                    "name" to target.scDisplayName,
-                    "count" to record.count,
-                    "time" to duration.toReadableString()
-                )
-                sendPartyMessage(response)
+                if (record.total == 0) {
+                    val response = formatResponse(
+                        responseTemplates[6].first,
+                        "name" to target.scDisplayName,
+                        "count" to record.count
+                    )
+                    sendPartyMessage(response)
+                } else {
+                    val duration = Clock.System.now() - record.time
+                    val response = formatResponse(
+                        responseTemplates[0].first,
+                        "name" to target.scDisplayName,
+                        "count" to record.count,
+                        "time" to duration.toReadableString()
+                    )
+                    sendPartyMessage(response)
+                }
             }
             is IRareDrop -> {
                 val entry: DropHistory.IDropEntry? = when (target) {
@@ -126,15 +138,27 @@ object SinceCommand : AbstractPartyCommand(
                 }
                 
                 if (entry != null) {
-                    if (entry.history.isEmpty()) {
-                        sendPartyMessage("No history for ${target.displayName}.")
+                    val currentTotal = if (target.relatedScs.isEmpty()) {
+                        0
                     } else {
-                        val lastDrop = entry.history.last()
+                        target.relatedScs.sumOf { sc -> CatchTracker.catchHistory.getOrAdd(sc).total }
+                    }
+
+                    val lastDrop = entry.history.lastOrNull()
+                    if (lastDrop == null) {
+                        val response = formatResponse(
+                            responseTemplates[5].first,
+                            "name" to target.displayName,
+                            "count" to currentTotal
+                        )
+                        sendPartyMessage(response)
+                    } else {
+                        val scSince = (currentTotal - lastDrop.totalCount).coerceAtLeast(0)
                         val duration = Clock.System.now() - lastDrop.date
                         val response = formatResponse(
                             responseTemplates[3].first,
                             "name" to target.displayName,
-                            "count" to entry.history.size,
+                            "count" to scSince,
                             "time" to duration.toReadableString()
                         )
                         sendPartyMessage(response)

@@ -47,7 +47,6 @@ class UIPopup(
     var postConfirmationText: String? = null
 
     init {
-        this.hide()
         create()
     }
 
@@ -67,6 +66,12 @@ class UIPopup(
         } else {
             okButton.hide()
             confirmCancelContainer.unhide()
+        }
+
+        if (hasParent) {
+            val p = parent
+            p.removeChild(this)
+            this childOf p
         }
 
         unhide()

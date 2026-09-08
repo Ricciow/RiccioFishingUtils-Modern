@@ -38,7 +38,7 @@ enum class SeaCreatureCategory(val islands: List<FishingIslands>, val partyTypes
         listOf(
             FishingIslands.HUB,
             FishingIslands.DESERT,
-            FishingIslands.GALATEA,
+            FishingIslands.MOONGLADE_MARSH,
             FishingIslands.SPIDER,
             FishingIslands.HOLLOWS,
             FishingIslands.BAYOU,
@@ -54,7 +54,7 @@ enum class SeaCreatureCategory(val islands: List<FishingIslands>, val partyTypes
         listOf(
             FishingIslands.HUB,
             FishingIslands.DESERT,
-            FishingIslands.GALATEA,
+            FishingIslands.MOONGLADE_MARSH,
             FishingIslands.SPIDER,
             FishingIslands.HOLLOWS,
             FishingIslands.BAYOU,
@@ -67,7 +67,7 @@ enum class SeaCreatureCategory(val islands: List<FishingIslands>, val partyTypes
         listOf(PartyTypes.REGULAR, PartyTypes.HOTSPOT, PartyTypes.BARN)
     ),
     GALATEA(
-        listOf(FishingIslands.GALATEA),
+        listOf(FishingIslands.MOONGLADE_MARSH),
         listOf(PartyTypes.REGULAR, PartyTypes.BARN)
     ),
     BAYOU(

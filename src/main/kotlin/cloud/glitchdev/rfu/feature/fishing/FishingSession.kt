@@ -1,11 +1,11 @@
-﻿package cloud.glitchdev.rfu.feature.fishing
+package cloud.glitchdev.rfu.feature.fishing
 
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.data.fishing.Hotspot
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
-import cloud.glitchdev.rfu.events.managers.KeyboardEvents.registerKeyboardEvent
+import cloud.glitchdev.rfu.events.managers.KeybindEvents.registerKeybind
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.events.managers.SkillEvents.registerSkillXpUpdateEvent
@@ -86,7 +86,10 @@ object FishingSession : Feature {
             lastHotspot = null
         }
 
-        registerKeyboardEvent({ GeneralFishing.pauseKeybind }, onPress = { togglePause() })
+        registerKeybind {
+            key = { GeneralFishing.pauseKeybind }
+            onPress = { togglePause() }
+        }
 
         registerTickEvent(interval = 20) {
             val now = Clock.System.now()

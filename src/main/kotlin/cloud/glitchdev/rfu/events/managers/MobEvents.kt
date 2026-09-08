@@ -18,6 +18,20 @@ object MobEvents {
         return MobDisposeEventManager.register(priority, callback)
     }
 
+    fun registerMobDeathEvent(
+        priority: Int = 20,
+        callback: (Set<SkyblockEntity>) -> Unit
+    ): MobDeathEventManager.MobDeathEvent {
+        return MobDeathEventManager.register(priority, callback)
+    }
+
+    fun registerMobUpdateEvent(
+        priority: Int = 20,
+        callback: (SkyblockEntity) -> Unit
+    ): MobUpdateEventManager.MobUpdateEvent {
+        return MobUpdateEventManager.register(priority, callback)
+    }
+
     object MobDetectEventManager : AbstractEventManager<(Set<SkyblockEntity>) -> Unit, MobDetectEventManager.MobDetectEvent>() {
         override val runTasks: (Set<SkyblockEntity>) -> Unit = { mobs ->
             safeExecution {
@@ -53,6 +67,46 @@ object MobEvents {
             priority: Int = 20,
             callback: (Set<SkyblockEntity>) -> Unit
         ) : ManagedTask<(Set<SkyblockEntity>) -> Unit, MobDisposeEvent>(priority, callback) {
+            override fun register() = submitTask(this)
+            override fun unregister() = removeTask(this)
+        }
+    }
+
+    object MobDeathEventManager : AbstractEventManager<(Set<SkyblockEntity>) -> Unit, MobDeathEventManager.MobDeathEvent>() {
+        override val runTasks: (Set<SkyblockEntity>) -> Unit = { mob ->
+            safeExecution {
+                tasks.forEach { task -> task.callback(mob) }
+            }
+        }
+
+        fun register(priority: Int = 20, callback: (Set<SkyblockEntity>) -> Unit): MobDeathEvent {
+            return MobDeathEvent(priority, callback).register()
+        }
+
+        class MobDeathEvent(
+            priority: Int = 20,
+            callback: (Set<SkyblockEntity>) -> Unit
+        ) : ManagedTask<(Set<SkyblockEntity>) -> Unit, MobDeathEvent>(priority, callback) {
+            override fun register() = submitTask(this)
+            override fun unregister() = removeTask(this)
+        }
+    }
+
+    object MobUpdateEventManager : AbstractEventManager<(SkyblockEntity) -> Unit, MobUpdateEventManager.MobUpdateEvent>() {
+        override val runTasks: (SkyblockEntity) -> Unit = { mob ->
+            safeExecution {
+                tasks.forEach { task -> task.callback(mob) }
+            }
+        }
+
+        fun register(priority: Int = 20, callback: (SkyblockEntity) -> Unit): MobUpdateEvent {
+            return MobUpdateEvent(priority, callback).register()
+        }
+
+        class MobUpdateEvent(
+            priority: Int = 20,
+            callback: (SkyblockEntity) -> Unit
+        ) : ManagedTask<(SkyblockEntity) -> Unit, MobUpdateEvent>(priority, callback) {
             override fun register() = submitTask(this)
             override fun unregister() = removeTask(this)
         }

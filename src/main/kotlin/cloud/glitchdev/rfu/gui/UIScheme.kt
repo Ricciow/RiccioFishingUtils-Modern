@@ -89,6 +89,9 @@ object UIScheme {
     val pfCardLevelLabelColor = Color(180, 180, 180)
     val pfCardDescriptionColor = Color(150, 150, 150)
     val pfCardOverlayHoverColor = Color(255, 85, 85)
+    //Pf presets
+    val pfCardPresetsDeleteTextHoverColor = Color(255, 85, 85)
+    val pfCardPresetsDeleteHoverColor = Color(255, 85, 85, 128)
     //Pf Layout
     val pfInputHeight = 18f
     val pfDescriptionHeight = 30f

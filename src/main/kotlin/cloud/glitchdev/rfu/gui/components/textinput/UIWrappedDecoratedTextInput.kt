@@ -1,9 +1,7 @@
 package cloud.glitchdev.rfu.gui.components.textinput
 
 import cloud.glitchdev.rfu.gui.UIScheme
-import cloud.glitchdev.rfu.utils.gui.addHoverColoring
 import gg.essential.elementa.components.UIRoundedRectangle
-import gg.essential.elementa.components.input.UIMultilineTextInput
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.childOf
@@ -17,7 +15,6 @@ import gg.essential.universal.UMatrixStack
 import cloud.glitchdev.rfu.gui.components.Colorable
 import cloud.glitchdev.rfu.gui.components.elementa.UISpecialMultilineTextInput
 import gg.essential.elementa.dsl.animate
-import java.awt.Color
 
 class UIWrappedDecoratedTextInput(
     val placeholder: String,

@@ -12,6 +12,8 @@ fun Long.compact(): String {
     }
 }
 
+fun Int.compact(): String = this.toLong().compact()
+
 private fun formatDecimal(value: Double): String {
     val s = String.format(Locale.US, "%.1f", value)
     return if (s.endsWith(".0")) s.dropLast(2) else s

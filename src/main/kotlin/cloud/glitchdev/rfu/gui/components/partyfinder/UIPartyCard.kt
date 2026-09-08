@@ -1,6 +1,9 @@
 package cloud.glitchdev.rfu.gui.components.partyfinder
 
 import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
+import cloud.glitchdev.rfu.constants.text.TextEffects
+import cloud.glitchdev.rfu.constants.text.TextStyle
+import cloud.glitchdev.rfu.feature.other.EmojiFeature
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.UIPopup
@@ -181,9 +184,12 @@ class UIPartyCard(
         } childOf header
 
         val userText = UIText(party.user) childOf textContainer
-        val title = party.title.ifEmpty { party.island.island }
+        val title = party.title
+            .takeIf { it.isNotEmpty() }
+            ?.let { TextEffects.BOLD.toString() + EmojiFeature.clearAndApplyPostStyle(it, TextStyle(TextEffects.BOLD)) }
+            ?: party.island.island
 
-        titleText = UIText("§l$title").constrain {
+        titleText = UIText(title).constrain {
             x = 0.pixels
             y = SiblingConstraint(UIScheme.pfCardSmallPadding)
             width = MinConstraint(ScaledTextConstraint(1f), 70.percent)
@@ -228,7 +234,10 @@ class UIPartyCard(
 
         descriptionSeparator = UIBlock() childOf descriptionContainer
 
-        val descriptionText = party.description.ifEmpty { "${party.island.island} fishing." }
+        val descriptionText = party.description
+            .takeIf { it.isNotEmpty() }
+            ?.let { EmojiFeature.clearAndApplyPostStyle(it, TextStyle()) }
+            ?: "${party.island.island} fishing."
 
         val description = UIWrappedText(descriptionText).constrain {
             x = SiblingConstraint(UIScheme.pfCardSmallPadding)
@@ -292,9 +301,9 @@ class UIPartyCard(
         val icon = if(isUser) "delete" else "report"
         val image = UIImage.ofResource("/assets/rfu/ui/$icon.png")
         overlayButton = UIButton.withImage(image, 5f, isBordered = true) {
-            val action = if (isUser) "delete your party" else "report ${party.user}'s party"
+            val action = if (isUser) "delete your party?" else "report ${party.user}'s party?\nThis is only for the party finder listing, not what happens inside the party, use hypixel's reporting for that."
             val pcText = postConfirmationText ?: if (isUser) null else "Party reported"
-            PartyFinderWindow.popup.show("Are you sure you want to $action?", pcText) {
+            PartyFinderWindow.popup.show("Are you sure you want to $action", pcText) {
                 if (isUser) {
                     PartyWebSocket.deleteParty(party.user)
                 } else {

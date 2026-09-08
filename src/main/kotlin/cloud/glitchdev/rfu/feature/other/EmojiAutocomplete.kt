@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.feature.other
 
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.text.Emoji
+import cloud.glitchdev.rfu.constants.text.Emoji.whiteText
 import com.mojang.brigadier.context.StringRange
 import com.mojang.brigadier.suggestion.Suggestions
 import java.util.concurrent.CompletableFuture
@@ -31,7 +32,7 @@ object EmojiAutocomplete {
 
         val range = StringRange.between(lastWordIndex, cursorPosition)
         val suggestionsList = uniqueMatches.map { entry ->
-            EmojiSuggestion(range, entry.key, entry.value)
+            EmojiSuggestion(range, entry.key, entry.value.whiteText())
         }
 
         return CompletableFuture.completedFuture(Suggestions(range, suggestionsList))

@@ -1,4 +1,4 @@
-﻿package cloud.glitchdev.rfu.constants.fishing
+package cloud.glitchdev.rfu.constants.fishing
 
 import cloud.glitchdev.rfu.model.data.DataOption
 import com.google.gson.TypeAdapter
@@ -23,7 +23,7 @@ enum class FishingIslands(val island: String, val availableLiquids : List<Liquid
     PARK("The Park", listOf(LiquidTypes.WATER), Color(170, 255, 170)),
 
     @SerializedName("Galatea")
-    GALATEA("Galatea", listOf(LiquidTypes.WATER, LiquidTypes.LAVA), Color(10, 100, 0)),
+    MOONGLADE_MARSH("Moonglade Marsh", listOf(LiquidTypes.WATER, LiquidTypes.LAVA), Color(10, 100, 0)),
 
     @SerializedName("The Farming Islands")
     DESERT("The Farming Islands", listOf(LiquidTypes.WATER), Color(255, 255, 85)),
@@ -67,18 +67,28 @@ enum class FishingIslands(val island: String, val availableLiquids : List<Liquid
         }
 
         fun findIslandObject(name : String) : FishingIslands? {
-            return entries.find { fishingIslands -> fishingIslands.island == name }
+            return when (name) {
+                "Galatea", "Moonglade Marsh" -> MOONGLADE_MARSH
+                else -> entries.find { fishingIslands -> fishingIslands.island == name }
+            }
         }
     }
 
     class Adapter : TypeAdapter<FishingIslands>() {
         override fun write(out: JsonWriter, value: FishingIslands?) {
-            out.value(value?.island ?: "Unknown")
+            when (value) {
+                MOONGLADE_MARSH -> out.value("Galatea")
+                null -> out.nullValue()
+                else -> out.value(value.island)
+            }
         }
 
         override fun read(`in`: JsonReader): FishingIslands {
             val name = `in`.nextString()
-            return entries.find { it.island == name } ?: UNKNOWN
+            return when (name) {
+                "Galatea", "Moonglade Marsh" -> MOONGLADE_MARSH
+                else -> entries.find { it.island == name } ?: UNKNOWN
+            }
         }
     }
 }

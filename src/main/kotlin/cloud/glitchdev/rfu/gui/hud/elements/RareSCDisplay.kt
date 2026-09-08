@@ -1,10 +1,8 @@
 package cloud.glitchdev.rfu.gui.hud.elements
 
-import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
 import cloud.glitchdev.rfu.constants.fishing.RareScDisplayDataType
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
-import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
 import cloud.glitchdev.rfu.constants.text.TextColor.YELLOW
 import cloud.glitchdev.rfu.constants.text.TextColor.WHITE
 import cloud.glitchdev.rfu.constants.text.TextColor.GRAY
@@ -12,20 +10,16 @@ import cloud.glitchdev.rfu.constants.text.TextEffects.BOLD
 import cloud.glitchdev.rfu.data.catches.CatchTracker
 import cloud.glitchdev.rfu.gui.hud.AbstractFishingHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
-import cloud.glitchdev.rfu.utils.World
-import cloud.glitchdev.rfu.utils.dsl.hasDescriptionText
 import cloud.glitchdev.rfu.utils.dsl.toReadableString
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
-import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.phys.Vec3
 import kotlin.math.ceil
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Clock
 import cloud.glitchdev.rfu.feature.fishing.FishingSession
-import cloud.glitchdev.rfu.events.managers.BaitEventManager
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
-import cloud.glitchdev.rfu.events.managers.HotSpotEvents
+import cloud.glitchdev.rfu.utils.fishing.SeaCreatureAvailability
 import cloud.glitchdev.rfu.utils.dsl.isWearingTrophyHunterArmor
 
 @HudElement
@@ -64,53 +58,19 @@ object RareSCDisplay : AbstractFishingHudElement("rareSCDisplay") {
 
         val lines = mutableListOf<String>()
         val selectedScs = SeaCreatures.entries.filter { it.special }
-        val currentIsland = World.island
+        val context = SeaCreatureAvailability.getCurrentContext()
 
-        val catchHistory = CatchTracker.catchHistory
-        var lastHotspot = catchHistory.lastHotspot
-        var lastPos = catchHistory.lastPos
-        var lastBait = catchHistory.lastBait
-        var lastLiquid = catchHistory.lastLiquid
-
-        val player = mc.player
-        if (lastPos == Vec3.ZERO && player != null) {
-            lastPos = player.position()
-            lastHotspot = HotSpotEvents.getHotspotAt(lastPos)
-            lastBait = BaitEventManager.lastBait
-            lastLiquid = lastHotspot?.liquid
-        }
-
-        val bobber = player?.fishing
-        if (bobber != null) {
-            lastLiquid = when {
-                bobber.isInWater -> LiquidTypes.WATER
-                bobber.isInLava -> LiquidTypes.LAVA
-                else -> lastLiquid
-            }
-        }
-
-        if (lastLiquid == null && currentIsland != null && currentIsland.availableLiquids.size == 1) {
-            lastLiquid = currentIsland.availableLiquids.first()
-        }
-
-        if (lastPos == Vec3.ZERO && !FishingSession.isFishing && !isEditing) {
+        if ((context == null || context.pos == Vec3.ZERO) && !FishingSession.isFishing && !isEditing) {
             text.setText("")
             return
         }
 
         val dataOrder = SeaCreatureConfig.rareScDisplayDataOrder
+        val catchHistory = CatchTracker.catchHistory
 
         selectedScs.groupBy { it.category }.forEach { (_, scsInCategory) ->
             scsInCategory.forEach { sc ->
-                if (currentIsland == null || !sc.category.islands.contains(currentIsland)) {
-                    return@forEach
-                }
-
-                if (lastPos != Vec3.ZERO && !sc.condition(lastHotspot, lastPos, lastBait)) {
-                    return@forEach
-                }
-
-                if (lastLiquid != null && sc.liquidType != lastLiquid) {
+                if (context == null || !SeaCreatureAvailability.isAvailable(sc, context)) {
                     return@forEach
                 }
 

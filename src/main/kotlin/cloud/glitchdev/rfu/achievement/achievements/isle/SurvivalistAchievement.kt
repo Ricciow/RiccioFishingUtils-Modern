@@ -8,8 +8,8 @@ import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.data.mob.SkyblockEntity
 import cloud.glitchdev.rfu.events.managers.ArmorEvents
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDeathEvent
 import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDetectEvent
-import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDisposeEvent
 import cloud.glitchdev.rfu.events.managers.PlayerEvents.registerPlayerDetectEvent
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
@@ -124,8 +124,8 @@ object SurvivalistAchievement : StageAchievement() {
             waitingForJawbus = false
         })
 
-        activeListeners.add(registerMobDisposeEvent { entities ->
-            val jawbus = trackingJawbus ?: return@registerMobDisposeEvent
+        activeListeners.add(registerMobDeathEvent { entities ->
+            val jawbus = trackingJawbus ?: return@registerMobDeathEvent
             if (entities.contains(jawbus)) {
                 val world = mc.level
                 val pos = jawbus.modelEntity.blockPosition()

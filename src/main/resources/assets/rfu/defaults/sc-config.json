@@ -60,6 +60,21 @@
       "rareSCAlert": false,
       "scDisplayColor": "§c"
     },
+    "Baby Magma Slug": {
+      "name": "This is just placeholder",
+      "plural": "Doesn't do anything",
+      "article": "a",
+      "special": false,
+      "style": "§c",
+      "catchMessage": "I mean, you can't really catch this, sooo consider this an Easter Egg :dog:",
+      "liquidType": "LAVA",
+      "category": "ISLE",
+      "lsRangeEnabled": false,
+      "bossbar": false,
+      "gdragAlert": false,
+      "rareSCAlert": false,
+      "scDisplayColor": "§c"
+    },
     "Great White Shark": {
       "name": "Great White Shark",
       "plural": "Great White Sharks",

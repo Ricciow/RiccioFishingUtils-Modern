@@ -1,4 +1,4 @@
-﻿package cloud.glitchdev.rfu.constants.chat
+package cloud.glitchdev.rfu.constants.chat
 
 enum class MessageTypes(val displayName : String) {
     HYPE("Hyperion"),
@@ -9,7 +9,9 @@ enum class MessageTypes(val displayName : String) {
     BLOCKS("Blocks in the way"),
     THUNDER_SPARK("Thunder Spark"),
     COCOON("Cocoon"),
-    SACKS("Sacks");
+    SACKS("Sacks"),
+    CHARM("Charm"),
+    HURRICANE_BOTTLE("Hurricane in a Bottle");
 
     override fun toString(): String {
         return displayName

@@ -3,7 +3,7 @@ package cloud.glitchdev.rfu.gui.window
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.events.managers.HudRenderEvents.registerHudRenderEvent
-import cloud.glitchdev.rfu.events.managers.KeyboardEvents.registerKeyboardEvent
+import cloud.glitchdev.rfu.events.managers.KeybindEvents.registerKeybind
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.UIPopup
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyListChangedEvent
@@ -20,6 +20,7 @@ import cloud.glitchdev.rfu.gui.components.elementa.group.GroupManager
 import cloud.glitchdev.rfu.gui.components.partyfinder.UICreateParty
 import cloud.glitchdev.rfu.gui.components.partyfinder.UIFilterArea
 import cloud.glitchdev.rfu.gui.components.partyfinder.UIPartyCard
+import cloud.glitchdev.rfu.gui.components.partyfinder.UIPartyPresetsModal
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.utils.Coroutines
 import cloud.glitchdev.rfu.utils.World
@@ -32,6 +33,7 @@ import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIImage
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
+import gg.essential.elementa.components.inspector.Inspector
 import gg.essential.elementa.constraints.AspectConstraint
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
@@ -68,6 +70,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
     private var isPeeking = false
 
     lateinit var popup: UIPopup
+    lateinit var presetsModal: UIPartyPresetsModal
     lateinit var filterButton : UIButton
     lateinit var refreshButton : UIButton
     lateinit var filterArea : UIContainer
@@ -117,11 +120,11 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             }
         }
 
-        registerKeyboardEvent(
-            key = { OtherSettings.peekPartyFinderKeybind },
-            onPress = { if (!World.isOnAlpha) isPeeking = true },
+        registerKeybind {
+            key = { OtherSettings.peekPartyFinderKeybind }
+            onPress = { if (!World.isOnAlpha) isPeeking = true }
             onRelease = { isPeeking = false }
-        )
+        }
 
         registerHudRenderEvent(50) { context, ticks ->
             if (isPeeking) {
@@ -161,6 +164,9 @@ object PartyFinderWindow : BaseWindow(false), Feature {
         createPartyCreationArea(contentWrapper)
         createPartyArea(contentWrapper)
 
+        presetsModal = UIPartyPresetsModal(5f).childOf(window)
+        presetsModal.hideModal()
+
         popup = UIPopup(5f, "", isBordered = true).childOf(window).colors {
             primaryColor = UIScheme.pfCardBorder.toConstraint()
             innerColor = UIScheme.pfCardBg.toConstraint()
@@ -169,6 +175,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             buttonHoverColor = UIScheme.pfCardBorderHovered.toConstraint()
             buttonHoverTextColor = UIScheme.pfCardTitleHoverColor.toConstraint()
         }
+        popup.hide(instantly = true)
     }
 
     fun createHeader(background: UIComponent) {
@@ -198,6 +205,9 @@ object PartyFinderWindow : BaseWindow(false), Feature {
 
         val createImage = UIImage.ofResource("/assets/rfu/ui/edit.png")
         UIButton.withImage(createImage, 5f) {
+            if (creationOpen && ::creationArea.isInitialized) {
+                creationArea.saveSessionState()
+            }
             creationOpen = !creationOpen
             onUpdate()
         }.constrain {
@@ -389,5 +399,11 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             }
         }
         updateFiltering()
+    }
+
+    override fun onWindowClose() {
+        if (::creationArea.isInitialized) {
+            creationArea.saveSessionState()
+        }
     }
 }

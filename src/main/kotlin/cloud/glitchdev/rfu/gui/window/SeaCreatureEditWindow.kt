@@ -4,7 +4,6 @@ import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.seacreature.UISeaCreatureEditor
 import cloud.glitchdev.rfu.gui.components.seacreature.UISeaCreatureList
-import cloud.glitchdev.rfu.utils.gui.addHoverColoring
 import com.teamresourceful.resourcefulconfig.client.ConfigScreen
 import gg.essential.elementa.UIComponent
 import gg.essential.elementa.components.UIContainer
@@ -13,7 +12,6 @@ import gg.essential.elementa.components.UIText
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.FillConstraint
 import gg.essential.elementa.constraints.SiblingConstraint
-import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.*
 
 @Suppress("UnstableApiUsage")

@@ -2,6 +2,10 @@ package cloud.glitchdev.rfu.feature.other
 
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.text.Emoji
+import cloud.glitchdev.rfu.constants.text.Emoji.whiteText
+import cloud.glitchdev.rfu.constants.text.TextColor
+import cloud.glitchdev.rfu.constants.text.TextEffects
+import cloud.glitchdev.rfu.constants.text.TextStyle
 import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.Font
 import net.minecraft.network.chat.Component
@@ -57,7 +61,23 @@ object EmojiFeature {
         
         var result = text
         Emoji.ALL.forEach { (trigger, replacement) ->
-            result = result?.replace(trigger, replacement, true)
+            result = result?.replace(trigger, replacement.whiteText(), true)
+        }
+        return result
+    }
+
+    fun replaceEmojisUnformatted(text: String?): String? {
+        var result = text
+        Emoji.ALL.forEach { (trigger, replacement) ->
+            result = result?.replace(trigger, replacement, false)
+        }
+        return result
+    }
+
+    fun clearAndApplyPostStyle(text: String?, style: TextStyle?): String? {
+        var result = text
+        Emoji.ALL.forEach { (_, replacement) ->
+            result = result?.replace(replacement, "${TextColor.WHITE}$replacement${TextEffects.RESET}${style?:""}", true)
         }
         return result
     }

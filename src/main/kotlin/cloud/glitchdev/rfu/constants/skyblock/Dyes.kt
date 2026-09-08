@@ -1,4 +1,4 @@
-﻿package cloud.glitchdev.rfu.constants.skyblock
+package cloud.glitchdev.rfu.constants.skyblock
 import cloud.glitchdev.rfu.constants.fishing.IRareDrop
 import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatureCategory
@@ -29,7 +29,7 @@ enum class Dyes(val dyeName: String, val hex: String, val relatedScNames : List<
     LIVID("Livid Dye", "CEB7AA"),
     MANGO("Mango Dye", "FDBE02"),
     MATCHA("Matcha Dye", "74A12E"),
-    MIDNIGHT("Midnight Dye", "50216C"),
+    MIDNIGHT("Midnight Dye", "50216C", listOf("SPOOKY_CATEGORY")),
     MOCHA("Mocha Dye", "967969"),
     MYTHOLOGICAL("Mythological Dye", "6F6F0C"),
     NADESHIKO("Nadeshiko Dye", "F6ADC6"),
@@ -50,11 +50,12 @@ enum class Dyes(val dyeName: String, val hex: String, val relatedScNames : List<
 
     override val displayName: String get() = dyeName
 
-    val relatedScs: List<SeaCreatures>
+    override val relatedScs: List<SeaCreatures>
         get() = when {
             relatedScNames.contains("WATER_LIQUID") -> SeaCreatures.entries.filter { it.liquidType == LiquidTypes.WATER }
             relatedScNames.contains("LAVA_LIQUID") -> SeaCreatures.entries.filter { it.liquidType == LiquidTypes.LAVA }
             relatedScNames.contains("WINTER_CATEGORY") -> SeaCreatures.entries.filter { it.category == SeaCreatureCategory.WINTER }
+            relatedScNames.contains("SPOOKY_CATEGORY") -> SeaCreatures.entries.filter { it.category == SeaCreatureCategory.SPOOKY }
             else -> relatedScNames.mapNotNull { SeaCreatures.get(it) }
         }
 

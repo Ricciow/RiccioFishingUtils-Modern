@@ -232,12 +232,6 @@ object SeaCreatureConfig : Category("Sea Creatures") {
         condition = { bossHealthBars }
     }
 
-    var boostPollingRate by boolean(true) {
-        name = Literal("Boost Polling Rate")
-        description = Literal("Makes detections more frequent when the health bar is active (Probably wont but may cause lag, hence the option)")
-        condition = { bossHealthBars }
-    }
-
     init {
         dualSeparator {
             title = "Rare SC Display"

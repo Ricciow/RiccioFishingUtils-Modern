@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.data.other
 import cloud.glitchdev.rfu.data.other.data.BooleanEntry
 import cloud.glitchdev.rfu.data.other.data.CakesEntry
 import cloud.glitchdev.rfu.data.other.data.Entry
+import cloud.glitchdev.rfu.data.other.data.PartyPresetsEntry
 import cloud.glitchdev.rfu.data.other.data.StringEntry
 import cloud.glitchdev.rfu.data.other.data.StringSetEntry
 import cloud.glitchdev.rfu.utils.JsonFile
@@ -33,6 +34,7 @@ object OtherManager {
                         "CakesEntry" -> context.deserialize(json, CakesEntry::class.java)
                         "StringSetEntry" -> context.deserialize(json, StringSetEntry::class.java)
                         "BooleanEntry" -> context.deserialize(json, BooleanEntry::class.java)
+                        "PartyPresetsEntry" -> context.deserialize(json, PartyPresetsEntry::class.java)
                         else -> throw JsonParseException("Unknown Entry type: $type")
                     }
                 }

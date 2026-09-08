@@ -6,6 +6,6 @@ import cloud.glitchdev.rfu.feature.streak.challenge.RFUChallenge
 @RFUChallenge
 object GalateaIslandCatchChallenge : BaseIslandCatchChallenge(
     id = "sc_island_galatea",
-    island = FishingIslands.GALATEA,
+    island = FishingIslands.MOONGLADE_MARSH,
     title = "Galatea Angler"
 )

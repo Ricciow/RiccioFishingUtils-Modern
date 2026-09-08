@@ -5,12 +5,15 @@
   "mixins": [
     "ParsedConfigMixin",
     "ConfigScreenMixin",
-    "KeyMappingMixin",
+    "OptionsMixin",
     "KeyMappingAccessor",
+    "KeyboardHandlerMixin",
+    "MouseHandlerMixin",
     "GuiGraphicsExtractorMixin",
     "ListWidgetMixin",
     "ClientPacketListenerMixin",
     "ClientCommonPacketListenerImplMixin",
+    "ConnectionMixin",
     "DownloadedPackSourceMixin",
     "AbstractContainerScreenMixin",
     "AbstractContainerScreenAccessor",
@@ -30,7 +33,13 @@
     "CommandSuggestionsAccessor",
     "SuggestionsListMixin",
     "EditBoxMixin",
-    "FontPreparedTextBuilderMixin"
+    "FontPreparedTextBuilderMixin",
+    "elementa.UIComponentMixin",
+    "elementa.MappedStateMixin",
+    "elementa.AnimatingConstraintsMixin",
+    "elementa.WindowScreenMixin",
+    "ScreenMixin",
+    "universalcraft.UScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

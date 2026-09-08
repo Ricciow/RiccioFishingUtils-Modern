@@ -19,6 +19,11 @@ object Emoji {
         "\uE125" to listOf("hog"),
         "\uE126" to listOf("exploding_head"),
         "\uE127" to listOf("kaboom", "boom"),
+        "\uE128" to listOf("carrot"),
+        "\uE129" to listOf("shark"),
+        "\uE12A" to listOf("fish"),
+        "\uE12B" to listOf("face_holding_back_tears", "fhbt"),
+        "\uE12C" to listOf("rolling_eyes"),
 
         // Sea Creatures
         "\uE116" to listOf("abyssal_miner", "abyssalminer", "miner"),
@@ -48,7 +53,7 @@ object Emoji {
     )
 
     val ALL = EMOJIS.flatMap { (unicode, aliases) ->
-        aliases.map { ":$it:" to unicode.whiteText() }
+        aliases.map { ":$it:" to unicode }
     }.toMap()
 
     fun String.whiteText() : String {

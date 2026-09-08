@@ -45,7 +45,7 @@ class JsonFile<T : Any>(
 
     init {
         instances.add(this)
-        load()
+        load(triggerOnReload = false)
 
         registerJoinEvent {
             save()
@@ -64,7 +64,7 @@ class JsonFile<T : Any>(
         }
     }
 
-    fun load() {
+    fun load(triggerOnReload: Boolean = true) {
         var loadedData: T? = null
         val hadFile = file.exists()
 
@@ -113,10 +113,12 @@ class JsonFile<T : Any>(
             }
         }
 
-        try {
-            onReload()
-        } catch (e: Exception) {
-            RFULogger.error("[$filename] Error during onReload callback", e)
+        if (triggerOnReload) {
+            try {
+                onReload()
+            } catch (e: Exception) {
+                RFULogger.error("[$filename] Error during onReload callback", e)
+            }
         }
     }
 
