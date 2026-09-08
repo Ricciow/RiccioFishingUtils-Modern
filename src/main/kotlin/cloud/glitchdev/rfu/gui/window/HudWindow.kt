@@ -238,16 +238,16 @@ object HudWindow : BaseWindow(false) {
     }
 
     fun openEditingGui(target: EditTarget = if (isOnInventory) EditTarget.INVENTORY else EditTarget.HUD) {
-        resolvePositionsOnWorldJoin()
-        isExportMode = false
-        isEditingOpen = true
-        switchEditTarget(target)
-        Gui.openGui(this)
+        openGuiInternal(target, exportMode = false)
     }
 
     fun openExportGui(target: EditTarget = EditTarget.HUD) {
+        openGuiInternal(target, exportMode = true)
+    }
+
+    private fun openGuiInternal(target: EditTarget, exportMode: Boolean) {
         resolvePositionsOnWorldJoin()
-        isExportMode = true
+        isExportMode = exportMode
         isEditingOpen = true
         switchEditTarget(target)
         Gui.openGui(this)
@@ -304,17 +304,13 @@ object HudWindow : BaseWindow(false) {
             }
             DefaultHudManager.exportLayoutToJson(window.getWidth(), window.getHeight(), elementsToExport)
             isExportMode = false
-            for (element in hudElements) {
-                element.closeEdit()
-                HudManager.updateElementConfig(element)
-            }
-            HudManager.hudFile.save()
-        } else {
-            for (element in hudElements) {
-                element.closeEdit()
-                HudManager.updateElementConfig(element)
-            }
         }
+
+        for (element in hudElements) {
+            element.closeEdit()
+            HudManager.updateElementConfig(element)
+        }
+        HudManager.hudFile.save()
     }
 
     fun updateState() {
