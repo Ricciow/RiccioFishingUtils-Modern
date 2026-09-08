@@ -359,7 +359,7 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
         if (forcePreview) return true
 
         return when (HudWindow.currentRenderPass) {
-            HudWindow.RenderPass.HUD -> renderOnHud
+            HudWindow.RenderPass.HUD -> !isOnInventory && renderOnHud
             HudWindow.RenderPass.INVENTORY -> isOnInventory && renderOnInventory
             HudWindow.RenderPass.NONE -> !isOnInventory && renderOnHud
         }

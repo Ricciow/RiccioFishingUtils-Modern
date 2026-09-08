@@ -6,15 +6,22 @@ import cloud.glitchdev.rfu.constants.text.TextColor.LIGHT_RED
 import cloud.glitchdev.rfu.constants.text.TextColor.YELLOW
 import cloud.glitchdev.rfu.constants.text.TextEffects.BOLD
 import cloud.glitchdev.rfu.constants.fishing.FishTrackingType
+import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.gui.hud.AbstractFishingHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 import cloud.glitchdev.rfu.utils.dsl.toReadableString
-import kotlin.time.Clock
 import kotlin.time.Duration
-import kotlin.time.Instant
-
 import cloud.glitchdev.rfu.feature.fishing.FishingSession
+import cloud.glitchdev.rfu.feature.fishing.FishingSession.resetSession
+import cloud.glitchdev.rfu.utils.gui.setHidden
+import gg.essential.elementa.components.UIText
+import gg.essential.elementa.constraints.ScaledTextConstraint
+import gg.essential.elementa.constraints.SiblingConstraint
+import gg.essential.elementa.constraints.TextAspectConstraint
+import gg.essential.elementa.dsl.childOf
+import gg.essential.elementa.dsl.constrain
+import gg.essential.elementa.dsl.pixels
 import kotlin.time.Duration.Companion.minutes
 
 @HudElement
@@ -26,10 +33,31 @@ object FishTrackingDisplay : AbstractFishingHudElement("fishTrackingDisplay") {
         get() = GeneralFishing.fishTrackingDisplay
     override val isElementActive: Boolean
         get() = !requiresFishing || FishingSession.pausedDuration < (1.minutes + GeneralFishing.fishingTime.minutes)
+    override val renderOnInventory: Boolean = true
+
+    private lateinit var resetButton : UIText
 
     override fun onInitialize() {
         super.onInitialize()
         registerTickEvent(interval = 20) {
+            updateState()
+        }
+    }
+
+    init {
+        create()
+    }
+
+    fun create() {
+        resetButton = UIText("$LIGHT_RED[Reset]").constrain {
+            x = 0.pixels()
+            y = SiblingConstraint()
+            width = ScaledTextConstraint(scale * 1.1f)
+            height = TextAspectConstraint()
+        } childOf container
+
+        resetButton.onMouseClick {
+            resetSession()
             updateState()
         }
     }
@@ -84,6 +112,11 @@ object FishTrackingDisplay : AbstractFishingHudElement("fishTrackingDisplay") {
         text.setText(if (lines.isEmpty()) {
             if (isEditing) "fishTrackingDisplay" else ""
         } else lines.joinToString("\n"))
+
+        resetButton.setHidden(!isOnInventory)
+        resetButton.constrain {
+            width = ScaledTextConstraint(scale * 1.1f)
+        }
     }
 
     private fun formatXp(value: Long): String {

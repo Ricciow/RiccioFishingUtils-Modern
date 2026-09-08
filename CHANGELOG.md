@@ -24,6 +24,7 @@
 - Changed the !since command to display only simple info
 - Removed Boost Polling rate setting and changed the display itself to update when the entity is updated
 - Daily Streak HUD and Daily Challenge cards now format large progress numbers compactly
+- Some HUD elements now have buttons on inventory
 - Renamed Galatea to Moonglade Marsh
 - Made the emojis in party finder be sent in emoji form so it only occupies 1 char
 - Made party finder creation window save between sessions

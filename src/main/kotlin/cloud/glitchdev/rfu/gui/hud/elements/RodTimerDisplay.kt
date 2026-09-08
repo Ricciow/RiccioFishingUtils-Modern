@@ -22,18 +22,6 @@ object RodTimerDisplay : AbstractTextHudElement("rodTimer") {
     override val isElementActive: Boolean
         get() = rodTime >= 0
 
-    val container = UIContainer().constrain {
-        x = CenterConstraint()
-        y = CenterConstraint()
-        width = ChildBasedSizeConstraint()
-        height = ChildBasedSizeConstraint()
-    } childOf this
-
-    init {
-        this.removeChild(text)
-        text childOf container
-    }
-
     override fun onUpdateState() {
         super.onUpdateState()
 
