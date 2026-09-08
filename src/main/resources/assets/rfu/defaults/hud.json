@@ -1,6 +1,6 @@
 {
-  "referenceWidth": 640.0,
-  "referenceHeight": 337.0,
+  "referenceWidth": 854.0,
+  "referenceHeight": 459.0,
   "elements": {
     "achievementTrackerDisplay": {
       "anchor": "BOTTOM_LEFT",
@@ -13,7 +13,7 @@
     "bestiaryHUD": {
       "anchor": "TOP_LEFT",
       "x": 10.0,
-      "y": 87.3,
+      "y": 84.7,
       "scale": 1.0,
       "width": 76.0,
       "height": 9.0
@@ -21,7 +21,7 @@
     "blizzardTimer": {
       "anchor": "TOP_LEFT",
       "x": 10.0,
-      "y": 57.3,
+      "y": 57.7,
       "scale": 1.0,
       "width": 75.0,
       "height": 9.0
@@ -31,7 +31,7 @@
       "x": 10.0,
       "y": 48.7,
       "scale": 1.0,
-      "width": 82.0,
+      "width": 76.0,
       "height": 9.0
     },
     "bossHealthBar": {
@@ -45,7 +45,7 @@
     "dailyStreakDisplay": {
       "anchor": "BOTTOM_LEFT",
       "x": 10.0,
-      "y": 94.3,
+      "y": 110.5,
       "scale": 1.0,
       "width": 123.0,
       "height": 36.0
@@ -53,17 +53,17 @@
     "deployablesDisplay": {
       "anchor": "TOP_LEFT",
       "x": 10.0,
-      "y": 66.3,
+      "y": 66.7,
       "scale": 1.0,
       "width": 77.0,
-      "height": 18.0
+      "height": 27.0
     },
     "dyeDisplay": {
       "anchor": "BOTTOM_RIGHT",
-      "x": 6.3,
-      "y": 7.6,
+      "x": 10.7,
+      "y": 7.3,
       "scale": 0.9,
-      "width": 48.7,
+      "width": 60.3,
       "height": 24.0
     },
     "fishTrackingDisplay": {
@@ -76,8 +76,8 @@
     },
     "frogcoinBlessing": {
       "anchor": "TOP_LEFT",
-      "x": 97.3,
-      "y": 57.3,
+      "x": 108.7,
+      "y": 57.7,
       "scale": 1.0,
       "width": 186.0,
       "height": 27.0
@@ -85,25 +85,25 @@
     "inktrackingdisplay": {
       "anchor": "TOP_LEFT",
       "x": 10.0,
-      "y": 87.3,
+      "y": 93.7,
       "scale": 1.0,
       "width": 135.0,
       "height": 45.0
     },
     "petDisplay": {
       "anchor": "MIDDLE_RIGHT",
-      "x": 6.3,
-      "y": 42.7,
+      "x": 10.7,
+      "y": 49.7,
       "scale": 1.0,
       "width": 161.0,
       "height": 9.0
     },
     "rareDropsDisplay": {
       "anchor": "TOP_RIGHT",
-      "x": 6.3,
-      "y": 39.3,
+      "x": 15.0,
+      "y": 42.7,
       "scale": 1.0,
-      "width": 216.0,
+      "width": 206.0,
       "height": 27.0
     },
     "rareSCDisplay": {
@@ -111,7 +111,7 @@
       "x": 9.7,
       "y": -20.0,
       "scale": 1.0,
-      "width": 218.0,
+      "width": 196.0,
       "height": 27.0
     },
     "rodTimer": {
@@ -124,8 +124,8 @@
     },
     "scCapDisplay": {
       "anchor": "TOP_LEFT",
-      "x": 97.3,
-      "y": 49.0,
+      "x": 108.7,
+      "y": 48.7,
       "scale": 1.0,
       "width": 97.0,
       "height": 9.0
