@@ -111,6 +111,9 @@ object HudWindow : BaseWindow(false) {
         }
 
         registerShutdownEvent(0) {
+            if (window.getWidth() > 0f && window.getHeight() > 0f) {
+                HudManager.saveResolution(window.getWidth(), window.getHeight())
+            }
             for(element in hudElements) {
                 HudManager.updateElementConfig(element)
             }
@@ -131,6 +134,8 @@ object HudWindow : BaseWindow(false) {
         val screenWidth = window.getWidth()
         val screenHeight = window.getHeight()
         if (screenWidth <= 0f || screenHeight <= 0f) return
+
+        HudManager.saveResolution(screenWidth, screenHeight)
 
         if (!HudManager.hudData.hasInitializedDefaults) {
             if (HudManager.hudData.hudElements.isEmpty()) {
@@ -303,6 +308,10 @@ object HudWindow : BaseWindow(false) {
             }
             DefaultHudManager.exportLayoutToJson(window.getWidth(), window.getHeight(), elementsToExport)
             isExportMode = false
+        }
+
+        if (window.getWidth() > 0f && window.getHeight() > 0f) {
+            HudManager.saveResolution(window.getWidth(), window.getHeight())
         }
 
         for (element in hudElements) {
@@ -479,6 +488,22 @@ object HudWindow : BaseWindow(false) {
                 currentX = existing.x
                 currentY = existing.y
                 scale = existing.scale
+            }
+        } else {
+            val savedW = HudManager.hudData.screenWidth
+            val savedH = HudManager.hudData.screenHeight
+
+            if (savedW > 0f && savedH > 0f) {
+                val calculated = DefaultHudManager.calculateDefaultPosition(element, savedW, savedH)
+                element.currentX = calculated.x
+                element.currentY = calculated.y
+                element.scale = calculated.scale
+                HudManager.hudData.update(element.id, calculated.x, calculated.y, calculated.scale)
+                HudManager.hudFile.save()
+            } else {
+                element.currentX = element.defaultX
+                element.currentY = element.defaultY
+                element.scale = 1f
             }
         }
         element.updateState()

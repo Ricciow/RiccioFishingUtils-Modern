@@ -24,8 +24,16 @@ object HudManager {
         hudData.update(element.id, element.currentX, element.currentY, element.scale)
     }
 
+    fun saveResolution(screenWidth: Float, screenHeight: Float) {
+        if (screenWidth > 0f && screenHeight > 0f) {
+            hudData.screenWidth = screenWidth
+            hudData.screenHeight = screenHeight
+        }
+    }
+
     fun resetToDefaults(screenWidth: Float, screenHeight: Float, elements: List<AbstractHudElement>) {
         hudData.hudElements.clear()
+        saveResolution(screenWidth, screenHeight)
         for (element in elements) {
             val calculated = DefaultHudManager.calculateDefaultPosition(element, screenWidth, screenHeight)
             element.currentX = calculated.x

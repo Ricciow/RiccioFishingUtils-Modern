@@ -59,14 +59,13 @@ object DefaultHudManager {
             return calculateFallbackPosition(element, screenWidth, screenHeight)
         }
 
-        if (screenWidth <= 0f || screenHeight <= 0f) {
-            return calculateFallbackPosition(element, screenWidth, screenHeight)
-        }
-
         val refW = if (defaultLayout.referenceWidth > 0f) defaultLayout.referenceWidth else 960f
         val refH = if (defaultLayout.referenceHeight > 0f) defaultLayout.referenceHeight else 540f
 
-        val scaleRatio = min(screenWidth / refW, screenHeight / refH).coerceIn(0.5f, 1.0f)
+        val effectiveW = if (screenWidth > 0f) screenWidth else refW
+        val effectiveH = if (screenHeight > 0f) screenHeight else refH
+
+        val scaleRatio = min(effectiveW / refW, effectiveH / refH).coerceIn(0.5f, 1.0f)
         val rawScale = round((entry.scale * scaleRatio) * 1000f) / 1000f
         val finalScale = if (entry.scale > 0f) rawScale.coerceAtLeast(0.3f) else rawScale
 
@@ -76,18 +75,18 @@ object DefaultHudManager {
 
         val screenX = when (entry.anchor) {
             HudAnchor.TOP_LEFT, HudAnchor.MIDDLE_LEFT, HudAnchor.BOTTOM_LEFT -> entry.x
-            HudAnchor.TOP_CENTER, HudAnchor.CENTER, HudAnchor.BOTTOM_CENTER -> (screenWidth - actualW) / 2f + entry.x
-            HudAnchor.TOP_RIGHT, HudAnchor.MIDDLE_RIGHT, HudAnchor.BOTTOM_RIGHT -> screenWidth - actualW - entry.x
+            HudAnchor.TOP_CENTER, HudAnchor.CENTER, HudAnchor.BOTTOM_CENTER -> (effectiveW - actualW) / 2f + entry.x
+            HudAnchor.TOP_RIGHT, HudAnchor.MIDDLE_RIGHT, HudAnchor.BOTTOM_RIGHT -> effectiveW - actualW - entry.x
         }
 
         val screenY = when (entry.anchor) {
             HudAnchor.TOP_LEFT, HudAnchor.TOP_CENTER, HudAnchor.TOP_RIGHT -> entry.y
-            HudAnchor.MIDDLE_LEFT, HudAnchor.CENTER, HudAnchor.MIDDLE_RIGHT -> (screenHeight - actualH) / 2f + entry.y
-            HudAnchor.BOTTOM_LEFT, HudAnchor.BOTTOM_CENTER, HudAnchor.BOTTOM_RIGHT -> screenHeight - actualH - entry.y
+            HudAnchor.MIDDLE_LEFT, HudAnchor.CENTER, HudAnchor.MIDDLE_RIGHT -> (effectiveH - actualH) / 2f + entry.y
+            HudAnchor.BOTTOM_LEFT, HudAnchor.BOTTOM_CENTER, HudAnchor.BOTTOM_RIGHT -> effectiveH - actualH - entry.y
         }
 
-        val clampedX = screenX.coerceIn(0f, max(0f, screenWidth - actualW))
-        val clampedY = screenY.coerceIn(0f, max(0f, screenHeight - actualH))
+        val clampedX = screenX.coerceIn(0f, max(0f, effectiveW - actualW))
+        val clampedY = screenY.coerceIn(0f, max(0f, effectiveH - actualH))
 
         return CalculatedHudPosition(clampedX, clampedY, finalScale)
     }

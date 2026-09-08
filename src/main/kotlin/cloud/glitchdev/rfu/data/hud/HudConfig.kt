@@ -2,6 +2,8 @@ package cloud.glitchdev.rfu.data.hud
 
 class HudConfig {
     var hasInitializedDefaults: Boolean = false
+    var screenWidth: Float = 0f
+    var screenHeight: Float = 0f
     var hudElements : MutableList<HudElement> = mutableListOf()
 
     fun getOrAdd(id : String, defaultX : Float = 0f, defaultY: Float = 0f, scale: Float = 1f) : HudElement {
