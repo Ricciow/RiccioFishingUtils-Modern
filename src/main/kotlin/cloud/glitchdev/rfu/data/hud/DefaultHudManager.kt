@@ -107,7 +107,7 @@ object DefaultHudManager {
         screenHeight: Float,
         elements: List<AbstractHudElement>
     ): String {
-        val elementEntries = LinkedHashMap<String, DefaultHudElementEntry>()
+        val elementEntries = LinkedHashMap<String, DefaultHudElementEntry>(defaultLayout.elements)
 
         for (element in elements) {
             val w = element.getWidth()

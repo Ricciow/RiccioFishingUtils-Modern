@@ -1,13 +1,18 @@
 package cloud.glitchdev.rfu.gui.window
 
+import cloud.glitchdev.rfu.config.RFUSettings
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextStyle
+import cloud.glitchdev.rfu.events.keybind.KeyContext
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.events.managers.HudRenderEvents.registerHudRenderEvent
+import cloud.glitchdev.rfu.events.managers.KeybindEvents.registerKeybind
 import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.UIButton
+import cloud.glitchdev.rfu.gui.components.colors
+import cloud.glitchdev.rfu.gui.components.hud.UIFakeInventory
 import cloud.glitchdev.rfu.gui.hud.AbstractHudElement
 import cloud.glitchdev.rfu.data.hud.DefaultHudManager
 import cloud.glitchdev.rfu.data.hud.HudManager
@@ -20,6 +25,7 @@ import gg.essential.elementa.components.UIBlock
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIWrappedText
 import gg.essential.elementa.constraints.CenterConstraint
+import gg.essential.elementa.constraints.ChildBasedSizeConstraint
 import gg.essential.elementa.constraints.RelativeWindowConstraint
 import gg.essential.elementa.constraints.SiblingConstraint
 import gg.essential.elementa.dsl.childOf
@@ -44,7 +50,7 @@ object HudWindow : BaseWindow(false) {
         private set
 
     val isOnInventory: Boolean
-        get() = currentContainerScreen != null
+        get() = if (isEditingOpen) currentEditTarget == EditTarget.INVENTORY else currentContainerScreen != null
 
     var isInteractingWithHud: Boolean = false
         private set
@@ -53,7 +59,10 @@ object HudWindow : BaseWindow(false) {
     lateinit var hSnapLine: UIContainer
     lateinit var infoText : UIWrappedText
     lateinit var exportBanner : UIWrappedText
+    lateinit var bottomControls : UIContainer
+    lateinit var modeToggleButton : UIButton
     lateinit var resetButton : UIButton
+    lateinit var fakeInventory : UIFakeInventory
 
     private var resetClickTimestamp = 0L
     private var isConfirmingReset = false
@@ -64,11 +73,32 @@ object HudWindow : BaseWindow(false) {
         INVENTORY
     }
 
+    enum class EditTarget {
+        HUD,
+        INVENTORY
+    }
+
+    var currentEditTarget: EditTarget = EditTarget.HUD
+        private set
+
     var currentRenderPass: RenderPass = RenderPass.NONE
         private set
 
     init {
         create()
+
+        registerKeybind {
+            key = { RFUSettings.moveHudKeybind }
+            context = KeyContext.IN_GAME
+            onPress = { openEditingGui(EditTarget.HUD) }
+        }
+
+        registerKeybind {
+            key = { RFUSettings.moveHudKeybind }
+            context = KeyContext.CONTAINER_ONLY
+            consume = true
+            onPress = { openEditingGui(EditTarget.INVENTORY) }
+        }
 
         registerHudRenderEvent { context, ticks ->
             if (!isEditingOpen) {
@@ -207,26 +237,57 @@ object HudWindow : BaseWindow(false) {
         return false
     }
 
-    fun openEditingGui() {
+    fun openEditingGui(target: EditTarget = if (isOnInventory) EditTarget.INVENTORY else EditTarget.HUD) {
         resolvePositionsOnWorldJoin()
         isExportMode = false
         isEditingOpen = true
-        updateState()
-        for(element in hudElements) {
-            element.openEdit(preview = false)
-        }
+        switchEditTarget(target)
         Gui.openGui(this)
     }
 
-    fun openExportGui() {
+    fun openExportGui(target: EditTarget = EditTarget.HUD) {
         resolvePositionsOnWorldJoin()
         isExportMode = true
         isEditingOpen = true
-        updateState()
-        for(element in hudElements) {
-            element.openEdit(preview = true)
-        }
+        switchEditTarget(target)
         Gui.openGui(this)
+    }
+
+    fun getModeButtonText(): String = when (currentEditTarget) {
+        EditTarget.HUD -> "Mode: HUD"
+        EditTarget.INVENTORY -> "Mode: Inv"
+    }
+
+    fun switchEditTarget(target: EditTarget) {
+        currentEditTarget = target
+        refreshModeButton()
+        if (target == EditTarget.INVENTORY && ::fakeInventory.isInitialized) {
+            fakeInventory.refreshTexture()
+        }
+        if (isExportMode && ::exportBanner.isInitialized) {
+            val targetLabel = if (target == EditTarget.HUD) "HUD elements visible" else "Inventory elements visible"
+            exportBanner.setText(
+                """§6HUD Layout Designer §7($targetLabel)§r
+                  |§ePress §cESC§e to export to clipboard!§r""".trimMargin()
+            )
+        }
+        for (element in hudElements) {
+            val shouldEdit = when (target) {
+                EditTarget.HUD -> element.renderOnHud
+                EditTarget.INVENTORY -> element.renderOnInventory
+            }
+            if (shouldEdit) {
+                element.openEdit(preview = isExportMode)
+            } else {
+                element.closeEdit()
+            }
+        }
+        updateState()
+    }
+
+    fun refreshModeButton() {
+        if (!::modeToggleButton.isInitialized) return
+        modeToggleButton.updateText(getModeButtonText())
     }
 
     override fun onWindowClose() {
@@ -235,7 +296,13 @@ object HudWindow : BaseWindow(false) {
         updateState()
 
         if (isExportMode) {
-            DefaultHudManager.exportLayoutToJson(window.getWidth(), window.getHeight(), hudElements)
+            val elementsToExport = hudElements.filter {
+                when (currentEditTarget) {
+                    EditTarget.HUD -> it.renderOnHud
+                    EditTarget.INVENTORY -> it.renderOnInventory
+                }
+            }
+            DefaultHudManager.exportLayoutToJson(window.getWidth(), window.getHeight(), elementsToExport)
             isExportMode = false
             for (element in hudElements) {
                 element.closeEdit()
@@ -255,6 +322,8 @@ object HudWindow : BaseWindow(false) {
         if (::exportBanner.isInitialized) exportBanner.setHidden(!isExportMode)
         if (::infoText.isInitialized) infoText.setHidden(isExportMode)
         if (::resetButton.isInitialized) resetButton.setHidden(isExportMode)
+        if (::bottomControls.isInitialized) bottomControls.setHidden(!isEditingOpen)
+        if (::fakeInventory.isInitialized) fakeInventory.setHidden(!isEditingOpen || currentEditTarget != EditTarget.INVENTORY)
     }
 
     fun showSnapLines(x: Float?, y: Float?) {
@@ -316,6 +385,8 @@ object HudWindow : BaseWindow(false) {
             height = RelativeWindowConstraint(1f)
         } childOf window
 
+        fakeInventory = UIFakeInventory() childOf background
+
         infoText = UIWrappedText(
             text = """Hold Ctrl/Shift to disable snapping
                      |Scroll up/down to resize, hold Ctrl/Shift for more precision""".trimMargin(),
@@ -323,7 +394,7 @@ object HudWindow : BaseWindow(false) {
             centered = true
         ).constrain {
             x = CenterConstraint()
-            y = CenterConstraint()
+            y = 100.percent - 48.pixels
         } childOf background
 
         exportBanner = UIWrappedText(
@@ -336,14 +407,33 @@ object HudWindow : BaseWindow(false) {
             y = 20.pixels()
         } childOf background
 
+        bottomControls = UIContainer().constrain {
+            x = CenterConstraint()
+            y = 100.percent() - 24.pixels()
+            height = 18.pixels()
+            width = ChildBasedSizeConstraint()
+        } childOf background
+
+        modeToggleButton = UIButton(getModeButtonText(), radiusProps = 4f, onClick = {
+            val nextTarget = if (currentEditTarget == EditTarget.HUD) EditTarget.INVENTORY else EditTarget.HUD
+            switchEditTarget(nextTarget)
+        }).constrain {
+            x = 0.pixels()
+            y = CenterConstraint()
+            width = 110.pixels()
+            height = 18.pixels()
+        } childOf bottomControls
+
         resetButton = UIButton("Reset HUD", radiusProps = 4f, onClick = {
             handleResetButtonClick()
         }).constrain {
-            x = CenterConstraint()
-            y = 100.percent() - 24.pixels()
-            width = 130.pixels()
+            x = SiblingConstraint(10f)
+            y = CenterConstraint()
+            width = 110.pixels()
             height = 18.pixels()
-        } childOf background
+        } childOf bottomControls
+
+        refreshModeButton()
 
         vSnapLine = UIContainer().constrain {
             x = (-1000).pixels()

@@ -11,12 +11,37 @@ object HudDebug : AbstractCommand("hud") {
 
     override fun build(builder: LiteralArgumentBuilder<FabricClientCommandSource>) {
         builder.then(
-            lit("export").executes {
-                mc.schedule {
-                    HudWindow.openExportGui()
+            lit("export")
+                .executes {
+                    mc.schedule {
+                        HudWindow.openExportGui(HudWindow.EditTarget.HUD)
+                    }
+                    1
                 }
-                1
-            }
+                .then(
+                    lit("hud").executes {
+                        mc.schedule {
+                            HudWindow.openExportGui(HudWindow.EditTarget.HUD)
+                        }
+                        1
+                    }
+                )
+                .then(
+                    lit("inv").executes {
+                        mc.schedule {
+                            HudWindow.openExportGui(HudWindow.EditTarget.INVENTORY)
+                        }
+                        1
+                    }
+                )
+                .then(
+                    lit("inventory").executes {
+                        mc.schedule {
+                            HudWindow.openExportGui(HudWindow.EditTarget.INVENTORY)
+                        }
+                        1
+                    }
+                )
         )
     }
 }

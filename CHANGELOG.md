@@ -32,6 +32,5 @@
 ### Back-end
 - Made the mob tracking event driven, making it faster and improving Time to Kill accuracy.
 - Linked rare drops and dyes to mobs.
-- Added inventory support for hud elements
 - Added exponential backoff to Mayor API requests on failure.
 - Reworked the keybind system to be event-driven.

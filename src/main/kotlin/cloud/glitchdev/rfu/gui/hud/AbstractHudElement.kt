@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.gui.hud
 import cloud.glitchdev.rfu.events.managers.CloseConfigEvents.registerCloseConfigEvent
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
 import cloud.glitchdev.rfu.gui.UIScheme
+import cloud.glitchdev.rfu.gui.components.hud.UIFakeInventory
 import cloud.glitchdev.rfu.gui.window.HudWindow
 import cloud.glitchdev.rfu.utils.World
 import cloud.glitchdev.rfu.utils.gui.setHidden
@@ -57,7 +58,11 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
     open val isClickableOnInventory: Boolean = true
     var forcePreview: Boolean = false
     open val enabled: Boolean
-        get() = forcePreview || (requirement && (isEditing || isElementActive))
+        get() {
+            if (forcePreview) return true
+            if (HudWindow.isEditingOpen) return isEditing && requirement
+            return requirement && (isEditing || isElementActive)
+        }
     open var scale = 1f
     open val skyblockOnly = true
 
@@ -224,6 +229,29 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
             bestSnapLine = windowCenter
         }
 
+        if (HudWindow.isEditingOpen && HudWindow.currentEditTarget == HudWindow.EditTarget.INVENTORY) {
+            val invDimension = if (windowDimension == window.getWidth()) UIFakeInventory.INVENTORY_WIDTH else UIFakeInventory.INVENTORY_HEIGHT
+            val invStart = (windowDimension - invDimension) / 2f
+            val invEnd = invStart + invDimension
+
+            val invCandidates = listOf(
+                invStart to invStart,
+                invEnd to invEnd,
+                (invStart - size) to invStart,
+                (invEnd - size) to invEnd
+            )
+
+            for ((pos, line) in invCandidates) {
+                val distance = abs(currentPos - pos)
+
+                if (distance < minDistance) {
+                    minDistance = distance
+                    bestPos = pos
+                    bestSnapLine = line
+                }
+            }
+        }
+
         for (other in HudWindow.hudElements) {
             if (other === this || !other.enabled) continue
 
@@ -288,7 +316,13 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
                 height = if (scaleTextEnabled) ChildBasedSizeConstraint() - scaleText.getHeight().pixels() else ChildBasedSizeConstraint()
             }
 
-            this.setHidden((!enabled || skyblockOnly && !World.isInSkyblock) && !forcePreview)
+            val isHidden = if (HudWindow.isEditingOpen) {
+                !forcePreview && (!isEditing || !requirement)
+            } else {
+                (!enabled || skyblockOnly && !World.isInSkyblock) && !forcePreview
+            }
+
+            this.setHidden(isHidden)
 
             onUpdateState()
         }
@@ -316,7 +350,12 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
     open fun onCloseEdit() {}
 
     protected open fun shouldDrawInCurrentPass(): Boolean {
-        if (HudWindow.isEditingOpen && isEditing) return true
+        if (HudWindow.isEditingOpen) {
+            return isEditing && when (HudWindow.currentEditTarget) {
+                HudWindow.EditTarget.HUD -> renderOnHud
+                HudWindow.EditTarget.INVENTORY -> renderOnInventory
+            }
+        }
         if (forcePreview) return true
 
         return when (HudWindow.currentRenderPass) {

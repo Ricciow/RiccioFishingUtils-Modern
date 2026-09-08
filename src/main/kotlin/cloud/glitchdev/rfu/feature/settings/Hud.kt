@@ -16,6 +16,24 @@ object Hud : AbstractCommand("rfumove") {
             1
         }
         builder.then(
+            lit("hud").executes {
+                HudWindow.openEditingGui(HudWindow.EditTarget.HUD)
+                1
+            }
+        )
+        builder.then(
+            lit("inventory").executes {
+                HudWindow.openEditingGui(HudWindow.EditTarget.INVENTORY)
+                1
+            }
+        )
+        builder.then(
+            lit("inv").executes {
+                HudWindow.openEditingGui(HudWindow.EditTarget.INVENTORY)
+                1
+            }
+        )
+        builder.then(
             lit("reset").executes {
                 HudWindow.resetAllToDefaults()
                 1

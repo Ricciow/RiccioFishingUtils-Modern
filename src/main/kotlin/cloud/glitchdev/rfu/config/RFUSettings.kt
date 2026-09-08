@@ -142,7 +142,14 @@ object RFUSettings : ConfigKt("rfu/settings") {
                 }
             }
         }
+    }
 
+    var moveHudKeybind by key(0) {
+        name = Literal("Move HUD Keybind")
+        description = Literal("Keybind to open the HUD editing GUI (/rfumove).")
+    }
+
+    init {
         button {
             title = "See Commands"
             description = "See what commands RFU has to offer!"
