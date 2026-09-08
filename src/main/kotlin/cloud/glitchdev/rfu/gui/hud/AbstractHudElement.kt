@@ -35,8 +35,8 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
     private val snapThreshold = 5f
 
     //Prevent overlapping on default positions
-    open val defaultX = currentDefaultX
-    open val defaultY = currentDefaultY.also {
+    val defaultX = currentDefaultX
+    val defaultY = currentDefaultY.also {
         if (currentYCount < Y_LIMIT - 1) {
             currentDefaultY += Y_INCREMENT
             currentYCount += 1
@@ -409,7 +409,7 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
         if (forcePreview) return true
 
         return when (HudWindow.currentRenderPass) {
-            HudWindow.RenderPass.HUD -> !isOnInventory && renderOnHud
+            HudWindow.RenderPass.HUD -> renderOnHud && !(isOnInventory && renderOnInventory)
             HudWindow.RenderPass.INVENTORY -> isOnInventory && renderOnInventory
             HudWindow.RenderPass.NONE -> !isOnInventory && renderOnHud
         }
