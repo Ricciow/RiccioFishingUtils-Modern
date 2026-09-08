@@ -336,6 +336,9 @@ object HudWindow : BaseWindow(false) {
         if (!isExportMode && ::infoText.isInitialized) {
             infoText.setHidden(!state)
         }
+        if (::bottomControls.isInitialized) {
+            bottomControls.setHidden(!state || !isEditingOpen)
+        }
     }
 
     private fun handleResetButtonClick() {
