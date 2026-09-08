@@ -11,7 +11,6 @@ import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.UIButton
-import cloud.glitchdev.rfu.gui.components.colors
 import cloud.glitchdev.rfu.gui.components.hud.UIFakeInventory
 import cloud.glitchdev.rfu.gui.hud.AbstractHudElement
 import cloud.glitchdev.rfu.data.hud.DefaultHudManager
