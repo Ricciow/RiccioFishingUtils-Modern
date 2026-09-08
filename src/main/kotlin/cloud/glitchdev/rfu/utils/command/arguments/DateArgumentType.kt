@@ -1,9 +1,10 @@
 package cloud.glitchdev.rfu.utils.command.arguments
 
+import cloud.glitchdev.rfu.constants.text.TextColor.LIGHT_RED
 import com.mojang.brigadier.StringReader
 import com.mojang.brigadier.arguments.ArgumentType
 import com.mojang.brigadier.context.CommandContext
-import com.mojang.brigadier.exceptions.DynamicCommandExceptionType
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import net.minecraft.network.chat.Component
@@ -20,29 +21,14 @@ class DateArgumentType(
 ) : ArgumentType<Instant> {
 
     companion object {
-        private val INVALID_DATE = DynamicCommandExceptionType { input ->
-            Component.literal("Invalid date format '$input'. Example formats: 18/12/2026, 18/12/2026 18:00, or 'now'")
-        }
-
-        private val dateTimeFormatters = listOf(
-            DateTimeFormatter.ofPattern("d/M/yyyy H:m:s"),
-            DateTimeFormatter.ofPattern("d/M/yyyy H:m"),
-            DateTimeFormatter.ofPattern("d-M-yyyy H:m:s"),
-            DateTimeFormatter.ofPattern("d-M-yyyy H:m"),
-            DateTimeFormatter.ofPattern("yyyy-M-d H:m:s"),
-            DateTimeFormatter.ofPattern("yyyy-M-d H:m"),
-            DateTimeFormatter.ofPattern("yyyy/M/d H:m:s"),
-            DateTimeFormatter.ofPattern("yyyy/M/d H:m"),
+        private val INVALID_DATE = SimpleCommandExceptionType(
+            Component.literal("${LIGHT_RED}Invalid date! Example: dd/mm/yyyy or dd/mm/yyyy:hh:mm")
         )
 
-        private val dateFormatters = listOf(
-            DateTimeFormatter.ofPattern("d/M/yyyy"),
-            DateTimeFormatter.ofPattern("d-M-yyyy"),
-            DateTimeFormatter.ofPattern("yyyy-M-d"),
-            DateTimeFormatter.ofPattern("yyyy/M/d"),
-        )
+        private val dateTimeFormatter = DateTimeFormatter.ofPattern("d/M/yyyy:H:m")
+        private val dateFormatter = DateTimeFormatter.ofPattern("d/M/yyyy")
 
-        fun date(suggestions: List<String> = listOf("now", "today")): DateArgumentType = DateArgumentType(suggestions)
+        fun date(suggestions: List<String> = listOf("now", "today", "dd/mm/yyyy", "dd/mm/yyyy:hh:mm")): DateArgumentType = DateArgumentType(suggestions)
 
         fun <S> getDate(context: CommandContext<S>, name: String): Instant {
             return context.getArgument(name, Instant::class.java)
@@ -56,35 +42,19 @@ class DateArgumentType(
                 return Clock.System.now()
             }
 
-            trimmed.toLongOrNull()?.let { num ->
-                return if (num > 100_000_000_000L) {
-                    Instant.fromEpochMilliseconds(num)
-                } else {
-                    Instant.fromEpochSeconds(num)
-                }
-            }
-
-            runCatching {
-                return Instant.parse(trimmed)
-            }
-
             val zone = ZoneId.systemDefault()
 
-            for (formatter in dateTimeFormatters) {
-                try {
-                    val ldt = LocalDateTime.parse(trimmed, formatter)
-                    val javaInstant = ldt.atZone(zone).toInstant()
-                    return Instant.fromEpochMilliseconds(javaInstant.toEpochMilli())
-                } catch (_: Exception) {}
-            }
+            try {
+                val ldt = LocalDateTime.parse(trimmed, dateTimeFormatter)
+                val javaInstant = ldt.atZone(zone).toInstant()
+                return Instant.fromEpochMilliseconds(javaInstant.toEpochMilli())
+            } catch (_: Exception) {}
 
-            for (formatter in dateFormatters) {
-                try {
-                    val ld = LocalDate.parse(trimmed, formatter)
-                    val javaInstant = ld.atStartOfDay(zone).toInstant()
-                    return Instant.fromEpochMilliseconds(javaInstant.toEpochMilli())
-                } catch (_: Exception) {}
-            }
+            try {
+                val ld = LocalDate.parse(trimmed, dateFormatter)
+                val javaInstant = ld.atStartOfDay(zone).toInstant()
+                return Instant.fromEpochMilliseconds(javaInstant.toEpochMilli())
+            } catch (_: Exception) {}
 
             return null
         }
@@ -101,7 +71,7 @@ class DateArgumentType(
             reader.string.substring(start, reader.cursor)
         }
 
-        return parseDate(input) ?: throw INVALID_DATE.createWithContext(reader, input)
+        return parseDate(input) ?: throw INVALID_DATE.createWithContext(reader)
     }
 
     override fun <S> listSuggestions(
