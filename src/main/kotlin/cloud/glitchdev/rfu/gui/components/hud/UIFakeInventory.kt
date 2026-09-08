@@ -2,9 +2,13 @@ package cloud.glitchdev.rfu.gui.components.hud
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.utils.RFULogger
+import gg.essential.elementa.UIComponent
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIImage
 import gg.essential.elementa.constraints.CenterConstraint
+import gg.essential.elementa.constraints.ConstraintType
+import gg.essential.elementa.constraints.PositionConstraint
+import gg.essential.elementa.constraints.resolution.ConstraintVisitor
 import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.dsl.pixels
@@ -19,6 +23,14 @@ class UIFakeInventory : UIContainer() {
         const val INVENTORY_WIDTH = 176f
         const val INVENTORY_HEIGHT = 166f
         private const val INVENTORY_TEXTURE_PATH = "/assets/minecraft/textures/gui/container/inventory.png"
+
+        fun getInventoryLeft(windowWidth: Float): Float {
+            return ((windowWidth.toInt() - INVENTORY_WIDTH.toInt()) / 2).toFloat()
+        }
+
+        fun getInventoryTop(windowHeight: Float): Float {
+            return ((windowHeight.toInt() - INVENTORY_HEIGHT.toInt()) / 2).toFloat()
+        }
 
         fun loadInventoryImage(): BufferedImage? {
             return try {
@@ -51,8 +63,8 @@ class UIFakeInventory : UIContainer() {
 
     init {
         this.constrain {
-            x = CenterConstraint()
-            y = CenterConstraint()
+            x = InventoryPositionConstraint(isX = true)
+            y = InventoryPositionConstraint(isX = false)
             width = INVENTORY_WIDTH.pixels()
             height = INVENTORY_HEIGHT.pixels()
         }
@@ -70,6 +82,32 @@ class UIFakeInventory : UIContainer() {
                 width = INVENTORY_WIDTH.pixels()
                 height = INVENTORY_HEIGHT.pixels()
             } childOf this
+        }
+    }
+
+    private class InventoryPositionConstraint(private val isX: Boolean) : PositionConstraint {
+        override var cachedValue = 0f
+        override var recalculate = true
+        override var constrainTo: UIComponent? = null
+
+        override fun getXPositionImpl(component: UIComponent): Float {
+            val parent = constrainTo ?: component.parent
+            return getInventoryLeft(parent.getWidth())
+        }
+
+        override fun getYPositionImpl(component: UIComponent): Float {
+            val parent = constrainTo ?: component.parent
+            return getInventoryTop(parent.getHeight())
+        }
+
+        override fun visitImpl(visitor: ConstraintVisitor, type: ConstraintType) {
+            if (isX) {
+                visitor.visitParent(ConstraintType.WIDTH)
+                visitor.visitParent(ConstraintType.X)
+            } else {
+                visitor.visitParent(ConstraintType.HEIGHT)
+                visitor.visitParent(ConstraintType.Y)
+            }
         }
     }
 }

@@ -293,13 +293,21 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
 
         if (HudWindow.isEditingOpen && HudWindow.currentEditTarget == HudWindow.EditTarget.INVENTORY) {
             val isHorizontal = windowDimension == window.getWidth()
+            val invStart = if (isHorizontal) {
+                UIFakeInventory.getInventoryLeft(windowDimension)
+            } else {
+                UIFakeInventory.getInventoryTop(windowDimension)
+            }
             val invDimension = if (isHorizontal) UIFakeInventory.INVENTORY_WIDTH else UIFakeInventory.INVENTORY_HEIGHT
-            val invOrthDimension = if (isHorizontal) UIFakeInventory.INVENTORY_HEIGHT else UIFakeInventory.INVENTORY_WIDTH
-            val windowOrthDimension = if (isHorizontal) window.getHeight() else window.getWidth()
-
-            val invStart = (windowDimension - invDimension) / 2f
             val invEnd = invStart + invDimension
-            val invOrthStart = (windowOrthDimension - invOrthDimension) / 2f
+
+            val windowOrthDimension = if (isHorizontal) window.getHeight() else window.getWidth()
+            val invOrthStart = if (isHorizontal) {
+                UIFakeInventory.getInventoryTop(windowOrthDimension)
+            } else {
+                UIFakeInventory.getInventoryLeft(windowOrthDimension)
+            }
+            val invOrthDimension = if (isHorizontal) UIFakeInventory.INVENTORY_HEIGHT else UIFakeInventory.INVENTORY_WIDTH
             val invOrthEnd = invOrthStart + invOrthDimension
 
             evaluateBoundingBox(invStart, invEnd, invOrthStart, invOrthEnd, isGlobal = true)
