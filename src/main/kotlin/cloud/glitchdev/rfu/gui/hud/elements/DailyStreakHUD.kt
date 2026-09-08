@@ -135,7 +135,7 @@ object DailyStreakHUD : AbstractTextHudElement("dailyStreakDisplay") {
             height = iconSize.pixels()
         } childOf parent
 
-        val refreshImage = UIImage.ofResource("/assets/rfu/ui/refresh.png").constrain {
+        val refreshImage = UIImage.ofResourceCached("/assets/rfu/ui/refresh.png").constrain {
             x = CenterConstraint()
             y = CenterConstraint()
             width = 100.percent()
@@ -144,14 +144,17 @@ object DailyStreakHUD : AbstractTextHudElement("dailyStreakDisplay") {
         } childOf rerollBtn
 
         rerollBtn.onMouseEnter {
+            if(isEditing) return@onMouseEnter
             refreshImage.animate {
                 setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, Color(255, 255, 255).toConstraint())
             }
         }.onMouseLeave {
+            if(isEditing) return@onMouseLeave
             refreshImage.animate {
                 setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, Color(200, 200, 200).toConstraint())
             }
         }.onMouseClick { event ->
+            if(isEditing) return@onMouseClick
             event.stopPropagation()
             if (challenge != null) {
                 DailyStreakManager.rerollChallenge(challenge.id)
