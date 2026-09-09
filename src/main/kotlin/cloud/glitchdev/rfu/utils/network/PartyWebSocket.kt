@@ -1,5 +1,7 @@
 package cloud.glitchdev.rfu.utils.network
 
+import cloud.glitchdev.rfu.config.categories.BackendSettings
+import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.chat.RegexConstants.PLAYER_REGEX
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
@@ -14,11 +16,15 @@ import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.Party
+import cloud.glitchdev.rfu.utils.World
 import cloud.glitchdev.rfu.utils.Coroutines
 import cloud.glitchdev.rfu.constants.text.TextColor
+import cloud.glitchdev.rfu.constants.text.TextEffects
+import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerAllowGameEvent
 import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
 import cloud.glitchdev.rfu.events.managers.WebSocketEvents.registerConnectionStatusChangedEvent
+import cloud.glitchdev.rfu.gui.components.partyfinder.UIPartyPresetsModal
 import cloud.glitchdev.rfu.utils.dsl.isIgnored
 import cloud.glitchdev.rfu.utils.dsl.removeRankTag
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
@@ -26,6 +32,10 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import net.minecraft.network.chat.ClickEvent
+import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.HoverEvent
+import net.minecraft.network.chat.Style
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
@@ -39,10 +49,17 @@ import kotlin.time.Duration.Companion.hours
 object PartyWebSocket : RegisteredEvent {
     private val gson = Gson()
     private var connectionLostJob: Job? = null
-    
+    private var lastSubmitTime = 0L
+
+    var lastParty: FishingParty? = null
+        private set
+
     var myParty: FishingParty? = null
         private set(value) {
             field = value
+            if (value != null) {
+                lastParty = value.deepCopy()
+            }
             PartyFinderEvents.MyPartyChanged.runTasks(value)
         }
 
@@ -69,7 +86,8 @@ object PartyWebSocket : RegisteredEvent {
                     }
                     
                     if (!WebSocketClient.isConnected && myParty != null) {
-                        Chat.sendMessage(TextUtils.rfupfLiteral("Party dequeued (Connection lost)", TextColor.LIGHT_RED))
+                        myParty?.let { lastParty = it.deepCopy() }
+                        sendPartyDequeuedMessage("Connection lost")
                         myParty = null
                     }
                 }
@@ -139,7 +157,8 @@ object PartyWebSocket : RegisteredEvent {
                         event.id?.let { user ->
                             if (user == User.getUsername()) {
                                 if (myParty != null) {
-                                    Chat.sendMessage(TextUtils.rfupfLiteral("Party dequeued", TextColor.LIGHT_RED))
+                                    myParty?.let { lastParty = it.deepCopy() }
+                                    sendPartyDequeuedMessage()
                                 }
                                 myParty = null
                             }
@@ -199,13 +218,30 @@ object PartyWebSocket : RegisteredEvent {
         WebSocketClient.send("/app/party/sync", "")
     }
 
+    fun sendPartyDequeuedMessage(reason: String? = null) {
+        val text = if (reason != null) "Party dequeued ($reason)" else "Party dequeued"
+        val message = TextUtils.rfupfLiteral("$text ", TextColor.LIGHT_RED)
+
+        val requeueButton = Component.literal("${TextColor.LIGHT_GREEN}${TextEffects.BOLD}[Requeue]")
+            .setStyle(
+                Style.EMPTY
+                    .withClickEvent(ClickEvent.RunCommand("/rfurequeue"))
+                    .withHoverEvent(HoverEvent.ShowText(Component.literal("${TextColor.YELLOW}Click to requeue your party!")))
+            )
+
+        message.append(requeueButton)
+        Chat.sendMessage(message)
+    }
+
     fun publishParty(party: FishingParty) {
         party.profileId = User.profileId
+        lastParty = party.deepCopy()
         WebSocketClient.send("/app/party/publish", party)
     }
 
     fun editParty(party: FishingParty) {
         party.profileId = User.profileId
+        lastParty = party.deepCopy()
         WebSocketClient.send("/app/party/edit", party)
     }
 
@@ -217,11 +253,98 @@ object PartyWebSocket : RegisteredEvent {
         }
     }
 
+    fun requeueParty() {
+        if (!BackendSettings.backendAccepted) {
+            Chat.sendMessage(TextUtils.backendAcceptMessage())
+            return
+        }
+
+        if (!World.isInSkyblock) {
+            Chat.sendMessage(
+                TextUtils.rfuLiteral(
+                    "Must be in skyblock to use this feature!",
+                    TextStyle(TextColor.LIGHT_RED, TextEffects.UNDERLINE)
+                )
+            )
+            return
+        }
+
+        if (World.isOnAlpha) {
+            Chat.sendMessage(
+                TextUtils.rfuLiteral(
+                    "Party Finder is disabled on the Alpha network!",
+                    TextStyle(TextColor.LIGHT_RED, TextEffects.UNDERLINE)
+                )
+            )
+            return
+        }
+
+        if (!WebSocketClient.isConnected) {
+            Chat.sendMessage(TextUtils.rfupfLiteral("Not connected to RFU Backend!", TextColor.LIGHT_RED))
+            return
+        }
+
+        if (myParty != null) {
+            Chat.sendMessage(TextUtils.rfupfLiteral("You already have an active party listing!", TextColor.LIGHT_RED))
+            return
+        }
+
+        val party = lastParty?.deepCopy() ?: run {
+            val entry = UIPartyPresetsModal.getPresetsEntry()
+            entry.lastPartyState?.let { state ->
+                val blank = FishingParty.blankParty()
+                state.applyTo(blank)
+                blank
+            }
+        }
+
+        if (party == null) {
+            Chat.sendMessage(TextUtils.rfupfLiteral("No previous party to requeue!", TextColor.LIGHT_RED))
+            return
+        }
+
+        party.profileId = User.profileId
+        party.user = User.getUsername()
+        party.players.current = if (Party.inParty) maxOf(Party.memberCount, 1) else 1
+
+        val validation = PartyRequirementsManager.canCreateParty(party)
+        if (!validation.isSuccess) {
+            Chat.sendMessage(TextUtils.rfupfLiteral(validation.getErrorMessage(), TextColor.LIGHT_RED))
+            return
+        }
+
+        val now = System.currentTimeMillis()
+        val elapsed = now - lastSubmitTime
+        if (elapsed < 5000L) {
+            val secondsLeft = ((5000L - elapsed) / 1000L) + 1
+            Chat.sendMessage(TextUtils.rfupfLiteral("Please wait ${secondsLeft}s before trying again!", TextColor.LIGHT_RED))
+            return
+        }
+
+        if (DevSettings.devMode && DevSettings.isInSkyblock) {
+            lastSubmitTime = now
+            submitParty(party)
+            Chat.sendMessage(TextUtils.rfupfLiteral("Party requeued!", TextColor.LIGHT_GREEN))
+        } else {
+            Party.requestPartyInfo {
+                if (Party.inParty && !Party.isLeader) {
+                    Chat.sendMessage(TextUtils.rfupfLiteral("You must be the party leader to do this!", TextColor.LIGHT_RED))
+                } else {
+                    lastSubmitTime = System.currentTimeMillis()
+                    party.players.current = if (Party.inParty) maxOf(Party.memberCount, 1) else 1
+                    submitParty(party)
+                    Chat.sendMessage(TextUtils.rfupfLiteral("Party requeued!", TextColor.LIGHT_GREEN))
+                }
+            }
+        }
+    }
+
     fun deleteParty(user: String) {
         WebSocketClient.send("/app/party/delete", gson.toJson(user))
         if (user == User.getUsername()) {
             if (myParty != null) {
-                Chat.sendMessage(TextUtils.rfupfLiteral("Party dequeued", TextColor.LIGHT_RED))
+                myParty?.let { lastParty = it.deepCopy() }
+                sendPartyDequeuedMessage()
             }
             myParty = null
         }
