@@ -6,6 +6,9 @@
 - Added Moby-Duck Wisdom buff HUD display.
 - Reworked /rfuemojis to be more compact.
 
+### Changes
+- Made Flare timer server tick based
+
 ### Fixes
 - Fixed date input in /rfudrophistory add not working.
 - Made hud not be hidden while on inventory
