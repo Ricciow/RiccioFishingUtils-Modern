@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.data.mob.strategies
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.data.mob.DeployableManager.Deployable
 import cloud.glitchdev.rfu.data.mob.DeployableType
+import cloud.glitchdev.rfu.events.managers.ServerTickEvents
 import net.minecraft.core.component.DataComponents
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EquipmentSlot
@@ -14,6 +15,7 @@ import kotlin.math.round
 
 class FlareStrategy : DeployableStrategy {
     override val type = DeployableType.FLARE
+    private val FLARE_DURATION_TICKS = 180L * 20L
 
     private enum class FlareType(val priority: Int, val accentLabel: String, val texture: String) {
         SOS(3, "+125%", "ewogICJ0aW1lc3RhbXAiIDogMTY2MjY4Mjc3NjUxNiwKICAicHJvZmlsZUlkIiA6ICI4YjgyM2E1YmU0Njk0YjhiOTE0NmE5MWRhMjk4ZTViNSIsCiAgInByb2ZpbGVOYW1lIiA6ICJTZXBoaXRpcyIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9jMDA2MmNjOThlYmRhNzJhNmE0Yjg5NzgzYWRjZWYyODE1YjQ4M2EwMWQ3M2VhODdiM2RmNzYwNzJhODlkMTNiIiwKICAgICAgIm1ldGFkYXRhIiA6IHsKICAgICAgICAibW9kZWwiIDogInNsaW0iCiAgICAgIH0KICAgIH0KICB9Cn0="),
@@ -24,12 +26,14 @@ class FlareStrategy : DeployableStrategy {
     private data class TrackedFlare(
         val entityId: Int,
         val flareType: FlareType,
-        val endTimeMillis: Long,
+        val endServerTick: Long,
         var posX: Double,
         var posZ: Double,
         var highestY: Double,
     ) {
         fun toDeployable(): Deployable {
+            val remainingTicks = (endServerTick - ServerTickEvents.currentServerTick).coerceAtLeast(0L)
+            val endTimeMillis = System.currentTimeMillis() + remainingTicks * 50L
             return Deployable(
                 type = DeployableType.FLARE,
                 endTimeMillis = endTimeMillis,
@@ -59,7 +63,7 @@ class FlareStrategy : DeployableStrategy {
 
     private data class TrackedFirework(
         val entityId: Int,
-        val endTimeMillis: Long,
+        val endServerTick: Long,
         var posX: Double,
         var posZ: Double,
         var highestY: Double,
@@ -115,7 +119,7 @@ class FlareStrategy : DeployableStrategy {
                     val now = System.currentTimeMillis()
                     TrackedFirework(
                         entityId = entity.id,
-                        endTimeMillis = now + 180_000,
+                        endServerTick = ServerTickEvents.currentServerTick + FLARE_DURATION_TICKS,
                         posX = entity.x,
                         posZ = entity.z,
                         highestY = entity.y,
@@ -133,7 +137,7 @@ class FlareStrategy : DeployableStrategy {
                         activeFlares[entity.id] = TrackedFlare(
                             entityId = entity.id,
                             flareType = FlareType.UNDEFINED,
-                            endTimeMillis = firework.endTimeMillis,
+                            endServerTick = firework.endServerTick,
                             posX = entity.x,
                             posZ = entity.z,
                             highestY = entity.y,
@@ -162,18 +166,18 @@ class FlareStrategy : DeployableStrategy {
         }
 
         val matchingFirework = findMatchingFirework(entity)
-        val endTimeMillis = if (matchingFirework != null) {
+        val endServerTick = if (matchingFirework != null) {
             matchingFirework.claimed = true
             activeFlares.remove(matchingFirework.entityId)
-            matchingFirework.endTimeMillis
+            matchingFirework.endServerTick
         } else {
-            System.currentTimeMillis() + 180_000
+            ServerTickEvents.currentServerTick + FLARE_DURATION_TICKS
         }
 
         activeFlares[entity.id] = TrackedFlare(
             entityId = entity.id,
             flareType = flareType,
-            endTimeMillis = endTimeMillis,
+            endServerTick = endServerTick,
             posX = entity.x,
             posZ = entity.z,
             highestY = if (matchingFirework != null) maxOf(entity.y, matchingFirework.highestY) else entity.y,
@@ -195,7 +199,7 @@ class FlareStrategy : DeployableStrategy {
 
         val best = pool.minWithOrNull(
             compareByDescending<TrackedFlare> { it.flareType.priority }
-                .thenByDescending { it.endTimeMillis }
+                .thenByDescending { it.endServerTick }
                 .thenBy { it.distanceSquared(playerPos) }
         )
 
