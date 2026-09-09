@@ -63,9 +63,8 @@ object MobManager : RegisteredEvent {
             if (status == EntityEvent.DEATH) {
                 val sbEntity = sbEntities[entity.id] ?: return@registerEntityStatusEvent
                 if (entity.id == sbEntity.modelEntity.id) {
-                    removeEntity(sbEntity)
+                    sbEntity.isDying = true
                     MobEvents.MobDeathEventManager.runTasks(setOf(sbEntity))
-                    MobEvents.MobDisposeEventManager.runTasks(setOf(sbEntity))
                 }
             }
         }
@@ -83,8 +82,9 @@ object MobManager : RegisteredEvent {
         }
     }
 
-    fun getEntities() : Set<SkyblockEntity> {
-        return uniqueSbEntities.toSet()
+    fun getEntities(includeDying: Boolean = false) : Set<SkyblockEntity> {
+        return if (includeDying) uniqueSbEntities.toSet()
+        else uniqueSbEntities.filter { !it.isRemoved() }.toSet()
     }
 
     fun getSkyblockEntity(id: Int): SkyblockEntity? {
@@ -97,7 +97,8 @@ object MobManager : RegisteredEvent {
 
         if (!entity.isInvisible) return false
 
-        if (!SkyblockEntity.isNameTagEntity(entity)) return false
+        val parsed = SkyblockEntity.parseNameTag(entity) ?: return false
+        if (parsed.health == "0") return false
 
         val foundModel = findModelForNametag(entity, world)
 
@@ -105,11 +106,14 @@ object MobManager : RegisteredEvent {
             val existingLink = sbEntities[foundModel.id]
 
             if (existingLink != null) {
+                if (existingLink.isDying) return false
                 if (existingLink.nameTagEntity.isRemoved) {
                     sbEntities.remove(existingLink.nameTagEntity.id)
                     existingLink.updateNametag(entity)
+                    existingLink.updateEntityData()
                     sbEntities[entity.id] = existingLink
-                    return true
+                    MobEvents.MobUpdateEventManager.runTasks(existingLink)
+                    return false
                 }
             } else {
                 val sbEntity = SkyblockEntity(entity, foundModel)
@@ -131,7 +135,9 @@ object MobManager : RegisteredEvent {
         val candidates = world.getEntities(nametag, searchBox) { candidate ->
             if (candidate !is LivingEntity || candidate is ArmorStand) return@getEntities false
             if (candidate is Player && getPlayerNames().contains(candidate.name.toUnformattedString())) return@getEntities false
+            if (!candidate.isAlive || candidate.isDeadOrDying) return@getEntities false
             val existingLink = sbEntities[candidate.id]
+            if (existingLink?.isDying == true) return@getEntities false
             existingLink == null || existingLink.nameTagEntity.isRemoved
         }.toList()
 

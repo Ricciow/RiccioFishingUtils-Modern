@@ -11,6 +11,7 @@
 - Fixed party preset loading not validating and disable requirements not met by the player.
 - Fixed mod not auto rejoining on togglewarp
 - Fixed Plhlegblast alerts, boss health bar, and kill time tracking not working when mob health reaches billions, thank you Derpy.
+- Fixed rare sea creature alert sometimes triggering when the creature dies.
 
 ### Back-end
 - Added an event manager for fishing sessions and made fishing HUD elements update reactively.

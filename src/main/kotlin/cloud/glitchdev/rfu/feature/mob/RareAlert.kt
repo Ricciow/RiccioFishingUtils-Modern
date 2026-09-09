@@ -1,8 +1,10 @@
-﻿package cloud.glitchdev.rfu.feature.mob
+package cloud.glitchdev.rfu.feature.mob
 
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig.RARE_SC_REGEX
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
+import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
 import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDetectEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
@@ -17,7 +19,7 @@ object RareAlert : Feature {
     override fun onInitialize() {
         registerMobDetectEvent { entities ->
             if(!SeaCreatureConfig.detectionAlert) return@registerMobDetectEvent
-            val entities = entities.filter { SeaCreatures.get(it.sbName)?.rareSCAlert == true }.toSet()
+            val entities = entities.filter { !it.isRemoved() && it.health != "0" && SeaCreatures.get(it.sbName)?.rareSCAlert == true }.toSet()
             val newEntities = entities.minus(lastEntities)
             lastEntities = entities
 
@@ -34,6 +36,14 @@ object RareAlert : Feature {
             if(newEntities.isNotEmpty() && SeaCreatureConfig.rareScSound) {
                 Sounds.playSound("rfu:rare_sc", 1f, SeaCreatureConfig.rareScSoundVolume)
             }
+        }
+
+        registerLocationEvent {
+            lastEntities = emptySet()
+        }
+
+        registerDisconnectEvent {
+            lastEntities = emptySet()
         }
     }
 }

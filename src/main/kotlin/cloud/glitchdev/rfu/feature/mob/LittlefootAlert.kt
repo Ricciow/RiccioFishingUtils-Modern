@@ -1,6 +1,8 @@
 package cloud.glitchdev.rfu.feature.mob
 
 import cloud.glitchdev.rfu.config.categories.OtherSettings
+import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
 import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDetectEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
@@ -16,7 +18,7 @@ object LittlefootAlert : Feature {
         registerMobDetectEvent { entities ->
             if(!OtherSettings.littlefootAlert) return@registerMobDetectEvent
             
-            val littlefoots = entities.filter { it.sbName.contains("Littlefoot", ignoreCase = true) }.toSet()
+            val littlefoots = entities.filter { !it.isRemoved() && it.sbName.contains("Littlefoot", ignoreCase = true) }.toSet()
             val newLittlefoots = littlefoots.minus(lastEntities)
             lastEntities = littlefoots
 
@@ -29,6 +31,14 @@ object LittlefootAlert : Feature {
                     Sounds.playSound("rfu:littlefoot", 1f, OtherSettings.littlefootVolume)
                 }
             }
+        }
+
+        registerLocationEvent {
+            lastEntities = emptySet()
+        }
+
+        registerDisconnectEvent {
+            lastEntities = emptySet()
         }
     }
 }
