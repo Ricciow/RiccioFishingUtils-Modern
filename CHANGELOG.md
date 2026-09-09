@@ -2,6 +2,7 @@
 
 ### Features
 - Added a requeue button to the party dequeued message and /rfurequeue command.
+- Prevent sending party/chat messages when muted and added /rfuunmuteme command.
 
 ### Fixes
 - Fixed date input in /rfudrophistory add not working.
