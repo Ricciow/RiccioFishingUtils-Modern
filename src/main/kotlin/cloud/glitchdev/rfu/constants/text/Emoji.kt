@@ -2,7 +2,7 @@ package cloud.glitchdev.rfu.constants.text
 
 
 object Emoji {
-    val EMOJIS = mapOf(
+    val EMOJIS: Map<String, List<String>> = linkedMapOf(
         // Non-Sea Creatures
         "\uE100" to listOf("dog"),
         "\uE101" to listOf("goat"),
@@ -48,8 +48,6 @@ object Emoji {
         "\uE108" to listOf("yeti"),
         "\uE123" to listOf("giant_isopod", "isopod", "pod"),
         "\uE124" to listOf("silkbreeze", "silk")
-
-        //\uE128 next
     )
 
     val ALL = EMOJIS.flatMap { (unicode, aliases) ->
@@ -58,5 +56,14 @@ object Emoji {
 
     fun String.whiteText() : String {
         return "${TextColor.WHITE}$this${TextEffects.RESET}"
+    }
+
+    fun formatDisplayName(alias: String): String {
+        return alias.replace('_', ' ')
+            .split(' ')
+            .filter { it.isNotEmpty() }
+            .joinToString(" ") { word ->
+                word.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+            }
     }
 }
