@@ -43,7 +43,7 @@ object GdragAlert : Feature {
 
         val health = entity.health.parseHealthValue()
         val maxHealth = entity.maxHealth.parseHealthValue()
-        if (maxHealth == 0) return
+        if (maxHealth == 0L) return
 
         val healthPercentage = (health.toDouble() / maxHealth.toDouble()) * 100
 
