@@ -17,6 +17,7 @@
 - Fixed Plhlegblast alerts, boss health bar, and kill time tracking not working when mob health reaches billions, thank you Derpy.
 - Fixed rare sea creature alert sometimes triggering when the creature dies.
 - Fixed flare timer not reverting to older active flares when a newer flare despawns.
+- Fixed party description text rendering vertically when opening the party finder creation menu or loading presets.
 
 ### Back-end
 - Added an event manager for fishing sessions and made fishing HUD elements update reactively.
