@@ -33,6 +33,7 @@ import gg.essential.elementa.dsl.minus
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.toConstraint
+import gg.essential.universal.UMatrixStack
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
@@ -82,6 +83,14 @@ object HudWindow : BaseWindow(false) {
 
     var currentRenderPass: RenderPass = RenderPass.NONE
         private set
+
+    override fun onDrawScreen(matrixStack: UMatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float) {
+        if (currentRenderPass == RenderPass.NONE) {
+            super.onDrawScreen(matrixStack, mouseX, mouseY, partialTicks)
+        } else {
+            window.draw(matrixStack)
+        }
+    }
 
     init {
         create()

@@ -10,6 +10,7 @@
 - Made Flare timer server tick based
 
 ### Fixes
+- Fixed the camera spinning after taking an Essential screenshot.
 - Fixed date input in /rfudrophistory add not working.
 - Made hud not be hidden while on inventory
 - Fixed party preset loading not validating and disable requirements not met by the player.
