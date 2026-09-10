@@ -32,7 +32,7 @@ object SurvivalistAchievement : StageAchievement() {
     private var wasDoubleHook = false
     private var hadHardMode = false
     private var disqualifiedForArmor = false
-    private var maxJawbusHealth = -1
+    private var maxJawbusHealth = -1L
     private var jawbusSpawnTime = 0L
 
     private val DEATH_REGEX = """ ☠ You """.toRegex()
@@ -57,7 +57,7 @@ object SurvivalistAchievement : StageAchievement() {
                 wasDoubleHook = doubleHook
                 hadHardMode = LavaFishing.jawbus_hard_mode
                 disqualifiedForArmor = false
-                maxJawbusHealth = -1
+                maxJawbusHealth = -1L
                 jawbusSpawnTime = System.currentTimeMillis()
                 trackingJawbus = null
             }
@@ -67,24 +67,24 @@ object SurvivalistAchievement : StageAchievement() {
             val jawbus = trackingJawbus
             if (jawbus != null) {
                 val currentHealth = jawbus.health.parseHealthValue()
-                if (currentHealth > 0) {
-                    if (maxJawbusHealth == -1 || currentHealth > maxJawbusHealth) {
+                if (currentHealth > 0L) {
+                    if (maxJawbusHealth == -1L || currentHealth > maxJawbusHealth) {
                         maxJawbusHealth = currentHealth
                     }
 
                     val isWearingArmor = ArmorEvents.currentArmorSet.isWearingAnyArmor
 
-                    if (isWearingArmor && maxJawbusHealth > 0) {
+                    if (isWearingArmor && maxJawbusHealth > 0L) {
                         val damageDealt = maxJawbusHealth - currentHealth
                         val timeElapsed = System.currentTimeMillis() - jawbusSpawnTime
                         val isGracePeriodActive = jawbusSpawnTime > 0L && timeElapsed <= 3000L
 
                         if (isGracePeriodActive) {
-                            if (damageDealt > 5_000_000) {
+                            if (damageDealt > 5_000_000L) {
                                 disqualifiedForArmor = true
                             }
                         } else {
-                            if (damageDealt > 0) {
+                            if (damageDealt > 0L) {
                                 disqualifiedForArmor = true
                             }
                         }

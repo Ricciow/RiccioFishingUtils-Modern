@@ -80,7 +80,7 @@ fun String.toInteractiveText(command: String, hoverText: Component = Component.l
     return root
 }
 
-fun String.parseHealthValue(): Int {
+fun String.parseHealthValue(): Long {
     var str = this
     var multiplier = 1.0
 
@@ -90,6 +90,9 @@ fun String.parseHealthValue(): Int {
     } else if (str.endsWith("M", true)) {
         multiplier = 1_000_000.0
         str = str.dropLast(1)
+    } else if (str.endsWith("B", true)) {
+        multiplier = 1_000_000_000.0
+        str = str.dropLast(1)
     }
 
     str = if (multiplier > 1.0) {
@@ -98,7 +101,7 @@ fun String.parseHealthValue(): Int {
         str.replace(",", "")
     }
 
-    return str.toDoubleOrNull()?.times(multiplier)?.toInt() ?: 0
+    return str.toDoubleOrNull()?.times(multiplier)?.toLong() ?: 0L
 }
 
 fun String.escapeForRegex(): String {

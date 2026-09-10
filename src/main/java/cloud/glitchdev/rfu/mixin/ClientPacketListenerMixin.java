@@ -62,4 +62,9 @@ public class ClientPacketListenerMixin {
             EntityStatusEvents.INSTANCE.getRunTasks().invoke(entity, packet.getEventId());
         }
     }
+
+    @Inject(method = "handleSetTime", at = @At("TAIL"))
+    private void onSetTime(ClientboundSetTimePacket packet, CallbackInfo ci) {
+        SetTimeEvents.INSTANCE.getRunTasks().invoke(packet.gameTime());
+    }
 }

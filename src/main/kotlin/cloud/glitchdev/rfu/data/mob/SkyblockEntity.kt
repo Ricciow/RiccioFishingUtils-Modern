@@ -31,6 +31,7 @@ class SkyblockEntity(
     var maxHealth: String = "0"
     var isShurikened: Boolean = false
     var originBobber: BobberInfo? = null
+    var isDying: Boolean = false
 
     var renderEvent: RenderEvents.RenderEvent? = null
 
@@ -61,7 +62,15 @@ class SkyblockEntity(
         return "$sbName ($health/$maxHealth) (renderEvent: ${renderEvent != null})$bobberInfo - ${nameTagEntity.x}, ${nameTagEntity.y}, ${nameTagEntity.z}"
     }
 
-    fun isRemoved(): Boolean = nameTagEntity.isRemoved && modelEntity.isRemoved
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is SkyblockEntity) return false
+        return modelEntity.id == other.modelEntity.id
+    }
+
+    override fun hashCode(): Int = modelEntity.id.hashCode()
+
+    fun isRemoved(): Boolean = isDying || modelEntity.isRemoved
 
     fun setGlowing(state: Boolean, color: Color = Color.WHITE) {
         (modelEntity as EntityAccess).`rfu$setGlowing`(state)
@@ -147,8 +156,8 @@ class SkyblockEntity(
     )
 
     companion object {
-        private val entityRegex = """(?:﴾ )?\[Lv\d+] \S+ (.+) (\d+[\.,]?\d*[kM]?)/(\d+[\.,]?\d*[kM]?)❤(?: ﴿)?( ✯)?""".toRegex()
-        private val corruptedRegex = """^aCorrupted (.+)a$""".toRegex()
+        private val entityRegex = """(?:﴾ )?\[Lv\d+] \S+ (.+) (\d+[\.,]?\d*[kMB]?)/(\d+[\.,]?\d*[kMB]?)❤(?: ﴿)?( ✯)?""".toRegex(RegexOption.IGNORE_CASE)
+        private val corruptedRegex = """^aCorrupted (.+?)a$""".toRegex()
 
         fun isNameTagEntity(entity: ArmorStand): Boolean {
             if (!entity.hasCustomName()) return false

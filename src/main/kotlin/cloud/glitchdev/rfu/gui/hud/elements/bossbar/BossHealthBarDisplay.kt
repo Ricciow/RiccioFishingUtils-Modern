@@ -13,6 +13,7 @@ import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
+import java.util.Locale
 import kotlin.math.max
 
 @HudElement
@@ -28,16 +29,21 @@ object BossHealthBarDisplay : AbstractHudElement("bossHealthBar") {
         height = (9 * scale).pixels()
     } childOf this
 
-    private fun formatHealthValue(value: Int): String {
+    private fun formatHealthValue(value: Long): String {
         return when {
+            value >= 1_000_000_000 -> {
+                val billions = value / 1_000_000_000.0
+                val formatted = String.format(Locale.ROOT, "%.1f", billions)
+                if (formatted.endsWith(".0")) formatted.dropLast(2) + "B" else formatted + "B"
+            }
             value >= 1_000_000 -> {
                 val millions = value / 1_000_000.0
-                val formatted = String.format("%.1f", millions).replace(",", ".")
+                val formatted = String.format(Locale.ROOT, "%.1f", millions)
                 if (formatted.endsWith(".0")) formatted.dropLast(2) + "M" else formatted + "M"
             }
             value >= 1_000 -> {
                 val thousands = value / 1_000.0
-                val formatted = String.format("%.1f", thousands).replace(",", ".")
+                val formatted = String.format(Locale.ROOT, "%.1f", thousands)
                 if (formatted.endsWith(".0")) formatted.dropLast(2) + "k" else formatted + "k"
             }
             else -> value.toString()

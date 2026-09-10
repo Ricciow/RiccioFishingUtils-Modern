@@ -45,6 +45,14 @@ data class FishingParty(
         }
     }
 
+    fun deepCopy(): FishingParty {
+        return this.copy(
+            requisites = this.requisites.map { it.copy() }.toMutableList(),
+            seaCreatures = this.seaCreatures.toList(),
+            players = this.players.copy()
+        )
+    }
+
     companion object {
         fun blankParty(): FishingParty {
             val island = World.island ?: FishingIslands.ISLE

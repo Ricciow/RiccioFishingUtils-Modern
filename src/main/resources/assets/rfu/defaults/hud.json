@@ -145,6 +145,14 @@
       "scale": 1.0,
       "width": 167.0,
       "height": 79.0
+    },
+    "mobyDuckDisplay": {
+      "anchor": "TOP_LEFT",
+      "x": 108.7,
+      "y": 39.7,
+      "scale": 1.0,
+      "width": 139.0,
+      "height": 9.0
     }
   }
 }

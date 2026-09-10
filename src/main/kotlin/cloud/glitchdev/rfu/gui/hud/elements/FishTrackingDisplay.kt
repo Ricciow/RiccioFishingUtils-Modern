@@ -58,7 +58,6 @@ object FishTrackingDisplay : AbstractFishingHudElement("fishTrackingDisplay") {
 
         resetButton.onMouseClick {
             resetSession()
-            updateState()
         }
     }
 

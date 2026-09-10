@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.data.other.data
 import cloud.glitchdev.rfu.constants.fishing.FishingIslands
 import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
 import cloud.glitchdev.rfu.model.party.FishingParty
+import cloud.glitchdev.rfu.party.PartyRequirementsManager
 
 data class PartyPresetsEntry(
     var lastPartyState: PartyPresetData? = null,
@@ -31,10 +32,10 @@ data class PartyPresetData(
         party.level = level
         party.players.max = if (maxPlayers > 0) maxPlayers else 6
         party.setRequisite("has_killer", "Has Killer", hasKiller)
-        party.setRequisite("enderman_9", "Enderman 9", enderman9)
-        party.setRequisite("looting_5", "Looting 5", looting5)
-        party.setRequisite("brain_food", "Brain Food", brainFood)
-        party.setRequisite("bloodshot", "Bloodshot", bloodshot)
+        party.setRequisite("enderman_9", "Enderman 9", enderman9 && PartyRequirementsManager.hasEnderman9())
+        party.setRequisite("looting_5", "Looting 5", looting5 && PartyRequirementsManager.hasLooting5())
+        party.setRequisite("brain_food", "Brain Food", brainFood && PartyRequirementsManager.hasBrainFood())
+        party.setRequisite("bloodshot", "Bloodshot", bloodshot && PartyRequirementsManager.hasBloodshotBelt())
     }
 
     fun copyFrom(party: FishingParty, presetName: String = name) {

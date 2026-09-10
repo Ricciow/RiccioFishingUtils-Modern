@@ -4,6 +4,7 @@ import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.data.fishing.Hotspot
+import cloud.glitchdev.rfu.events.managers.FishingSessionEvents
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
 import cloud.glitchdev.rfu.events.managers.KeybindEvents.registerKeybind
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
@@ -97,7 +98,7 @@ object FishingSession : Feature {
 
             if (isFishing && pausedAt == null && (now - lastFishingEvent) > limit) {
                 if (GeneralFishing.pauseSessionOnWindowReached) {
-                    pausedAt = lastFishingEvent
+                    pauseSession(lastFishingEvent)
                 } else {
                     resetSession()
                 }
@@ -111,12 +112,25 @@ object FishingSession : Feature {
 
     fun togglePause() {
         if (!isFishing) return
-        if (isPaused) handleActivity() else pausedAt = Clock.System.now()
+        if (isPaused) resumeSession() else pauseSession()
+    }
+
+    fun pauseSession(at: Instant = Clock.System.now()) {
+        if (!isFishing || isPaused) return
+        pausedAt = at
+        FishingSessionEvents.FishingSessionPauseEventManager.runTasks()
+    }
+
+    fun resumeSession() {
+        if (!isFishing || !isPaused) return
+        handleActivity()
     }
 
     fun handleActivity() {
         val now = Clock.System.now()
-        if (startFishing == Instant.DISTANT_PAST) {
+        val isStarting = startFishing == Instant.DISTANT_PAST
+        val wasPaused = isPaused
+        if (isStarting) {
             startFishing = now
         } else {
             pausedAt?.let {
@@ -129,9 +143,16 @@ object FishingSession : Feature {
             pausedAt = null
         }
         lastFishingEvent = now
+
+        if (isStarting) {
+            FishingSessionEvents.FishingSessionStartEventManager.runTasks()
+        } else if (wasPaused) {
+            FishingSessionEvents.FishingSessionResumeEventManager.runTasks()
+        }
     }
 
     fun resetSession() {
+        val wasFishing = isFishing
         startFishing = Instant.DISTANT_PAST
         lastFishingEvent = Instant.DISTANT_PAST
         pausedAt = null
@@ -146,6 +167,10 @@ object FishingSession : Feature {
 
         xpTracker.reset()
         xpTracker.update()
+
+        if (wasFishing) {
+            FishingSessionEvents.FishingSessionEndEventManager.runTasks()
+        }
     }
 
     @Command

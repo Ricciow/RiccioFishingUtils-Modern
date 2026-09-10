@@ -76,7 +76,7 @@ object WarpKickManager : RegisteredEvent {
     }
 
     override fun register() {
-        registerGameEvent("""You have been kicked from the party by ($PLAYER_REGEX)""".toExactRegex()) { _, _, matches ->
+        registerGameEvent("""You have been kicked from the party by ($PLAYER_REGEX)\s*""".toExactRegex()) { _, _, matches ->
             val kicker = matches?.groupValues?.getOrNull(1)?.removeRankTag() ?: return@registerGameEvent
             lastKicker = kicker
             lastKickTime = System.currentTimeMillis()
@@ -85,7 +85,6 @@ object WarpKickManager : RegisteredEvent {
         registerGameEvent("""-----------------------------------------------------\n($PLAYER_REGEX) has invited you to join their party!\nYou have 60 seconds to accept\. Click here to join!\n-----------------------------------------------------""".toExactRegex()) { _, _, matches ->
             val inviter = matches?.groupValues?.getOrNull(1)?.removeRankTag() ?: return@registerGameEvent
             val now = System.currentTimeMillis()
-
             if (inviter == lastKicker && now - lastKickTime < 30000) {
                 Chat.sendCommand("p join $inviter")
                 lastKicker = null
@@ -100,10 +99,6 @@ object WarpKickManager : RegisteredEvent {
             } else {
                 kickList.clear()
                 pendingRejoin.clear()
-
-                if (!isLeader) {
-                    lastKicker = null
-                }
             }
         }
 

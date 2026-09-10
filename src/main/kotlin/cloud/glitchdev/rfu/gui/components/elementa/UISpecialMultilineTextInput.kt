@@ -29,6 +29,7 @@ import gg.essential.elementa.utils.splitStringToWidthTruncated
 import gg.essential.universal.UKeyboard
 import gg.essential.universal.UMatrixStack
 import java.awt.Color
+import kotlin.math.abs
 
 class UISpecialMultilineTextInput @JvmOverloads constructor(
     placeholder: String = "",
@@ -50,6 +51,7 @@ class UISpecialMultilineTextInput @JvmOverloads constructor(
     cursorColor
 ) {
     private var maxHeight: HeightConstraint? = null
+    private var lastSplitWidth = 0f
 
     fun setMaxHeight(maxHeight: HeightConstraint) = apply {
         this.maxHeight = maxHeight
@@ -63,6 +65,25 @@ class UISpecialMultilineTextInput @JvmOverloads constructor(
 
     override fun textToLines(text: String): List<String> {
         return text.split('\n')
+    }
+
+    override fun splitTextForWrapping(text: String, maxLineWidth: Float): List<String> {
+        if (maxLineWidth <= 0f) {
+            lastSplitWidth = 0f
+            return listOf(text)
+        }
+        lastSplitWidth = maxLineWidth
+        return super.splitTextForWrapping(text, maxLineWidth)
+    }
+
+    override fun recalculateAllVisualLines() {
+        visualLines.clear()
+
+        for ((index, textualLine) in textualLines.withIndex()) {
+            val splitLines = splitTextForWrapping(textualLine.text, getWidth())
+            textualLine.visualIndices = visualLines.size until (visualLines.size + splitLines.size)
+            visualLines.addAll(splitLines.map { VisualLine(it, index) })
+        }
     }
 
     override fun scrollIntoView(pos: LinePosition) {
@@ -96,13 +117,38 @@ class UISpecialMultilineTextInput @JvmOverloads constructor(
     override fun draw(matrixStack: UMatrixStack) {
         beforeDraw(matrixStack)
 
+        val currentWidth = getWidth()
+        if (currentWidth <= 0f) {
+            super.draw(matrixStack)
+            return
+        }
+
+        if (abs(currentWidth - lastSplitWidth) > 0.1f) {
+            val textPos = try { cursor.toTextualPos() } catch (_: Exception) { LinePosition(0, 0, isVisual = false) }
+            val otherTextPos = try { otherSelectionEnd.toTextualPos() } catch (_: Exception) { LinePosition(0, 0, isVisual = false) }
+            lastSplitWidth = currentWidth
+            recalculateAllVisualLines()
+            cursor = try { textPos.toVisualPos() } catch (_: Exception) { LinePosition(0, 0, isVisual = true) }
+            otherSelectionEnd = try { otherTextPos.toVisualPos() } catch (_: Exception) { LinePosition(0, 0, isVisual = true) }
+            val heightDifference = getHeight() - visualLines.size * lineHeight * getTextScale()
+            if (verticalScrollingOffset < heightDifference) {
+                targetVerticalScrollingOffset = heightDifference.coerceAtMost(0f)
+                verticalScrollingOffset = targetVerticalScrollingOffset
+            }
+            recalculateDimensions()
+        }
+
         val textScale = getTextScale()
         if (!active && !hasText()) {
-            val textToDraw = splitStringToWidthTruncated(placeholder, getWidth(), textScale, 1)[0]
-            // MODIFIED: Draw placeholder with shadow
-            getFontProvider().drawString(
-                matrixStack, textToDraw, getColor(), getLeft(), getTop(), 10f, textScale, shadow
-            )
+            if (placeholder.isNotEmpty()) {
+                val lines = splitStringToWidthTruncated(placeholder, currentWidth, textScale, 1)
+                if (lines.isNotEmpty()) {
+                    // MODIFIED: Draw placeholder with shadow
+                    getFontProvider().drawString(
+                        matrixStack, lines[0], getColor(), getLeft(), getTop(), 10f, textScale, shadow
+                    )
+                }
+            }
             return super.draw(matrixStack)
         }
 

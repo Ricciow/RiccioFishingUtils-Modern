@@ -15,14 +15,15 @@ import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.command.AbstractCommand
 import cloud.glitchdev.rfu.utils.command.Command
+import cloud.glitchdev.rfu.utils.command.arguments.DateArgumentType
 import cloud.glitchdev.rfu.utils.command.arguments.StringListArgumentType
-import cloud.glitchdev.rfu.utils.dsl.DateParser
 import cloud.glitchdev.rfu.utils.dsl.toFormattedDate
 import com.mojang.brigadier.arguments.IntegerArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import kotlin.math.ceil
 import kotlin.time.Clock
+import kotlin.time.Instant
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
@@ -54,14 +55,14 @@ object DropsHistory {
                     arg("dropName", StringListArgumentType(dropSuggestions, greedy = false, exclusive = false))
                         .executes { context ->
                             val dropName = StringArgumentType.getString(context, "dropName")
-                            handleAddDrop(context.source, dropName, null, null, null, null)
+                            handleAddDrop(context.source, dropName, Clock.System.now(), null, null, null)
                             1
                         }
                         .then(
-                            arg("date", StringArgumentType.string())
+                            arg("date", DateArgumentType.date())
                                 .executes { context ->
                                     val dropName = StringArgumentType.getString(context, "dropName")
-                                    val date = StringArgumentType.getString(context, "date")
+                                    val date = DateArgumentType.getDate(context, "date")
                                     handleAddDrop(context.source, dropName, date, null, null, null)
                                     1
                                 }
@@ -69,7 +70,7 @@ object DropsHistory {
                                     arg("mf", IntegerArgumentType.integer(0))
                                         .executes { context ->
                                             val dropName = StringArgumentType.getString(context, "dropName")
-                                            val date = StringArgumentType.getString(context, "date")
+                                            val date = DateArgumentType.getDate(context, "date")
                                             val mf = IntegerArgumentType.getInteger(context, "mf")
                                             handleAddDrop(context.source, dropName, date, mf, null, null)
                                             1
@@ -78,7 +79,7 @@ object DropsHistory {
                                             arg("count", IntegerArgumentType.integer(0))
                                                 .executes { context ->
                                                     val dropName = StringArgumentType.getString(context, "dropName")
-                                                    val date = StringArgumentType.getString(context, "date")
+                                                    val date = DateArgumentType.getDate(context, "date")
                                                     val mf = IntegerArgumentType.getInteger(context, "mf")
                                                     val count = IntegerArgumentType.getInteger(context, "count")
                                                     handleAddDrop(context.source, dropName, date, mf, count, null)
@@ -88,7 +89,7 @@ object DropsHistory {
                                                     arg("mob", StringArgumentType.greedyString())
                                                         .executes { context ->
                                                             val dropName = StringArgumentType.getString(context, "dropName")
-                                                            val date = StringArgumentType.getString(context, "date")
+                                                            val date = DateArgumentType.getDate(context, "date")
                                                             val mf = IntegerArgumentType.getInteger(context, "mf")
                                                             val count = IntegerArgumentType.getInteger(context, "count")
                                                             val mob = StringArgumentType.getString(context, "mob")
@@ -170,7 +171,7 @@ object DropsHistory {
     private fun handleAddDrop(
         source: FabricClientCommandSource,
         dropName: String,
-        dateStr: String?,
+        parsedDate: Instant = Clock.System.now(),
         magicFind: Int?,
         customCount: Int?,
         mobName: String? = null
@@ -179,19 +180,6 @@ object DropsHistory {
         if (drop == null) {
             source.sendFeedback(TextUtils.rfuLiteral("Drop '$dropName' does not exist!", LIGHT_RED))
             return
-        }
-
-        val parsedDate = if (dateStr != null) {
-            val parsed = DateParser.parse(dateStr)
-            if (parsed == null) {
-                source.sendFeedback(
-                    TextUtils.rfuLiteral("Invalid date format '$dateStr'. Example formats: 18/12/2026, 18/12/2026 18:00, or 'now'", LIGHT_RED)
-                )
-                return
-            }
-            parsed
-        } else {
-            Clock.System.now()
         }
 
         val entry: DropHistory.IDropEntry = when (drop) {

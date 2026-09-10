@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.gui.hud.elements
 
+import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.constants.text.TextColor.AQUAMARINE
 import cloud.glitchdev.rfu.constants.text.TextColor.YELLOW
@@ -8,6 +9,7 @@ import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 import cloud.glitchdev.rfu.data.mob.DeployableManager
 import cloud.glitchdev.rfu.data.mob.DeployableType
+import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.utils.dsl.toReadableString
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -15,15 +17,39 @@ import kotlin.time.Duration.Companion.milliseconds
 @HudElement
 object DeployablesDisplay : AbstractTextHudElement("deployablesDisplay") {
     private var activeDeployables: Map<DeployableType, DeployableManager.Deployable> = emptyMap()
+    private var wasActive: Boolean = false
 
     override val requirement: Boolean
         get() = GeneralFishing.deployableDisplay
     override val isElementActive: Boolean
-        get() = activeDeployables.any { (type, _) -> type.isDisplayEnabled() }
+        get() = getActiveDeployables().any { (type, _) -> type.isDisplayEnabled() }
+
+    override fun onInitialize() {
+        super.onInitialize()
+
+        registerTickEvent(interval = 5) {
+            val active = isElementActive
+            if (isEditing || active || wasActive) {
+                updateState()
+            }
+            wasActive = active
+        }
+    }
+
+    private fun getActiveDeployables(): Map<DeployableType, DeployableManager.Deployable> {
+        val player = mc.player
+        val active = DeployableManager.getActiveDeployables()
+        return if (player != null) {
+            active.filter { (_, deployable) ->
+                deployable.isInRange(player.position())
+            }
+        } else active
+    }
 
     override fun onUpdateState() {
         super.onUpdateState()
 
+        activeDeployables = getActiveDeployables()
         val now = System.currentTimeMillis()
         val lines = DeployableType.entries
             .filter { it.isDisplayEnabled() }
@@ -33,11 +59,6 @@ object DeployablesDisplay : AbstractTextHudElement("deployablesDisplay") {
             }
 
         text.setText(if (lines.isEmpty()) "deployablesDisplay" else lines.joinToString("\n"))
-    }
-
-    fun updateDeployables(active: Map<DeployableType, DeployableManager.Deployable>) {
-        this.activeDeployables = active
-        updateState()
     }
 
     private fun buildLine(type: DeployableType, deployable: DeployableManager.Deployable?, now: Long): String? {

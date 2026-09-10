@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.feature.mob
 
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig.HEALTH_BAR_REGEX
+import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDeathEvent
 import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDetectEvent
 import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDisposeEvent
 import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobUpdateEvent
@@ -17,8 +18,14 @@ object BossHealthBar : Feature {
                 BossHealthBarDisplay.updateEntities(emptySet())
                 return@registerMobDetectEvent
             }
-            val filteredEntities = entities.filter { HEALTH_BAR_REGEX.matches(it.sbName) }
+            val filteredEntities = entities.filter { !it.isRemoved() && HEALTH_BAR_REGEX.matches(it.sbName) }
             BossHealthBarDisplay.updateEntities(filteredEntities.toSet())
+        }
+
+        registerMobDeathEvent { entities ->
+            if (BossHealthBarDisplay.entities.removeAll(entities)) {
+                BossHealthBarDisplay.updateState()
+            }
         }
 
         registerMobDisposeEvent { entities ->

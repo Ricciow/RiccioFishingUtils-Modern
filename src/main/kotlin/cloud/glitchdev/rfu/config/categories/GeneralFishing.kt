@@ -5,7 +5,6 @@ import cloud.glitchdev.rfu.constants.fishing.FishTrackingType
 import cloud.glitchdev.rfu.data.mob.DeployableType
 import cloud.glitchdev.rfu.feature.fishing.DoubleHookMessages
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
-import com.teamresourceful.resourcefulconfigkt.api.ObjectKt
 
 object GeneralFishing : Category("General Fishing") {
     override val description: TranslatableValue
@@ -229,5 +228,10 @@ object GeneralFishing : Category("General Fishing") {
     var bobbinTimeDisplay by reloadableBoolean(true) {
         name = Literal("Bobbin' Time Display")
         description = Literal("Display nearby bobbers and Bobbin' Time bonus on screen")
+    }
+
+    var mobyDuckDisplay by reloadableBoolean(true) {
+        name = Literal("Moby-Duck Timer Display")
+        description = Literal("Display the Moby-Duck Fishing Wisdom buff timer on screen.")
     }
 }
