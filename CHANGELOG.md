@@ -4,9 +4,9 @@
 - Added a requeue button to the party dequeued message and /rfurequeue command.
 - Prevent sending party/chat messages when muted and added /rfuunmuteme command.
 - Added Moby-Duck Wisdom buff HUD display.
-- Reworked /rfuemojis to be more compact.
 
 ### Changes
+- Reworked /rfuemojis to be more compact.
 - Made Flare timer server tick based
 
 ### Fixes
