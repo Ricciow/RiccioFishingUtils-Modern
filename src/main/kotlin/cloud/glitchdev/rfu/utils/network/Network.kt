@@ -12,7 +12,6 @@ import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.config.categories.BackendSettings
-import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.utils.World
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
@@ -282,12 +281,18 @@ object Network : RegisteredEvent {
     }
 
     private fun sendAcknowledgementMessage() {
-        val message = TextUtils.rfuLiteral("This mod utilizes a separate back-end for some features. Do you want to enable it? ", TextStyle(YELLOW))
+        val message = TextUtils.rfuLiteral("This mod uses a separate back-end for some features. Review the Privacy Policy, then choose whether to enable it. ", TextStyle(YELLOW))
 
         message.append(Component.literal("\n${YELLOW}Includes:"))
         message.append(Component.literal("\n${GRAY} - ${AQUAMARINE}Party Finder: ${WHITE}Find fishing parties with ease."))
         message.append(Component.literal("\n${GRAY} - ${AQUAMARINE}Dye Tracking: ${WHITE}See currently boosted dyes in rotation."))
         message.append(Component.literal("\n${GRAY} - ${AQUAMARINE}Announcements: ${WHITE}Get notified of updates instantly.\n"))
+
+        val privacyPolicy = Component.literal(" ${YELLOW}${BOLD}[PRIVACY POLICY]")
+            .withStyle {
+                it.withClickEvent(ClickEvent.OpenUrl(URI.create("https://rfu.glitchdev.cloud/privacy")))
+                    .withHoverEvent(HoverEvent.ShowText(Component.literal("${YELLOW}Open Privacy Policy")))
+            }
 
         val accept = Component.literal("$LIGHT_GREEN$BOLD[ACCEPT]")
             .withStyle { it.withClickEvent(ClickEvent.RunCommand("/rfubackend accept"))
@@ -297,7 +302,7 @@ object Network : RegisteredEvent {
             .withStyle { it.withClickEvent(ClickEvent.RunCommand("/rfubackend deny"))
                 .withHoverEvent(HoverEvent.ShowText(Component.literal("${LIGHT_RED}Deny backend connection"))) }
 
-        message.append(accept).append(deny)
+        message.append(accept).append(deny).append(privacyPolicy)
         Chat.sendMessage(message)
     }
 
