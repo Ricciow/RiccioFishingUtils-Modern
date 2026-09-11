@@ -13,6 +13,7 @@ import cloud.glitchdev.rfu.utils.command.SimpleCommand
 import cloud.glitchdev.rfu.utils.rendering.Render3D
 import cloud.glitchdev.rfu.utils.rendering.Render3DBuilder.Companion.text
 import com.mojang.brigadier.context.CommandContext
+import gg.essential.universal.utils.toUnformattedString
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import java.awt.Color
 
@@ -42,12 +43,30 @@ object Sb : SimpleCommand("sb"), Feature {
                     val scName = sbEntity.getName() ?: "Unknown"
                     lines.add("§a$scName §e(${sbEntity.modelEntity.type.toShortString()}) §7[Model ID: ${sbEntity.modelEntity.id}, Tag ID: ${sbEntity.nameTagEntity.id}]")
 
+                    val player = mc.player
+                    if (player != null) {
+                        val dist = sbEntity.modelEntity.distanceTo(player)
+                        lines.add("§7Dist: §f${"%.1f".format(dist)}m §7| Age: §f${sbEntity.modelEntity.tickCount}t")
+                    }
+
                     val shurikenStr = if (sbEntity.isShurikened) " §b[Shurikened]" else ""
                     lines.add("§cHP: ${sbEntity.health}/${sbEntity.maxHealth}$shurikenStr")
 
                     val origin = sbEntity.originBobber
                     if (origin != null) {
                         lines.add("§9Bobber: ${origin.entityId} (Owner: ${origin.ownerName ?: "Unknown"})")
+                    }
+
+                    if (sbEntity.modelEntity.passengers.isNotEmpty()) {
+                        val passengerList = sbEntity.modelEntity.passengers.joinToString(", ") {
+                            "§f${it.name.toUnformattedString()} §e(${it.type.toShortString()}) §7[ID: ${it.id}]"
+                        }
+                        lines.add("§dPassengers (${sbEntity.modelEntity.passengers.size}): $passengerList")
+                    }
+
+                    val vehicle = sbEntity.modelEntity.vehicle
+                    if (vehicle != null) {
+                        lines.add("§bRiding: §f${vehicle.name.toUnformattedString()} §e(${vehicle.type.toShortString()}) §7[ID: ${vehicle.id}]")
                     }
 
                     text {
