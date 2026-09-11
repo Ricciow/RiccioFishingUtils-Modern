@@ -53,10 +53,8 @@ object Network : RegisteredEvent {
     private val USER_AGENT = "Java-http-client/${System.getProperty("java.version")} rfu:${RFU_VERSION.friendlyString}"
 
     override fun register() {
-        registerJoinEvent { wasConnected ->
-            if(!wasConnected) {
-                authenticateUser()
-            }
+        registerJoinEvent { _ ->
+            authenticateUser()
         }
 
         registerDisconnectEvent {
@@ -64,9 +62,7 @@ object Network : RegisteredEvent {
         }
 
         registerLocationEvent {
-            if (World.isOnHypixel) {
-                authenticateUser()
-            } else {
+            if (!World.isOnHypixel) {
                 WebSocketClient.disconnect()
             }
         }
