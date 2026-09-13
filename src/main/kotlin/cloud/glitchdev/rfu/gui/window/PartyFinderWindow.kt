@@ -25,6 +25,7 @@ import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.utils.Coroutines
 import cloud.glitchdev.rfu.utils.World
 import cloud.glitchdev.rfu.utils.User
+import cloud.glitchdev.rfu.utils.gui.setHidden
 import cloud.glitchdev.rfu.utils.network.PartyWebSocket
 import gg.essential.elementa.UIComponent
 import gg.essential.elementa.components.ScrollComponent
@@ -33,7 +34,6 @@ import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIImage
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
-import gg.essential.elementa.components.inspector.Inspector
 import gg.essential.elementa.constraints.AspectConstraint
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
@@ -122,7 +122,15 @@ object PartyFinderWindow : BaseWindow(false), Feature {
 
         registerKeybind {
             key = { OtherSettings.peekPartyFinderKeybind }
-            onPress = { if (!World.isOnAlpha) isPeeking = true }
+            onPress = {
+                if (!World.isOnAlpha) isPeeking = true
+                if(creationOpen) {
+                    creationOpen = false
+                    onUpdate()
+                }
+                presetsModal.setHidden(true)
+                popup.setHidden(true)
+            }
             onRelease = { isPeeking = false }
         }
 
