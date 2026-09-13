@@ -123,7 +123,7 @@ object AchievementWindow : BaseWindow() {
                 AchievementCategory.TROPHY_FISHING -> "/assets/rfu/ui/trophy.png"
                 AchievementCategory.SPECIAL -> "/assets/rfu/ui/looting_5.png"
             }
-            val image = UIImage.ofResource(iconPath)
+            val image = UIImage.ofResourceCached(iconPath)
             val btn = UIButton.withImage(image, 5f) {
                 selectedCategory = category
                 refreshAchievements()

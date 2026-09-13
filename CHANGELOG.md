@@ -15,6 +15,7 @@
 - Fixed bossbar and merge health settings in /rfuscedit not properly applying to sea creatures
 - Peek party finder keybind now closes the creation window / presets
 - Prevented the session reset button on hud from triggering while editing
+- Improved caching on the party finder window
 - Fixed skeleton fish being categorized as a rare tfish instead of epic
 
 ### Back-end

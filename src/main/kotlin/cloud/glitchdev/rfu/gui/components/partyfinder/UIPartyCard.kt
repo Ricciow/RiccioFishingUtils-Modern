@@ -299,7 +299,7 @@ class UIPartyCard(
     fun createFloating() {
         val isUser = party.user.isUser()
         val icon = if(isUser) "delete" else "report"
-        val image = UIImage.ofResource("/assets/rfu/ui/$icon.png")
+        val image = UIImage.ofResourceCached("/assets/rfu/ui/$icon.png")
         overlayButton = UIButton.withImage(image, 5f, isBordered = true) {
             val action = if (isUser) "delete your party?" else "report ${party.user}'s party?\nThis is only for the party finder listing, not what happens inside the party, use hypixel's reporting for that."
             val pcText = postConfirmationText ?: if (isUser) null else "Party reported"

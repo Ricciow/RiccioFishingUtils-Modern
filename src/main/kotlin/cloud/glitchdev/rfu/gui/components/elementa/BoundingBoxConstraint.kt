@@ -102,13 +102,22 @@ class BoundingBoxConstraint : SizeConstraint {
 
         try {
             val target = constrainTo ?: component
-            val validChildren = target.children.filter { !it.isFloating }
-            if (validChildren.isEmpty()) return 0f
+            val children = target.children
+            if (children.isEmpty()) return 0f
 
             patchChildrenConstraints(target, isWidth = true)
 
-            val rightMost = validChildren.maxOfOrNull { it.getRight() } ?: target.getLeft()
-            return rightMost - target.getLeft()
+            var rightMost = target.getLeft()
+            var hasValidChildren = false
+            for (child in children) {
+                if (child.isFloating) continue
+                hasValidChildren = true
+                val right = child.getRight()
+                if (right > rightMost) {
+                    rightMost = right
+                }
+            }
+            return if (hasValidChildren) rightMost - target.getLeft() else 0f
         } finally {
             isCalculating = false
         }
@@ -120,13 +129,22 @@ class BoundingBoxConstraint : SizeConstraint {
 
         try {
             val target = constrainTo ?: component
-            val validChildren = target.children.filter { !it.isFloating }
-            if (validChildren.isEmpty()) return 0f
+            val children = target.children
+            if (children.isEmpty()) return 0f
 
             patchChildrenConstraints(target, isWidth = false)
 
-            val bottomMost = validChildren.maxOfOrNull { it.getBottom() } ?: target.getTop()
-            return bottomMost - target.getTop()
+            var bottomMost = target.getTop()
+            var hasValidChildren = false
+            for (child in children) {
+                if (child.isFloating) continue
+                hasValidChildren = true
+                val bottom = child.getBottom()
+                if (bottom > bottomMost) {
+                    bottomMost = bottom
+                }
+            }
+            return if (hasValidChildren) bottomMost - target.getTop() else 0f
         } finally {
             isCalculating = false
         }

@@ -132,7 +132,7 @@ class UIToggleCard(
             height = ChildBasedMaxSizeConstraint()
         } childOf background
 
-        iconUI = UIImage.ofResource(icon).constrain {
+        iconUI = UIImage.ofResourceCached(icon).constrain {
             x = SiblingConstraint()
             y = CenterConstraint()
             width = AspectConstraint()

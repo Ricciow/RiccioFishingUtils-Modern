@@ -37,20 +37,54 @@ class JustifiedCramSiblingConstraint(private val basePadding: Float = 0f) : Sibl
     override var recalculate = true
     override var constrainTo: UIComponent? = null
 
-    private fun getLines(parent: UIComponent): List<List<UIComponent>> {
+    private data class ChildPos(
+        val x: Float,
+        val y: Float,
+        val horizontalPadding: Float,
+        val verticalPadding: Float
+    )
+
+    private class ParentLayout(
+        val parentLeft: Float,
+        val parentTop: Float,
+        val parentWidth: Float,
+        val childrenCount: Int,
+        val firstChild: UIComponent?,
+        val lastChild: UIComponent?,
+        val positions: Map<UIComponent, ChildPos>
+    )
+
+    private fun getLayout(parent: UIComponent): ParentLayout {
+        val cached = layoutCache[parent]
+        val children = parent.children
+        val parentLeft = parent.getLeft()
+        val parentTop = parent.getTop()
+        val parentWidth = parent.getWidth()
+        val firstChild = children.firstOrNull()
+        val lastChild = children.lastOrNull()
+
+        if (cached != null &&
+            cached.parentLeft == parentLeft &&
+            cached.parentTop == parentTop &&
+            cached.parentWidth == parentWidth &&
+            cached.childrenCount == children.size &&
+            cached.firstChild === firstChild &&
+            cached.lastChild === lastChild
+        ) {
+            return cached
+        }
+
         val lines = mutableListOf<List<UIComponent>>()
         var currentLine = mutableListOf<UIComponent>()
-        var currentX = parent.getLeft()
+        var currentX = parentLeft
 
-        for (child in parent.children) {
+        for (child in children) {
             val childWidth = child.getWidth()
 
-            // REMOVED basePadding from the wrap calculation.
-            // Elements will now stay on the same line until they literally touch (padding = 0).
             if (currentLine.isNotEmpty() && currentX + childWidth > parent.getRight() + precisionAdjustmentFactor) {
                 lines.add(currentLine)
                 currentLine = mutableListOf(child)
-                currentX = parent.getLeft() + childWidth
+                currentX = parentLeft + childWidth
             } else {
                 currentLine.add(child)
                 currentX += childWidth
@@ -60,60 +94,67 @@ class JustifiedCramSiblingConstraint(private val basePadding: Float = 0f) : Sibl
         if (currentLine.isNotEmpty()) {
             lines.add(currentLine)
         }
-        return lines
+
+        val positions = HashMap<UIComponent, ChildPos>(children.size)
+        var currentLineTop = parentTop
+
+        for ((lineIndex, line) in lines.withIndex()) {
+            var totalComponentsWidth = 0.0
+            for (child in line) {
+                totalComponentsWidth += child.getWidth().toDouble()
+            }
+            val availableSpace = parentWidth - totalComponentsWidth.toFloat()
+            val dynamicPadding = if (line.size > 1) availableSpace / (line.size - 1) else 0f
+            val actualPadding = min(basePadding, dynamicPadding)
+
+            var childX = parentLeft
+            var maxChildHeight = 0f
+
+            for ((indexInLine, child) in line.withIndex()) {
+                val hPadding = if (indexInLine == 0) 0f else actualPadding
+                val vPadding = if (lineIndex > 0 && indexInLine == 0) basePadding else 0f
+                positions[child] = ChildPos(childX, currentLineTop, hPadding, vPadding)
+
+                val childWidth = child.getWidth()
+                val childHeight = child.getHeight()
+                if (childHeight > maxChildHeight) {
+                    maxChildHeight = childHeight
+                }
+                childX += childWidth + actualPadding
+            }
+
+            currentLineTop += maxChildHeight + basePadding
+        }
+
+        val newLayout = ParentLayout(
+            parentLeft,
+            parentTop,
+            parentWidth,
+            children.size,
+            firstChild,
+            lastChild,
+            positions
+        )
+        layoutCache[parent] = newLayout
+        return newLayout
     }
 
     override fun getXPositionImpl(component: UIComponent): Float {
         val parent = component.parent
         val index = parent.children.indexOf(component)
-
         if (index == 0) return parent.getLeft()
 
-        val lines = getLines(parent)
-        val lineIndex = lines.indexOfFirst { it.contains(component) }
-
-        if (lineIndex == -1) return parent.getLeft()
-
-        val line = lines[lineIndex]
-        val indexInLine = line.indexOf(component)
-
-        if (indexInLine == 0) {
-            return parent.getLeft()
-        }
-
-        val totalComponentsWidth = line.sumOf { it.getWidth().toDouble() }.toFloat()
-        val availableSpace = parent.getWidth() - totalComponentsWidth
-        val dynamicPadding = availableSpace / (line.size - 1)
-
-        // The core logic change: use basePadding, UNLESS the available spacing is smaller
-        val actualPadding = min(basePadding, dynamicPadding)
-
-        var x = parent.getLeft()
-        for (i in 0 until indexInLine) {
-            x += line[i].getWidth() + actualPadding
-        }
-        return x
+        val layout = getLayout(parent)
+        return layout.positions[component]?.x ?: parent.getLeft()
     }
 
     override fun getYPositionImpl(component: UIComponent): Float {
         val parent = component.parent
         val index = parent.children.indexOf(component)
-
         if (index == 0) return parent.getTop()
 
-        val lines = getLines(parent)
-        val lineIndex = lines.indexOfFirst { it.contains(component) }
-
-        if (lineIndex == -1) return parent.getTop()
-
-        val line = lines[lineIndex]
-
-        if (line.first() == component && lineIndex > 0) {
-            val sibling = parent.children[index - 1]
-            return getLowestPoint(sibling, parent, index) + basePadding
-        }
-
-        return line.first().getTop()
+        val layout = getLayout(parent)
+        return layout.positions[component]?.y ?: parent.getTop()
     }
 
     override fun to(component: UIComponent) = apply {
@@ -148,18 +189,8 @@ class JustifiedCramSiblingConstraint(private val basePadding: Float = 0f) : Sibl
         val index = parent.children.indexOf(component)
         if (index == 0) return 0f
 
-        val lines = getLines(parent)
-        val lineIndex = lines.indexOfFirst { it.contains(component) }
-        if (lineIndex == -1) return 0f
-
-        val line = lines[lineIndex]
-        if (line.first() == component) return 0f
-
-        val totalComponentsWidth = line.sumOf { it.getWidth().toDouble() }.toFloat()
-        val availableSpace = parent.getWidth() - totalComponentsWidth
-        val dynamicPadding = availableSpace / (line.size - 1)
-
-        return min(basePadding, dynamicPadding)
+        val layout = getLayout(parent)
+        return layout.positions[component]?.horizontalPadding ?: 0f
     }
 
     override fun getVerticalPadding(component: UIComponent): Float {
@@ -167,17 +198,12 @@ class JustifiedCramSiblingConstraint(private val basePadding: Float = 0f) : Sibl
         val index = parent.children.indexOf(component)
         if (index == 0) return 0f
 
-        val lines = getLines(parent)
-        val lineIndex = lines.indexOfFirst { it.contains(component) }
-
-        if (lineIndex > 0 && lines[lineIndex].first() == component) {
-            return basePadding
-        }
-
-        return 0f
+        val layout = getLayout(parent)
+        return layout.positions[component]?.verticalPadding ?: 0f
     }
 
     private companion object {
         private const val precisionAdjustmentFactor = 0.01f
+        private val layoutCache = java.util.WeakHashMap<UIComponent, ParentLayout>()
     }
 }

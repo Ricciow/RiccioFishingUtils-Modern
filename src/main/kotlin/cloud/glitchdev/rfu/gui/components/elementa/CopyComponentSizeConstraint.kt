@@ -16,26 +16,25 @@ class CopyComponentSizeConstraint(
 
     override fun getWidthImpl(component: UIComponent): Float {
         return try {
-            // Evaluates the constraint of the target component directly
-            targetComponent.constraints.width.getWidthImpl(targetComponent)
+            targetComponent.getWidth()
         } catch (e: Exception) {
-            fallbackConstraint.getWidthImpl(component)
+            fallbackConstraint.getWidth(component)
         }
     }
 
     override fun getHeightImpl(component: UIComponent): Float {
         return try {
-            targetComponent.constraints.height.getHeightImpl(targetComponent)
+            targetComponent.getHeight()
         } catch (e: Exception) {
-            fallbackConstraint.getHeightImpl(component)
+            fallbackConstraint.getHeight(component)
         }
     }
 
     override fun getRadiusImpl(component: UIComponent): Float {
         return try {
-            targetComponent.constraints.radius.getRadiusImpl(targetComponent)
+            targetComponent.getRadius()
         } catch (e: Exception) {
-            fallbackConstraint.getRadiusImpl(component)
+            fallbackConstraint.getRadius(component)
         }
     }
 
