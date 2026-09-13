@@ -21,7 +21,7 @@ enum class TrophyFish(
     VANILLE("Vanille", Rarity.RARE),
     MANA_RAY("Mana Ray", Rarity.RARE),
     OBFUSCATED_3("Obfuscated 3", Rarity.RARE),
-    SKELETON_FISH("Skeleton Fish", Rarity.RARE),
+    SKELETON_FISH("Skeleton Fish", Rarity.EPIC),
     MOLDFIN("Moldfin", Rarity.EPIC),
     SOULFISH("Soul Fish", Rarity.EPIC),
     KARATE_FISH("Karate Fish", Rarity.EPIC),
