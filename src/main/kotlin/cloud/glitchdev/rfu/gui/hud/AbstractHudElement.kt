@@ -88,7 +88,6 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
             y = defaultY.pixels()
             width = ChildBasedSizeConstraint()
             height = ChildBasedSizeConstraint()
-            isFloating = true
         }
 
         scaleText.hide()
@@ -343,6 +342,8 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
 
     fun updateState() {
         if(hasParent) {
+            this.isFloating = isEditing || (isOnInventory && renderOnInventory)
+
             scaleText.setHidden(!scaleTextEnabled)
 
             val gap = 5f

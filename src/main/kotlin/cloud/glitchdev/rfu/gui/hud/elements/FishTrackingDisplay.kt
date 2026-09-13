@@ -57,7 +57,9 @@ object FishTrackingDisplay : AbstractFishingHudElement("fishTrackingDisplay") {
         } childOf container
 
         resetButton.onMouseClick {
-            resetSession()
+            if(!isEditing) {
+                resetSession()
+            }
         }
     }
 
