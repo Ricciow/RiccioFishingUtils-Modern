@@ -6,7 +6,6 @@ import cloud.glitchdev.rfu.constants.text.TextColor.LIGHT_RED
 import cloud.glitchdev.rfu.constants.text.TextColor.YELLOW
 import cloud.glitchdev.rfu.constants.text.TextEffects.BOLD
 import cloud.glitchdev.rfu.constants.fishing.FishTrackingType
-import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.gui.hud.AbstractFishingHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement

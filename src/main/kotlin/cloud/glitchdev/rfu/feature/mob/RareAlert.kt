@@ -1,7 +1,6 @@
 package cloud.glitchdev.rfu.feature.mob
 
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
-import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig.RARE_SC_REGEX
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
