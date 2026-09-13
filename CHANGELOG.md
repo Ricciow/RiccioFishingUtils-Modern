@@ -1,6 +1,7 @@
 # v1.19.0 - ???
 
 ### Features
+- Added Rare SC Alert Preset setting with {color} variable support and alert preview in /rfuscedit
 
 ### Changes
 - Revoked previous backend acceptance to display privacy policy

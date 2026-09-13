@@ -45,6 +45,7 @@ class UISeaCreatureEditor : UIContainer() {
     private lateinit var previewNormal: UIText
     private lateinit var previewDouble: UIText
     private lateinit var previewDisplay: UIText
+    private lateinit var previewAlert: UIText
 
     init {
         create()
@@ -116,6 +117,11 @@ class UISeaCreatureEditor : UIContainer() {
         previewDisplay = UIText("Preview: ").constrain {
             x = 15.pixels()
             y = SiblingConstraint(10f)
+        } childOf parent
+
+        previewAlert = UIText("Preview: ").constrain {
+            x = 15.pixels()
+            y = SiblingConstraint(5f)
         } childOf parent
     }
 
@@ -266,10 +272,11 @@ class UISeaCreatureEditor : UIContainer() {
         val article = articleInput.getText()
         val articleUpper = article.replaceFirstChar { it.uppercaseChar() }
         val mob = if (article.isNotEmpty()) "$article $name" else name
-        val displayColor = scDisplayColorInput.getText().toMcCodes().ifEmpty { WHITE }
+        val displayColor = scDisplayColorInput.getText().toMcCodes().ifEmpty { WHITE.code }
 
         val normalTemplate = SeaCreatureConfig.catchMessageTemplate
         val doubleHookTemplate = SeaCreatureConfig.doubleHookCatchMessageTemplate
+        val alertTemplate = SeaCreatureConfig.rareScAlertPreset
 
         fun style(template: String): String {
             return template
@@ -277,6 +284,7 @@ class UISeaCreatureEditor : UIContainer() {
                 .replace("{article_upper}", articleUpper)
                 .replace("{name}", name)
                 .replace("{style}", style)
+                .replace("{color}", displayColor)
                 .replace("{plural}", plural)
                 .replace("{mob}", mob)
                 .replace("{mobs}", plural)
@@ -285,6 +293,7 @@ class UISeaCreatureEditor : UIContainer() {
 
         previewNormal.setText("Preview: ${style(normalTemplate)}")
         previewDouble.setText("Preview: ${style(doubleHookTemplate)}")
+        previewAlert.setText("Preview: ${style(alertTemplate)}")
 
         val dataOrder = SeaCreatureConfig.rareScDisplayDataOrder
         val displayPreviewLine = buildString {

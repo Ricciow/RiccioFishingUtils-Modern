@@ -1,4 +1,4 @@
-﻿package cloud.glitchdev.rfu.feature.fishing
+package cloud.glitchdev.rfu.feature.fishing
 
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
@@ -54,6 +54,7 @@ object CatchMessageReplacer : Feature {
             .replace("{article_upper}", sc.article.replaceFirstChar { it.uppercaseChar() })
             .replace("{name}", sc.scDisplayName)
             .replace("{style}", sc.style)
+            .replace("{color}", sc.scDisplayColor)
             .replace("{plural}", sc.plural)
             .replace("{mob}", sc.getSingularNameWithArticle())
             .replace("{mobs}", sc.plural)

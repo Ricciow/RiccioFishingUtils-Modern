@@ -11,6 +11,7 @@ import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.data.mob.SkyblockEntity
 import cloud.glitchdev.rfu.utils.Sounds
 import cloud.glitchdev.rfu.utils.Title
+import cloud.glitchdev.rfu.utils.dsl.toMcCodes
 
 @RFUFeature
 object RareAlert : Feature {
@@ -30,7 +31,9 @@ object RareAlert : Feature {
                 seenEntities.add(entity.sbName)
                 result
             }.forEach { entity ->
-                Title.showTitle("§6§l[§fα§6§l] §3§l${entity.sbName} §6§l[§fα§6§l]") { !entity.isRemoved() }
+                val sc = SeaCreatures.get(entity.sbName)
+                val title = formatAlert(sc, entity.sbName)
+                Title.showTitle(title) { !entity.isRemoved() }
             }
 
             if(newEntities.isNotEmpty() && SeaCreatureConfig.rareScSound) {
@@ -44,6 +47,35 @@ object RareAlert : Feature {
 
         registerDisconnectEvent {
             lastEntities = emptySet()
+        }
+    }
+
+    fun formatAlert(sc: SeaCreatures?, fallbackName: String = ""): String {
+        val name = sc?.scDisplayName ?: fallbackName
+        val color = sc?.scDisplayColor?.ifEmpty { "§f" } ?: "§f"
+        val style = sc?.style ?: ""
+        val article = sc?.article ?: ""
+        val articleUpper = article.replaceFirstChar { it.uppercaseChar() }
+        val plural = sc?.plural ?: name
+        val mob = sc?.getSingularNameWithArticle() ?: name
+
+        return SeaCreatureConfig.rareScAlertPreset
+            .replace("{article}", article)
+            .replace("{article_upper}", articleUpper)
+            .replace("{name}", name)
+            .replace("{style}", style)
+            .replace("{color}", color)
+            .replace("{plural}", plural)
+            .replace("{mob}", mob)
+            .replace("{mobs}", plural)
+            .toMcCodes()
+    }
+
+    fun preview() {
+        val sc = SeaCreatures.entries.filter { it.special }.randomOrNull() ?: SeaCreatures.entries.randomOrNull()
+        if (sc != null) {
+            val title = formatAlert(sc)
+            Title.showTitle(title)
         }
     }
 }
