@@ -28,14 +28,11 @@ import cloud.glitchdev.rfu.gui.components.partyfinder.UIPartyPresetsModal
 import cloud.glitchdev.rfu.utils.dsl.isIgnored
 import cloud.glitchdev.rfu.utils.dsl.removeRankTag
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
+import cloud.glitchdev.rfu.feature.partyfinder.PartyRequeueAlert
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import net.minecraft.network.chat.ClickEvent
-import net.minecraft.network.chat.Component
-import net.minecraft.network.chat.HoverEvent
-import net.minecraft.network.chat.Style
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
@@ -87,7 +84,7 @@ object PartyWebSocket : RegisteredEvent {
                     
                     if (!WebSocketClient.isConnected && myParty != null) {
                         myParty?.let { lastParty = it.deepCopy() }
-                        sendPartyDequeuedMessage("Connection lost")
+                        PartyRequeueAlert.sendPartyDequeuedMessage("Connection lost")
                         myParty = null
                     }
                 }
@@ -158,7 +155,7 @@ object PartyWebSocket : RegisteredEvent {
                             if (user == User.getUsername()) {
                                 if (myParty != null) {
                                     myParty?.let { lastParty = it.deepCopy() }
-                                    sendPartyDequeuedMessage()
+                                    PartyRequeueAlert.sendPartyDequeuedMessage()
                                 }
                                 myParty = null
                             }
@@ -218,19 +215,15 @@ object PartyWebSocket : RegisteredEvent {
         WebSocketClient.send("/app/party/sync", "")
     }
 
-    fun sendPartyDequeuedMessage(reason: String? = null) {
-        val text = if (reason != null) "Party dequeued ($reason)" else "Party dequeued"
-        val message = TextUtils.rfupfLiteral("$text ", TextColor.LIGHT_RED)
-
-        val requeueButton = Component.literal("${TextColor.LIGHT_GREEN}${TextEffects.BOLD}[Requeue]")
-            .setStyle(
-                Style.EMPTY
-                    .withClickEvent(ClickEvent.RunCommand("/rfurequeue"))
-                    .withHoverEvent(HoverEvent.ShowText(Component.literal("${TextColor.YELLOW}Click to requeue your party!")))
-            )
-
-        message.append(requeueButton)
-        Chat.sendMessage(message)
+    fun getPreviousParty(): FishingParty? {
+        return lastParty?.deepCopy() ?: run {
+            val entry = UIPartyPresetsModal.getPresetsEntry()
+            entry.lastPartyState?.let { state ->
+                val blank = FishingParty.blankParty()
+                state.applyTo(blank)
+                blank
+            }
+        }
     }
 
     fun publishParty(party: FishingParty) {
@@ -289,14 +282,7 @@ object PartyWebSocket : RegisteredEvent {
             return
         }
 
-        val party = lastParty?.deepCopy() ?: run {
-            val entry = UIPartyPresetsModal.getPresetsEntry()
-            entry.lastPartyState?.let { state ->
-                val blank = FishingParty.blankParty()
-                state.applyTo(blank)
-                blank
-            }
-        }
+        val party = getPreviousParty()
 
         if (party == null) {
             Chat.sendMessage(TextUtils.rfupfLiteral("No previous party to requeue!", TextColor.LIGHT_RED))
@@ -344,7 +330,7 @@ object PartyWebSocket : RegisteredEvent {
         if (user == User.getUsername()) {
             if (myParty != null) {
                 myParty?.let { lastParty = it.deepCopy() }
-                sendPartyDequeuedMessage()
+                PartyRequeueAlert.sendPartyDequeuedMessage()
             }
             myParty = null
         }

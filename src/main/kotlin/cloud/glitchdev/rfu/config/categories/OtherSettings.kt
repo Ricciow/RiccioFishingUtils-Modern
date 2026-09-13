@@ -156,6 +156,12 @@ object OtherSettings : Category("Other") {
         condition = { BackendSettings.backendAccepted }
     }
 
+    var partyRequeueAlert by boolean(true) {
+        name = Literal("Party Requeue Alert")
+        description = Literal("Sends a message with a requeue button when your party is dequeued or stops being full.")
+        condition = { BackendSettings.backendAccepted }
+    }
+
     var peekPartyFinderKeybind by key(0) {
         name = Literal("Peek Party Finder Keybind")
         description = Literal("Keybind to peek the party finder window without opening the GUI.")

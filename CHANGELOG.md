@@ -2,6 +2,7 @@
 
 ### Features
 - Added Rare SC Alert Preset setting with {color} variable support and alert preview in /rfuscedit
+- Added Party Requeue Alert to prompt requeuing when your party is no longer full
 
 ### Changes
 - Revoked previous backend acceptance to display privacy policy
