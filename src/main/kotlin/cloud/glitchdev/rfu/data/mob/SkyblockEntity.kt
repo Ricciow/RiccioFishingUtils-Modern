@@ -17,14 +17,22 @@ import net.minecraft.world.entity.decoration.ArmorStand
 import java.awt.Color
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.milliseconds
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.EquipmentSlot
+import net.minecraft.world.phys.Vec3
 import kotlin.time.Instant
 import cloud.glitchdev.rfu.data.fishing.BobberInfo
 import cloud.glitchdev.rfu.events.managers.BobberManager
 
 class SkyblockEntity(
     var nameTagEntity: ArmorStand,
-    var modelEntity: LivingEntity,
+    initialModels: Collection<LivingEntity>,
 ) {
+    constructor(nameTagEntity: ArmorStand, modelEntity: LivingEntity) : this(nameTagEntity, listOf(modelEntity))
+
+    val modelEntities: MutableSet<LivingEntity> = initialModels.toMutableSet()
+    var modelEntity: LivingEntity = modelEntities.firstOrNull() ?: (nameTagEntity as LivingEntity)
+
     lateinit var sbName: String
     val createdAt : Instant = Clock.System.now() - (modelEntity.tickCount * 50L).milliseconds
     var health: String = "0"
@@ -33,18 +41,81 @@ class SkyblockEntity(
     var originBobber: BobberInfo? = null
     var isDying: Boolean = false
 
+    val parts: MutableSet<Entity> = mutableSetOf()
+    private var isGlowing: Boolean = false
+    private var glowColor: Color = Color.WHITE
+
     var renderEvent: RenderEvents.RenderEvent? = null
 
     init {
         updateEntityData()
+        updateParts()
         linkToBobber()
+    }
+
+    fun updateParts() {
+        val oldParts = if (isGlowing) parts.toSet() else emptySet()
+        parts.clear()
+        parts.addAll(modelEntities)
+
+        fun addPassengers(entity: Entity) {
+            for (passenger in entity.passengers) {
+                if (passenger !== nameTagEntity && parts.add(passenger)) {
+                    addPassengers(passenger)
+                }
+            }
+        }
+
+        for (model in modelEntities) {
+            var currentVehicle = model.vehicle
+            while (currentVehicle != null && currentVehicle !== nameTagEntity) {
+                if (parts.add(currentVehicle)) {
+                    addPassengers(currentVehicle)
+                    currentVehicle = currentVehicle.vehicle
+                } else break
+            }
+            addPassengers(model)
+        }
+
+        val world = modelEntity.level()
+        if (::sbName.isInitialized) {
+            val isSerpentine = MobManager.isSerpentineMob(sbName)
+            val maxScan = if (isSerpentine) 32 else 6
+            var currentId = nameTagEntity.id - 1
+            var scanned = 0
+            while (scanned < maxScan) {
+                val candidate = world.getEntity(currentId) ?: break
+                if (candidate is ArmorStand && (candidate.hasCustomName() || candidate.isCustomNameVisible)) {
+                    break
+                }
+                if (candidate is ArmorStand && candidate.id != nameTagEntity.id &&
+                    hasSkull(candidate)) {
+                    parts.add(candidate)
+                    currentId--
+                    scanned++
+                } else if (candidate is LivingEntity && (modelEntities.contains(candidate) || candidate.id in (nameTagEntity.id - maxScan until nameTagEntity.id))) {
+                    currentId--
+                    scanned++
+                } else {
+                    break
+                }
+            }
+        }
+
+        if (isGlowing) {
+            applyGlowToParts(true, glowColor)
+            val removedParts = oldParts - parts
+            for (removed in removedParts) {
+                (removed as? EntityAccess)?.`rfu$setGlowing`(false)
+            }
+        }
     }
 
     private fun linkToBobber() {
         if (::sbName.isInitialized) {
             val sc = SeaCreatures.get(sbName)
             if (sc != null) {
-                originBobber = BobberManager.getBobberForEntity(modelEntity.id)
+                originBobber = parts.firstNotNullOfOrNull { BobberManager.getBobberForEntity(it.id) }
                     ?: BobberManager.findClosestBobber(modelEntity.position(), maxDistance = 1.0)
             }
         }
@@ -57,31 +128,52 @@ class SkyblockEntity(
         return if (::sbName.isInitialized) sbName else null
     }
 
+    fun position(): Vec3 = modelEntity.position()
+
     override fun toString(): String {
         val bobberInfo = originBobber?.let { " (bobberOwner: ${it.ownerName})" } ?: ""
-        return "$sbName ($health/$maxHealth) (renderEvent: ${renderEvent != null})$bobberInfo - ${nameTagEntity.x}, ${nameTagEntity.y}, ${nameTagEntity.z}"
+        return "$sbName ($health/$maxHealth) (models: ${modelEntities.size}, parts: ${parts.size}) (renderEvent: ${renderEvent != null})$bobberInfo - ${nameTagEntity.x}, ${nameTagEntity.y}, ${nameTagEntity.z}"
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is SkyblockEntity) return false
-        return modelEntity.id == other.modelEntity.id
+    fun isRemoved(): Boolean {
+        if (isDying) return true
+        if (modelEntities.isEmpty() || modelEntities.all { !it.isAlive || it.isRemoved }) return true
+        val player = mc.player
+        return player != null && player.distanceToSqr(position()) <= 400.0 && outdatedNametag()
     }
 
-    override fun hashCode(): Int = modelEntity.id.hashCode()
-
-    fun isRemoved(): Boolean = isDying || modelEntity.isRemoved
+    fun outdatedNametag(): Boolean = nameTagEntity.isRemoved || (modelEntity.level().getEntity(nameTagEntity.id) == null)
 
     fun setGlowing(state: Boolean, color: Color = Color.WHITE) {
-        (modelEntity as EntityAccess).`rfu$setGlowing`(state)
-        (modelEntity as EntityAccess).`rfu$setGlowColor`(color)
+        this.isGlowing = state
+        this.glowColor = color
+        applyGlowToParts(state, color)
+    }
+
+    private fun hasSkull(candidate: ArmorStand): Boolean {
+        return !candidate.getItemBySlot(EquipmentSlot.HEAD).isEmpty
+    }
+
+    private fun isEffectivelyInvisible(entity: Entity): Boolean {
+        if (!entity.isInvisible) return false
+        if (entity is LivingEntity) {
+            return entity.getItemBySlot(EquipmentSlot.HEAD).isEmpty
+        }
+        return true
+    }
+
+    private fun applyGlowToParts(state: Boolean, color: Color) {
+        parts.forEach { entity ->
+            val shouldGlow = state && !isEffectivelyInvisible(entity)
+            val access = entity as? EntityAccess ?: return@forEach
+            access.`rfu$setGlowing`(shouldGlow)
+            access.`rfu$setGlowColor`(color)
+        }
     }
 
     fun isGlowing(): Boolean {
-        return (modelEntity as EntityAccess).`rfu$isGlowing`()
+        return isGlowing
     }
-
-    fun outdatedNametag() : Boolean = nameTagEntity.isRemoved
 
     /**
      * Updates the nametag entity if allowed
@@ -144,6 +236,9 @@ class SkyblockEntity(
     }
 
     fun dispose() {
+        if (isGlowing) {
+            applyGlowToParts(false, Color.WHITE)
+        }
         renderEvent?.unregister()
         renderEvent = null
     }

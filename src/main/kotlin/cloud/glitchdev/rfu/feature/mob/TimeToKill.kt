@@ -4,7 +4,9 @@ import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig.RARE_SC_REGEX
 import cloud.glitchdev.rfu.constants.text.TextColor
+import cloud.glitchdev.rfu.data.mob.SkyblockEntity
 import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDeathEvent
+import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDisposeEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat
@@ -15,18 +17,27 @@ import kotlin.time.Clock
 @RFUFeature
 object TimeToKill : Feature {
     override fun onInitialize() {
-        registerMobDeathEvent { entities ->
-            if(!SeaCreatureConfig.timeToKill) return@registerMobDeathEvent
-            val entities = entities.filter { RARE_SC_REGEX.matches(it.sbName) }
-            entities.forEach { entity ->
-                val player = mc.player ?: return@forEach
-                if (player.distanceTo(entity.modelEntity) > 40f) return@forEach
-                val duration = Clock.System.now() - entity.createdAt
+        registerMobDisposeEvent { entities ->
+            onMobDeath(entities, true)
+        }
 
-                Chat.sendMessage(
-                    TextUtils.rfuLiteral("${TextColor.YELLOW}${entity.sbName} ${TextColor.GOLD}took ${TextColor.YELLOW}${duration.toReadableString(true)} ${TextColor.GOLD}to kill!")
-                )
-            }
+        registerMobDeathEvent { entities ->
+            onMobDeath(entities)
+        }
+    }
+
+    fun onMobDeath(entities : Set<SkyblockEntity>, avoidDead : Boolean = false) {
+        if(!SeaCreatureConfig.timeToKill) return
+        val rareEntities = entities.filter { RARE_SC_REGEX.matches(it.sbName) }
+        rareEntities.forEach { entity ->
+            if (avoidDead && entity.isDying) return@forEach
+            val player = mc.player ?: return@forEach
+            if (player.distanceTo(entity.modelEntity) > 40f) return@forEach
+            val duration = Clock.System.now() - entity.createdAt
+
+            Chat.sendMessage(
+                TextUtils.rfuLiteral("${TextColor.YELLOW}${entity.sbName} ${TextColor.GOLD}took ${TextColor.YELLOW}${duration.toReadableString(true)} ${TextColor.GOLD}to kill!")
+            )
         }
     }
 }
