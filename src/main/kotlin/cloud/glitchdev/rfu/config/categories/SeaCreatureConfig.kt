@@ -223,7 +223,7 @@ object SeaCreatureConfig : Category("Sea Creatures") {
     }
 
     val HEALTH_BAR_REGEX
-        get() = SeaCreatures.entries.filter { it.special }.joinToString("|") { it.scName }.toExactRegex()
+        get() = SeaCreatures.entries.filter { it.special && it.bossbar }.joinToString("|") { it.scName }.toExactRegex()
 
 
     var coloredShurikenBar by boolean(true) {

@@ -8,6 +8,7 @@
 
 ### Fixes
 - Fixed sea creature glow only displaying one entity and invisible entities sometimes
+- Fixed bossbar and merge health settings in /rfuscedit not properly applying to sea creatures
 
 ### Back-end
 - Reworked entity system to accept more model entities

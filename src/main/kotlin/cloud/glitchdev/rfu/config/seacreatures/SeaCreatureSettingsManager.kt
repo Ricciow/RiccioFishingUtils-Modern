@@ -82,7 +82,7 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
     fun isGdragAlert(scName: String): Boolean = isSpecial(scName) && (resolve(scName) { it.gdragAlert } ?: false)
     fun isRareSCAlert(scName: String): Boolean = isSpecial(scName) && (resolve(scName) { it.rareSCAlert } ?: false)
     fun isBossbarEnabled(scName: String): Boolean = isSpecial(scName) && (resolve(scName) { it.bossbar } ?: false)
-    fun isMergeBossbarHpEnabled(scName: String): Boolean = resolve(scName) { it.mergeBossbarHp } ?: scName.contains("Scuttler", ignoreCase = true)
+    fun isMergeBossbarHpEnabled(scName: String): Boolean = isBossbarEnabled(scName) && (resolve(scName) { it.mergeBossbarHp } ?: scName.contains("Scuttler", ignoreCase = true))
     fun getScDisplayColor(scName: String): String = resolve(scName) { it.scDisplayColor } ?: "§f"
 
     fun save() {

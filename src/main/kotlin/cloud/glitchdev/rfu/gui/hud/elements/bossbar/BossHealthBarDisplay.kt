@@ -21,8 +21,11 @@ object BossHealthBarDisplay : AbstractHudElement("bossHealthBar") {
     val entities: MutableSet<SkyblockEntity> = mutableSetOf()
     val bars : MutableList<BossHealthBar> = mutableListOf()
 
-    override val enabled: Boolean
-        get() = forcePreview || ((super.enabled || entities.isNotEmpty()) && SeaCreatureConfig.bossHealthBars)
+    override val requirement: Boolean
+        get() = SeaCreatureConfig.bossHealthBars
+
+    override val isElementActive: Boolean
+        get() = entities.isNotEmpty()
 
     val barsContainer = UIContainer().constrain {
         width = (400 * scale).pixels()
@@ -79,10 +82,11 @@ object BossHealthBarDisplay : AbstractHudElement("bossHealthBar") {
             val totalMaxHealth = formatHealthValue(totalMaxHealthVal)
             val shurikenCount = groupEntities.count { it.isShurikened }
             val outdated = groupEntities.all { it.outdatedNametag() }
+            val displayName = SeaCreatures.get(sbName)?.scDisplayName ?: sbName
             
             mergedInfos.add(
                 BossBarEntityInfo(
-                    sbName = sbName,
+                    sbName = displayName,
                     health = totalHealth,
                     maxHealth = totalMaxHealth,
                     shurikenCount = shurikenCount,
@@ -95,9 +99,10 @@ object BossHealthBarDisplay : AbstractHudElement("bossHealthBar") {
 
         // Add non-merged entities
         toNotMerge.forEach { entity ->
+            val displayName = SeaCreatures.get(entity.sbName)?.scDisplayName ?: entity.sbName
             mergedInfos.add(
                 BossBarEntityInfo(
-                    sbName = entity.sbName,
+                    sbName = displayName,
                     health = entity.health,
                     maxHealth = entity.maxHealth,
                     shurikenCount = if (entity.isShurikened) 1 else 0,
