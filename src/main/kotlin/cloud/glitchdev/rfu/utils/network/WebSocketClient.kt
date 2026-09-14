@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.utils.network
 
-import cloud.glitchdev.rfu.RiccioFishingUtils.API_URL
+import cloud.glitchdev.rfu.RiccioFishingUtils.WS_URL
 import cloud.glitchdev.rfu.RiccioFishingUtils.RFU_VERSION
 import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.events.managers.ErrorEvents
@@ -47,7 +47,7 @@ object WebSocketClient {
         if (isConnected || isReconnecting || isConnecting) return
         
         isConnecting = true
-        val wsUrl = API_URL.replace("https://", "wss://").replace("http://", "ws://").replace("/api", "") + "/ws"
+        val wsUrl = WS_URL
         RFULogger.dev("Connecting to WebSocket: $wsUrl")
         
         client.newWebSocketBuilder()

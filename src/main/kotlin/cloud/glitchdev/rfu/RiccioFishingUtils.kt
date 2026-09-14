@@ -19,6 +19,12 @@ object RiccioFishingUtils : ClientModInitializer {
             return field
         }
 
+    val WS_URL: String
+        get() {
+            if (DevSettings.devMode && DevSettings.useCustomWebSocket) return DevSettings.webSocketEnvironment
+            return API_URL.replace("https://", "wss://").replace("http://", "ws://").replace("/api", "") + "/ws"
+        }
+
     val CONFIG_DIR = FabricLoaderImpl.INSTANCE.configDir
     val CONTAINER = FabricLoaderImpl.INSTANCE.getModContainer(MOD_ID).get()
     val RFU_VERSION = CONTAINER.metadata.version

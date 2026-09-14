@@ -52,10 +52,22 @@ object DevSettings : Category("Developer") {
         condition = { devMode }
     }
 
-    var backEndEnvironment by string("http://localhost:8080/api") {
+    var backEndEnvironment by string("http://localhost:8081/api") {
         name = Literal("Back-end Environment")
         description = Literal("The url which the mod will use for its back-end features")
         condition = { devMode && useCustomBackend }
+    }
+
+    var useCustomWebSocket by reloadableBoolean(false) {
+        name = Literal("Use Custom WebSocket")
+        description = Literal("Enable to use a custom WebSocket environment URL.")
+        condition = { devMode }
+    }
+
+    var webSocketEnvironment by string("ws://localhost:8080/ws") {
+        name = Literal("WebSocket Environment")
+        description = Literal("The url which the mod will use for WebSocket features")
+        condition = { devMode && useCustomWebSocket }
     }
 
     var bypassHypixelCheck by observable(boolean(false) {
