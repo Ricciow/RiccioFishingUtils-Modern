@@ -197,6 +197,11 @@ object OtherSettings : Category("Other") {
         description = Literal("Shows the bestiary progress from the tablist. Requires the Bestiary Tablist to work.")
     }
 
+    var tpsDisplay by boolean(false) {
+        name = Literal("TPS Display")
+        description = Literal("Displays the server's current TPS.")
+    }
+
     var outdatedCake by boolean(true) {
         name = Literal("Outdated cake alert")
         description = Literal("Sends a message when a cake expires")
