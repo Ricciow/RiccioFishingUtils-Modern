@@ -9,6 +9,7 @@
 - Added (ᵔᴥᵔ) as a trigger for the :dog: emoji
 - Made the introduction walkthrough send as a single message upon joining SkyBlock instead of separate messages on Hypixel join
 - Made inventory HUD elements be floating when the inventory is open
+- Made daily streaks only reset if you logged in on a day and failed to complete it, preserving streaks across skipped days
 
 ### Fixes
 - Fixed sea creature glow only displaying one entity and invisible entities sometimes
