@@ -1,16 +1,19 @@
 package cloud.glitchdev.rfu.mixin.universalcraft;
 
-import cloud.glitchdev.rfu.gui.window.HudWindow;
+import gg.essential.universal.UScreen;
+import org.spongepowered.asm.mixin.Mixin;
+//? if <26.3 {
+/*import cloud.glitchdev.rfu.gui.window.HudWindow;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import gg.essential.universal.AdvancedDrawContext;
-import gg.essential.universal.UScreen;
-import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+*///?}
 
 @Mixin(value = UScreen.class, remap = false)
 public abstract class UScreenMixin {
-    @WrapOperation(
+    //? if <26.3 {
+    /*@WrapOperation(
         method = "extractRenderState",
         at = @At(
             value = "INVOKE",
@@ -23,4 +26,5 @@ public abstract class UScreenMixin {
         }
         original.call(instance);
     }
+    *///?}
 }

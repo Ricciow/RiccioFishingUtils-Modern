@@ -39,7 +39,7 @@ object CopyItemDataFeature : Feature {
     }
 
     fun copyCurrentItemData() {
-        //~ if >=26.2 'screen' -> 'gui.screen()' {
+        //~ if >=26.2 'mc.screen' -> 'mc.gui.screen()' {
         val screen = mc.gui.screen()
         //~}
         val hoveredSlotItem: ItemStack? = (screen as? AbstractContainerScreenAccessor)?.`rfu$getHoveredSlot`()?.item
@@ -74,7 +74,7 @@ object CopyItemDataFeature : Feature {
     }
 
     fun copyContainerData() {
-        //~ if >=26.2 'screen' -> 'gui.screen()' {
+        //~ if >=26.2 'mc.screen' -> 'mc.gui.screen()' {
         val screen = mc.gui.screen() as? AbstractContainerScreen<*>
         //~}
         if (screen == null) {

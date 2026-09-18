@@ -19,4 +19,5 @@
 - Fixed skeleton fish being categorized as a rare tfish instead of epic
 
 ### Back-end
+- Added 26.3.support
 - Reworked entity system to accept more model entities

@@ -2,9 +2,7 @@ package cloud.glitchdev.rfu.mixin;
 
 import cloud.glitchdev.rfu.events.managers.SlotClickedEvents;
 import cloud.glitchdev.rfu.gui.window.HudWindow;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
@@ -54,7 +52,7 @@ public class AbstractContainerScreenMixin {
         }
     }
 
-    @Inject(method = "slotClicked", at = @At("HEAD"))
+    @Inject(method = "slotClicked(Lnet/minecraft/world/inventory/Slot;IILnet/minecraft/world/inventory/ContainerInput;)V", at = @At("HEAD"))
     private void onSlotClicked(Slot slot, int slotId, int mouseButton, ContainerInput type, CallbackInfo ci) {
         if (slot != null && slotId >= 0) {
             SlotClickedEvents.INSTANCE.getRunTasks().invoke(slot, ((AbstractContainerScreen<?>) (Object) this));
