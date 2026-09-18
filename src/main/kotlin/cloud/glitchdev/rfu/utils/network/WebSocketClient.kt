@@ -253,10 +253,11 @@ object WebSocketClient {
         }
     }
 
-    fun disconnect() {
+    fun disconnect(reason: String = "Disconnecting") {
+        RFULogger.info("WebSocket Disconnecting: $reason")
         heartbeatJob?.cancel()
         heartbeatJob = null
-        webSocket?.sendClose(WebSocket.NORMAL_CLOSURE, "Disconnecting")
+        webSocket?.sendClose(WebSocket.NORMAL_CLOSURE, reason)
         webSocket = null
         isConnected = false
         isReconnecting = false
