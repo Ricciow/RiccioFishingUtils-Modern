@@ -1,4 +1,4 @@
-﻿package cloud.glitchdev.rfu.events.managers
+package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.RiccioFishingUtils
 import cloud.glitchdev.rfu.config.categories.HotSpotSettings
@@ -178,6 +178,7 @@ object HotSpotEvents : RegisteredEvent {
                 if (unknownHotspot != null && unknownHotspot.center.distanceTo(pos) < 5.0) {
                     unknownHotspot.buff = name
                     HotspotCache.addMeasurement(unknownHotspot.blockPos, 0.0, unknownHotspot.liquid, name, unknownHotspot.island)
+                    HotSpotChangedEventManager.runTasks(hotspots.values.toList())
                 }
             }
         }
@@ -304,6 +305,7 @@ object HotSpotEvents : RegisteredEvent {
         if (existing != null) {
             if (existing.type == HotspotType.UNKNOWN && type != HotspotType.UNKNOWN) {
                 existing.buff = type.displayName
+                HotSpotChangedEventManager.runTasks(hotspots.values.toList())
                 return true
             } else {
                 return false
@@ -429,6 +431,7 @@ object HotSpotEvents : RegisteredEvent {
     fun clearHotspots() {
         hotspots.clear()
         virtualUuids.clear()
+        HotSpotChangedEventManager.runTasks(emptyList())
     }
 
     private fun handleHotspotMessage(sender: String, stat: String, x: Double, y: Double, z: Double) {

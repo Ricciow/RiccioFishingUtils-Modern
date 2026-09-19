@@ -22,6 +22,7 @@
 - Fixed Moby-Duck timer disappearing when leaving SkyBlock or restarting the game
 - Fixed texture memory leak when opening inventory with HUD hidden
 - Fixed inventory HUD clicks conflicting with REI
+- Fixed Hotspot Pointer pointing to lower or same hotspots
 
 ### Back-end
 - Reworked entity system to accept more model entities
