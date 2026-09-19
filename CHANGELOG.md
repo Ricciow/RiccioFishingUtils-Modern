@@ -5,6 +5,7 @@
 - Added Party Requeue Alert to prompt requeuing when your party is no longer full
 - Added TPS Hud display (disabled by default)
 - Added Shard Hotspots support
+- Added :aquamarine: :carmine: :midnight: and :treasure: emojis
 
 ### Changes
 - Revoked previous backend acceptance to display privacy policy

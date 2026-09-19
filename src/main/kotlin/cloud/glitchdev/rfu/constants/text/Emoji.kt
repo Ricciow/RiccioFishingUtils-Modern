@@ -57,7 +57,11 @@ object Emoji {
         EmojiData("\uE106", listOf("wiki_tiki", "wikitiki", "tiki")),
         EmojiData("\uE108", listOf("yeti")),
         EmojiData("\uE123", listOf("giant_isopod", "isopod", "pod")),
-        EmojiData("\uE124", listOf("silkbreeze", "silk"))
+        EmojiData("\uE124", listOf("silkbreeze", "silk")),
+        EmojiData("\uE12D", listOf("aquamarine", "aquamarine_dye")),
+        EmojiData("\uE12E", listOf("carmine", "carmine_dye")),
+        EmojiData("\uE12F", listOf("midnight", "midnight_dye")),
+        EmojiData("\uE130", listOf("treasure", "treasure_dye")),
     )
 
     val ALL: Map<String, String> = EMOJIS.flatMap { emoji ->
