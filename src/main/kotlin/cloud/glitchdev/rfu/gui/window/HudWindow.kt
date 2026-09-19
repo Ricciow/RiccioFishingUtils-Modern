@@ -84,6 +84,20 @@ object HudWindow : BaseWindow(false) {
     var currentRenderPass: RenderPass = RenderPass.NONE
         private set
 
+    private var hasRecycledTexturesThisFrame = false
+
+    fun onFrameExtractionStart() {
+        hasRecycledTexturesThisFrame = false
+    }
+
+    fun shouldRecycleTextures(): Boolean {
+        if (!hasRecycledTexturesThisFrame) {
+            hasRecycledTexturesThisFrame = true
+            return true
+        }
+        return false
+    }
+
     override fun onDrawScreen(matrixStack: UMatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float) {
         if (currentRenderPass == RenderPass.NONE) {
             super.onDrawScreen(matrixStack, mouseX, mouseY, partialTicks)

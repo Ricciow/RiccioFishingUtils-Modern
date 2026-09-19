@@ -20,6 +20,7 @@
 - Improved caching on the party finder window
 - Fixed skeleton fish being categorized as a rare tfish instead of epic
 - Fixed Moby-Duck timer disappearing when leaving SkyBlock or restarting the game
+- Fixed texture memory leak when opening inventory with HUD hidden
 
 ### Back-end
 - Reworked entity system to accept more model entities
