@@ -89,8 +89,16 @@ object ServerCountdownEvents : AbstractEventManager<() -> Unit, ServerCountdownE
         var targetServerTick: Long = startServerTick + durationTicks
             private set
 
+        var isPaused: Boolean = false
+            private set
+        private var pausedRemainingTicks: Long = durationTicks
+
         val remainingTicks: Long
-            get() = (targetServerTick - ServerTickEvents.currentServerTick).coerceAtLeast(0L)
+            get() = if (isPaused) {
+                pausedRemainingTicks.coerceAtLeast(0L)
+            } else {
+                (targetServerTick - ServerTickEvents.currentServerTick).coerceAtLeast(0L)
+            }
 
         val elapsedTicks: Long
             get() = durationTicks - remainingTicks
@@ -104,11 +112,31 @@ object ServerCountdownEvents : AbstractEventManager<() -> Unit, ServerCountdownE
         val remainingDuration: Duration
             get() = if (remainingTicks > 0L) (remainingTicks * 50L).milliseconds else Duration.ZERO
 
+        fun pause() {
+            if (!isPaused && !isCompleted) {
+                pausedRemainingTicks = remainingTicks
+                isPaused = true
+            }
+        }
+
+        fun unpause() {
+            if (isPaused && !isCompleted) {
+                targetServerTick = ServerTickEvents.currentServerTick + pausedRemainingTicks
+                isPaused = false
+            }
+        }
+
         fun resync(newRemainingTicks: Long) {
-            targetServerTick = ServerTickEvents.currentServerTick + newRemainingTicks
+            if (isPaused) {
+                pausedRemainingTicks = newRemainingTicks
+            } else {
+                targetServerTick = ServerTickEvents.currentServerTick + newRemainingTicks
+            }
         }
 
         internal fun tick() {
+            if (isPaused) return
+
             if (isCompleted) {
                 onTick?.invoke(this)
                 onComplete?.invoke()
