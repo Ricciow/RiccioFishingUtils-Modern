@@ -4,6 +4,7 @@
 - Added Rare SC Alert Preset setting with {color} variable support and alert preview in /rfuscedit
 - Added Party Requeue Alert to prompt requeuing when your party is no longer full
 - Added TPS Hud display (disabled by default)
+- Added Shard Hotspots support
 
 ### Changes
 - Revoked previous backend acceptance to display privacy policy
@@ -11,6 +12,7 @@
 - Made the introduction walkthrough send as a single message upon joining SkyBlock instead of separate messages on Hypixel join
 - Made inventory HUD elements be floating when the inventory is open
 - Made daily streaks only reset if you logged in on a day and failed to complete it, preserving streaks across skipped days
+- Updated hotspot share messages to include stat counts and shard names
 
 ### Fixes
 - Fixed sea creature glow only displaying one entity and invisible entities sometimes
@@ -23,6 +25,7 @@
 - Fixed texture memory leak when opening inventory with HUD hidden
 - Fixed inventory HUD clicks conflicting with REI
 - Fixed Hotspot Pointer pointing to lower or same hotspots
+- Fixed hotspot rendering and radius calculations breaking with skyocean
 
 ### Back-end
 - Reworked entity system to accept more model entities
