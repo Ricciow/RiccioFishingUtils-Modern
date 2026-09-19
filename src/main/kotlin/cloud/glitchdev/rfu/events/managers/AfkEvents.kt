@@ -33,7 +33,6 @@ object AfkEvents : RegisteredEvent {
             if (mouseX != lastMouseX || mouseY != lastMouseY) {
                 lastMouseX = mouseX
                 lastMouseY = mouseY
-                println("Changed Mouse")
                 recordActivity()
             }
 
