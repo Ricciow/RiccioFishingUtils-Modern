@@ -6,6 +6,7 @@
 - Added TPS Hud display (disabled by default)
 - Added Shard Hotspots support
 - Added :aquamarine: :carmine: :midnight: and :treasure: emojis
+- Added /kaboom command to send :kaboom: in party chat and leave the party
 
 ### Changes
 - Revoked previous backend acceptance to display privacy policy
