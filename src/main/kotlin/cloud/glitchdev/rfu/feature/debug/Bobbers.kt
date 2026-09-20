@@ -73,7 +73,7 @@ object Bobbers : SimpleCommand("bobbers"), Feature {
         renderAll = !renderAll
 
         context.source.sendFeedback(
-            TextUtils.rfuLiteral(
+            TextUtils.debugLiteral(
                 "Tracked Bobber rendering: ${if (renderAll) "§aENABLED" else "§cDISABLED"}",
                 TextStyle(TextColor.YELLOW)
             )

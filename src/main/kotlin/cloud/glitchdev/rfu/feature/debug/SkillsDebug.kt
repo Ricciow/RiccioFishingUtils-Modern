@@ -1,4 +1,4 @@
-﻿package cloud.glitchdev.rfu.feature.debug
+package cloud.glitchdev.rfu.feature.debug
 
 import cloud.glitchdev.rfu.constants.skyblock.SkillType
 import cloud.glitchdev.rfu.constants.text.TextColor
@@ -18,7 +18,7 @@ object SkillsDebug : AbstractCommand("skills") {
     override fun build(builder: LiteralArgumentBuilder<FabricClientCommandSource>) {
         builder
             .executes { context ->
-                context.source.sendFeedback(TextUtils.rfuLiteral("--- Skills Debug ---", TextStyle(TextColor.GOLD)))
+                context.source.sendFeedback(TextUtils.debugLiteral("--- Skills Debug ---", TextStyle(TextColor.GOLD)))
                 for (skill in SkillType.entries) {
                     val xp = SkillTracker.getSkillXp(skill)
                     val level = SkillTracker.getSkillLevel(skill)
@@ -39,7 +39,7 @@ object SkillsDebug : AbstractCommand("skills") {
                         val skill = SkillType.fromName(skillName)
                         if (skill == null) {
                             context.source.sendFeedback(
-                                TextUtils.rfuLiteral("Unknown skill: $skillName", TextStyle(TextColor.RED))
+                                TextUtils.debugLiteral("Unknown skill: $skillName", TextStyle(TextColor.RED))
                             )
                             return@executes 1
                         }
@@ -51,7 +51,7 @@ object SkillsDebug : AbstractCommand("skills") {
                         val xpInLevel = xp - currentLevelXp
                         val xpNeededForNext = nextLevelXp - currentLevelXp
                         context.source.sendFeedback(
-                            TextUtils.rfuLiteral("--- ${skill.displayName} Debug ---", TextStyle(TextColor.GOLD))
+                            TextUtils.debugLiteral("--- ${skill.displayName} Debug ---", TextStyle(TextColor.GOLD))
                         )
                         context.source.sendFeedback(
                             Component.literal("${TextColor.YELLOW}Total XP: ${TextColor.LIGHT_GREEN}${xp}")

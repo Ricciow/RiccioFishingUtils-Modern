@@ -15,7 +15,7 @@ object ReloadSeaCreatures : AbstractCommand("reloadsc") {
         builder.executes { context ->
             val count = SeaCreatureSettingsManager.reloadFromResources()
             context.source.sendFeedback(
-                TextUtils.rfuLiteral(
+                TextUtils.debugLiteral(
                     "Reloaded $count sea creatures from resources.",
                     TextStyle(TextColor.LIGHT_GREEN)
                 )

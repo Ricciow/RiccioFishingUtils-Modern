@@ -52,7 +52,7 @@ object DebugHotspots : Feature {
         override fun execute(context: CommandContext<FabricClientCommandSource>): Int {
             showSphere = !showSphere
             context.source.sendFeedback(
-                TextUtils.rfuLiteral(
+                TextUtils.debugLiteral(
                     "Hotspot debug sphere: ${if (showSphere) "§aENABLED" else "§cDISABLED"}",
                     TextStyle(TextColor.YELLOW)
                 )
