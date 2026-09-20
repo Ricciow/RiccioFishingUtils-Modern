@@ -299,7 +299,7 @@ object Network : RegisteredEvent {
 
         val privacyPolicy = Component.literal(" ${YELLOW}${BOLD}[PRIVACY POLICY]")
             .withStyle {
-                it.withClickEvent(ClickEvent.OpenUrl(URI.create("https://rfu.glitchdev.cloud/privacy")))
+                it.withClickEvent(ClickEvent.OpenUrl(URI.create("https://rfu.ricciow.dev/privacy")))
                     .withHoverEvent(HoverEvent.ShowText(Component.literal("${YELLOW}Open Privacy Policy")))
             }
 
