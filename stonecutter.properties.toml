@@ -73,7 +73,7 @@ mod.mc_dep = ">=26.3 <26.4"
 universalcraft_mc_version = "26.3"
 #ResourcefulConfig
 resourceful_mc_version = "26.3"
-resourceful_version = "6.0.0"
+resourceful_version = "6.0.1"
 resourcefulkt_mc_version = "26.1"
 resourcefulkt_version = "4.0.0"
 #Hypixel Mod API
