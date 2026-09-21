@@ -14,10 +14,13 @@ import gg.essential.elementa.constraints.*
 import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.*
 import gg.essential.universal.UKeyboard
-import gg.essential.universal.UMatrixStack
+//? if < 26.3 {
+/*import gg.essential.universal.UMatrixStack
+*///? } else {
+import gg.essential.elementa.renderer.ElementaExtractor
+//? }
 import cloud.glitchdev.rfu.gui.components.Colorable
 import cloud.glitchdev.rfu.utils.gui.isHidden
-import java.awt.Color
 import kotlin.math.min
 
 abstract class UIAbstractDropdown(
@@ -286,7 +289,23 @@ abstract class UIAbstractDropdown(
         }
     }
 
-    override fun draw(matrixStack: UMatrixStack) {
+    //? if >= 26.3 {
+    override fun extractComponent(extractor: ElementaExtractor) {
+        val currentHeight = this.getHeight()
+        if (lastHeight != currentHeight) {
+            lastHeight = currentHeight
+            updateHeight()
+        }
+        if (scrollbar.isHidden()) {
+            scrollComponent.constrain {
+                x = CenterConstraint()
+                width = 100.percent() - 5.pixels
+            }
+        }
+        super.extractComponent(extractor)
+    }
+    //? } else {
+    /*override fun draw(matrixStack: UMatrixStack) {
         val currentHeight = this.getHeight()
         if (lastHeight != currentHeight) {
             lastHeight = currentHeight
@@ -300,6 +319,7 @@ abstract class UIAbstractDropdown(
         }
         super.draw(matrixStack)
     }
+    *///? }
 
     open fun updateHeight() {
         val newHeight = this.getHeight()

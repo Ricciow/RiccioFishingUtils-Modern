@@ -15,6 +15,8 @@ import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.gui.components.EditBox
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+import gg.essential.elementa.WindowScreen
+import gg.essential.elementa.components.input.AbstractTextInput
 import java.util.concurrent.ConcurrentHashMap
 
 @AutoRegister
@@ -49,6 +51,10 @@ object KeybindEvents : AbstractEventManager<() -> Unit, KeybindTask>(), Register
     }
 
     private fun isTextInputFocused(screen: Screen?): Boolean {
+        if (screen is WindowScreen) {
+            val focused = screen.window.focusedComponent
+            return focused is AbstractTextInput && focused.isActive()
+        }
         val focused = screen?.focused ?: return false
         return focused is EditBox && focused.canConsumeInput()
     }

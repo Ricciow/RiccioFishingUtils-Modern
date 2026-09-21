@@ -16,10 +16,12 @@ import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.dsl.minus
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
-import gg.essential.elementa.dsl.times
 import gg.essential.elementa.dsl.toConstraint
-import gg.essential.universal.UMatrixStack
-import java.awt.Color
+//? if <26.3 {
+/*import gg.essential.universal.UMatrixStack
+*///? } else {
+import gg.essential.elementa.renderer.ElementaExtractor
+//? }
 
 /**
  * Simple Button Component
@@ -185,7 +187,19 @@ class UIButton(
 
     }
 
-    override fun draw(matrixStack: UMatrixStack) {
+    //? if >= 26.3 {
+    override fun extractComponent(extractor: ElementaExtractor) {
+        val currentWidth = this.getWidth()
+        val currentHeight = this.getHeight()
+        if (currentWidth != lastWidth || currentHeight != lastHeight) {
+            lastWidth = currentWidth
+            lastHeight = currentHeight
+            updateFontSize()
+        }
+        super.extractComponent(extractor)
+    }
+    //? } else {
+    /*override fun draw(matrixStack: UMatrixStack) {
         val currentWidth = this.getWidth()
         val currentHeight = this.getHeight()
         if (currentWidth != lastWidth || currentHeight != lastHeight) {
@@ -195,6 +209,7 @@ class UIButton(
         }
         super.draw(matrixStack)
     }
+    *///? }
 
     private fun updateFontSize() {
         if (!::textArea.isInitialized) return
