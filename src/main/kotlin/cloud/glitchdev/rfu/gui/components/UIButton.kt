@@ -13,6 +13,7 @@ import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.animate
 import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
+import gg.essential.elementa.dsl.max
 import gg.essential.elementa.dsl.minus
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
@@ -80,8 +81,8 @@ class UIButton(
             innerBg = UIRoundedRectangle(radiusProps).constrain {
                 x = CenterConstraint()
                 y = CenterConstraint()
-                width = 100.percent - (borderWidth * 2).pixels
-                height = 100.percent - (borderWidth * 2).pixels
+                width = max(0.pixels, 100.percent - (borderWidth * 2).pixels)
+                height = max(0.pixels, 100.percent - (borderWidth * 2).pixels)
                 color = innerColor
             } childOf this
             innerBg

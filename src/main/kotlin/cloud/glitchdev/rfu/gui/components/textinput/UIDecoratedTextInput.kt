@@ -11,6 +11,7 @@ import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.toConstraint
 import cloud.glitchdev.rfu.gui.components.Colorable
 import gg.essential.elementa.dsl.animate
+import gg.essential.elementa.dsl.max
 import gg.essential.elementa.dsl.minus
 import gg.essential.elementa.dsl.pixels
 
@@ -74,8 +75,8 @@ class UIDecoratedTextInput(
         }.constrain {
             x = CenterConstraint()
             y = CenterConstraint()
-            width = 100.percent() - 4.pixels
-            height = 100.percent() - 2.pixels
+            width = max(0.pixels, 100.percent() - 4.pixels)
+            height = max(0.pixels, 100.percent() - 2.pixels)
             color = if (isEnabled) unselectedTextColor else UIScheme.disabledTextColor.toConstraint()
         }.onMouseClick {
             if (!isEnabled) return@onMouseClick

@@ -41,6 +41,7 @@ import gg.essential.elementa.dsl.animate
 import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.dsl.div
+import gg.essential.elementa.dsl.max
 import gg.essential.elementa.dsl.minus
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
@@ -139,7 +140,7 @@ class UIPartyCard(
         val innerBg = UIRoundedRectangle(radiusProps).constrain {
             x = CenterConstraint()
             y = borderWidth.pixels
-            width = 100.percent - (borderWidth * 2).pixels
+            width = max(0.pixels, 100.percent - (borderWidth * 2).pixels)
             height = ChildBasedSizeConstraint() + (innerPadding * 2).pixels
             color = UIScheme.pfCardBg.toConstraint()
         } childOf this
@@ -147,7 +148,7 @@ class UIPartyCard(
         innerContainer = UIContainer().constrain {
             x = innerPadding.pixels
             y = innerPadding.pixels
-            width = 100.percent - (innerPadding * 2).pixels
+            width = max(0.pixels, 100.percent - (innerPadding * 2).pixels)
             height = BoundingBoxConstraint()
         } childOf innerBg
 

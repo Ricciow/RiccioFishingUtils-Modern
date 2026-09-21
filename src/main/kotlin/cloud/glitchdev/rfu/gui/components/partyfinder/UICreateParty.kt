@@ -41,6 +41,7 @@ import gg.essential.elementa.constraints.TextAspectConstraint
 import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.dsl.effect
+import gg.essential.elementa.dsl.max
 import gg.essential.elementa.dsl.minus
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
@@ -120,15 +121,15 @@ class UICreateParty : UIContainer() {
             x = CenterConstraint()
             y = UIScheme.pfSmallSpacing.pixels
             width = 100.percent()
-            height = 100.percent() - UIScheme.pfSmallSpacing.pixels
+            height = max(0.pixels, 100.percent() - UIScheme.pfSmallSpacing.pixels)
             color = UIScheme.pfCardBorder.toConstraint()
         } childOf this
 
         val innerContainer = UIRoundedRectangle(5f).constrain {
             x = CenterConstraint()
             y = CenterConstraint()
-            width = 100.percent() - (UIScheme.pfCardBorderWidth * 2).pixels()
-            height = 100.percent() - (UIScheme.pfCardBorderWidth * 2).pixels()
+            width = max(0.pixels, 100.percent() - (UIScheme.pfCardBorderWidth * 2).pixels())
+            height = max(0.pixels, 100.percent() - (UIScheme.pfCardBorderWidth * 2).pixels())
             color = UIScheme.pfCardBg.toConstraint()
         } childOf border effect ScissorEffect()
 
