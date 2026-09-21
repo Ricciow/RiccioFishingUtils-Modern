@@ -22,7 +22,7 @@ public class AbstractContainerScreenMixin {
         HudWindow.INSTANCE.onInventoryClosed();
     }
 
-    @Inject(method = "slotClicked", at = @At("HEAD"))
+    @Inject(method = "slotClicked(Lnet/minecraft/world/inventory/Slot;IILnet/minecraft/world/inventory/ContainerInput;)V", at = @At("HEAD"))
     private void onSlotClicked(Slot slot, int slotId, int mouseButton, ContainerInput type, CallbackInfo ci) {
         if (slot != null && slotId >= 0) {
             SlotClickedEvents.INSTANCE.getRunTasks().invoke(slot, ((AbstractContainerScreen<?>) (Object) this));

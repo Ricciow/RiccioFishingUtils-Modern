@@ -6,6 +6,7 @@
 - Added TPS Hud display (disabled by default)
 - Added Shard Hotspots support
 - Added :aquamarine: :carmine: :midnight: and :treasure: emojis
+- Added Remove Nether Fog setting (disabled by default)
 
 ### Changes
 - Revoked previous backend acceptance to display privacy policy
@@ -29,5 +30,6 @@
 - Fixed hotspot rendering and radius calculations breaking with skyocean
 
 ### Back-end
+- Added 26.3 support
 - Reworked entity system to accept more model entities
 - Automatically disconnect from the RFU Back-end when AFK

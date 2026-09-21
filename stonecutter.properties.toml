@@ -10,18 +10,18 @@ mod.id = "rfu"
 mod.name = "RiccioFishingUtils"
 
 #Fabric
-deps.fabric_loader = "0.18.4"
+deps.fabric_loader = "0.19.5"
 
 #Devauth
 devauth_version = "1.2.2"
 
 #Essential
-elementa_version = "745"
-universalcraft_version = "505"
+elementa_version = "774"
+universalcraft_version = "534"
 
 #Faric_language_kotlin
-fabric_language_kotlin = "1.13.10+kotlin.2.3.20"
-modrinth.kotlin_version = "1.13.10+kotlin.2.3.20"
+fabric_language_kotlin = "1.14.1+kotlin.2.4.20"
+modrinth.kotlin_version = "1.14.1+kotlin.2.4.20"
 
 ["26.1"]
 #Fabric
@@ -57,6 +57,23 @@ universalcraft_mc_version = "26.2"
 #ResourcefulConfig
 resourceful_mc_version = "26.2"
 resourceful_version = "5.0.0"
+resourcefulkt_mc_version = "26.1"
+resourcefulkt_version = "4.0.0"
+#Hypixel Mod API
+hypixel_mod_api_version = "1.0.2"
+modrinth.hypixel_version = "1.0.2+build.1+mc26.1"
+
+["26.3"]
+#Fabric
+deps.fabric_api = "0.160.7+26.3"
+modrinth.fapi_version = "0.160.7+26.3"
+#Minecraft
+mod.mc_dep = ">=26.3 <26.4"
+#Essential
+universalcraft_mc_version = "26.3"
+#ResourcefulConfig
+resourceful_mc_version = "26.3"
+resourceful_version = "6.0.1"
 resourcefulkt_mc_version = "26.1"
 resourcefulkt_version = "4.0.0"
 #Hypixel Mod API

@@ -324,6 +324,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             width = 100.percent
             height = 0.pixels
         } childOf background
+        creationArea.hide(instantly = true)
     }
 
     fun updateFiltering() {
@@ -363,6 +364,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
                 filtersOpen = false
                 wasFilterOpen = true
             }
+            creationArea.unhide()
             creationArea.animate {
                 setHeightAnimation(Animations.OUT_EXP, 0.5f, 100.percent)
                 onComplete {
@@ -377,6 +379,9 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             partiesContainer.unhide()
             creationArea.animate {
                 setHeightAnimation(Animations.OUT_EXP, 0.5f, 0.pixels)
+                onComplete {
+                    creationArea.hide()
+                }
             }
         }
 

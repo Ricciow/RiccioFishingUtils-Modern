@@ -21,7 +21,7 @@ import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.network.VersionHttp.isOutdated
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 import com.teamresourceful.resourcefulconfigkt.api.ConfigKt
-import net.minecraft.util.Util
+import cloud.glitchdev.rfu.utils.PlatformUtils
 
 //~ if >=26.2 'setScreen' -> 'gui.setScreen' {
 object RFUSettings : ConfigKt("rfu/settings") {
@@ -49,7 +49,7 @@ object RFUSettings : ConfigKt("rfu/settings") {
             text = "Join"
 
             onClick {
-                Util.getPlatform().openUri("https://discord.gg/JfrXm6TqXz")
+                PlatformUtils.openUri("https://discord.gg/JfrXm6TqXz")
             }
         }
 
@@ -59,7 +59,7 @@ object RFUSettings : ConfigKt("rfu/settings") {
             text = "Open"
 
             onClick {
-                Util.getPlatform().openUri("https://github.com/ricciow/ricciofishingutils-modern")
+                PlatformUtils.openUri("https://github.com/ricciow/ricciofishingutils-modern")
             }
         }
 
@@ -69,7 +69,7 @@ object RFUSettings : ConfigKt("rfu/settings") {
             text = "Open"
 
             onClick {
-                Util.getPlatform().openUri("https://www.patreon.com/cw/Ricciow")
+                PlatformUtils.openUri("https://www.patreon.com/cw/Ricciow")
             }
         }
 
