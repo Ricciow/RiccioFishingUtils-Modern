@@ -22,11 +22,12 @@ import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.plus
 import gg.essential.elementa.dsl.toConstraint
+//? if >= 26.3 {
 import gg.essential.elementa.renderer.ElementaExtractor
-import gg.essential.universal.UKeyboard
-//? if < 26.3 {
+//?} else {
 /*import gg.essential.universal.UMatrixStack
-*///? }
+*///?}
+import gg.essential.universal.UKeyboard
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.round
@@ -86,6 +87,10 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
     } childOf this
 
     init {
+        //? if >= 26.3 {
+        this.enableEffect(HudRenderPassEffect(this))
+        //?}
+
         this.constrain {
             x = defaultX.pixels()
             y = defaultY.pixels()
@@ -403,7 +408,7 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
     open fun onOpenEdit() {}
     open fun onCloseEdit() {}
 
-    protected open fun shouldDrawInCurrentPass(): Boolean {
+    open fun shouldDrawInCurrentPass(): Boolean {
         if (HudWindow.isEditingOpen) {
             return isEditing && when (HudWindow.currentEditTarget) {
                 HudWindow.EditTarget.HUD -> renderOnHud
