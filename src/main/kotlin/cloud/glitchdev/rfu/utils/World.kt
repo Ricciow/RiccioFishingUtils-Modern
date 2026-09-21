@@ -14,6 +14,8 @@ import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import net.hypixel.data.type.GameType
+import net.minecraft.world.level.Level
+import net.minecraft.world.level.dimension.BuiltinDimensionTypes
 import java.time.Clock
 import kotlin.jvm.optionals.getOrElse
 import kotlin.jvm.optionals.getOrNull
@@ -86,6 +88,14 @@ object  World : RegisteredEvent {
             jerryFishingFestival = false
         }
         return SBDay <= 3 && (mayor == Mayors.MARINA)
+    }
+
+    fun isNether(level: Level?): Boolean {
+        if (level == null) return false
+        return level.dimension() == Level.NETHER ||
+                level.dimensionTypeRegistration().`is`(BuiltinDimensionTypes.NETHER) ||
+                island == FishingIslands.ISLE ||
+                (level.dimensionType().hasCeiling && !level.dimensionType().hasSkyLight)
     }
 
     override fun register() {
