@@ -16,7 +16,7 @@ object PartyDebug : SimpleCommand("party") {
 
     override fun execute(context: CommandContext<FabricClientCommandSource>): Int {
         val message = Component.literal("${TextColor.CYAN}${TextEffects.STRIKE}-----------------------------------------------------\n")
-        message.append(TextUtils.rfuLiteral("Party Debug Info:\n", TextStyle(TextColor.GOLD, TextEffects.BOLD)))
+        message.append(TextUtils.debugLiteral("Party Debug Info:\n", TextStyle(TextColor.GOLD, TextEffects.BOLD)))
         message.append(Component.literal("${TextColor.YELLOW}In Party: ${if (Party.inParty) "${TextColor.LIGHT_GREEN}Yes" else "${TextColor.LIGHT_RED}No"}\n"))
         message.append(Component.literal("${TextColor.YELLOW}Is Leader: ${if (Party.isLeader) "${TextColor.LIGHT_GREEN}Yes" else "${TextColor.LIGHT_RED}No"}\n"))
         message.append(Component.literal("${TextColor.YELLOW}Is All Invite: ${if (Party.isAllInvite) "${TextColor.LIGHT_GREEN}Yes" else "${TextColor.LIGHT_RED}No"}\n"))

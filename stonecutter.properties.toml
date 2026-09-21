@@ -25,8 +25,8 @@ modrinth.kotlin_version = "1.14.1+kotlin.2.4.20"
 
 ["26.1"]
 #Fabric
-deps.fabric_api = "0.144.4+26.1"
-modrinth.fapi_version = "0.144.4+26.1"
+deps.fabric_api = "0.155.3+26.1.2"
+modrinth.fapi_version = "0.155.3+26.1.2"
 #Minecraft
 mod.mc_dep = ">=26.1 <26.2"
 #Essential
@@ -48,8 +48,8 @@ stonecutter.redirect = "26.1"
 
 ["26.2"]
 #Fabric
-deps.fabric_api = "0.153.0+26.2"
-modrinth.fapi_version = "0.153.0+26.2"
+deps.fabric_api = "0.161.0+26.2"
+modrinth.fapi_version = "0.161.0+26.2"
 #Minecraft
 mod.mc_dep = ">=26.2 <26.3"
 #Essential

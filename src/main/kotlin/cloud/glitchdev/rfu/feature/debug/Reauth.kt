@@ -14,7 +14,7 @@ object Reauth : AbstractCommand("reauth") {
     override fun build(builder: LiteralArgumentBuilder<FabricClientCommandSource>) {
         builder.executes { context ->
             context.source.sendFeedback(
-                TextUtils.rfuLiteral(
+                TextUtils.debugLiteral(
                     "Re-authenticating backend...",
                     TextStyle(TextColor.YELLOW)
                 )

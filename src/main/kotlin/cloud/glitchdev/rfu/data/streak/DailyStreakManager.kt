@@ -20,7 +20,6 @@ object DailyStreakManager {
     private var listenersActivated = false
 
     fun getTodayDateString(): String = LocalDate.now(ZoneOffset.UTC).toString()
-    fun getYesterdayDateString(): String = LocalDate.now(ZoneOffset.UTC).minusDays(1).toString()
 
     fun saveData() {
         file.save()
@@ -41,8 +40,7 @@ object DailyStreakManager {
     }
 
     private fun performDailyReset(today: String) {
-        val yesterday = getYesterdayDateString()
-        if (data.lastCompletedDate.isNotEmpty() && data.lastCompletedDate != yesterday && data.lastCompletedDate != today) {
+        if (data.currentDate.isNotEmpty() && data.currentDate != today && data.lastCompletedDate != data.currentDate) {
             data.currentStreak = 0
         }
 

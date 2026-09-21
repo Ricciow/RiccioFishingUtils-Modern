@@ -13,7 +13,7 @@ object AchievementResetAll : SimpleCommand("resetall") {
 
     override fun execute(context: CommandContext<FabricClientCommandSource>): Int {
         AchievementManager.getRegistry().values.forEach { it.debugReset() }
-        context.source.sendFeedback(TextUtils.rfuLiteral("Reset all achievements", TextStyle(TextColor.LIGHT_GREEN)))
+        context.source.sendFeedback(TextUtils.debugLiteral("Reset all achievements", TextStyle(TextColor.LIGHT_GREEN)))
         return 1
     }
 }

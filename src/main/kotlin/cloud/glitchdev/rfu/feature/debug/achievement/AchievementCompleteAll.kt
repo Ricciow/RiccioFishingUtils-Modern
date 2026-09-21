@@ -13,7 +13,7 @@ object AchievementCompleteAll : SimpleCommand("completeall") {
 
     override fun execute(context: CommandContext<FabricClientCommandSource>): Int {
         AchievementManager.getRegistry().values.forEach { it.debugComplete() }
-        context.source.sendFeedback(TextUtils.rfuLiteral("Completed all achievements", TextStyle(TextColor.LIGHT_GREEN)))
+        context.source.sendFeedback(TextUtils.debugLiteral("Completed all achievements", TextStyle(TextColor.LIGHT_GREEN)))
         return 1
     }
 }

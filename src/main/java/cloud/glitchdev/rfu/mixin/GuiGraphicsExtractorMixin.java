@@ -13,6 +13,7 @@ import org.joml.Matrix3x2fStack;
 import org.joml.Vector2i;
 import org.joml.Vector2ic;
 import org.jspecify.annotations.Nullable;
+import cloud.glitchdev.rfu.gui.window.HudWindow;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -31,6 +32,14 @@ public abstract class GuiGraphicsExtractorMixin {
     @Shadow @Final private Minecraft minecraft;
     @Shadow @Final private Matrix3x2fStack pose;
     @Shadow @Final private TextureAtlas guiSprites;
+
+    @Inject(
+        method = "<init>(Lnet/minecraft/client/Minecraft;Lorg/joml/Matrix3x2fStack;Lnet/minecraft/client/renderer/state/gui/GuiRenderState;II)V",
+        at = @At("RETURN")
+    )
+    private void rfu$onInit(CallbackInfo ci) {
+        HudWindow.INSTANCE.onFrameExtractionStart();
+    }
 
     @ModifyVariable(method = "tooltip", at = @At("HEAD"), name = "style", argsOnly = true)
     private Identifier rfu$modifyStyle(Identifier style) {

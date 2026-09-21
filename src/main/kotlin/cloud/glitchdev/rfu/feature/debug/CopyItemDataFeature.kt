@@ -56,7 +56,7 @@ object CopyItemDataFeature : Feature {
 
         if (itemStack.isEmpty) {
             Chat.sendMessage(
-                TextUtils.rfuLiteral("No item hovered or held to copy data from.", TextStyle(TextColor.LIGHT_RED))
+                TextUtils.debugLiteral("No item hovered or held to copy data from.", TextStyle(TextColor.LIGHT_RED))
             )
             return
         }
@@ -69,7 +69,7 @@ object CopyItemDataFeature : Feature {
 
         val displayName = itemStack.hoverName.toUnformattedString()
         Chat.sendMessage(
-            TextUtils.rfuLiteral("Copied item data for '$displayName' to clipboard!", TextStyle(TextColor.LIGHT_GREEN))
+            TextUtils.debugLiteral("Copied item data for '$displayName' to clipboard!", TextStyle(TextColor.LIGHT_GREEN))
         )
     }
 
@@ -79,7 +79,7 @@ object CopyItemDataFeature : Feature {
         //~}
         if (screen == null) {
             Chat.sendMessage(
-                TextUtils.rfuLiteral("No container screen open to copy data from.", TextStyle(TextColor.LIGHT_RED))
+                TextUtils.debugLiteral("No container screen open to copy data from.", TextStyle(TextColor.LIGHT_RED))
             )
             return
         }
@@ -113,7 +113,7 @@ object CopyItemDataFeature : Feature {
         mc.keyboardHandler.clipboard = jsonString
 
         Chat.sendMessage(
-            TextUtils.rfuLiteral("Copied container data ($itemCount items) for '$title' to clipboard!", TextStyle(TextColor.LIGHT_GREEN))
+            TextUtils.debugLiteral("Copied container data ($itemCount items) for '$title' to clipboard!", TextStyle(TextColor.LIGHT_GREEN))
         )
     }
 

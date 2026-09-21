@@ -21,7 +21,10 @@ public abstract class UScreenMixin {
         )
     )
     private void rfu$wrapNextFrame(AdvancedDrawContext instance, Operation<Void> original) {
-        if ((Object) this == HudWindow.INSTANCE && HudWindow.INSTANCE.getCurrentRenderPass() == HudWindow.RenderPass.INVENTORY) {
+        if ((Object) this == HudWindow.INSTANCE) {
+            if (HudWindow.INSTANCE.shouldRecycleTextures()) {
+                original.call(instance);
+            }
             return;
         }
         original.call(instance);

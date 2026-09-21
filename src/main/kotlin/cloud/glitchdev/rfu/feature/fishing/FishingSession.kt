@@ -156,6 +156,7 @@ object FishingSession : Feature {
         startFishing = Instant.DISTANT_PAST
         lastFishingEvent = Instant.DISTANT_PAST
         pausedAt = null
+        lastHotspot = null
         totalFishingXp = SkillTracker.getSkillXp(SkillType.FISHING)
 
         scTracker.reset()

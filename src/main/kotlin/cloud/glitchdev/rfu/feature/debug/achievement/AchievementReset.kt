@@ -22,12 +22,12 @@ object AchievementReset : AbstractCommand("reset") {
                         val achievement = AchievementManager.getAchievement(id)
 
                         if (achievement == null) {
-                            context.source.sendFeedback(TextUtils.rfuLiteral("Achievement not found: $id", TextStyle(TextColor.LIGHT_RED)))
+                            context.source.sendFeedback(TextUtils.debugLiteral("Achievement not found: $id", TextStyle(TextColor.LIGHT_RED)))
                             return@executes 1
                         }
 
                         achievement.debugReset()
-                        context.source.sendFeedback(TextUtils.rfuLiteral("Reset achievement: $id", TextStyle(TextColor.LIGHT_GREEN)))
+                        context.source.sendFeedback(TextUtils.debugLiteral("Reset achievement: $id", TextStyle(TextColor.LIGHT_GREEN)))
                         1
                     }
             )

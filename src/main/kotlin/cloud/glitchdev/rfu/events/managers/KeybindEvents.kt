@@ -85,6 +85,7 @@ object KeybindEvents : AbstractEventManager<() -> Unit, KeybindTask>(), Register
     }
 
     private fun dispatchInput(code: Int, action: Int, modifiers: Int): Boolean {
+        RawInputEventManager.runTasks(code, action, modifiers)
         var consumed = false
         safeExecution {
             val currentScreen = getCurrentScreen()
@@ -213,4 +214,31 @@ object KeybindEvents : AbstractEventManager<() -> Unit, KeybindTask>(), Register
 
     fun registerKeybind(builder: KeybindBuilder.() -> Unit): KeybindTask =
         KeybindBuilder().apply(builder).build().register()
+
+    fun registerRawInputEvent(
+        priority: Int = 20,
+        callback: (code: Int, action: Int, modifiers: Int) -> Unit
+    ): RawInputEventManager.RawInputEvent {
+        return RawInputEventManager.register(priority, callback)
+    }
+
+    object RawInputEventManager : AbstractEventManager<(Int, Int, Int) -> Unit, RawInputEventManager.RawInputEvent>() {
+        override val runTasks: (Int, Int, Int) -> Unit = { code, action, modifiers ->
+            safeExecution {
+                tasks.forEach { task -> task.callback(code, action, modifiers) }
+            }
+        }
+
+        fun register(priority: Int = 20, callback: (Int, Int, Int) -> Unit): RawInputEvent {
+            return RawInputEvent(priority, callback).register()
+        }
+
+        class RawInputEvent(
+            priority: Int = 20,
+            callback: (Int, Int, Int) -> Unit
+        ) : ManagedTask<(Int, Int, Int) -> Unit, RawInputEvent>(priority, callback) {
+            override fun register() = submitTask(this)
+            override fun unregister() = removeTask(this)
+        }
+    }
 }

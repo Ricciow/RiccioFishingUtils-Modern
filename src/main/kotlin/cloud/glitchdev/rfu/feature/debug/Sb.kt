@@ -158,7 +158,7 @@ object Sb : SimpleCommand("sb"), Feature {
         enabled = !enabled
 
         context.source.sendFeedback(
-            TextUtils.rfuLiteral(
+            TextUtils.debugLiteral(
                 "Skyblock Entity Inspection & Rendering: ${if (enabled) "${TextColor.LIGHT_GREEN}ENABLED" else "${TextColor.LIGHT_RED}DISABLED"}",
                 TextStyle(TextColor.YELLOW)
             )

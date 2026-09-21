@@ -1,4 +1,4 @@
-﻿package cloud.glitchdev.rfu.constants.fishing
+package cloud.glitchdev.rfu.constants.fishing
 
 import java.awt.Color
 
@@ -8,7 +8,8 @@ enum class HotspotType(val displayName: String, val buffMatch: String?, val colo
     FISHING_SPEED("Fishing Speed", "Fishing Speed", Color(85, 255, 255, 100)),
     UNKNOWN("Unknown", null, Color(255, 255, 255, 100)),
     TROPHY("Trophy Chance", "Trophy Chance", Color(255, 170, 0, 100)),
-    TREASURE("Treasure Chance", "Treasure Chance", Color(255, 255, 85, 100));
+    TREASURE("Treasure Chance", "Treasure Chance", Color(255, 255, 85, 100)),
+    SHARD("Shard Chance", "Shard", Color(255, 183, 197, 100));
 
     override fun toString(): String = displayName
 

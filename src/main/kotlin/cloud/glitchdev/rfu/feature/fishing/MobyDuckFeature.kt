@@ -1,5 +1,7 @@
 package cloud.glitchdev.rfu.feature.fishing
 
+import cloud.glitchdev.rfu.data.other.OtherManager
+import cloud.glitchdev.rfu.data.other.data.MobyDuckEntry
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerAnyChatEvent
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
@@ -9,19 +11,18 @@ import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.World
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
-import kotlin.jvm.optionals.getOrNull
 import kotlin.time.Duration
-import net.hypixel.data.type.GameType
 
 @RFUFeature
 object MobyDuckFeature : Feature {
-    private const val MOBY_DURATION = 3600L * 20
+    private const val MOBY_DURATION = 3600L * 20L
 
-    var isCollectorsEdition: Boolean = false
-        private set
-
-    var wisdomValue: String = "1"
-        private set
+    private val entry: MobyDuckEntry
+        get() = OtherManager.getField("moby_duck") { MobyDuckEntry() } as? MobyDuckEntry ?: MobyDuckEntry()
+    val isCollectorsEdition: Boolean
+        get() = entry.isCollectorsEdition
+    val wisdomValue: String
+        get() = entry.wisdomValue
 
     private var serverCountdownTask: ServerCountdownEvent? = null
 
@@ -29,7 +30,7 @@ object MobyDuckFeature : Feature {
         get() = serverCountdownTask?.remainingDuration ?: Duration.ZERO
 
     val isActive: Boolean
-        get() = serverCountdownTask != null && serverCountdownTask!!.remainingTicks > 0L && World.isInSkyblock
+        get() = (serverCountdownTask?.remainingTicks ?: entry.remainingTicks) > 0L && World.isInSkyblock
 
     private val mobyDuckRegex = """You consumed a Moby-Duck(?::\s*(Collector's Edition))?\s*and gained \+([\d.]+)[\s☯]*Fishing Wisdom for 60m!""".toExactRegex()
     private val expirationWarningRegex = """Moby-Duck expires in (\d+)s!?""".toExactRegex()
@@ -51,15 +52,20 @@ object MobyDuckFeature : Feature {
             stopTimers()
         }
 
-        registerLocationEvent { event ->
-            val serverType = event.serverType.getOrNull()
-            if (serverType != null && serverType != GameType.SKYBLOCK) {
-                stopTimers()
+        registerLocationEvent {
+            if (World.isInSkyblock) {
+                unpauseTimer()
+            } else {
+                pauseTimer()
             }
         }
 
         registerDisconnectEvent {
-            stopTimers()
+            pauseTimer()
+        }
+
+        if (World.isInSkyblock && entry.remainingTicks > 0L) {
+            unpauseTimer()
         }
     }
 
@@ -68,30 +74,72 @@ object MobyDuckFeature : Feature {
         isCollectors: Boolean = false,
         wisdom: String = "1"
     ) {
-        isCollectorsEdition = isCollectors
-        wisdomValue = wisdom
+        if (!World.isInSkyblock) return
+
+        entry.isCollectorsEdition = isCollectors
+        entry.wisdomValue = wisdom
+        entry.remainingTicks = durationTicks
+        OtherManager.file.save()
 
         serverCountdownTask?.unregister()
         serverCountdownTask = registerServerCountdownEvent(
             durationTicks = durationTicks,
             interval = 20L,
+            onTick = { task ->
+                entry.remainingTicks = task.remainingTicks
+            },
             onComplete = {
                 stopTimers()
             }
         )
     }
 
+    private fun unpauseTimer() {
+        if (!World.isInSkyblock) return
+        val task = serverCountdownTask
+        if (task != null) {
+            task.unpause()
+        } else if (entry.remainingTicks > 0L) {
+            serverCountdownTask = registerServerCountdownEvent(
+                durationTicks = entry.remainingTicks,
+                interval = 20L,
+                onTick = { task ->
+                    entry.remainingTicks = task.remainingTicks
+                },
+                onComplete = {
+                    stopTimers()
+                }
+            )
+        }
+    }
+
+    private fun pauseTimer() {
+        val task = serverCountdownTask
+        if (task != null) {
+            task.pause()
+            entry.remainingTicks = task.remainingTicks
+            OtherManager.file.save()
+        }
+    }
+
     fun resyncTimer(ticks: Long) {
+        if (!World.isInSkyblock) return
+
+        entry.remainingTicks = ticks
+        OtherManager.file.save()
         val currentTask = serverCountdownTask
         if (currentTask != null && !currentTask.isCompleted) {
             currentTask.resync(ticks)
         } else {
-            startTimer(ticks, isCollectorsEdition, wisdomValue)
+            unpauseTimer()
         }
     }
 
     fun stopTimers() {
         serverCountdownTask?.unregister()
         serverCountdownTask = null
+        entry.remainingTicks = 0L
+        entry.isCollectorsEdition = false
+        OtherManager.file.save()
     }
 }

@@ -37,7 +37,8 @@ object HotSpotSettings : Category("Hot Spots") {
         HotspotType.SEA_CREATURE,
         HotspotType.FISHING_SPEED,
         HotspotType.TROPHY,
-        HotspotType.TREASURE
+        HotspotType.TREASURE,
+        HotspotType.SHARD
     ) {
         name = Literal("Pointer Priority")
         description = Literal("Drag to reorder the priority for the hotspot pointer.")

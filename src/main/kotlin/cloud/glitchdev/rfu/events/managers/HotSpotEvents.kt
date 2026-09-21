@@ -1,4 +1,4 @@
-﻿package cloud.glitchdev.rfu.events.managers
+package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.RiccioFishingUtils
 import cloud.glitchdev.rfu.config.categories.HotSpotSettings
@@ -53,24 +53,34 @@ object HotSpotEvents : RegisteredEvent {
     override fun register() {
         HotspotCache.getCachedEntries(null)
 
-        //Rfu
-        registerGameEvent("""Party > (?:\[[A-Z]+\+*] )?([0-9a-zA-Z_]{3,16}): (.*?) Hotspot - (-?\d+), (-?\d+), (-?\d+)""".toExactRegex()) { _, _, matches ->
+        registerGameEvent("""Party > (?:\[[A-Z]+\+*] )?([0-9a-zA-Z_]{3,16}): (.*?) Hotspot (?:\||-) (-?\d+), (-?\d+), (-?\d+)""".toExactRegex()) { _, _, matches ->
             val groups = matches?.groupValues ?: return@registerGameEvent
             handleHotspotMessage(
                 sender = groups[1],
-                stat = groups[2],
+                stat = groups[2].trim(),
                 x = groups[3].toDouble(),
                 y = groups[4].toDouble(),
                 z = groups[5].toDouble()
             )
         }
 
-        //Feesh
-        registerGameEvent("""(?:\[[A-Z]+\+*] )?([0-9a-zA-Z_]{3,16}): x: (-?\d+), y: (-?\d+), z: (-?\d+) \| .\d+. (.*?) Hotspot""".toRegex()) { _, _, matches ->
+        registerGameEvent("""(?:Party > )?(?:\[[A-Z]+\+*] )?([0-9a-zA-Z_]{3,16}): x: (-?\d+), y: (-?\d+), z: (-?\d+) \| (?:(.*?) )?Hotspot(?: at [^|]+)?(?: \| @\w+)?""".toRegex()) { _, _, matches ->
+            val groups = matches?.groupValues ?: return@registerGameEvent
+            val stat = groups[5].trim().ifBlank { "Unknown" }
+            handleHotspotMessage(
+                sender = groups[1],
+                stat = stat,
+                x = groups[2].toDouble(),
+                y = groups[3].toDouble(),
+                z = groups[4].toDouble()
+            )
+        }
+
+        registerGameEvent("""(?:Party > )?(?:\[[A-Z]+\+*] )?([0-9a-zA-Z_]{3,16}): x: (-?\d+), y: (-?\d+), z: (-?\d+) \| ([^|]+) \| [a-zA-Z0-9_-]+""".toRegex()) { _, _, matches ->
             val groups = matches?.groupValues ?: return@registerGameEvent
             handleHotspotMessage(
                 sender = groups[1],
-                stat = groups[5],
+                stat = groups[5].trim(),
                 x = groups[2].toDouble(),
                 y = groups[3].toDouble(),
                 z = groups[4].toDouble()
@@ -178,6 +188,7 @@ object HotSpotEvents : RegisteredEvent {
                 if (unknownHotspot != null && unknownHotspot.center.distanceTo(pos) < 5.0) {
                     unknownHotspot.buff = name
                     HotspotCache.addMeasurement(unknownHotspot.blockPos, 0.0, unknownHotspot.liquid, name, unknownHotspot.island)
+                    HotSpotChangedEventManager.runTasks(hotspots.values.toList())
                 }
             }
         }
@@ -299,11 +310,13 @@ object HotSpotEvents : RegisteredEvent {
 
     fun getAllHotspots(): Collection<Hotspot> = hotspots.values
 
-    fun addExternalHotspot(pos: Vec3, type: HotspotType) : Boolean {
+    fun addExternalHotspot(pos: Vec3, type: HotspotType, rawBuff: String = type.displayName) : Boolean {
+        val buffName = if (rawBuff.isNotBlank() && rawBuff != "Unknown") rawBuff else type.displayName
         val existing = getHotspotAt(pos)
         if (existing != null) {
             if (existing.type == HotspotType.UNKNOWN && type != HotspotType.UNKNOWN) {
-                existing.buff = type.displayName
+                existing.buff = buffName
+                HotSpotChangedEventManager.runTasks(hotspots.values.toList())
                 return true
             } else {
                 return false
@@ -314,7 +327,7 @@ object HotSpotEvents : RegisteredEvent {
         val uuid = UUID.nameUUIDFromBytes("virtual_${blockPos}".toByteArray())
         if (hotspots.containsKey(uuid)) return false
 
-        val hotspot = Hotspot(uuid, pos, type.displayName, 0f, LiquidTypes.WATER).apply {
+        val hotspot = Hotspot(uuid, pos, buffName, 0f, LiquidTypes.WATER).apply {
             isNotified = true
             isExternal = true
         }
@@ -429,6 +442,7 @@ object HotSpotEvents : RegisteredEvent {
     fun clearHotspots() {
         hotspots.clear()
         virtualUuids.clear()
+        HotSpotChangedEventManager.runTasks(emptyList())
     }
 
     private fun handleHotspotMessage(sender: String, stat: String, x: Double, y: Double, z: Double) {
@@ -440,13 +454,14 @@ object HotSpotEvents : RegisteredEvent {
         val pos = Vec3(x, y, z)
         val type = HotspotType.fromBuff(stat)
 
-        val result = addExternalHotspot(pos, type)
+        val result = addExternalHotspot(pos, type, stat)
 
         if(FishingSession.isHotspotFishing && HotSpotSettings.hotspotPointer && result) {
+            val displayStat = if (stat.isNotBlank() && stat != "Unknown") stat else type.displayName
             Chat.sendMessage(
                 TextUtils.rfuLiteral("${TextColor.YELLOW}Received a ")
                     .append(
-                        Component.literal("${TextEffects.BOLD}${type.displayName}")
+                        Component.literal("${TextEffects.BOLD}$displayStat")
                             .withStyle(Style.EMPTY.withColor(type.color.rgb))
                     ).append(
                         " ${TextColor.YELLOW}hotspot's coordinates from ${TextColor.GOLD}$sender"

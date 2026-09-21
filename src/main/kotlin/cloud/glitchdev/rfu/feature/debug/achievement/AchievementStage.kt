@@ -26,15 +26,15 @@ object AchievementStage : AbstractCommand("setstage") {
                             val achievement = AchievementManager.getAchievement(id)
 
                             if (achievement == null) {
-                                context.source.sendFeedback(TextUtils.rfuLiteral("Achievement not found: $id", TextStyle(TextColor.LIGHT_RED)))
+                                context.source.sendFeedback(TextUtils.debugLiteral("Achievement not found: $id", TextStyle(TextColor.LIGHT_RED)))
                                 return@executes 1
                             }
 
                             if (achievement is StageAchievement) {
                                 achievement.debugSetStage(stage)
-                                context.source.sendFeedback(TextUtils.rfuLiteral("Set stage to $stage for: $id", TextStyle(TextColor.LIGHT_GREEN)))
+                                context.source.sendFeedback(TextUtils.debugLiteral("Set stage to $stage for: $id", TextStyle(TextColor.LIGHT_GREEN)))
                             } else {
-                                context.source.sendFeedback(TextUtils.rfuLiteral("Achievement is not a stage achievement: $id", TextStyle(TextColor.LIGHT_RED)))
+                                context.source.sendFeedback(TextUtils.debugLiteral("Achievement is not a stage achievement: $id", TextStyle(TextColor.LIGHT_RED)))
                             }
                             1
                         }

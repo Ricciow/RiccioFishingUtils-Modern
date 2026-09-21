@@ -13,6 +13,7 @@ import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.config.categories.BackendSettings
 import cloud.glitchdev.rfu.utils.World
+import cloud.glitchdev.rfu.events.managers.AfkEvents.registerAfkStatusChangedEvent
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
@@ -64,6 +65,18 @@ object Network : RegisteredEvent {
         registerLocationEvent {
             if (!World.isOnHypixel) {
                 WebSocketClient.disconnect()
+            }
+        }
+
+        registerAfkStatusChangedEvent { isAfk ->
+            if (isAfk) {
+                if (WebSocketClient.isConnected) {
+                    WebSocketClient.disconnect("AFK")
+                }
+            } else {
+                if (!WebSocketClient.isConnected) {
+                    authenticateUser()
+                }
             }
         }
     }
@@ -286,7 +299,7 @@ object Network : RegisteredEvent {
 
         val privacyPolicy = Component.literal(" ${YELLOW}${BOLD}[PRIVACY POLICY]")
             .withStyle {
-                it.withClickEvent(ClickEvent.OpenUrl(URI.create("https://rfu.glitchdev.cloud/privacy")))
+                it.withClickEvent(ClickEvent.OpenUrl(URI.create("https://rfu.ricciow.dev/privacy")))
                     .withHoverEvent(HoverEvent.ShowText(Component.literal("${YELLOW}Open Privacy Policy")))
             }
 

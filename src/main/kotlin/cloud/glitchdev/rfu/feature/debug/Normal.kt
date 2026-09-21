@@ -220,7 +220,7 @@ object Normal : Feature, AbstractCommand("normal") {
         }
         val rangeMsg = if (range != null) " §7(range: ${range}m)" else ""
         context.source.sendFeedback(
-            TextUtils.rfuLiteral(
+            TextUtils.debugLiteral(
                 "Entity rendering on alive entities$rangeMsg: ${if (renderAll) "§aENABLED" else "§cDISABLED"}",
                 TextStyle(TextColor.YELLOW)
             )
@@ -237,7 +237,7 @@ object Normal : Feature, AbstractCommand("normal") {
         }
         val rangeMsg = if (range != null) " §7(range: ${range}m)" else ""
         context.source.sendFeedback(
-            TextUtils.rfuLiteral(
+            TextUtils.debugLiteral(
                 "Entity rendering on alive entities$rangeMsg: ${if (renderAll) "§aENABLED" else "§cDISABLED"}",
                 TextStyle(TextColor.YELLOW)
             )
@@ -257,7 +257,7 @@ object Normal : Feature, AbstractCommand("normal") {
             range = null
             renderAll = render
             context.source.sendFeedback(
-                TextUtils.rfuLiteral(
+                TextUtils.debugLiteral(
                     "Entity rendering range limit §cCLEARED §e(rendering on alive entities: ${if (renderAll) "§aENABLED" else "§cDISABLED"}§e)",
                     TextStyle(TextColor.YELLOW)
                 )
@@ -267,7 +267,7 @@ object Normal : Feature, AbstractCommand("normal") {
             renderAll = render
             targetId = null
             context.source.sendFeedback(
-                TextUtils.rfuLiteral(
+                TextUtils.debugLiteral(
                     "Entity rendering range set to ${r}m: ${if (renderAll) "§aENABLED" else "§cDISABLED"}",
                     TextStyle(TextColor.YELLOW)
                 )
@@ -279,7 +279,7 @@ object Normal : Feature, AbstractCommand("normal") {
     fun executeClearRange(context: CommandContext<FabricClientCommandSource>): Int {
         range = null
         context.source.sendFeedback(
-            TextUtils.rfuLiteral(
+            TextUtils.debugLiteral(
                 "Entity rendering range limit §cCLEARED §e(rendering: ${if (renderAll) "§aENABLED" else "§cDISABLED"}§e)",
                 TextStyle(TextColor.YELLOW)
             )
@@ -291,7 +291,7 @@ object Normal : Feature, AbstractCommand("normal") {
         val rangeStr = if (range != null) "§a${range}m" else "§cNone (infinite)"
         val statusStr = if (renderAll) "§aENABLED" else "§cDISABLED"
         context.source.sendFeedback(
-            TextUtils.rfuLiteral(
+            TextUtils.debugLiteral(
                 "Entity rendering status: $statusStr §e| Range: $rangeStr",
                 TextStyle(TextColor.YELLOW)
             )
@@ -304,7 +304,7 @@ object Normal : Feature, AbstractCommand("normal") {
         if (targetId == id) {
             targetId = null
             context.source.sendFeedback(
-                TextUtils.rfuLiteral(
+                TextUtils.debugLiteral(
                     "Entity rendering on entity ID $id: §cDISABLED",
                     TextStyle(TextColor.YELLOW)
                 )
@@ -314,7 +314,7 @@ object Normal : Feature, AbstractCommand("normal") {
             renderAll = false
             filter = null
             context.source.sendFeedback(
-                TextUtils.rfuLiteral(
+                TextUtils.debugLiteral(
                     "Entity rendering on entity ID $id: §aENABLED",
                     TextStyle(TextColor.YELLOW)
                 )
@@ -331,7 +331,7 @@ object Normal : Feature, AbstractCommand("normal") {
             renderAll = false
             filter = null
             context.source.sendFeedback(
-                TextUtils.rfuLiteral(
+                TextUtils.debugLiteral(
                     "Entity rendering on entity ID $id: §aENABLED",
                     TextStyle(TextColor.YELLOW)
                 )
@@ -341,7 +341,7 @@ object Normal : Feature, AbstractCommand("normal") {
                 targetId = null
             }
             context.source.sendFeedback(
-                TextUtils.rfuLiteral(
+                TextUtils.debugLiteral(
                     "Entity rendering on entity ID $id: §cDISABLED",
                     TextStyle(TextColor.YELLOW)
                 )
@@ -359,7 +359,7 @@ object Normal : Feature, AbstractCommand("normal") {
             targetId = null
             val rangeMsg = if (range != null) " §7(range: ${range}m)" else ""
             context.source.sendFeedback(
-                TextUtils.rfuLiteral(
+                TextUtils.debugLiteral(
                     "Entity rendering on type matching '$f'$rangeMsg: §aENABLED",
                     TextStyle(TextColor.YELLOW)
                 )
@@ -370,7 +370,7 @@ object Normal : Feature, AbstractCommand("normal") {
                 renderAll = false
             }
             context.source.sendFeedback(
-                TextUtils.rfuLiteral(
+                TextUtils.debugLiteral(
                     "Entity rendering on type matching '$f': §cDISABLED",
                     TextStyle(TextColor.YELLOW)
                 )

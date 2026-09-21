@@ -21,12 +21,12 @@ object AchievementComplete : AbstractCommand("complete") {
                     val achievement = AchievementManager.getAchievement(id)
 
                     if (achievement == null) {
-                        context.source.sendFeedback(TextUtils.rfuLiteral("Achievement not found: $id", TextStyle(TextColor.LIGHT_RED)))
+                        context.source.sendFeedback(TextUtils.debugLiteral("Achievement not found: $id", TextStyle(TextColor.LIGHT_RED)))
                         return@executes 1
                     }
 
                     achievement.debugComplete()
-                    context.source.sendFeedback(TextUtils.rfuLiteral("Completed achievement: $id", TextStyle(TextColor.LIGHT_GREEN)))
+                    context.source.sendFeedback(TextUtils.debugLiteral("Completed achievement: $id", TextStyle(TextColor.LIGHT_GREEN)))
                     1
                 }
         )
