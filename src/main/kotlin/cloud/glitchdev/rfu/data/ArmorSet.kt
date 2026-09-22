@@ -40,6 +40,12 @@ data class ArmorSet(
         }
     }
 
+    val isWearingTikiMask: Boolean by lazy {
+        if (head.isEmpty) return@lazy false
+        val headName = (head.customName ?: head.hoverName).toUnformattedString()
+        headName.contains("Tiki Mask", ignoreCase = true)
+    }
+
     val hasBobbinTimeArmor: Boolean by lazy { bobbinTimeRate > 0.0 }
 
     val bobbinTimeRate: Double by lazy {

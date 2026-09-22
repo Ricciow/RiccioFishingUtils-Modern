@@ -52,6 +52,11 @@ object HotSpotSettings : Category("Hot Spots") {
         }
     }
 
+    var noTikiMaskAlert by boolean(true) {
+        name = Literal("No Tiki Mask Alert")
+        description = Literal("Sends an alert when you are fishing in a hotspot without a Tiki Mask!")
+    }
+
     var hotspotExpiredAlert by boolean(true) {
         name = Literal("Hotspot Expired Alert")
         description = Literal("Sends an alert when the hotspot you're fishing in expires!")

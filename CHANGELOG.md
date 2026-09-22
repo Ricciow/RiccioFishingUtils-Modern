@@ -9,6 +9,7 @@
 - Added Remove Nether Fog setting (disabled by default)
 - Added /kaboom command to send :kaboom: in party chat and leave the party
 - Added Bait Count setting to replace the number on the 9th slot stack size
+- Added No Tiki Mask Alert when fishing on a hotspot without a Tiki Mask
 
 ### Changes
 - Revoked previous backend acceptance to display privacy policy
