@@ -32,5 +32,6 @@
 
 ### Back-end
 - Added 26.3 support
+- Updated build dependencies
 - Reworked entity system to accept more model entities
 - Automatically disconnect from the RFU Back-end when AFK

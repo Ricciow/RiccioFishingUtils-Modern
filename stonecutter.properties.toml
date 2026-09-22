@@ -1,7 +1,7 @@
 #Defined in gradle.properties
-#loom_version = "1.15-SNAPSHOT"
-#kotlin_version = "2.3.20"
-#ksp_version = "2.3.6"
+#loom_version = "1.18.2"
+#kotlin_version = "2.4.20"
+#ksp_version = "2.3.12"
 
 #RFU
 mod.version = "1.19.0"
@@ -33,7 +33,7 @@ mod.mc_dep = ">=26.1 <26.2"
 universalcraft_mc_version = "26.1"
 #ResourcefulConfig
 resourceful_mc_version = "26.1"
-resourceful_version = "4.0.0"
+resourceful_version = "4.0.1"
 resourcefulkt_mc_version = "26.1"
 resourcefulkt_version = "4.0.0"
 #Hypixel Mod API
@@ -65,8 +65,8 @@ modrinth.hypixel_version = "1.0.2+build.1+mc26.1"
 
 ["26.3"]
 #Fabric
-deps.fabric_api = "0.160.7+26.3"
-modrinth.fapi_version = "0.160.7+26.3"
+deps.fabric_api = "0.161.0+26.3"
+modrinth.fapi_version = "0.161.0+26.3"
 #Minecraft
 mod.mc_dep = ">=26.3 <26.4"
 #Essential

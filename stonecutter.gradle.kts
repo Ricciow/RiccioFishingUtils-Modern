@@ -1,5 +1,6 @@
 plugins {
     id("dev.kikugie.stonecutter")
+    kotlin("jvm") apply false
 }
 
 fun getProp(p: Project, name: String): String {
