@@ -15,6 +15,7 @@
 - Made inventory HUD elements be floating when the inventory is open
 - Made daily streaks only reset if you logged in on a day and failed to complete it, preserving streaks across skipped days
 - Updated hotspot share messages to include stat counts and shard names
+- Updated Slugfish Timer to be server tick based
 
 ### Fixes
 - Fixed sea creature glow only displaying one entity and invisible entities sometimes

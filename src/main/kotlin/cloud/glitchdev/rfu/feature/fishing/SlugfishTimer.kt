@@ -5,6 +5,7 @@ import cloud.glitchdev.rfu.config.categories.TrophyFishing
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.events.managers.PetEvents.registerPetUpdateEvent
 import cloud.glitchdev.rfu.events.managers.RenderEvents.registerRenderEvent
+import cloud.glitchdev.rfu.events.managers.ServerTickEvents
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
@@ -12,15 +13,14 @@ import cloud.glitchdev.rfu.utils.dsl.isWearingTrophyHunterArmor
 import cloud.glitchdev.rfu.utils.dsl.toReadableString
 import cloud.glitchdev.rfu.utils.rendering.Render3D
 import cloud.glitchdev.rfu.utils.rendering.Render3DBuilder.Companion.text
-import kotlin.time.Clock
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.Instant
 
 @RFUFeature
 object SlugfishTimer : Feature {
     private var slugPetReduction = 1.0
     private const val SLUG_PET_INCREMENT = 49.0/99
-    private var startTime : Instant = Instant.DISTANT_PAST
+    private var startServerTick = 0L
     private var isTrophyFishing = false
     private var wasFishing = false
 
@@ -44,7 +44,7 @@ object SlugfishTimer : Feature {
             if (!isTrophyFishing) return@registerTickEvent
             if (mc.player?.fishing != null) {
                 if(wasFishing) return@registerTickEvent
-                startTime = Clock.System.now()
+                startServerTick = ServerTickEvents.currentServerTick
                 wasFishing = true
             } else {
                 wasFishing = false
@@ -56,9 +56,10 @@ object SlugfishTimer : Feature {
             if(!TrophyFishing.slugfishTimer) return@registerRenderEvent
             if(!isTrophyFishing) return@registerRenderEvent
             val bobber = mc.player?.fishing ?: return@registerRenderEvent
-            val duration = Clock.System.now() - startTime
+            val elapsedTicks = (ServerTickEvents.currentServerTick - startServerTick).coerceAtLeast(0L)
+            val duration = (elapsedTicks * 50L).milliseconds
             Render3D.draw(renderContext) {
-                val color = if(duration <= 20.seconds * slugPetReduction) {
+                val color = if(duration < 20.seconds * slugPetReduction) {
                     TextColor.LIGHT_RED
                 } else {
                     TextColor.LIGHT_GREEN
