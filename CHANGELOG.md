@@ -8,6 +8,7 @@
 - Added :aquamarine: :carmine: :midnight: and :treasure: emojis
 - Added Remove Nether Fog setting (disabled by default)
 - Added /kaboom command to send :kaboom: in party chat and leave the party
+- Added Bait Count setting to replace the number on the 9th slot stack size
 
 ### Changes
 - Revoked previous backend acceptance to display privacy policy

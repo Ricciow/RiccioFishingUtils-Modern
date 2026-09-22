@@ -26,6 +26,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
+import net.minecraft.world.item.ItemStack;
+import cloud.glitchdev.rfu.utils.fishing.BaitUtils;
+import cloud.glitchdev.rfu.utils.ResourcePackUtils;
 
 @Mixin(GuiGraphicsExtractor.class)
 public abstract class GuiGraphicsExtractorMixin {
@@ -41,9 +44,23 @@ public abstract class GuiGraphicsExtractorMixin {
         HudWindow.INSTANCE.onFrameExtractionStart();
     }
 
+    @ModifyVariable(
+        method = "itemDecorations(Lnet/minecraft/client/gui/Font;Lnet/minecraft/world/item/ItemStack;IILjava/lang/String;)V",
+        at = @At("HEAD"),
+        name = "countText",
+        argsOnly = true
+    )
+    private String rfu$modifyItemCountText(String countText, Font font, ItemStack itemStack) {
+        String customCount = BaitUtils.getCustomBaitCountText(itemStack);
+        if (customCount != null) {
+            return customCount;
+        }
+        return countText;
+    }
+
     @ModifyVariable(method = "tooltip", at = @At("HEAD"), name = "style", argsOnly = true)
     private Identifier rfu$modifyStyle(Identifier style) {
-        if (style != null && this.guiSprites != null && !cloud.glitchdev.rfu.utils.ResourcePackUtils.isHypixelPackActive()) {
+        if (style != null && this.guiSprites != null && !ResourcePackUtils.isHypixelPackActive()) {
             Identifier bgSprite = style.withPath(path -> "tooltip/" + path + "_background");
             if (this.guiSprites.getSprite(bgSprite) == this.guiSprites.missingSprite()) {
                 return null;

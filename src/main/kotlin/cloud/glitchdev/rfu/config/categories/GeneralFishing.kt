@@ -234,4 +234,9 @@ object GeneralFishing : Category("General Fishing") {
         name = Literal("Moby-Duck Timer Display")
         description = Literal("Display the Moby-Duck Fishing Wisdom buff timer on screen.")
     }
+
+    var showActualBaitCount by boolean(true) {
+        name = Literal("Show Actual Bait Count")
+        description = Literal("Replaces the stack size in the 9th hotbar slot with the actual remaining bait count.")
+    }
 }
