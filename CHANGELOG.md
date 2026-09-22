@@ -7,6 +7,7 @@
 - Added Shard Hotspots support
 - Added :aquamarine: :carmine: :midnight: and :treasure: emojis
 - Added Remove Nether Fog setting (disabled by default)
+- Added /kaboom command to send :kaboom: in party chat and leave the party
 
 ### Changes
 - Revoked previous backend acceptance to display privacy policy
