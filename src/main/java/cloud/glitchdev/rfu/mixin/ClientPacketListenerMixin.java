@@ -51,6 +51,12 @@ public class ClientPacketListenerMixin {
         SetSlotEvents.INSTANCE.getRunTasks().invoke(packet.getContainerId(), packet.getSlot(), packet.getItem());
     }
 
+    @Inject(method = "handleParticleEvent", at = @At("HEAD"), cancellable = true)
+    private void handleLevelParticles(ClientboundLevelParticlesPacket packet, CallbackInfo ci) {
+        VoidCancelable cancelable = new VoidCancelable(ci);
+        ParticleEvents.ParticleRenderEvents.INSTANCE.getRunTasks().invoke(packet, cancelable);
+    }
+
     @Inject(method = "handleEntityEvent", at = @At("TAIL"))
     private void onEntityEvent(ClientboundEntityEventPacket packet, CallbackInfo ci) {
         Entity entity = packet.getEntity(this.level);

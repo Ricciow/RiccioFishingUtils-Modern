@@ -12,6 +12,7 @@ import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ParticleEvents.registerParticleEvent
+import cloud.glitchdev.rfu.events.managers.ParticleEvents.ParticleRenderEvents.registerParticleRenderEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.events.managers.EntityRenderEvents.registerEntityRenderEvent
 import cloud.glitchdev.rfu.utils.World
@@ -35,6 +36,7 @@ import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.DustParticleOptions
 import net.minecraft.core.particles.ParticleTypes
+import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket
 import net.minecraft.tags.FluidTags
 import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.phys.AABB
@@ -49,6 +51,11 @@ import kotlin.math.sqrt
 object HotSpotEvents : RegisteredEvent {
     private val hotspots = ConcurrentHashMap<UUID, Hotspot>()
     private val virtualUuids = mutableSetOf<UUID>()
+
+    private data class HotspotParticle(
+        val pos: Vec3,
+        val isSmoke: Boolean
+    )
 
     override fun register() {
         HotspotCache.getCachedEntries(null)
@@ -193,41 +200,19 @@ object HotSpotEvents : RegisteredEvent {
             }
         }
 
-        registerParticleEvent { packet, cancelable ->
-            val particleOptions = packet.particle
-            val particleType = particleOptions.type
-            val isDust = particleType == ParticleTypes.DUST
-            val isSmoke = particleType == ParticleTypes.SMOKE
+        registerParticleEvent { packet ->
+            val particle = getHotspotParticle(packet) ?: return@registerParticleEvent
+            val pos = particle.pos
+            var closestHotspot = findClosestHotspot(particle)
 
-            if (!isDust && !isSmoke) return@registerParticleEvent
-
-            if (isDust && particleOptions is DustParticleOptions) {
-                val colorVec = particleOptions.color
-
-                val red = (colorVec.x * 255).toInt()
-                val green = (colorVec.y * 255).toInt()
-                val blue = (colorVec.z * 255).toInt()
-
-                if(red != HotSpotConstants.PARTICLE_RED || green != HotSpotConstants.PARTICLE_GREEN || blue != HotSpotConstants.PARTICLE_BLUE) return@registerParticleEvent
-            }
-
-            val pos = Vec3(packet.x, packet.y, packet.z)
-
-            var closestHotspot = hotspots.values
-                .filter { hotspot ->
-                    if (isSmoke) hotspot.liquid == LiquidTypes.LAVA
-                    else hotspot.liquid == LiquidTypes.WATER
-                }
-                .minByOrNull { it.center.distanceTo(pos) }
-
-            if (closestHotspot == null || abs(pos.y - closestHotspot.center.y) > HotSpotConstants.PARTICLE_MAX_VERTICAL_DISTANCE || pos.horizontalDistance(closestHotspot.center) > HotSpotConstants.PARTICLE_MAX_HORIZONTAL_DISTANCE) {
+            if (closestHotspot == null || !isParticleNearHotspot(pos, closestHotspot)) {
                 val playerPos = RiccioFishingUtils.mc.player?.position() ?: return@registerParticleEvent
                 val cachedEntry = HotspotCache.getCachedEntries(World.island).find { (blockPos, data) ->
                     val center = Vec3(blockPos.x + 0.5, blockPos.y.toDouble(), blockPos.z + 0.5)
 
                     if (playerPos.distanceTo(center) < HotSpotConstants.RANGE_DISPOSE_DISTANCE) return@find false
 
-                    val liquidMatches = if (isSmoke) data.liquid == LiquidTypes.LAVA else data.liquid == LiquidTypes.WATER
+                    val liquidMatches = if (particle.isSmoke) data.liquid == LiquidTypes.LAVA else data.liquid == LiquidTypes.WATER
                     liquidMatches && abs(pos.y - center.y) <= HotSpotConstants.PARTICLE_MAX_VERTICAL_DISTANCE && pos.horizontalDistance(center) <= HotSpotConstants.PARTICLE_MAX_HORIZONTAL_DISTANCE
                 }
 
@@ -247,7 +232,7 @@ object HotSpotEvents : RegisteredEvent {
             }
 
             if (closestHotspot == null) return@registerParticleEvent
-            if (abs(pos.y - closestHotspot.center.y) > HotSpotConstants.PARTICLE_MAX_VERTICAL_DISTANCE) return@registerParticleEvent
+            if (!isParticleNearHotspot(pos, closestHotspot)) return@registerParticleEvent
 
             val horizontalDistance = pos.horizontalDistance(closestHotspot.center)
 
@@ -270,11 +255,21 @@ object HotSpotEvents : RegisteredEvent {
                     }
                 }
 
-                if (closestHotspot.radius > 0 && HotSpotSettings.highlightHotSpots) {
-                    if (abs(horizontalDistance - closestHotspot.radius) <= HotSpotConstants.RADIUS_CANCELLATION_TOLERANCE) {
-                        cancelable.cancel()
-                    }
-                }
+            }
+        }
+
+        registerParticleRenderEvent { packet, cancelable ->
+            if (!HotSpotSettings.highlightHotSpots) return@registerParticleRenderEvent
+
+            val particle = getHotspotParticle(packet) ?: return@registerParticleRenderEvent
+            val closestHotspot = findClosestHotspot(particle) ?: return@registerParticleRenderEvent
+            if (!isParticleNearHotspot(particle.pos, closestHotspot)) return@registerParticleRenderEvent
+
+            val horizontalDistance = particle.pos.horizontalDistance(closestHotspot.center)
+            if (closestHotspot.radius > 0 &&
+                abs(horizontalDistance - closestHotspot.radius) <= HotSpotConstants.RADIUS_CANCELLATION_TOLERANCE
+            ) {
+                cancelable.cancel()
             }
         }
 
@@ -413,6 +408,45 @@ object HotSpotEvents : RegisteredEvent {
             }
         }
         return ""
+    }
+
+    private fun getHotspotParticle(packet: ClientboundLevelParticlesPacket): HotspotParticle? {
+        val particleOptions = packet.particle
+        val particleType = particleOptions.type
+        val isDust = particleType == ParticleTypes.DUST
+        val isSmoke = particleType == ParticleTypes.SMOKE
+
+        if (!isDust && !isSmoke) return null
+
+        if (isDust && particleOptions is DustParticleOptions) {
+            val color = particleOptions.color
+            val red = (color.x * 255).toInt()
+            val green = (color.y * 255).toInt()
+            val blue = (color.z * 255).toInt()
+
+            if (red != HotSpotConstants.PARTICLE_RED ||
+                green != HotSpotConstants.PARTICLE_GREEN ||
+                blue != HotSpotConstants.PARTICLE_BLUE
+            ) {
+                return null
+            }
+        }
+
+        return HotspotParticle(Vec3(packet.x, packet.y, packet.z), isSmoke)
+    }
+
+    private fun findClosestHotspot(particle: HotspotParticle): Hotspot? {
+        return hotspots.values
+            .filter { hotspot ->
+                if (particle.isSmoke) hotspot.liquid == LiquidTypes.LAVA
+                else hotspot.liquid == LiquidTypes.WATER
+            }
+            .minByOrNull { it.center.distanceTo(particle.pos) }
+    }
+
+    private fun isParticleNearHotspot(pos: Vec3, hotspot: Hotspot): Boolean {
+        return abs(pos.y - hotspot.center.y) <= HotSpotConstants.PARTICLE_MAX_VERTICAL_DISTANCE &&
+            pos.horizontalDistance(hotspot.center) < HotSpotConstants.PARTICLE_MAX_HORIZONTAL_DISTANCE
     }
 
     private fun getLiquidType(pos: Vec3, world: ClientLevel): LiquidTypes {

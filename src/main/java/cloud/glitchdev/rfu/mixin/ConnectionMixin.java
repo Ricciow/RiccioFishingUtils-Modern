@@ -34,18 +34,15 @@ public abstract class ConnectionMixin {
 
     @Inject(
         method = "channelRead0(Lio/netty/channel/ChannelHandlerContext;Lnet/minecraft/network/protocol/Packet;)V",
-        at = @At("HEAD"),
-        cancellable = true
+        at = @At("HEAD")
     )
     private void onReceivePacket(ChannelHandlerContext ctx, Packet<?> packet, CallbackInfo ci) {
         if (packet instanceof ClientboundLevelParticlesPacket particlesPacket) {
-            VoidCancelable cancelable = new VoidCancelable(ci);
-            ParticleEvents.INSTANCE.getRunTasks().invoke(particlesPacket, cancelable);
+            ParticleEvents.INSTANCE.processPacket(particlesPacket);
         } else if (packet instanceof ClientboundBundlePacket bundlePacket) {
             for (Packet<?> subPacket : bundlePacket.subPackets()) {
                 if (subPacket instanceof ClientboundLevelParticlesPacket particlesPacket) {
-                    VoidCancelable cancelable = new VoidCancelable(ci);
-                    ParticleEvents.INSTANCE.getRunTasks().invoke(particlesPacket, cancelable);
+                    ParticleEvents.INSTANCE.processPacket(particlesPacket);
                 }
             }
         }
