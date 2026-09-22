@@ -66,6 +66,11 @@ object OtherSettings : Category("Other") {
         description = Literal("The GUI scale for tooltips.")
     }
 
+    var removeNetherFog by boolean(false) {
+        name = Literal("Remove Nether Fog")
+        description = Literal("Removes the nether fog")
+    }
+
     init {
         dualSeparator {
             title = "Emojis"

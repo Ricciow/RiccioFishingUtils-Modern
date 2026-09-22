@@ -38,6 +38,9 @@ import cloud.glitchdev.rfu.config.categories.OtherSettings
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import java.awt.Color
+//? if >= 26.3 {
+import gg.essential.universal.UScreen
+//?}
 
 object HudWindow : BaseWindow(false) {
     val backgroundColor = UIScheme.darkBackground.toConstraint()
@@ -85,9 +88,26 @@ object HudWindow : BaseWindow(false) {
         private set
 
     private var hasRecycledTexturesThisFrame = false
+    //? if >= 26.3 {
+    private var multiPassRenderer: HudMultiPassRenderer? = null
+
+    override fun uCreateRenderer(): UScreen.Renderer {
+        val renderer = HudMultiPassRenderer()
+        multiPassRenderer = renderer
+        return renderer
+    }
+
+    override fun uExtractRenderState(mouseX: Int, mouseY: Int, partialTicks: Float): UScreen.RenderState {
+        window.prepareFrame()
+        return HudMultiPassRenderState(window.extractRenderState())
+    }
+    //?}
 
     fun onFrameExtractionStart() {
         hasRecycledTexturesThisFrame = false
+        //? if >= 26.3 {
+        multiPassRenderer?.onFrameStart()
+        //?}
     }
 
     fun shouldRecycleTextures(): Boolean {

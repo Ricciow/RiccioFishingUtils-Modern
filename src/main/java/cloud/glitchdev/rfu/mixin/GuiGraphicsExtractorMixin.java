@@ -186,6 +186,9 @@ public abstract class GuiGraphicsExtractorMixin {
             int yo,
             ClientTooltipPositioner positioner,
             @Nullable Identifier style,
+            //? if >=26.3 {
+            boolean extraSpaceAfterFirstLine,
+            //?}
             CallbackInfo ci
     ) {
         if (rfu$isCustomScaleActive()) {

@@ -39,7 +39,9 @@ public class ClientPacketListenerMixin {
 
     @Inject(method = "handleRemoveEntities", at = @At("HEAD"))
     private void onEntitiesRemoved(ClientboundRemoveEntitiesPacket packet, CallbackInfo ci) {
-        for (int entityId : packet.getEntityIds()) {
+        //~ if >=26.3 'getEntityIds' -> 'entityIds' {
+        for (int entityId : packet.entityIds()) {
+        //~}
             EntityRemovedEvents.INSTANCE.getRunTasks().invoke(entityId);
         }
     }

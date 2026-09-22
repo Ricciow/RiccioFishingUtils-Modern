@@ -1,6 +1,8 @@
 package cloud.glitchdev.rfu.events.keybind
 
-import cloud.glitchdev.rfu.RiccioFishingUtils.mc
+//? if <26.3 {
+/*import cloud.glitchdev.rfu.RiccioFishingUtils.mc
+*///?}
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.managers.KeybindEvents
 import cloud.glitchdev.rfu.utils.dsl.toInputKey
@@ -14,36 +16,44 @@ enum class KeyContext {
 }
 
 enum class KeyModifier(val mask: Int) {
-    SHIFT(1),
-    CONTROL(2),
-    ALT(4),
-    SUPER(8);
+    SHIFT(InputConstants.MOD_SHIFT),
+    CONTROL(InputConstants.MOD_CONTROL),
+    ALT(InputConstants.MOD_ALT),
+    SUPER(InputConstants.MOD_SUPER);
 
     companion object {
         fun fromModifiers(mods: Int): Set<KeyModifier> {
             val set = hashSetOf<KeyModifier>()
-            if ((mods and 1) != 0) set.add(SHIFT)
-            if ((mods and 2) != 0) set.add(CONTROL)
-            if ((mods and 4) != 0) set.add(ALT)
-            if ((mods and 8) != 0) set.add(SUPER)
+            if ((mods and InputConstants.MOD_SHIFT) != 0) set.add(SHIFT)
+            if ((mods and InputConstants.MOD_CONTROL) != 0) set.add(CONTROL)
+            if ((mods and InputConstants.MOD_ALT) != 0) set.add(ALT)
+            if ((mods and InputConstants.MOD_SUPER) != 0) set.add(SUPER)
             return set
         }
 
         fun getCurrentModifiers(): Set<KeyModifier> {
-            val window = mc.window
+            //? if <26.3 {
+            /*val window = mc.window
+            *///?}
             val set = hashSetOf<KeyModifier>()
-            if (InputConstants.isKeyDown(window, 340) || InputConstants.isKeyDown(window, 344)) {
+            //~ if <26.3 'isKeyDown(' -> 'isKeyDown(window, ' {
+            if (InputConstants.isKeyDown(InputConstants.KEY_LSHIFT) || InputConstants.isKeyDown(InputConstants.KEY_RSHIFT)) {
                 set.add(SHIFT)
             }
-            if (InputConstants.isKeyDown(window, 341) || InputConstants.isKeyDown(window, 345)) {
+            if (InputConstants.isKeyDown(InputConstants.KEY_LCONTROL) || InputConstants.isKeyDown(InputConstants.KEY_RCONTROL)) {
                 set.add(CONTROL)
             }
-            if (InputConstants.isKeyDown(window, 342) || InputConstants.isKeyDown(window, 346)) {
+            if (InputConstants.isKeyDown(InputConstants.KEY_LALT) || InputConstants.isKeyDown(InputConstants.KEY_RALT)) {
                 set.add(ALT)
             }
-            if (InputConstants.isKeyDown(window, 343) || InputConstants.isKeyDown(window, 347)) {
+            //~ if <26.3 'KEY_LGUI' -> 'KEY_LSUPER' {
+            //~ if <26.3 'KEY_RGUI' -> 'KEY_RSUPER' {
+            if (InputConstants.isKeyDown(InputConstants.KEY_LGUI) || InputConstants.isKeyDown(InputConstants.KEY_RGUI)) {
                 set.add(SUPER)
             }
+            //~}
+            //~}
+            //~}
             return set
         }
     }

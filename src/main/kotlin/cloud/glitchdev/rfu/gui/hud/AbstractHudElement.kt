@@ -22,8 +22,12 @@ import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.plus
 import gg.essential.elementa.dsl.toConstraint
+//? if >= 26.3 {
+import gg.essential.elementa.renderer.ElementaExtractor
+//?} else {
+/*import gg.essential.universal.UMatrixStack
+*///?}
 import gg.essential.universal.UKeyboard
-import gg.essential.universal.UMatrixStack
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.round
@@ -83,6 +87,10 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
     } childOf this
 
     init {
+        //? if >= 26.3 {
+        this.enableEffect(HudRenderPassEffect(this))
+        //?}
+
         this.constrain {
             x = defaultX.pixels()
             y = defaultY.pixels()
@@ -400,7 +408,7 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
     open fun onOpenEdit() {}
     open fun onCloseEdit() {}
 
-    protected open fun shouldDrawInCurrentPass(): Boolean {
+    open fun shouldDrawInCurrentPass(): Boolean {
         if (HudWindow.isEditingOpen) {
             return isEditing && when (HudWindow.currentEditTarget) {
                 HudWindow.EditTarget.HUD -> renderOnHud
@@ -416,10 +424,17 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
         }
     }
 
-    override fun draw(matrixStack: UMatrixStack) {
+    //? if >=26.3 {
+    override fun extractComponent(extractor: ElementaExtractor) {
+        if (!shouldDrawInCurrentPass()) return
+        super.extractComponent(extractor)
+    }
+    //?} else {
+    /*override fun draw(matrixStack: UMatrixStack) {
         if (!shouldDrawInCurrentPass()) return
         super.draw(matrixStack)
     }
+    *///?}
 
     companion object {
         private const val MAX_SNAP_ORTHOGONAL_DISTANCE = 300f

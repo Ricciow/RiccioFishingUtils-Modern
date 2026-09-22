@@ -13,13 +13,16 @@ import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.animate
 import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
+import gg.essential.elementa.dsl.max
 import gg.essential.elementa.dsl.minus
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
-import gg.essential.elementa.dsl.times
 import gg.essential.elementa.dsl.toConstraint
-import gg.essential.universal.UMatrixStack
-import java.awt.Color
+//? if <26.3 {
+/*import gg.essential.universal.UMatrixStack
+*///? } else {
+import gg.essential.elementa.renderer.ElementaExtractor
+//? }
 
 /**
  * Simple Button Component
@@ -78,8 +81,8 @@ class UIButton(
             innerBg = UIRoundedRectangle(radiusProps).constrain {
                 x = CenterConstraint()
                 y = CenterConstraint()
-                width = 100.percent - (borderWidth * 2).pixels
-                height = 100.percent - (borderWidth * 2).pixels
+                width = max(0.pixels, 100.percent - (borderWidth * 2).pixels)
+                height = max(0.pixels, 100.percent - (borderWidth * 2).pixels)
                 color = innerColor
             } childOf this
             innerBg
@@ -185,7 +188,19 @@ class UIButton(
 
     }
 
-    override fun draw(matrixStack: UMatrixStack) {
+    //? if >= 26.3 {
+    override fun extractComponent(extractor: ElementaExtractor) {
+        val currentWidth = this.getWidth()
+        val currentHeight = this.getHeight()
+        if (currentWidth != lastWidth || currentHeight != lastHeight) {
+            lastWidth = currentWidth
+            lastHeight = currentHeight
+            updateFontSize()
+        }
+        super.extractComponent(extractor)
+    }
+    //? } else {
+    /*override fun draw(matrixStack: UMatrixStack) {
         val currentWidth = this.getWidth()
         val currentHeight = this.getHeight()
         if (currentWidth != lastWidth || currentHeight != lastHeight) {
@@ -195,6 +210,7 @@ class UIButton(
         }
         super.draw(matrixStack)
     }
+    *///? }
 
     private fun updateFontSize() {
         if (!::textArea.isInitialized) return

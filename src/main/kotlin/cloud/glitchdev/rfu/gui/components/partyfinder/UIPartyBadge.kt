@@ -26,8 +26,8 @@ class UIPartyBadge(val label: String, val value: String, val titleText: UICompon
         val innerContainer = UIRoundedRectangle(4f).constrain {
             x = CenterConstraint()
             y = CenterConstraint()
-            width = 100.percent - 2.pixels
-            height = 100.percent - 2.pixels
+            width = max(0.pixels, 100.percent - 2.pixels)
+            height = max(0.pixels, 100.percent - 2.pixels)
             color = UIScheme.pfCardLevelBgColor.toConstraint()
         } childOf this
 
