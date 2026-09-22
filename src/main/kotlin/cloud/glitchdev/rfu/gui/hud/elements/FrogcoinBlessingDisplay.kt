@@ -59,10 +59,16 @@ object FrogcoinBlessingDisplay : AbstractTextHudElement("frogcoinBlessing") {
                     buff.contains("Trophy") -> TextColor.GOLD
                     buff.contains("Treasure") -> TextColor.YELLOW
                     buff.contains("Double Hook") -> TextColor.LIGHT_BLUE
+                    buff.contains("Fishing Speed") -> TextColor.AQUAMARINE
                     else -> TextColor.WHITE
                 }
                 lines.add("$buffColor+$buff: ${TextColor.WHITE}${duration.toReadableString()}")
             }
+        }
+
+        if (lines.size == 1) {
+            text.setText("")
+            return
         }
 
         text.setText(lines.joinToString("\n"))

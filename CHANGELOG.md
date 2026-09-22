@@ -18,6 +18,7 @@
 - Made daily streaks only reset if you logged in on a day and failed to complete it, preserving streaks across skipped days
 - Updated hotspot share messages to include stat counts and shard names
 - Updated Slugfish Timer to be server tick based
+- Made Frog Blessing display save between sessions
 
 ### Fixes
 - Fixed sea creature glow only displaying one entity and invisible entities sometimes
@@ -31,6 +32,7 @@
 - Fixed inventory HUD clicks conflicting with REI
 - Fixed Hotspot Pointer pointing to lower or same hotspots
 - Fixed hotspot rendering and radius calculations breaking with skyocean
+- Fixed fishing speed color on frog blessing display
 
 ### Back-end
 - Added 26.3 support
