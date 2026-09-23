@@ -87,7 +87,6 @@ object HudWindow : BaseWindow(false) {
     var currentRenderPass: RenderPass = RenderPass.NONE
         private set
 
-    private var hasRecycledTexturesThisFrame = false
     //? if >= 26.3 {
     private var multiPassRenderer: HudMultiPassRenderer? = null
 
@@ -104,11 +103,15 @@ object HudWindow : BaseWindow(false) {
     //?}
 
     fun onFrameExtractionStart() {
-        hasRecycledTexturesThisFrame = false
-        //? if >= 26.3 {
+        //? if < 26.3 {
+        /*hasRecycledTexturesThisFrame = false
+        *///?} else {
         multiPassRenderer?.onFrameStart()
         //?}
     }
+
+    //? if < 26.3 {
+    /*private var hasRecycledTexturesThisFrame = false
 
     fun shouldRecycleTextures(): Boolean {
         if (!hasRecycledTexturesThisFrame) {
@@ -118,6 +121,7 @@ object HudWindow : BaseWindow(false) {
         return false
     }
 
+    @Suppress("DEPRECATION")
     override fun onDrawScreen(matrixStack: UMatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float) {
         if (currentRenderPass == RenderPass.NONE) {
             super.onDrawScreen(matrixStack, mouseX, mouseY, partialTicks)
@@ -125,6 +129,7 @@ object HudWindow : BaseWindow(false) {
             window.draw(matrixStack)
         }
     }
+    *///?}
 
     init {
         create()
