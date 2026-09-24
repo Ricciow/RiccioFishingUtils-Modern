@@ -71,17 +71,19 @@ object FishTrackingDisplay : AbstractFishingHudElement("fishTrackingDisplay") {
 
         if (items.contains(FishTrackingType.SC_H)) {
             val rate = FishingSession.scTracker.currentRatePerHour.toInt()
-            val total = FishingSession.scTracker.total.toInt()
-            val line = buildString {
-                append("$CYAN${BOLD}SC/h:")
-                append(" $YELLOW$rate")
-                if (items.contains(FishTrackingType.OVERALL)) {
-                    val overall = FishingSession.scTracker.overallRatePerHour.toInt()
-                    append(" $CYAN[$YELLOW${overall}$CYAN]")
+            if (rate != 0) {
+                val total = FishingSession.scTracker.total.toInt()
+                val line = buildString {
+                    append("$CYAN${BOLD}SC/h:")
+                    append(" $YELLOW$rate")
+                    if (items.contains(FishTrackingType.OVERALL)) {
+                        val overall = FishingSession.scTracker.overallRatePerHour.toInt()
+                        append(" $CYAN[$YELLOW${overall}$CYAN]")
+                    }
+                    append(" $CYAN($YELLOW$total$CYAN)")
                 }
-                append(" $CYAN($YELLOW$total$CYAN)")
+                lines.add(line)
             }
-            lines.add(line)
         }
 
         if (items.contains(FishTrackingType.XP_H)) {

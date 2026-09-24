@@ -22,6 +22,7 @@
 - Updated Slugfish Timer to be server tick based
 - Made Frog Blessing display save between sessions
 - Made the Rare Drops/Sc displays hidden while trophy or treasure fishing
+- Made the SC/h line on hud hidden when its rate is zero
 
 ### Fixes
 - Fixed sea creature glow only displaying one entity and invisible entities sometimes
