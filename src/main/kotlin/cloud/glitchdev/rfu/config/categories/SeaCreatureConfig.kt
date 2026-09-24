@@ -51,6 +51,11 @@ object SeaCreatureConfig : Category("Sea Creatures") {
         description = Literal("Sends a message after killing a rare Sea Creature saying how long it took.")
     }
 
+    var invulnerabilityTimer by reloadableBoolean(true) {
+        name = Literal("Invulnerability Timer")
+        description = Literal("Displays the invulnerability timer on rare sea creatures and Vanquishers.")
+    }
+
     init {
         dualSeparator {
             title = "Catch Messages"

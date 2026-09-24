@@ -1,6 +1,5 @@
 package cloud.glitchdev.rfu.constants.fishing
 
-import cloud.glitchdev.rfu.model.data.DataOption
 import cloud.glitchdev.rfu.data.fishing.Hotspot
 import com.google.gson.TypeAdapter
 import com.google.gson.annotations.JsonAdapter
@@ -27,9 +26,9 @@ class SeaCreatures(
     val rareSCAlert: Boolean = false,
     val mergeBossbarHp: Boolean = false,
     val scDisplayColor: String = "§f",
-    val rarePartyMessage: String = ""
+    val rarePartyMessage: String = "",
+    val invulnerabilityTimer: Boolean = true
 ) {
-    fun toDataOption(): DataOption = DataOption(this, this.scDisplayName)
     fun getSingularNameWithArticle(): String = "$article $scDisplayName"
 
     override fun toString(): String {

@@ -83,6 +83,7 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
     fun isRareSCAlert(scName: String): Boolean = isSpecial(scName) && (resolve(scName) { it.rareSCAlert } ?: false)
     fun isBossbarEnabled(scName: String): Boolean = isSpecial(scName) && (resolve(scName) { it.bossbar } ?: false)
     fun isMergeBossbarHpEnabled(scName: String): Boolean = isBossbarEnabled(scName) && (resolve(scName) { it.mergeBossbarHp } ?: scName.contains("Scuttler", ignoreCase = true))
+    fun isInvulnerabilityTimerEnabled(scName: String): Boolean = isSpecial(scName) && (resolve(scName) { it.invulnerabilityTimer } ?: true)
     fun getScDisplayColor(scName: String): String = resolve(scName) { it.scDisplayColor } ?: "§f"
 
     fun save() {
@@ -101,7 +102,8 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
                 lsRangeEnabled = false,
                 bossbar = false,
                 gdragAlert = false,
-                rareSCAlert = false
+                rareSCAlert = false,
+                invulnerabilityTimer = false
             )
         }
 
@@ -166,7 +168,8 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
                 rareSCAlert = isRareSCAlert(scName),
                 mergeBossbarHp = isMergeBossbarHpEnabled(scName),
                 scDisplayColor = resolve(scName) { it.scDisplayColor } ?: "§f",
-                rarePartyMessage = resolve(scName) { it.rarePartyMessage } ?: ""
+                rarePartyMessage = resolve(scName) { it.rarePartyMessage } ?: "",
+                invulnerabilityTimer = isInvulnerabilityTimerEnabled(scName)
             )
             SeaCreatures.register(sc)
             RFULogger.dev("Registered Sea Creature: $scName")
@@ -220,7 +223,8 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
                                 liquidType = backendSc.liquidType,
                                 category = backendSc.category,
                                 conditions = backendSc.conditions,
-                                mergeBossbarHp = currentSc.mergeBossbarHp ?: backendSc.mergeBossbarHp
+                                mergeBossbarHp = currentSc.mergeBossbarHp ?: backendSc.mergeBossbarHp,
+                                invulnerabilityTimer = currentSc.invulnerabilityTimer ?: backendSc.invulnerabilityTimer
                             )
                             if (updatedSc != currentSc) {
                                 mergedCreatures[scName] = updatedSc

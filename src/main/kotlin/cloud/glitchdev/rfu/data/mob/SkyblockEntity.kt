@@ -10,11 +10,14 @@ import cloud.glitchdev.rfu.events.managers.RenderEvents.registerRenderEvent
 import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.utils.rendering.Render3D
 import cloud.glitchdev.rfu.utils.rendering.Render3DBuilder.Companion.sphere
+import cloud.glitchdev.rfu.utils.rendering.Render3DBuilder.Companion.text
+import cloud.glitchdev.rfu.constants.text.TextColor
 import gg.essential.universal.utils.toUnformattedString
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.decoration.ArmorStand
 import java.awt.Color
+import java.util.Locale
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.milliseconds
 import net.minecraft.world.entity.Entity
@@ -23,6 +26,9 @@ import net.minecraft.world.phys.Vec3
 import kotlin.time.Instant
 import cloud.glitchdev.rfu.data.fishing.BobberInfo
 import cloud.glitchdev.rfu.events.managers.BobberManager
+import cloud.glitchdev.rfu.events.managers.ServerCountdownEvents.ServerCountdownEvent
+import cloud.glitchdev.rfu.events.managers.ServerCountdownEvents.registerServerCountdownEvent
+import cloud.glitchdev.rfu.utils.User
 
 class SkyblockEntity(
     var nameTagEntity: ArmorStand,
@@ -45,7 +51,11 @@ class SkyblockEntity(
     private var isGlowing: Boolean = false
     private var glowColor: Color = Color.WHITE
 
+    private val renderers = mutableListOf<(LevelRenderContext, LivingEntity) -> Unit>()
     var renderEvent: RenderEvents.RenderEvent? = null
+    private var hasLsRange = false
+    private var hasTimer = false
+    var countdownEvent: ServerCountdownEvent? = null
 
     init {
         updateEntityData()
@@ -128,11 +138,26 @@ class SkyblockEntity(
         return if (::sbName.isInitialized) sbName else null
     }
 
+    fun isOwn(): Boolean {
+        if (originBobber == null) {
+            linkToBobber()
+        }
+        val origin = originBobber ?: return false
+        val player = mc.player ?: return false
+        val ownerName = origin.ownerName
+        return origin.ownerUUID == player.uuid || (ownerName != null && User.isUser(ownerName))
+    }
+
+    fun isNamed(name: String, ignoreCase: Boolean = true): Boolean {
+        val entityName = getName() ?: return false
+        return entityName.contains(name, ignoreCase = ignoreCase)
+    }
+
     fun position(): Vec3 = modelEntity.position()
 
     override fun toString(): String {
         val bobberInfo = originBobber?.let { " (bobberOwner: ${it.ownerName})" } ?: ""
-        return "$sbName ($health/$maxHealth) (models: ${modelEntities.size}, parts: ${parts.size}) (renderEvent: ${renderEvent != null})$bobberInfo - ${nameTagEntity.x}, ${nameTagEntity.y}, ${nameTagEntity.z}"
+        return "$sbName ($health/$maxHealth) (models: ${modelEntities.size}, parts: ${parts.size}) (renderers: ${renderers.size})$bobberInfo - ${nameTagEntity.x}, ${nameTagEntity.y}, ${nameTagEntity.z}"
     }
 
     fun isRemoved(): Boolean {
@@ -201,14 +226,20 @@ class SkyblockEntity(
     }
 
     fun registerRenderer(renderer: (LevelRenderContext, LivingEntity) -> Unit) {
-        if (renderEvent != null) return
-
-        renderEvent = registerRenderEvent { context ->
-            renderer(context, this.modelEntity)
+        renderers.add(renderer)
+        if (renderEvent == null) {
+            renderEvent = registerRenderEvent { context ->
+                for (r in renderers) {
+                    r(context, this.modelEntity)
+                }
+            }
         }
     }
 
     fun registerLsRange() {
+        if (hasLsRange) return
+        hasLsRange = true
+
         registerRenderer { context, entity ->
             val sc = SeaCreatures.get(sbName)
             if (sc != null && SeaCreatureConfig.lootshareRange && RARE_SC_REGEX.matches(sc.scName) && sc.lsRangeEnabled) {
@@ -235,12 +266,51 @@ class SkyblockEntity(
         }
     }
 
+    fun registerTimer(
+        totalTicks: Long,
+        color: TextColor = TextColor.LIGHT_RED,
+        scale: Float = 0.05f,
+        condition: () -> Boolean = { true }
+    ) {
+        countdownEvent?.unregister()
+        countdownEvent = registerServerCountdownEvent(totalTicks)
+
+        if (hasTimer) return
+        hasTimer = true
+
+        registerRenderer { context, entity ->
+            if (!condition()) return@registerRenderer
+
+            val remainingTicks = countdownEvent?.remainingTicks ?: return@registerRenderer
+            if (remainingTicks > 0L) {
+                val remainingSeconds = remainingTicks / 20.0
+                val timerText = "${color.code}${String.format(Locale.US, "%.1fs", remainingSeconds)}"
+
+                Render3D.draw(context) {
+                    text {
+                        pos(entity, centered = true)
+                        text = timerText
+                        this.color = Color.WHITE
+                        this.scale = scale
+                        seeThrough = true
+                        dropShadow = true
+                        backgroundOpacity = 0.25f
+                    }
+                }
+            }
+        }
+    }
+
     fun dispose() {
         if (isGlowing) {
             applyGlowToParts(false, Color.WHITE)
         }
         renderEvent?.unregister()
         renderEvent = null
+        renderers.clear()
+        countdownEvent?.unregister()
+        countdownEvent = null
+        hasTimer = false
     }
 
     data class NameTagData(

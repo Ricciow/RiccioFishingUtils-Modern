@@ -38,6 +38,7 @@ class UISeaCreatureEditor : UIContainer() {
     private lateinit var mergeBossbarHpCheckbox: UICheckbox
     private lateinit var gdragAlertCheckbox: UICheckbox
     private lateinit var rareSCAlertCheckbox: UICheckbox
+    private lateinit var invulnerabilityTimerCheckbox: UICheckbox
     private lateinit var scDisplayColorInput: UIDecoratedTextInput
     private lateinit var rarePartyMessageInput: UIDecoratedTextInput
 
@@ -138,6 +139,7 @@ class UISeaCreatureEditor : UIContainer() {
             bossbarCheckbox.state = isRare
             gdragAlertCheckbox.state = isRare
             rareSCAlertCheckbox.state = isRare
+            invulnerabilityTimerCheckbox.state = isRare
             refreshEnabledStates()
             saveCurrent() 
         }.constrain {
@@ -182,6 +184,13 @@ class UISeaCreatureEditor : UIContainer() {
             x = 15.pixels()
             y = SiblingConstraint(5f)
             width = 100.pixels()
+            height = 15.pixels()
+        } childOf parent
+
+        invulnerabilityTimerCheckbox = UICheckbox("Invulnerability Timer", false) { saveCurrent() }.constrain {
+            x = 15.pixels()
+            y = SiblingConstraint(5f)
+            width = 170.pixels()
             height = 15.pixels()
         } childOf parent
 
@@ -245,6 +254,7 @@ class UISeaCreatureEditor : UIContainer() {
         bossbarCheckbox.state = current.bossbar
         gdragAlertCheckbox.state = current.gdragAlert
         rareSCAlertCheckbox.state = current.rareSCAlert
+        invulnerabilityTimerCheckbox.state = current.invulnerabilityTimer
         mergeBossbarHpCheckbox.state = current.mergeBossbarHp
         scDisplayColorInput.setText(current.scDisplayColor.replace("§", "&"))
         rarePartyMessageInput.setText(current.rarePartyMessage)
@@ -260,6 +270,7 @@ class UISeaCreatureEditor : UIContainer() {
         bossbarCheckbox.isEnabled = isRare
         gdragAlertCheckbox.isEnabled = isRare
         rareSCAlertCheckbox.isEnabled = isRare
+        invulnerabilityTimerCheckbox.isEnabled = isRare
         rarePartyMessageInput.isEnabled = isRare
         mergeBossbarHpCheckbox.isEnabled = isRare && hasBossbar
     }
@@ -326,7 +337,8 @@ class UISeaCreatureEditor : UIContainer() {
                 rareSCAlert = rareSCAlertCheckbox.state,
                 scDisplayColor = scDisplayColorInput.getText().toMcCodes(),
                 rarePartyMessage = rarePartyMessageInput.getText(),
-                mergeBossbarHp = mergeBossbarHpCheckbox.state
+                mergeBossbarHp = mergeBossbarHpCheckbox.state,
+                invulnerabilityTimer = invulnerabilityTimerCheckbox.state
             )
         }
         
