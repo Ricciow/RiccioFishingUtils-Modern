@@ -1,11 +1,14 @@
 package cloud.glitchdev.rfu.feature.fishing
 
+import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.data.fishing.Hotspot
 import cloud.glitchdev.rfu.events.managers.FishingSessionEvents
+import cloud.glitchdev.rfu.events.managers.ArmorEvents.registerArmorChangeEvent
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.ItemUsedEvents.registerItemUsedEvent
 import cloud.glitchdev.rfu.events.managers.KeybindEvents.registerKeybind
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
@@ -19,8 +22,11 @@ import cloud.glitchdev.rfu.utils.SlidingRateTracker
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.command.Command
 import cloud.glitchdev.rfu.utils.command.SimpleCommand
+import cloud.glitchdev.rfu.utils.dsl.isFishingRod
+import cloud.glitchdev.rfu.utils.dsl.isWearingTrophyHunterArmor
 import com.mojang.brigadier.context.CommandContext
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
+import net.minecraft.core.component.DataComponents
 import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
@@ -29,6 +35,12 @@ import kotlin.time.Instant
 @RFUFeature
 object FishingSession : Feature {
 
+    enum class FishingType {
+        NORMAL,
+        TROPHY,
+        TREASURE
+    }
+
     val xpTracker = SlidingRateTracker()
     val scTracker = SlidingRateTracker()
     val inkTracker = SlidingRateTracker()
@@ -36,6 +48,17 @@ object FishingSession : Feature {
 
     val isHotspotFishing : Boolean
         get() = lastHotspot != null
+
+    var fishingType: FishingType = FishingType.NORMAL
+        private set
+
+    val isTrophyFishing: Boolean
+        get() = fishingType == FishingType.TROPHY
+
+    val isTreasureFishing: Boolean
+        get() = fishingType == FishingType.TREASURE
+
+    private var hasTreasureHook = false
 
     private var totalFishingXp: Long = 0L
 
@@ -64,6 +87,19 @@ object FishingSession : Feature {
         }
 
     override fun onInitialize() {
+        registerArmorChangeEvent {
+            updateFishingType()
+        }
+
+        registerItemUsedEvent { item ->
+            if (!item.isFishingRod() || mc.player?.fishing != null) return@registerItemUsedEvent
+
+            val tag = item[DataComponents.CUSTOM_DATA]?.copyTag()
+            val hook = tag?.getCompound("hook")?.orElse(null)
+            hasTreasureHook = hook?.getString("part")?.orElse(null) == "treasure_hook"
+            updateFishingType()
+        }
+
         registerSkillXpUpdateEvent(SkillType.FISHING) { _, xp ->
             handleActivity()
             if (totalFishingXp != 0L && xp > totalFishingXp) {
@@ -157,6 +193,8 @@ object FishingSession : Feature {
         lastFishingEvent = Instant.DISTANT_PAST
         pausedAt = null
         lastHotspot = null
+        hasTreasureHook = false
+        updateFishingType()
         totalFishingXp = SkillTracker.getSkillXp(SkillType.FISHING)
 
         scTracker.reset()
@@ -172,6 +210,18 @@ object FishingSession : Feature {
         if (wasFishing) {
             FishingSessionEvents.FishingSessionEndEventManager.runTasks()
         }
+    }
+
+    private fun updateFishingType() {
+        val newType = when {
+            hasTreasureHook -> FishingType.TREASURE
+            isWearingTrophyHunterArmor() -> FishingType.TROPHY
+            else -> FishingType.NORMAL
+        }
+        if (newType == fishingType) return
+
+        fishingType = newType
+        FishingSessionEvents.FishingSessionUpdatedEventManager.runTasks(newType)
     }
 
     @Command

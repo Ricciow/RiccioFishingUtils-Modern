@@ -9,6 +9,7 @@ import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.data.fishing.TrophyDataManager
 import cloud.glitchdev.rfu.data.fishing.TrophyPityEntry
+import cloud.glitchdev.rfu.feature.fishing.FishingSession
 import cloud.glitchdev.rfu.feature.fishing.TrophyPityTracker
 import cloud.glitchdev.rfu.events.managers.ContainerEvents.registerContainerOpenEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
@@ -17,7 +18,6 @@ import cloud.glitchdev.rfu.events.managers.TrophyCatchEvents.registerTrophyFrogC
 import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 import cloud.glitchdev.rfu.utils.World
-import cloud.glitchdev.rfu.utils.dsl.isWearingTrophyHunterArmor
 
 @HudElement
 object TrophyPityDisplay : AbstractTextHudElement("trophyPity") {
@@ -50,7 +50,7 @@ object TrophyPityDisplay : AbstractTextHudElement("trophyPity") {
         }
 
         val pityEntries = if (isFrog) TrophyDataManager.data.pity.frogPity else TrophyDataManager.data.pity.fishPity
-        val isWearingArmor = isWearingTrophyHunterArmor()
+        val isTrophyFishing = FishingSession.isTrophyFishing
         val now = System.currentTimeMillis()
 
         return pityEntries.entries
@@ -68,7 +68,7 @@ object TrophyPityDisplay : AbstractTextHudElement("trophyPity") {
                         key == TrophyFrog.PUDDLE_JUMPER.name ||
                         key == TrophyFrog.EXPLODING_FROG.name ||
                         key == TrophyFish.GOLDEN_FISH.name
-                isWearingArmor || isExempt
+                isTrophyFishing || isExempt
             }
             .mapNotNull { (key, entry) ->
                 val trophy: Trophy? = if (isFrog) {

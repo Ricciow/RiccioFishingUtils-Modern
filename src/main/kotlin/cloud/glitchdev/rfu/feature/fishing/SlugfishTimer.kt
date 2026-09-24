@@ -9,7 +9,6 @@ import cloud.glitchdev.rfu.events.managers.ServerTickEvents
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
-import cloud.glitchdev.rfu.utils.dsl.isWearingTrophyHunterArmor
 import cloud.glitchdev.rfu.utils.dsl.toReadableString
 import cloud.glitchdev.rfu.utils.rendering.Render3D
 import cloud.glitchdev.rfu.utils.rendering.Render3DBuilder.Companion.text
@@ -21,7 +20,6 @@ object SlugfishTimer : Feature {
     private var slugPetReduction = 1.0
     private const val SLUG_PET_INCREMENT = 49.0/99
     private var startServerTick = 0L
-    private var isTrophyFishing = false
     private var wasFishing = false
 
     override fun onInitialize() {
@@ -34,14 +32,9 @@ object SlugfishTimer : Feature {
             }
         }
 
-        registerTickEvent(interval = 20L) {
-            if(!TrophyFishing.slugfishTimer) return@registerTickEvent
-            isTrophyFishing = isWearingTrophyHunterArmor()
-        }
-
         registerTickEvent {
             if(!TrophyFishing.slugfishTimer) return@registerTickEvent
-            if (!isTrophyFishing) return@registerTickEvent
+            if (!FishingSession.isTrophyFishing) return@registerTickEvent
             if (mc.player?.fishing != null) {
                 if(wasFishing) return@registerTickEvent
                 startServerTick = ServerTickEvents.currentServerTick
@@ -54,7 +47,7 @@ object SlugfishTimer : Feature {
 
         registerRenderEvent { renderContext ->
             if(!TrophyFishing.slugfishTimer) return@registerRenderEvent
-            if(!isTrophyFishing) return@registerRenderEvent
+            if(!FishingSession.isTrophyFishing) return@registerRenderEvent
             val bobber = mc.player?.fishing ?: return@registerRenderEvent
             val elapsedTicks = (ServerTickEvents.currentServerTick - startServerTick).coerceAtLeast(0L)
             val duration = (elapsedTicks * 50L).milliseconds
