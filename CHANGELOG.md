@@ -13,6 +13,7 @@
 - Added Invulnerability Timer for rare sea creatures and Vanquishers
 
 ### Changes
+- Improved settings search to show full matching categories or sections
 - Revoked previous backend acceptance to display privacy policy
 - Added (ᵔᴥᵔ) as a trigger for the :dog: emoji
 - Made the introduction walkthrough send as a single message upon joining SkyBlock instead of separate messages on Hypixel join
