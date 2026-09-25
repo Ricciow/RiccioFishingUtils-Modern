@@ -1,6 +1,7 @@
 # v1.19.0 - ???
 
 ### Features
+- Added message hiding options for Vanquisher spawns, treasure catches, and Blazetekk Radio
 - Added Rare SC Alert Preset setting with {color} variable support and alert preview in /rfuscedit
 - Added Party Requeue Alert to prompt requeuing when your party is no longer full
 - Added TPS Hud display (disabled by default)
@@ -13,6 +14,7 @@
 - Added Invulnerability Timer for rare sea creatures and Vanquishers
 
 ### Changes
+- The Charm message hiding option now also hides shard loot share messages
 - Improved settings search to show full matching categories or sections
 - Revoked previous backend acceptance to display privacy policy
 - Added (ᵔᴥᵔ) as a trigger for the :dog: emoji
