@@ -34,7 +34,7 @@ object HighlightHotSpots : Feature {
                     val borderColor = Color(baseBorderColor.red, baseBorderColor.green, baseBorderColor.blue, hotspotBorderOpacity)
 
                     cylinder {
-                        location = renderPos
+                        position = renderPos
                         radius = rad
                         height = -3.0f
                         slices = 32

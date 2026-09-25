@@ -77,8 +77,8 @@ object HotspotPointer : Feature {
 
             Render3D.draw(context) {
                 line {
-                    startLocation = camera
-                    location = bestHotspot.center
+                    startPosition = camera
+                    position = bestHotspot.center
                     color = bestHotspot.color.decreaseOpacity(255)
                     lineWidth = 3.0f
                 }

@@ -48,7 +48,7 @@ object DebugText : Feature, AbstractCommand("text") {
             Render3D.draw(context) {
                 for (t in activeTexts) {
                     text {
-                        location = t.location
+                        position = t.location
                         text = t.message
                         color = t.color
                         scale = t.scale

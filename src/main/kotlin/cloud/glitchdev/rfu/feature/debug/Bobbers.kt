@@ -60,7 +60,7 @@ object Bobbers : SimpleCommand("bobbers"), Feature {
 
     private fun LevelRenderContext.renderLines(baseLoc: Vec3, lines: List<String>) {
         text {
-            location = baseLoc
+            position = baseLoc
             text = lines.joinToString("\n")
             color = Color.WHITE
             scale = 0.025f

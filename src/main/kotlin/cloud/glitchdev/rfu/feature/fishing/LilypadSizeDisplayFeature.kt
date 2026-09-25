@@ -77,7 +77,7 @@ object LilypadSizeDisplayFeature : Feature {
                         val textLoc = entityPos.add(0.0, entity.bbHeight.toDouble() + 0.5, 0.0)
 
                         text {
-                            location = textLoc
+                            position = textLoc
                             text = percentageText
                             color = Color.WHITE
                             scale = 0.025f

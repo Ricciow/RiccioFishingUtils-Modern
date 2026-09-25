@@ -59,7 +59,7 @@ object SlugfishTimer : Feature {
                 }
                 text {
                     text = "$color${duration.toReadableString(true)}"
-                    location = bobber.position().add(0.0, 0.5, 0.0)
+                    position = bobber.position().add(0.0, 0.5, 0.0)
                 }
             }
         }

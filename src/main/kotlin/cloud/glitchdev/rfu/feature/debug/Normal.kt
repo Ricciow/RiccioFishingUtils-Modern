@@ -142,7 +142,7 @@ object Normal : Feature, AbstractCommand("normal") {
                     }
 
                     text {
-                        location = baseLoc
+                        position = baseLoc
                         text = lines.joinToString("\n")
                         color = Color.WHITE
                         scale = 0.025f
