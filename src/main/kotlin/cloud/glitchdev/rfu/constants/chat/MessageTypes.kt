@@ -16,7 +16,7 @@ enum class MessageTypes(val displayName: String, val regex: Regex) {
     CHARM("Charm", """(?:CHARM! You charmed .+ and received .+|LOOT SHARE You received \d+ .+? Shards? for assisting .+!)""".toExactRegex()),
     HURRICANE_BOTTLE("Hurricane in a Bottle", """(?:> )?Your (?:Empty )?Hurricane (?:in a )?Bottle has absorbed .+""".toExactRegex()),
     VANQUISHER("Vanquisher", """A Vanquisher is spawning nearby!""".toExactRegex()),
-    TREASURES("Treasures", """(?:\uE025\s*)?(?:GOOD|GREAT|OUTSTANDING) CATCH! You caught .+ x\d+!""".toExactRegex()),
+    TREASURES("Treasures", """(?:\uE025\s*)?(?:GOOD|GREAT|OUTSTANDING) CATCH! You caught .+!""".toExactRegex()),
     BLAZETEKK_RADIO("Blazetekk Radio", """(?:Your radio is weak\. Find another enjoyer to boost it\.|Your radio signal is strong!)\s*""".toExactRegex());
 
     fun matches(message: String): Boolean {
