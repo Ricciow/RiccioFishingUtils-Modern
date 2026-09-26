@@ -51,6 +51,11 @@ object SeaCreatureConfig : Category("Sea Creatures") {
         description = Literal("Sends a message after killing a rare Sea Creature saying how long it took.")
     }
 
+    var killTimePersonalBest by boolean(true) {
+        name = Literal("Kill Time PB")
+        description = Literal("Sends personal best message for kill times on rare sea creatures.")
+    }
+
     var invulnerabilityTimer by reloadableBoolean(true) {
         name = Literal("Invulnerability Timer")
         description = Literal("Displays the invulnerability timer on rare sea creatures and Vanquishers.")

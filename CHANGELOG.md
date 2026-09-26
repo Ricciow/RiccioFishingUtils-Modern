@@ -1,6 +1,7 @@
 # v1.19.0 - ???
 
 ### Features
+- Added personal best kill times for sea creatures
 - Added message hiding options for Vanquisher spawns, treasure catches, and Blazetekk Radio
 - Added Rare SC Alert Preset setting with {color} variable support and alert preview in /rfuscedit
 - Added Party Requeue Alert to prompt requeuing when your party is no longer full

@@ -81,6 +81,25 @@ class CatchHistory {
         currentRecord.total += 1
     }
 
+    fun registerKillTime(sc: SeaCreatures, durationMillis: Long): Boolean {
+        if (durationMillis <= 0) return false
+
+        val record = getOrAdd(sc)
+        val previousBest = record.bestKillTimeMs
+        if (previousBest != null && durationMillis >= previousBest) return false
+
+        record.bestKillTimeMs = durationMillis
+        return true
+    }
+
+    fun resetKillTime(sc: SeaCreatures): Boolean {
+        val record = catches.find { it.name == sc.scName } ?: return false
+        if (record.bestKillTimeMs == null) return false
+
+        record.bestKillTimeMs = null
+        return true
+    }
+
     /**
      * Function to delete particularly large mob histories
      * @param maxSize The maximum number of history data allowed
@@ -100,5 +119,6 @@ class CatchHistory {
         var count: Int = 0
         var time : Instant = Clock.System.now()
         var history: MutableList<Int> = ArrayList()
+        var bestKillTimeMs: Long? = null
     }
 }
