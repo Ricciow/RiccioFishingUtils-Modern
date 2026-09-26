@@ -186,16 +186,17 @@ object HotSpotEvents : RegisteredEvent {
         registerEntityRenderEvent { entity, isVisible, _ ->
             if (!isVisible) return@registerEntityRenderEvent
             val name = entity.customName?.toUnformattedString() ?: return@registerEntityRenderEvent
-            if (HotspotType.entries.any { it.buffMatch != null && name.contains(it.buffMatch) }) {
+            if (HotspotType.fromBuff(name) != HotspotType.UNKNOWN) {
                 val pos = entity.position()
-                val unknownHotspot = hotspots.values
-                    .filter { it.type == HotspotType.UNKNOWN }
+                val nearestHotspot = hotspots.values
                     .minByOrNull { it.center.distanceTo(pos) }
 
-                if (unknownHotspot != null && unknownHotspot.center.distanceTo(pos) < 5.0) {
-                    unknownHotspot.buff = name
-                    HotspotCache.addMeasurement(unknownHotspot.blockPos, 0.0, unknownHotspot.liquid, name, unknownHotspot.island)
-                    HotSpotChangedEventManager.runTasks(hotspots.values.toList())
+                if (nearestHotspot != null && nearestHotspot.center.distanceTo(pos) < 5.0) {
+                    HotspotCache.updateBuff(nearestHotspot.blockPos, nearestHotspot.liquid, name, nearestHotspot.island)
+                    if (nearestHotspot.buff != name) {
+                        nearestHotspot.buff = name
+                        HotSpotChangedEventManager.runTasks(hotspots.values.toList())
+                    }
                 }
             }
         }

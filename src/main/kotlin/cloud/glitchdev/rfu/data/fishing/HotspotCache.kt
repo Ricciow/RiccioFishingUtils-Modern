@@ -20,7 +20,7 @@ object HotspotCache {
         return "${island?.island}_${pos.x},${pos.y},${pos.z}"
     }
 
-    fun addMeasurement(pos: BlockPos, distance: Double, liquid: LiquidTypes, buff: String, island: FishingIslands?) {
+    fun addMeasurement(pos: BlockPos, distance: Double, liquid: LiquidTypes, island: FishingIslands?) {
         val key = getKey(pos, island)
         val data = synchronized(cache) {
             cache.getOrPut(key) { HotspotData(liquid, island) }
@@ -28,11 +28,6 @@ object HotspotCache {
 
         data.liquid = liquid
         data.island = island
-        data.lastMetadataUpdate = System.currentTimeMillis()
-        
-        if (buff.isNotEmpty()) {
-            data.setSessionBuff(buff)
-        }
 
         val distances = data.sessionDistances
         synchronized(distances) {
@@ -45,6 +40,18 @@ object HotspotCache {
                 distances.removeAt(0)
             }
         }
+    }
+
+    fun updateBuff(pos: BlockPos, liquid: LiquidTypes, buff: String, island: FishingIslands?) {
+        val key = getKey(pos, island)
+        val data = synchronized(cache) {
+            cache.getOrPut(key) { HotspotData(liquid, island) }
+        }
+
+        data.liquid = liquid
+        data.island = island
+        data.setSessionBuff(buff)
+        data.lastMetadataUpdate = System.currentTimeMillis()
     }
 
     fun getMedian(pos: BlockPos, island: FishingIslands?): Float? {

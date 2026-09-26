@@ -39,7 +39,7 @@ data class Hotspot(
     }
 
     fun addParticleDistance(distance: Double) {
-        HotspotCache.addMeasurement(blockPos, distance, liquid, buff, island)
+        HotspotCache.addMeasurement(blockPos, distance, liquid, island)
         val newMedian = HotspotCache.getMedian(blockPos, island) ?: 0f
         val now = System.currentTimeMillis()
 

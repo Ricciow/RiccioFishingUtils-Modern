@@ -29,6 +29,7 @@
 - Made the SC/h line on hud hidden when its rate is zero
 
 ### Fixes
+- Fixed hotspot highlights and tracking keeping the previous type
 - Disabled Party Finder hover effects while using the peek keybind
 - Fixed sea creature glow only displaying one entity and invisible entities sometimes
 - Fixed bossbar and merge health settings in /rfuscedit not properly applying to sea creatures
