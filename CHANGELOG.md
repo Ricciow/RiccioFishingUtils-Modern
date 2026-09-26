@@ -43,6 +43,7 @@
 - Peek party finder keybind now closes the creation window / presets
 - Prevented the session reset button on hud from triggering while editing
 - Improved caching on the party finder window
+- Improved Flux and Umberella HUD timers to better match their timers.
 - Fixed skeleton fish being categorized as a rare tfish instead of epic
 - Fixed Moby-Duck timer disappearing when leaving SkyBlock or restarting the game
 - Fixed texture memory leak when opening inventory with HUD hidden

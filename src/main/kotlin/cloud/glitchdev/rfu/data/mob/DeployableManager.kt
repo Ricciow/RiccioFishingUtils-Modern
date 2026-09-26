@@ -9,7 +9,6 @@ import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import net.minecraft.client.multiplayer.ClientLevel
-import net.minecraft.world.entity.Entity
 import net.minecraft.world.phys.Vec3
 import kotlin.math.round
 
@@ -25,6 +24,7 @@ object DeployableManager : RegisteredEvent {
         val customName: String = "",
         val labelColorOverride: TextColor? = null,
         val rangeOverride: Double? = null,
+        val displayedSeconds: Int? = null,
     ) {
         fun isInRange(playerPos: Vec3): Boolean {
             if (posX == null || posZ == null || highestY == null) return true
