@@ -1,5 +1,7 @@
 package cloud.glitchdev.rfu.party.commands
 
+import cloud.glitchdev.rfu.config.categories.DailyStreakSettings
+import cloud.glitchdev.rfu.config.categories.PartySettings
 import cloud.glitchdev.rfu.data.streak.DailyStreakManager
 import cloud.glitchdev.rfu.party.AbstractPartyCommand
 import cloud.glitchdev.rfu.party.PartyCommand
@@ -15,6 +17,8 @@ object StreakCommand : AbstractPartyCommand(
     ),
     permission = listOf(PartyCommandPermission.SELF_TRIGGER)
 ) {
+    override fun isEnabled() = DailyStreakSettings.dailyStreakEnabled && PartySettings.toggleStreakCommand
+
     override fun execute(sender: String, args: List<String>) {
         val response = formatResponse(responseTemplates[0].first, "count" to DailyStreakManager.data.currentStreak, "highest" to DailyStreakManager.data.highestStreak)
         sendPartyMessage(response)

@@ -65,6 +65,12 @@ object PartySettings : Category("Party") {
         condition = { togglePartyCommands }
     }
 
+    var toggleStreakCommand by boolean(true) {
+        name = Literal("Enable Streak Command")
+        description = Literal("Enables or disables the !streak party command.")
+        condition = { togglePartyCommands }
+    }
+
     var toggleAllInviteCommand by boolean(true) {
         name = Literal("Enable AllInvite Command")
         description = Literal("Enables or disables the !allinv party command.")

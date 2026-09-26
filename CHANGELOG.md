@@ -1,6 +1,7 @@
 # v1.19.0 - ???
 
 ### Features
+- Added a setting to toggle the daily streak party command
 - Added personal best kill times for sea creatures
 - Added message hiding options for Vanquisher spawns, treasure catches, and Blazetekk Radio
 - Added Rare SC Alert Preset setting with {color} variable support and alert preview in /rfuscedit
@@ -29,6 +30,7 @@
 - Made Frog Blessing display save between sessions
 - Made the Rare Drops/Sc displays hidden while trophy or treasure fishing
 - Made the SC/h line on hud hidden when its rate is zero
+- Made the daily streak command require daily streaks on
 
 ### Fixes
 - Fixed hotspot highlights and tracking keeping the previous type
