@@ -20,6 +20,7 @@ import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
+import net.minecraft.network.chat.Style
 
 @RFUFeature
 object CakeExpiredAlert : Feature {
@@ -48,10 +49,11 @@ object CakeExpiredAlert : Feature {
             if(newOutDated.isNotEmpty()) {
                 val hoverText = buildHoverText(newOutDated)
                 val message = TextUtils.rfuLiteral("${newOutDated.size} ${TextColor.GOLD}of your cakes just expired!", TextColor.YELLOW)
-                    .withStyle {
-                        it.withHoverEvent(HoverEvent.ShowText(Component.literal(hoverText)))
-                        it.withClickEvent(ClickEvent.RunCommand("visit ricciow"))
-                    }
+                    .setStyle(
+                        Style.EMPTY
+                        .withHoverEvent(HoverEvent.ShowText(Component.literal(hoverText)))
+                        .withClickEvent(ClickEvent.RunCommand("visit ricciow"))
+                    )
                 Chat.sendMessage(message)
             }
 
@@ -59,7 +61,7 @@ object CakeExpiredAlert : Feature {
             lastOutdated.addAll(outdated)
         }
 
-        registerTickEvent(interval = 20) {
+        registerTickEvent(interval = 6000) {
             if(!OtherSettings.outdatedCake) return@registerTickEvent
             if(!World.isInSkyblock) return@registerTickEvent
             val outdated = cakes.getOutdatedCakes()
@@ -67,10 +69,11 @@ object CakeExpiredAlert : Feature {
             if(outdated.isNotEmpty()) {
                 val hoverText = buildHoverText(outdated)
                 val message = TextUtils.rfuLiteral("You have ${TextColor.YELLOW}${outdated.size} ${TextColor.GOLD}expired cakes!", TextColor.GOLD)
-                    .withStyle {
-                        it.withHoverEvent(HoverEvent.ShowText(Component.literal(hoverText)))
-                        it.withClickEvent(ClickEvent.RunCommand("visit ricciow"))
-                    }
+                    .setStyle(
+                        Style.EMPTY
+                        .withHoverEvent(HoverEvent.ShowText(Component.literal(hoverText)))
+                        .withClickEvent(ClickEvent.RunCommand("visit ricciow"))
+                    )
                 Chat.sendMessage(message)
             }
         }
