@@ -16,7 +16,11 @@ import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.toConstraint
 
-object DeadWindow : WindowScreen(ElementaVersion.V10, drawDefaultBackground = false) {
+object DeadWindow : WindowScreen(ElementaVersion.V11, drawDefaultBackground = false) {
+    init {
+        useElementaRenderer = true
+    }
+
     val transparent = UIScheme.transparent.toConstraint()
     val bgColor = UIScheme.darkBackground.toConstraint()
     val textColor = UIScheme.diedColor.toConstraint()

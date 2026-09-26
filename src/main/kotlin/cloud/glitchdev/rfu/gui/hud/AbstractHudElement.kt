@@ -125,7 +125,7 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
                     else -> 10
                 }
 
-                val effect = event.delta.toFloat() / supression
+                val effect = event.scrollY.toFloat() / supression
 
                 scale = round(max(0.3f, scale + effect) * 1000) / 1000
 
