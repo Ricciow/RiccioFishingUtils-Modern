@@ -215,9 +215,15 @@ object GeneralFishing : Category("General Fishing") {
         }
     }
 
-    var rodTimerDisplay by boolean(false) {
+    var rodTimerDisplay by reloadableBoolean(false) {
         name = Literal("Rod Timer Display")
         description = Literal("Display the current rod timer on screen")
+    }
+
+    var rodTimerReadyText by string("!!!") {
+        name = Literal("Rod Timer Ready Text")
+        description = Literal("Text shown when the rod timer ends. Supports & color and formatting codes.")
+        condition = { rodTimerDisplay }
     }
 
     var rodTimerSound by boolean(false) {

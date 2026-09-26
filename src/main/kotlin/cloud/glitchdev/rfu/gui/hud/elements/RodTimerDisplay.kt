@@ -6,6 +6,7 @@ import cloud.glitchdev.rfu.constants.text.TextColor.YELLOW
 import cloud.glitchdev.rfu.constants.text.TextEffects.BOLD
 import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
+import cloud.glitchdev.rfu.utils.dsl.toMcCodes
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
@@ -25,9 +26,11 @@ object RodTimerDisplay : AbstractTextHudElement("rodTimer") {
     override fun onUpdateState() {
         super.onUpdateState()
 
+        val readyText = "$LIGHT_RED$BOLD${GeneralFishing.rodTimerReadyText.toMcCodes()}"
+
         container.constrain {
             width = if(rodTime == 0f) {
-                "${BOLD}3.0".width(scale).pixels()
+                readyText.width(scale).pixels()
             } else {
                 ChildBasedSizeConstraint()
             }
@@ -36,7 +39,7 @@ object RodTimerDisplay : AbstractTextHudElement("rodTimer") {
         val string = if(rodTime > 0) {
             "$YELLOW$BOLD$rodTime"
         } else if(rodTime == 0f) {
-            "$LIGHT_RED$BOLD!!!"
+            readyText
         } else {
             "$YELLOW${BOLD}3.0"
         }
