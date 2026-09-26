@@ -68,6 +68,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
     private var parties : List<FishingParty> = PartyFinderEvents.parties
     private var partyCards : MutableList<UIPartyCard> = mutableListOf()
     private var isPeeking = false
+    private lateinit var peekHoverBlocker: UIContainer
 
     lateinit var popup: UIPopup
     lateinit var presetsModal: UIPartyPresetsModal
@@ -123,7 +124,10 @@ object PartyFinderWindow : BaseWindow(false), Feature {
         registerKeybind {
             key = { OtherSettings.peekPartyFinderKeybind }
             onPress = {
-                if (!World.isOnAlpha) isPeeking = true
+                if (!World.isOnAlpha) {
+                    isPeeking = true
+                    peekHoverBlocker.unhide()
+                }
                 if(creationOpen) {
                     creationOpen = false
                     onUpdate()
@@ -131,7 +135,12 @@ object PartyFinderWindow : BaseWindow(false), Feature {
                 presetsModal.setHidden(true)
                 popup.setHidden(true)
             }
-            onRelease = { isPeeking = false }
+            onRelease = {
+                if (isPeeking) {
+                    isPeeking = false
+                    peekHoverBlocker.hide(true)
+                }
+            }
         }
 
         registerHudRenderEvent(50) { context, ticks ->
@@ -184,6 +193,15 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             buttonHoverTextColor = UIScheme.pfCardTitleHoverColor.toConstraint()
         }
         popup.hide(instantly = true)
+
+        peekHoverBlocker = UIContainer().constrain {
+            x = 0.pixels
+            y = 0.pixels
+            width = 100.percent
+            height = 100.percent
+        } childOf window
+        peekHoverBlocker.isFloating = true
+        peekHoverBlocker.hide(true)
     }
 
     fun createHeader(background: UIComponent) {
