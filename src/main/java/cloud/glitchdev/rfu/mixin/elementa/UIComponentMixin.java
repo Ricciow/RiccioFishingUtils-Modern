@@ -18,9 +18,6 @@ import java.util.List;
 public abstract class UIComponentMixin {
     @Final
     @Shadow private List<Function1<AnimatingConstraints, Unit>> beforeHideAnimations;
-    @Final
-    @Shadow private List<Function1<AnimatingConstraints, Unit>> afterUnhideAnimations;
-    @Shadow private int indexInParent;
 
     @Inject(method = "hide(Z)V", at = @At("HEAD"), cancellable = true)
     private void rfu$onHide(boolean instantly, CallbackInfo ci) {
@@ -40,9 +37,8 @@ public abstract class UIComponentMixin {
             return;
         }
 
-        if (instantly || (this.beforeHideAnimations != null && this.beforeHideAnimations.isEmpty())) {
-            this.indexInParent = parent.getChildren().indexOf(self);
-            parent.removeChild(self);
+        if (!instantly && this.beforeHideAnimations.isEmpty()) {
+            self.hide(true);
             ci.cancel();
         }
     }
@@ -61,16 +57,6 @@ public abstract class UIComponentMixin {
 
         UIComponent parent = self.getParent();
         if (parent == null || parent.getChildren().contains(self)) {
-            ci.cancel();
-            return;
-        }
-
-        if (this.afterUnhideAnimations != null && this.afterUnhideAnimations.isEmpty()) {
-            if (useLastPosition && this.indexInParent >= 0 && this.indexInParent < parent.getChildren().size()) {
-                parent.getChildren().add(this.indexInParent, self);
-            } else {
-                parent.getChildren().add(self);
-            }
             ci.cancel();
         }
     }
