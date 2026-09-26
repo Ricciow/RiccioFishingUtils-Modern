@@ -7,15 +7,15 @@ pluginManagement {
         maven("https://maven.kikugie.dev/snapshots") { name = "KikuGie Snapshots" }
     }
 
-    val kotlin_version: String by settings
-    val loom_version: String by settings
-    val ksp_version: String by settings
+    val kotlinVersion = providers.gradleProperty("kotlin_version").get()
+    val loomVersion = providers.gradleProperty("loom_version").get()
+    val kspVersion = providers.gradleProperty("ksp_version").get()
 
     plugins {
-        id("fabric-loom") version loom_version
-        id("net.fabricmc.fabric-loom") version loom_version
-        kotlin("jvm") version kotlin_version
-        id("com.google.devtools.ksp") version ksp_version
+        id("fabric-loom") version loomVersion
+        id("net.fabricmc.fabric-loom") version loomVersion
+        kotlin("jvm") version kotlinVersion
+        id("com.google.devtools.ksp") version kspVersion
     }
 
 }
