@@ -105,6 +105,11 @@ object GeneralFishing : Category("General Fishing") {
         description = Literal("Toggles the alert for expired deployables")
     }
 
+    var deployableExpiredPartyMessage by boolean(false) {
+        name = Literal("Deployable Expired Party Message")
+        description = Literal("Sends a party message when a nearby deployable expires.")
+    }
+
     var deployableTitleExtraTicks by int(0) {
         name = Literal("Deployable Title Duration")
         description = Literal("Extra time for expired deployable titles, in ticks.")
@@ -115,8 +120,8 @@ object GeneralFishing : Category("General Fishing") {
 
     var deployableAlertTypes by enums(*DeployableType.entries.toTypedArray()) {
         name = Literal("Deployable Alerts")
-        description = Literal("Select which deployable will cause an alert.")
-        condition = { deployableDisplay }
+        description = Literal("Select which deployables trigger alerts and party messages.")
+        condition = { deployableExpiredAlert || deployableExpiredPartyMessage }
     }
 
     var deployableExpiredSound by reloadableBoolean(true) {

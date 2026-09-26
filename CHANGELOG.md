@@ -1,6 +1,7 @@
 # v1.19.0 - ???
 
 ### Features
+- Added a party message alert when a deployable expires (off by default).
 - Added a setting to hide nearby players, while choosing which parts and equipment stay visible.
 - Added an Auto accept players setting for Party Finder.
 - Added a setting to toggle the daily streak party command
