@@ -14,6 +14,7 @@
 - Added No Tiki Mask Alert when fishing on a hotspot without a Tiki Mask
 - Added Invulnerability Timer for rare sea creatures and Vanquishers
 - Added a setting to customize the text shown when the rod timer ends
+- Added individual extra duration settings for each alert title
 
 ### Changes
 - The Charm message hiding option now also hides shard loot share messages

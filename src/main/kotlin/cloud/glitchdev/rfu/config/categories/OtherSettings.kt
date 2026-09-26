@@ -42,6 +42,14 @@ object OtherSettings : Category("Other") {
         description = Literal("Sends an alert whenever a Littlefoot is found.")
     }
 
+    var littlefootTitleExtraTicks by int(0) {
+        name = Literal("Littlefoot Title Duration")
+        description = Literal("Extra time for the Littlefoot title, in ticks.")
+        range = 0..200
+        slider = true
+        condition = { littlefootAlert }
+    }
+
     var littlefootSound by reloadableBoolean(true) {
         name = Literal("Littlefoot Alert Sound")
         description = Literal("Plays a sound whenever a Littlefoot is found.")
@@ -112,6 +120,14 @@ object OtherSettings : Category("Other") {
         description = Literal("Shows an alert on screen when your pet levels up.")
     }
 
+    var petLevelUpTitleExtraTicks by int(0) {
+        name = Literal("Pet Level Up Title Duration")
+        description = Literal("Extra time for the pet level up title, in ticks.")
+        range = 0..200
+        slider = true
+        condition = { petLevelUpAlert }
+    }
+
     var petLevelUpMinLevel by int(100) {
         name = Literal("Min Level for Alert")
         description = Literal("The minimum level for the alert to trigger.")
@@ -129,6 +145,14 @@ object OtherSettings : Category("Other") {
     var fullInventoryAlert by reloadableBoolean(false) {
         name = Literal("Full Inventory Alert")
         description = Literal("Shows an alert when your inventory becomes full.")
+    }
+
+    var fullInventoryTitleExtraTicks by int(0) {
+        name = Literal("Full Inventory Title Duration")
+        description = Literal("Extra time for the full inventory title, in ticks.")
+        range = 0..200
+        slider = true
+        condition = { fullInventoryAlert }
     }
 
     var fullInventorySound by reloadableBoolean(true) {

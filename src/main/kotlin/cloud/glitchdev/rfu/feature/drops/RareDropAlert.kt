@@ -71,7 +71,7 @@ object RareDropAlert : Feature {
         if (DropsSettings.rareDropTitleAlert) {
             val title = DropsSettings.rareDropTitleFormat.formatTemplate(*placeholders)
             val subtitle = DropsSettings.rareDropSubtitleFormat.formatTemplate(*placeholders)
-            Title.showTitle(title, subtitle, fadeIn = 5, duration = 40, fadeOut = 5)
+            Title.showTitle(title, subtitle, fadeIn = 5, duration = 40, fadeOut = 5, extraTicks = DropsSettings.rareDropTitleExtraTicks)
         }
 
         // Chat Message
@@ -112,7 +112,7 @@ object RareDropAlert : Feature {
         if (isTitle) {
             val title = DropsSettings.rareDropTitleFormat.formatTemplate(*placeholders)
             val subtitle = DropsSettings.rareDropSubtitleFormat.formatTemplate(*placeholders)
-            Title.showTitle(title, subtitle, fadeIn = 5, duration = 40, fadeOut = 5)
+            Title.showTitle(title, subtitle, fadeIn = 5, duration = 40, fadeOut = 5, extraTicks = DropsSettings.rareDropTitleExtraTicks)
         } else {
             val preview = DropsSettings.rareDropMessageFormat.formatTemplate(*placeholders)
             sendMessage(Component.literal(preview))

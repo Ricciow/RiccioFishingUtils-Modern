@@ -40,7 +40,7 @@ object DeployableTimers : Feature {
                     val shouldAlert = wasInRadius && isExpired
 
                     if (shouldAlert) {
-                        Title.showTitle(type.expiredTitle)
+                        Title.showTitle(type.expiredTitle, extraTicks = GeneralFishing.deployableTitleExtraTicks)
 
                         if (GeneralFishing.deployableExpiredSound) {
                             Sounds.playSound("rfu:deployable_expired", 1f, GeneralFishing.deployableExpiredVolume)

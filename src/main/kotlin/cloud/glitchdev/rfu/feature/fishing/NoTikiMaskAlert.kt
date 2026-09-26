@@ -3,7 +3,6 @@ package cloud.glitchdev.rfu.feature.fishing
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.HotSpotSettings
 import cloud.glitchdev.rfu.events.managers.ArmorEvents
-import cloud.glitchdev.rfu.events.managers.ArmorEvents.registerArmorChangeEvent
 import cloud.glitchdev.rfu.events.managers.HotSpotEvents
 import cloud.glitchdev.rfu.events.managers.ItemUsedEvents.registerItemUsedEvent
 import cloud.glitchdev.rfu.feature.Feature
@@ -21,7 +20,7 @@ object NoTikiMaskAlert : Feature {
             if (mc.player?.fishing != null) return@registerItemUsedEvent
 
             if (isFishingOnHotspot() && !ArmorEvents.currentArmorSet.isWearingTikiMask) {
-                Title.showTitle("§c§lNO TIKI MASK!")
+                Title.showTitle("§c§lNO TIKI MASK!", extraTicks = HotSpotSettings.noTikiMaskTitleExtraTicks)
             }
         }
     }

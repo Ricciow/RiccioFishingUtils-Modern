@@ -105,6 +105,14 @@ object GeneralFishing : Category("General Fishing") {
         description = Literal("Toggles the alert for expired deployables")
     }
 
+    var deployableTitleExtraTicks by int(0) {
+        name = Literal("Deployable Title Duration")
+        description = Literal("Extra time for expired deployable titles, in ticks.")
+        range = 0..200
+        slider = true
+        condition = { deployableExpiredAlert }
+    }
+
     var deployableAlertTypes by enums(*DeployableType.entries.toTypedArray()) {
         name = Literal("Deployable Alerts")
         description = Literal("Select which deployable will cause an alert.")
@@ -179,6 +187,14 @@ object GeneralFishing : Category("General Fishing") {
         description = Literal("Sends an alert whenever a rod cast fails.")
     }
 
+    var failCastTitleExtraTicks by int(0) {
+        name = Literal("Failed Cast Title Duration")
+        description = Literal("Extra time for the failed cast title, in ticks.")
+        range = 0..200
+        slider = true
+        condition = { failCastAlert }
+    }
+
     var failCastSound by reloadableBoolean(true) {
         name = Literal("Failed Cast Sound")
         description = Literal("Plays a sound whenever a cast fails.")
@@ -198,14 +214,38 @@ object GeneralFishing : Category("General Fishing") {
         description = Literal("Sends an alert when you're fishing without bait.")
     }
 
+    var noBaitTitleExtraTicks by int(0) {
+        name = Literal("No Bait Title Duration")
+        description = Literal("Extra time for the no bait title, in ticks.")
+        range = 0..200
+        slider = true
+        condition = { noBaitAlert }
+    }
+
     var missingRodPieceAlert by boolean(true) {
         name = Literal("Missing Rod Piece Alert")
         description = Literal("Sends an alert when you're fishing with a rod that is missing a piece (Hook, Line, or Sinker).")
     }
 
+    var missingRodPieceTitleExtraTicks by int(0) {
+        name = Literal("Missing Rod Piece Title Duration")
+        description = Literal("Extra time for the missing rod piece title, in ticks.")
+        range = 0..200
+        slider = true
+        condition = { missingRodPieceAlert }
+    }
+
     var noFishingArmorAlert by boolean(true) {
         name = Literal("No Fishing Armor Alert")
         description = Literal("Sends an alert when you're fishing without a fishing armor.")
+    }
+
+    var noFishingArmorTitleExtraTicks by int(0) {
+        name = Literal("No Fishing Armor Title Duration")
+        description = Literal("Extra time for the no fishing armor title, in ticks.")
+        range = 0..200
+        slider = true
+        condition = { noFishingArmorAlert }
     }
 
     init {

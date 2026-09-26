@@ -26,7 +26,7 @@ object MissingRodPieceAlert : Feature {
 
             if (missingPieces.isNotEmpty()) {
                 val subtitle = "${TextColor.GRAY}" + missingPieces.joinToString(", ")
-                Title.showTitle("§c§lMISSING ROD PIECE!", subtitle)
+                Title.showTitle("§c§lMISSING ROD PIECE!", subtitle, extraTicks = GeneralFishing.missingRodPieceTitleExtraTicks)
             }
         }
     }

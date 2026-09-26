@@ -50,7 +50,7 @@ object GdragAlert : Feature {
         if (healthPercentage <= SeaCreatureConfig.gdragAlertThreshold) {
             if (!hasGdrag) {
                 alertedEntities.add(entity)
-                Title.showTitle("§c§lNO G-DRAGON!", "§eEquip your Golden Dragon!", fadeIn = 5, duration = 40, fadeOut = 5)
+                Title.showTitle("§c§lNO G-DRAGON!", "§eEquip your Golden Dragon!", fadeIn = 5, duration = 40, fadeOut = 5, extraTicks = SeaCreatureConfig.goldenDragonTitleExtraTicks)
                 if (SeaCreatureConfig.goldenDragonSound) {
                     Sounds.playSound("rfu:gdrag_alert", 1f, SeaCreatureConfig.goldenDragonVolume)
                 }

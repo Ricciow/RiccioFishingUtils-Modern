@@ -32,7 +32,7 @@ object RareAlert : Feature {
             }.forEach { entity ->
                 val sc = SeaCreatures.get(entity.sbName)
                 val title = formatAlert(sc, entity.sbName)
-                Title.showTitle(title) { !entity.isRemoved() }
+                Title.showTitle(title, extraTicks = SeaCreatureConfig.rareScTitleExtraTicks) { !entity.isRemoved() }
             }
 
             if(newEntities.isNotEmpty() && SeaCreatureConfig.rareScSound) {
@@ -74,7 +74,7 @@ object RareAlert : Feature {
         val sc = SeaCreatures.entries.filter { it.special }.randomOrNull() ?: SeaCreatures.entries.randomOrNull()
         if (sc != null) {
             val title = formatAlert(sc)
-            Title.showTitle(title)
+            Title.showTitle(title, extraTicks = SeaCreatureConfig.rareScTitleExtraTicks)
         }
     }
 }

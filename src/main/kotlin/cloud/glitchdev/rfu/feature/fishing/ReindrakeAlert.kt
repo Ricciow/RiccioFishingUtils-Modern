@@ -22,7 +22,7 @@ object ReindrakeAlert : Feature {
                 "§c§lREINDRAKE!"
             }
 
-            Title.showTitle(titleText, "", 10, 20, 10)
+            Title.showTitle(titleText, "", 10, 20, 10, extraTicks = JerryFishing.reindrakeTitleExtraTicks)
         }
     }
 }

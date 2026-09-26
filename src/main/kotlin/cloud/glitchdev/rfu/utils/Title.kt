@@ -8,6 +8,11 @@ object Title {
     private val queue: ArrayDeque<TitleObj> = ArrayDeque()
     private var isRunning = false
 
+
+    fun showTitle(title: String, subTitle: String = "", fadeIn: Int = 5, duration: Int = 10, fadeOut: Int = 5, extraTicks: Int, condition: () -> Boolean = { true }) {
+        showTitle(title, subTitle, fadeIn, duration + extraTicks, fadeOut, condition)
+    }
+
     fun showTitle(title: String, subTitle: String = "", fadeIn: Int = 5, duration: Int = 10, fadeOut: Int = 5, condition: () -> Boolean = { true }) {
         queue.add(TitleObj(title, subTitle, fadeIn, duration, fadeOut, condition))
         displayTitles()

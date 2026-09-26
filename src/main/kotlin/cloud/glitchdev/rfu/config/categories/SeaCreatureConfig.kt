@@ -105,6 +105,14 @@ object SeaCreatureConfig : Category("Sea Creatures") {
         description = Literal("Sends an alert whenever a rare SC is found.")
     }
 
+    var rareScTitleExtraTicks by int(0) {
+        name = Literal("Rare SC Title Duration")
+        description = Literal("Extra time for rare sea creature titles, in ticks.")
+        range = 0..200
+        slider = true
+        condition = { detectionAlert }
+    }
+
     var rareScAlertPreset by string("&6&l[&fα&6&l] {color}&l{name} &6&l[&fα&6&l]") {
         name = Literal("Rare Sc Alert Preset")
         description = Literal("The template for the rare SC alert. Available: {article}, {article_upper}, {name}, {style}, {color}, {plural}, {mob}, {mobs}")
@@ -160,6 +168,14 @@ object SeaCreatureConfig : Category("Sea Creatures") {
     var goldenDragonAlert by reloadableBoolean(true) {
         name = Literal("Golden Dragon Alert")
         description = Literal("Sends an alert when a rare SC is low health and you don't have Golden Dragon equipped.")
+    }
+
+    var goldenDragonTitleExtraTicks by int(0) {
+        name = Literal("Golden Dragon Title Duration")
+        description = Literal("Extra time for the Golden Dragon alert title, in ticks.")
+        range = 0..200
+        slider = true
+        condition = { goldenDragonAlert }
     }
 
     var gdragAlertThreshold by int(20) {

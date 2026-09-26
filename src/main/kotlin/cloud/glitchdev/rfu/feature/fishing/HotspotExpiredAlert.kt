@@ -2,7 +2,6 @@
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.HotSpotSettings
-import cloud.glitchdev.rfu.constants.fishing.HotspotType
 import cloud.glitchdev.rfu.events.managers.HotSpotEvents
 import cloud.glitchdev.rfu.events.managers.HotSpotEvents.registerHotSpotDisposeEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
@@ -38,7 +37,7 @@ object HotspotExpiredAlert : Feature {
             if (hotspot.uuid != currentHotspotId) return@registerHotSpotDisposeEvent
 
             currentHotspotId = null
-            Title.showTitle("§6§lHotspot Expired!")
+            Title.showTitle("§6§lHotspot Expired!", extraTicks = HotSpotSettings.hotspotExpiredTitleExtraTicks)
             if (HotSpotSettings.hotspotExpiredSound) {
                 Sounds.playSound("rfu:hotspot_expired", 1f, HotSpotSettings.hotspotExpiredVolume)
             }

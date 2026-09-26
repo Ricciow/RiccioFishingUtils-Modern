@@ -19,7 +19,7 @@ object NoFishingArmorAlert : Feature {
             if (mc.player?.fishing != null) return@registerItemUsedEvent
 
             if (!ArmorEvents.currentArmorSet.isWearingFishingArmor) {
-                Title.showTitle("§c§lNO FISHING ARMOR!")
+                Title.showTitle("§c§lNO FISHING ARMOR!", extraTicks = GeneralFishing.noFishingArmorTitleExtraTicks)
             }
         }
     }

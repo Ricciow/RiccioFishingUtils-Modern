@@ -38,7 +38,7 @@ object FailCastAlert : Feature {
             if(!sentAlert) {
                 sentAlert = true
                 if(FishingSession.isFishing) {
-                    Title.showTitle(FAILED_CAST_MESSAGE, "", 0, 5, 5) { !isFishing }
+                    Title.showTitle(FAILED_CAST_MESSAGE, "", 0, 5, 5, extraTicks = GeneralFishing.failCastTitleExtraTicks) { !isFishing }
                     if(GeneralFishing.failCastSound) {
                         Sounds.playSound("rfu:failed_cast", 1f, GeneralFishing.failCastVolume)
                     }

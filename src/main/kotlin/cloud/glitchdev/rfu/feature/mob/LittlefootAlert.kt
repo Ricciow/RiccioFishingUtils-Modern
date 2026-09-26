@@ -23,7 +23,7 @@ object LittlefootAlert : Feature {
             lastEntities = littlefoots
 
             newLittlefoots.forEach { entity ->
-                Title.showTitle("§6§l[§f\uE021§6§l] §3§l${entity.sbName} §6§l[§f\uE021§6§l]") { !entity.isRemoved() }
+                Title.showTitle("§6§l[§f\uE021§6§l] §3§l${entity.sbName} §6§l[§f\uE021§6§l]", extraTicks = OtherSettings.littlefootTitleExtraTicks) { !entity.isRemoved() }
             }
 
             if(newLittlefoots.isNotEmpty()) {

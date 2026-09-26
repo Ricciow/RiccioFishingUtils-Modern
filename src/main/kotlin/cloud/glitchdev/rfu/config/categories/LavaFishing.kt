@@ -21,6 +21,14 @@ object LavaFishing : Category("Lava Fishing") {
         description = Literal("Sends an alert whenever someone dies to jawbus")
     }
 
+    var jawbusDeathTitleExtraTicks by int(0) {
+        name = Literal("Jawbus Death Title Duration")
+        description = Literal("Extra time for the Jawbus death title, in ticks.")
+        range = 0..200
+        slider = true
+        condition = { diedJawbusAlert }
+    }
+
     var diedJawbusSound by reloadableBoolean(true) {
         name = Literal("Jawbus Death Sound")
         description = Literal("Plays a sound whenever someone dies to jawbus")

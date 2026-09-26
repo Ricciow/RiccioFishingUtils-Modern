@@ -49,7 +49,7 @@ object BlizzardTimer : Feature {
         registerGameEvent(blizzardEndRegex) { _, _, _ ->
             if (World.island == FishingIslands.JERRY) {
                 if (blizzardActive && JerryFishing.blizzardExpiredAlert) {
-                    Title.showTitle("§b§lBlizzard Expired!")
+                    Title.showTitle("§b§lBlizzard Expired!", extraTicks = JerryFishing.blizzardTitleExtraTicks)
                     if (JerryFishing.blizzardExpiredSound) {
                         Sounds.playSound("rfu:blizzard_expired", 1f, JerryFishing.blizzardExpiredVolume)
                     }

@@ -25,7 +25,8 @@ object PetLevelUpAlert : Feature {
                     "§eYour §6$leveledPetName §eleveled up to level §6$newLevel§e!",
                     fadeIn = 10,
                     duration = 40,
-                    fadeOut = 10
+                    fadeOut = 10,
+                    extraTicks = OtherSettings.petLevelUpTitleExtraTicks
                 )
             }
         }
