@@ -13,8 +13,6 @@ import java.net.http.WebSocket
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
-import kotlin.time.Clock
-import kotlin.time.Instant
 import java.util.concurrent.CompletionStage
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.pow
@@ -38,9 +36,6 @@ object WebSocketClient {
                 WebSocketEvents.trigger(value)
             }
         }
-
-    var lastIncomingTime: Instant? = null
-        private set
 
     fun connect(authToken: String) {
         lastAuthToken = authToken
@@ -67,7 +62,6 @@ object WebSocketClient {
                 }
 
                 override fun onText(webSocket: WebSocket, data: CharSequence, last: Boolean): CompletionStage<*>? {
-                    lastIncomingTime = Clock.System.now()
                     val frame = data.toString()
                     if (frame.trim() != "") {
                         handleFrame(frame)
@@ -254,7 +248,7 @@ object WebSocketClient {
     }
 
     fun disconnect(reason: String = "Disconnecting") {
-        RFULogger.info("WebSocket Disconnecting: $reason")
+        if(webSocket != null) RFULogger.info("WebSocket Disconnecting: $reason")
         heartbeatJob?.cancel()
         heartbeatJob = null
         webSocket?.sendClose(WebSocket.NORMAL_CLOSURE, reason)

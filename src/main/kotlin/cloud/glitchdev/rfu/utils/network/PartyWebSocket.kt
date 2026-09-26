@@ -45,7 +45,6 @@ import kotlin.time.Duration.Companion.hours
 @AutoRegister
 object PartyWebSocket : RegisteredEvent {
     private val gson = Gson()
-    private var connectionLostJob: Job? = null
     private var lastSubmitTime = 0L
 
     var lastParty: FishingParty? = null
@@ -69,25 +68,9 @@ object PartyWebSocket : RegisteredEvent {
         RFULogger.dev("Registering PartyWebSocket")
 
         registerConnectionStatusChangedEvent { connected ->
-            if (connected) {
-                connectionLostJob?.cancel()
-                connectionLostJob = null
-            } else if (myParty != null) {
-                connectionLostJob = Coroutines.launch {
-                    val lastTime = WebSocketClient.lastIncomingTime ?: Clock.System.now()
-                    val elapsed = Clock.System.now() - lastTime
-                    val remaining = 60000 - elapsed.inWholeMilliseconds
-                    
-                    if (remaining > 0) {
-                        delay(remaining)
-                    }
-                    
-                    if (!WebSocketClient.isConnected && myParty != null) {
-                        myParty?.let { lastParty = it.deepCopy() }
-                        PartyRequeueAlert.sendPartyDequeuedMessage("Connection lost")
-                        myParty = null
-                    }
-                }
+            if (!connected && myParty != null) {
+                PartyRequeueAlert.sendPartyDequeuedMessage("Connection lost")
+                myParty = null
             }
         }
 

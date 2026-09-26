@@ -11,12 +11,14 @@ import cloud.glitchdev.rfu.utils.command.Command
 import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.User
+import cloud.glitchdev.rfu.utils.Coroutines
 import cloud.glitchdev.rfu.config.categories.BackendSettings
 import cloud.glitchdev.rfu.utils.World
 import cloud.glitchdev.rfu.events.managers.AfkEvents.registerAfkStatusChangedEvent
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.HoverEvent
 import net.minecraft.network.chat.Component
@@ -36,6 +38,8 @@ import java.net.http.HttpResponse
 import java.time.Instant
 import java.util.Base64
 import java.util.UUID
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 
 @AutoRegister
 object Network : RegisteredEvent {
@@ -52,20 +56,29 @@ object Network : RegisteredEvent {
     private var expiresAt : Long? = null
     private val client = HttpClient.newHttpClient()
     private val USER_AGENT = "Java-http-client/${System.getProperty("java.version")} rfu:${RFU_VERSION.friendlyString}"
+    private var disconnectJob: Job? = null
 
     override fun register() {
         registerJoinEvent { _ ->
-            authenticateUser()
+            if (World.isOnHypixel) {
+                cancelDisconnect()
+                authenticateUser()
+            }
         }
 
         registerDisconnectEvent {
-            WebSocketClient.disconnect()
+            scheduleDisconnect()
         }
 
         registerLocationEvent {
             if (!World.isOnHypixel) {
-                WebSocketClient.disconnect()
+                scheduleDisconnect()
             }
+        }
+
+        registerShutdownEvent {
+            cancelDisconnect()
+            WebSocketClient.disconnect()
         }
 
         registerAfkStatusChangedEvent { isAfk ->
@@ -77,6 +90,24 @@ object Network : RegisteredEvent {
                 if (!WebSocketClient.isConnected) {
                     authenticateUser()
                 }
+            }
+        }
+    }
+
+    private fun cancelDisconnect() {
+        disconnectJob?.cancel()
+        disconnectJob = null
+    }
+
+    private fun scheduleDisconnect() {
+        if (disconnectJob != null) return
+        disconnectJob = Coroutines.launch {
+            delay(30_000)
+            mc.execute {
+                if (!World.isOnHypixel) {
+                    WebSocketClient.disconnect()
+                }
+                disconnectJob = null
             }
         }
     }
@@ -238,11 +269,13 @@ object Network : RegisteredEvent {
             return
         }
 
-        if (!BackendSettings.backendAccepted || !World.isOnHypixel) {
-            RFULogger.warn("Backend not accepted or not on hypixel")
+        if (!BackendSettings.backendAccepted) {
+            RFULogger.warn("Backend not accepted")
             WebSocketClient.disconnect()
             return
         }
+
+        if (!World.isOnHypixel) return
 
         if(isTokenExpired()) {
             val session = mc.user

@@ -53,6 +53,7 @@
 - Fixed fishing speed color on frog blessing display
 
 ### Back-end
+- Leaving Hypixel now keeps the ws connection for 30 seconds.
 - Improved the Elementa memory leak patch
 - Updated Elementa rendering on 26.1 and 26.2 to use the new renderer
 - Added 26.3 support
