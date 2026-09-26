@@ -1,6 +1,7 @@
 # v1.19.0 - ???
 
 ### Features
+- Added a setting to hide nearby players, while choosing which parts and equipment stay visible.
 - Added an Auto accept players setting for Party Finder.
 - Added a setting to toggle the daily streak party command
 - Added personal best kill times for sea creatures

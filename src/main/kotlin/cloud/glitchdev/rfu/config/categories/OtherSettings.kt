@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.config.categories
 import cloud.glitchdev.rfu.config.Category
 import cloud.glitchdev.rfu.constants.chat.MessageTypes
 import cloud.glitchdev.rfu.constants.ui.TooltipGuiScale
+import cloud.glitchdev.rfu.constants.ui.VisiblePlayerEquipment
 import cloud.glitchdev.rfu.constants.text.TextColor.LIGHT_RED
 
 object OtherSettings : Category("Other") {
@@ -77,6 +78,31 @@ object OtherSettings : Category("Other") {
     var removeNetherFog by boolean(false) {
         name = Literal("Remove Nether Fog")
         description = Literal("Removes the nether fog")
+    }
+
+    init {
+        dualSeparator {
+            title = "Nearby Players"
+        }
+    }
+
+    var hideNearbyPlayers by reloadableBoolean(false) {
+        name = Literal("Hide Nearby Players")
+        description = Literal("Hides nearby players with a rank-style name tag on your screen.")
+    }
+
+    var hideNearbyPlayersRadius by int(5) {
+        name = Literal("Hide Players Within")
+        description = Literal("Distance in blocks at which other players are hidden.")
+        range = 1..10
+        slider = true
+        condition = { hideNearbyPlayers }
+    }
+
+    var visiblePlayerEquipment by enums(VisiblePlayerEquipment.BOOTS) {
+        name = Literal("Keep Visible")
+        description = Literal("Player parts and equipment to keep visible when nearby players are hidden.")
+        condition = { hideNearbyPlayers }
     }
 
     var partyInviteMsgs by boolean(true) {
