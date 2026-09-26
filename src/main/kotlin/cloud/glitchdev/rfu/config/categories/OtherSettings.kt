@@ -79,6 +79,12 @@ object OtherSettings : Category("Other") {
         description = Literal("Removes the nether fog")
     }
 
+    var partyInviteMsgs by boolean(true) {
+        name = Literal("Party invite messages")
+        description = Literal("Sends a prompt to invite player msg when some keywords are said by player")
+    }
+
+
     init {
         dualSeparator {
             title = "Emojis"
@@ -172,7 +178,7 @@ object OtherSettings : Category("Other") {
 
     init {
         separator {
-            title = "Party Finder Alert"
+            title = "Party Finder"
             description = "${LIGHT_RED}This feature requires backend acceptance!"
             condition = { !BackendSettings.backendAccepted }
         }
@@ -191,17 +197,17 @@ object OtherSettings : Category("Other") {
         condition = { BackendSettings.backendAccepted }
     }
 
+    var autoAcceptPlayers by boolean(false) {
+        name = Literal("Auto accept players")
+        description = Literal("Automatically invites players who request to join your Party Finder listing.")
+        condition = { BackendSettings.backendAccepted }
+    }
+
     var peekPartyFinderKeybind by key(0) {
         name = Literal("Peek Party Finder Keybind")
         description = Literal("Keybind to peek the party finder window without opening the GUI.")
         condition = { BackendSettings.backendAccepted }
     }
-
-    var partyInviteMsgs by boolean(true) {
-        name = Literal("Party invite messages")
-        description = Literal("Sends a prompt to invite player msg when some keywords are said by player")
-    }
-
 
     init {
         dualSeparator {

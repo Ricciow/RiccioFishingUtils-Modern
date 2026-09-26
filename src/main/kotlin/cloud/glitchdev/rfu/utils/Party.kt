@@ -1,13 +1,13 @@
 package cloud.glitchdev.rfu.utils
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
+import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.chat.RegexConstants.PLAYER_REGEX
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerAllowGameEvent
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.hypixelModAPI
@@ -20,7 +20,6 @@ import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.utils.command.AbstractCommand
 import cloud.glitchdev.rfu.utils.command.Command
-import cloud.glitchdev.rfu.utils.dsl.isIgnored
 import cloud.glitchdev.rfu.utils.dsl.removeRankTag
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import cloud.glitchdev.rfu.utils.network.PartyWebSocket
@@ -34,6 +33,7 @@ import net.minecraft.network.chat.HoverEvent
 import net.minecraft.network.chat.Style
 import net.minecraft.network.chat.Component
 import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.jvm.optionals.getOrNull
 import kotlinx.coroutines.delay
 
@@ -46,7 +46,7 @@ object Party : RegisteredEvent {
     var memberCount = 0
     var requestedUser: String? = null
     private val joinedCooldowns: MutableMap<String, Long> = mutableMapOf()
-    private val pendingPFInvites: MutableSet<String> = mutableSetOf()
+    private val pendingPFInvites: MutableSet<String> = ConcurrentHashMap.newKeySet()
     private var wasInServer = false
     private val uuidToNameCache = mutableMapOf<UUID, String>()
     private val partyInfoCallbacks = mutableListOf<() -> Unit>()
@@ -85,7 +85,11 @@ object Party : RegisteredEvent {
         }
 
         registerJoinRequestEvent { applicant ->
-            promptInvite(applicant)
+            if (OtherSettings.autoAcceptPlayers) {
+                sendPFInvite(applicant, preventDuplicate = true)
+            } else {
+                promptInvite(applicant)
+            }
         }
 
         registerGameEvent("""You have joined ($PLAYER_REGEX)'s? party!""".toExactRegex()) { _, _, matches ->
@@ -176,19 +180,7 @@ object Party : RegisteredEvent {
             executePartyChange()
         }
 
-        registerAllowGameEvent("From ($PLAYER_REGEX): \\[RFUPF\\] I would like to join your party!".toExactRegex()) { _, _, matches ->
-            val matchGroups = matches?.groupValues ?: return@registerAllowGameEvent true
-            val player = matchGroups[1].removeRankTag()
-            if (player.isIgnored()) return@registerAllowGameEvent false
-            promptInvite(player)
-            return@registerAllowGameEvent false
-        }
-
-        registerAllowGameEvent("To ($PLAYER_REGEX): \\[RFUPF\\] I would like to join your party!".toExactRegex()) { _, _, _ ->
-            return@registerAllowGameEvent false
-        }
-
-        registerOnPartyChangeEvent { inParty, isLeader, _, members ->
+        registerOnPartyChangeEvent { _, isLeader, _, _ ->
             val currentParty: FishingParty? = PartyWebSocket.myParty
             if (currentParty != null) {
                 if (isLeader) {
@@ -327,14 +319,13 @@ object Party : RegisteredEvent {
         oldMembers.putAll(members)
     }
 
-    fun requestEntry(username: String) {
-        requestedUser = username
-        Chat.sendCommand("w $username [RFUPF] I would like to join your party!")
+    private fun sendPFInvite(username: String, preventDuplicate: Boolean = false) {
+        val firstInvite = pendingPFInvites.add(username)
+        if (preventDuplicate && !firstInvite) return
+        Chat.sendCommand("party $username")
         Coroutines.launch {
             delay(60_000)
-            if (requestedUser == username) {
-                requestedUser = null
-            }
+            pendingPFInvites.remove(username)
         }
     }
 
@@ -347,15 +338,7 @@ object Party : RegisteredEvent {
                 arg("username", StringArgumentType.string())
                     .executes { context ->
                         val username = StringArgumentType.getString(context, "username")
-
-                        Chat.sendCommand("party $username")
-                        pendingPFInvites.add(username)
-                        
-                        Coroutines.launch {
-                            delay(60_000)
-                            pendingPFInvites.remove(username)
-                        }
-
+                        sendPFInvite(username)
                         1
                     }
             )

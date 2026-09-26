@@ -91,16 +91,13 @@ object PartyWebSocket : RegisteredEvent {
             }
         }
 
-        registerErrorMessageEvent { message, origin ->
+        registerErrorMessageEvent { _, origin ->
             if (origin == "/app/party/join" || origin.endsWith("/party/join")) {
                 pendingJoinHasError = true
                 pendingJoinJob?.cancel()
-            }
-            if (message == "Target user is not currently connected to the WebSocket.") {
-                lastJoinTarget?.let { target ->
-                    Party.requestEntry(target)
-                    lastJoinTarget = null
-                }
+                lastJoinTarget = null
+                lastJoinTime = null
+                Party.requestedUser = null
             }
         }
 

@@ -1,6 +1,7 @@
 # v1.19.0 - ???
 
 ### Features
+- Added an Auto accept players setting for Party Finder.
 - Added a setting to toggle the daily streak party command
 - Added personal best kill times for sea creatures
 - Added message hiding options for Vanquisher spawns, treasure catches, and Blazetekk Radio
