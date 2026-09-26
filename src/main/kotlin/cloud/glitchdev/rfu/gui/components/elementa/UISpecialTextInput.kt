@@ -26,12 +26,8 @@ import gg.essential.elementa.dsl.basicYConstraint
 import gg.essential.elementa.dsl.coerceIn
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.width
-//? if < 26.3 {
-/*import gg.essential.universal.UMatrixStack
-*///? } else {
 import gg.essential.elementa.font.extractMcScale
 import gg.essential.elementa.renderer.ElementaExtractor
-//? }
 import java.awt.Color
 
 /**
@@ -144,7 +140,6 @@ open class UISpecialTextInput @JvmOverloads constructor(
         return (getHeight() - textHeight) / 2f
     }
 
-    //? if >= 26.3 {
     override fun extractComponent(extractor: ElementaExtractor) {
         val verticalOffset = getVerticalOffset()
         val lineY = getTop() + verticalOffset
@@ -209,81 +204,4 @@ open class UISpecialTextInput @JvmOverloads constructor(
 
         super.extractComponent(extractor)
     }
-    //?  } else {
-    /*override fun draw(matrixStack: UMatrixStack) {
-        beforeDrawCompat(matrixStack)
-
-        val verticalOffset = getVerticalOffset()
-
-        if (!active && !hasText()) {
-            getFontProvider().drawString(
-                matrixStack,
-                placeholder,
-                getColor(),
-                getLeft(),
-                getTop() + verticalOffset,
-                10f,
-                getTextScale(),
-                shadow
-            )
-            return super.draw(matrixStack)
-        }
-
-        val lineText = getTextForRender()
-
-        if (active) {
-            cursorComponent.setY(basicYConstraint {
-                getTop() + verticalOffset
-            })
-            setCursorPos()
-        }
-
-        matrixStack.push()
-        matrixStack.translate(0.0, verticalOffset.toDouble(), 0.0)
-
-        if (hasSelection()) {
-            var currentX = getLeft()
-            cursorComponent.hide(instantly = true)
-
-            if (!selectionStart().isAtLineStart) {
-                val preSelectionText = lineText.substring(0, selectionStart().column)
-
-                getFontProvider().drawString(
-                    matrixStack, preSelectionText, getColor(), currentX, getTop(), 10f, getTextScale(), shadow
-                )
-
-                currentX += preSelectionText.width(getTextScale())
-            }
-
-            val selectedText = lineText.substring(selectionStart().column, selectionEnd().column)
-            val selectedTextWidth = selectedText.width(getTextScale())
-            drawSelectedTextCompat(matrixStack, selectedText, currentX, currentX + selectedTextWidth, row = 0)
-            currentX += selectedTextWidth
-
-            if (!selectionEnd().isAtLineEnd) {
-                val postSelectionText = lineText.substring(selectionEnd().column)
-
-                getFontProvider().drawString(
-                    matrixStack, postSelectionText, getColor(), currentX, getTop(), 10f, getTextScale(), shadow
-                )
-            }
-
-        } else {
-            getFontProvider().drawString(
-                matrixStack,
-                lineText,
-                getColor(),
-                getLeft(),
-                getTop(),
-                10f,
-                getTextScale(),
-                shadow
-            )
-        }
-
-        matrixStack.pop()
-
-        super.draw(matrixStack)
-    }
-    *///? }
 }

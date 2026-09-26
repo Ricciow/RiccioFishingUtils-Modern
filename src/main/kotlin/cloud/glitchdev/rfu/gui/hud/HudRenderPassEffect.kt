@@ -1,6 +1,5 @@
 package cloud.glitchdev.rfu.gui.hud
 
-//? if >= 26.3 {
 import gg.essential.elementa.effects.Effect
 import gg.essential.elementa.renderer.ElementaExtractor
 
@@ -21,4 +20,3 @@ class HudRenderPassEffect(private val element: AbstractHudElement) : Effect() {
         }
     }
 }
-//?}

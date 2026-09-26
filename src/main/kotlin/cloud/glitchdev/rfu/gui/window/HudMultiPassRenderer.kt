@@ -1,6 +1,5 @@
 package cloud.glitchdev.rfu.gui.window
 
-//? if >= 26.3 {
 import gg.essential.elementa.renderer.ElementaRenderer
 import gg.essential.universal.render.UGpuFormat
 import gg.essential.universal.render.UGpuTexture
@@ -74,4 +73,3 @@ class HudMultiPassRenderer : UScreen.Renderer {
         elementaRenderer.close()
     }
 }
-//?}

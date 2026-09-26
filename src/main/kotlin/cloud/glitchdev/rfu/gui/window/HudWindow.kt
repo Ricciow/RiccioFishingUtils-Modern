@@ -33,14 +33,11 @@ import gg.essential.elementa.dsl.minus
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.toConstraint
-import gg.essential.universal.UMatrixStack
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import java.awt.Color
-//? if >= 26.3 {
 import gg.essential.universal.UScreen
-//?}
 
 object HudWindow : BaseWindow(false) {
     val backgroundColor = UIScheme.darkBackground.toConstraint()
@@ -87,7 +84,6 @@ object HudWindow : BaseWindow(false) {
     var currentRenderPass: RenderPass = RenderPass.NONE
         private set
 
-    //? if >= 26.3 {
     private var multiPassRenderer: HudMultiPassRenderer? = null
 
     override fun uCreateRenderer(): UScreen.Renderer {
@@ -100,36 +96,9 @@ object HudWindow : BaseWindow(false) {
         window.prepareFrame()
         return HudMultiPassRenderState(window.extractRenderState())
     }
-    //?}
-
     fun onFrameExtractionStart() {
-        //? if < 26.3 {
-        /*hasRecycledTexturesThisFrame = false
-        *///?} else {
         multiPassRenderer?.onFrameStart()
-        //?}
     }
-
-    //? if < 26.3 {
-    /*private var hasRecycledTexturesThisFrame = false
-
-    fun shouldRecycleTextures(): Boolean {
-        if (!hasRecycledTexturesThisFrame) {
-            hasRecycledTexturesThisFrame = true
-            return true
-        }
-        return false
-    }
-
-    @Suppress("DEPRECATION")
-    override fun onDrawScreen(matrixStack: UMatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float) {
-        if (currentRenderPass == RenderPass.NONE) {
-            super.onDrawScreen(matrixStack, mouseX, mouseY, partialTicks)
-        } else {
-            window.draw(matrixStack)
-        }
-    }
-    *///?}
 
     init {
         create()

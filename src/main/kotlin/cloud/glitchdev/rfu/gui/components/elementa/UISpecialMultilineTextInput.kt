@@ -26,13 +26,8 @@ import gg.essential.elementa.dsl.coerceAtMost
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.width
 import gg.essential.universal.UKeyboard
-//? if < 26.3 {
-/*import gg.essential.elementa.utils.splitStringToWidthTruncated
-import gg.essential.universal.UMatrixStack
-*///? } else {
 import gg.essential.elementa.font.extractMcScale
 import gg.essential.elementa.renderer.ElementaExtractor
-//? }
 import java.awt.Color
 import kotlin.math.abs
 
@@ -119,7 +114,6 @@ class UISpecialMultilineTextInput @JvmOverloads constructor(
         }
     }
 
-    //? if >= 26.3 {
     override fun extractComponent(extractor: ElementaExtractor) {
         val currentWidth = getWidth()
         if (currentWidth <= 0f) {
@@ -235,129 +229,6 @@ class UISpecialMultilineTextInput @JvmOverloads constructor(
 
         super.extractComponent(extractor)
     }
-    //? } else {
-    /*override fun draw(matrixStack: UMatrixStack) {
-        beforeDraw(matrixStack)
-
-        val currentWidth = getWidth()
-        if (currentWidth <= 0f) {
-            super.draw(matrixStack)
-            return
-        }
-
-        if (abs(currentWidth - lastSplitWidth) > 0.1f) {
-            val textPos = try { cursor.toTextualPos() } catch (_: Exception) { LinePosition(0, 0, isVisual = false) }
-            val otherTextPos = try { otherSelectionEnd.toTextualPos() } catch (_: Exception) { LinePosition(0, 0, isVisual = false) }
-            lastSplitWidth = currentWidth
-            recalculateAllVisualLines()
-            cursor = try { textPos.toVisualPos() } catch (_: Exception) { LinePosition(0, 0, isVisual = true) }
-            otherSelectionEnd = try { otherTextPos.toVisualPos() } catch (_: Exception) { LinePosition(0, 0, isVisual = true) }
-            val heightDifference = getHeight() - visualLines.size * lineHeight * getTextScale()
-            if (verticalScrollingOffset < heightDifference) {
-                targetVerticalScrollingOffset = heightDifference.coerceAtMost(0f)
-                verticalScrollingOffset = targetVerticalScrollingOffset
-            }
-            recalculateDimensions()
-        }
-
-        val textScale = getTextScale()
-        if (!active && !hasText()) {
-            if (placeholder.isNotEmpty()) {
-                val lines = splitStringToWidthTruncated(placeholder, currentWidth, textScale, 1)
-                if (lines.isNotEmpty()) {
-                    // MODIFIED: Draw placeholder with shadow
-                    getFontProvider().drawString(
-                        matrixStack, lines[0], getColor(), getLeft(), getTop(), 10f, textScale, shadow
-                    )
-                }
-            }
-            return super.draw(matrixStack)
-        }
-
-        if (hasSelection()) {
-            cursorComponent.hide(instantly = true)
-        } else if (active) {
-            cursorComponent.unhide()
-            val (cursorPosX, cursorPosY) = cursor.toScreenPos()
-            cursorComponent.setX((cursorPosX).pixels())
-            cursorComponent.setY((cursorPosY).pixels())
-        }
-
-        val (selectionStart, selectionEnd) = getSelection()
-
-        for ((i, visualLine) in visualLines.withIndex()) {
-            val topOffset = (lineHeight * i * textScale) + verticalScrollingOffset
-            if (topOffset < -lineHeight * textScale || topOffset > getHeight() + lineHeight * textScale)
-                continue
-
-            // Calculate the absolute Y position for the line
-            val lineY = getTop() + topOffset
-
-            if (!hasSelection() || i < selectionStart.line || i > selectionEnd.line) {
-                // MODIFIED: Draw standard line text with shadow
-                getFontProvider().drawString(
-                    matrixStack, visualLine.text, getColor(), getLeft(), lineY, 10f, textScale, shadow
-                )
-            } else {
-                val startText = when {
-                    i == selectionStart.line && selectionStart.column > 0 -> {
-                        visualLine.text.substring(0, selectionStart.column)
-                    }
-                    else -> ""
-                }
-
-                val selectedText = when {
-                    selectionStart.line == selectionEnd.line -> visualLine.text.substring(
-                        selectionStart.column,
-                        selectionEnd.column
-                    )
-                    i > selectionStart.line && i < selectionEnd.line -> visualLine.text
-                    i == selectionStart.line -> visualLine.text.substring(selectionStart.column)
-                    i == selectionEnd.line -> visualLine.text.substring(0, selectionEnd.column)
-                    else -> ""
-                }
-
-                val endText = when {
-                    i == selectionEnd.line && selectionEnd.column < visualLines[i].length -> {
-                        visualLine.text.substring(selectionEnd.column)
-                    }
-                    else -> ""
-                }
-
-                val startTextWidth = startText.width(textScale)
-                val selectedTextWidth = selectedText.width(textScale)
-
-                val newlinePadding = if (i < selectionEnd.line) ' '.width(textScale) else 0f
-
-                if (startText.isNotEmpty()) {
-                    // MODIFIED: Draw pre-selection text with shadow
-                    getFontProvider().drawString(
-                        matrixStack, startText, getColor(), getLeft(), lineY, 10f, textScale, shadow
-                    )
-                }
-
-                if (selectedText.isNotEmpty() || newlinePadding != 0f) {
-                    drawSelectedText(
-                        matrixStack,
-                        selectedText,
-                        getLeft() + startTextWidth,
-                        getLeft() + startTextWidth + selectedTextWidth + newlinePadding,
-                        i
-                    )
-                }
-
-                if (endText.isNotEmpty()) {
-                    // MODIFIED: Draw post-selection text with shadow
-                    getFontProvider().drawString(
-                        matrixStack, endText, getColor(), getLeft() + startTextWidth + selectedTextWidth, lineY, 10f, textScale, shadow
-                    )
-                }
-            }
-        }
-
-        super.draw(matrixStack)
-    }
-    *///? }
 
     override fun screenPosToVisualPos(x: Float, y: Float): LinePosition {
         val realY = y - verticalScrollingOffset

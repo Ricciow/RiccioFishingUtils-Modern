@@ -22,11 +22,7 @@ import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.plus
 import gg.essential.elementa.dsl.toConstraint
-//? if >= 26.3 {
 import gg.essential.elementa.renderer.ElementaExtractor
-//?} else {
-/*import gg.essential.universal.UMatrixStack
-*///?}
 import gg.essential.universal.UKeyboard
 import kotlin.math.abs
 import kotlin.math.max
@@ -87,9 +83,7 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
     } childOf this
 
     init {
-        //? if >= 26.3 {
         this.enableEffect(HudRenderPassEffect(this))
-        //?}
 
         this.constrain {
             x = defaultX.pixels()
@@ -424,17 +418,10 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
         }
     }
 
-    //? if >=26.3 {
     override fun extractComponent(extractor: ElementaExtractor) {
         if (!shouldDrawInCurrentPass()) return
         super.extractComponent(extractor)
     }
-    //?} else {
-    /*override fun draw(matrixStack: UMatrixStack) {
-        if (!shouldDrawInCurrentPass()) return
-        super.draw(matrixStack)
-    }
-    *///?}
 
     companion object {
         private const val MAX_SNAP_ORTHOGONAL_DISTANCE = 300f

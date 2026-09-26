@@ -39,8 +39,7 @@
     "elementa.MappedStateMixin",
     "elementa.AnimatingConstraintsMixin",
     "elementa.WindowScreenMixin",
-    "ScreenMixin",
-    "universalcraft.UScreenMixin"
+    "ScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1
