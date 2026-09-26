@@ -43,7 +43,7 @@ object TimeToKill : Feature {
                 )
             }
 
-            if (CatchTracker.catchHistory.registerKillTime(sc, duration.inWholeMilliseconds)) {
+            if (!avoidDead && entity.isOwn() && CatchTracker.catchHistory.registerKillTime(sc, duration.inWholeMilliseconds)) {
                 CatchTracker.catchesFile.save()
                 if (sc.special && SeaCreatureConfig.killTimePersonalBest) {
                     Chat.sendMessage(
