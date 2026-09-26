@@ -1,4 +1,4 @@
-# v1.19.0 - ???
+# v1.19.0 - Major
 
 ### Features
 - Added a party message alert when a deployable expires (off by default).
