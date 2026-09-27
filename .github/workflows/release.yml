@@ -142,7 +142,7 @@ jobs:
             --arg title "$TITLE" \
             '{content: $content, expiresAt: ($expiresAt | tonumber), message: $message, title: $title}')
 
-          curl --fail-with-body --silent --show-error --connect-timeout 15 --max-time 60 -X POST https://rfu.glitchdev.cloud/api/announcement \
+          curl --fail-with-body --silent --show-error --connect-timeout 15 --max-time 60 -X POST https://rfu.glitchdev.cloud/api/admin/announcement \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer $RFU_API_TOKEN" \
             -d "$JSON_PAYLOAD"
