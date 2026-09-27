@@ -1,5 +1,8 @@
 # v1.19.1 - Minor
 
+### Features
+- Added /rfu gui /rfu hud /rfu move command aliases to open the HUD editor.
+
 ### Fixes
 - Rod timer now hides the !!! armor stand.
 - Made the pb message not show duplicated with the normal time to kill message
