@@ -27,6 +27,22 @@ object TextUtils {
         return Component.literal("§b§l[§f§lRFU§9§lPF§b§l] $textColor$string")
     }
 
+    fun rfupfLiteral(string: String, textColor: TextColor = TextColor.WHITE, textEffect : TextEffects) : MutableComponent {
+        return Component.literal("§b§l[§f§lRFU§9§lPF§b§l] $textColor$textEffect$string")
+    }
+
+    fun debugLiteral(string: String, textStyle: TextStyle) : MutableComponent {
+        return Component.literal("§b§l[§f§lRFU§1§lDEBUG§b§l] $textStyle$string")
+    }
+
+    fun debugLiteral(string: String, textColor: TextColor = TextColor.WHITE) : MutableComponent {
+        return Component.literal("§b§l[§f§lRFU§1§lDEBUG§b§l] $textColor$string")
+    }
+
+    fun debugLiteral(string: String, textColor: TextColor = TextColor.WHITE, textEffect : TextEffects) : MutableComponent {
+        return Component.literal("§b§l[§f§lRFU§1§lDEBUG§b§l] $textColor$textEffect$string")
+    }
+
     fun backendAcceptMessage() : MutableComponent {
         return rfuLiteral(
             "Must accept the backend features to use this feature!",

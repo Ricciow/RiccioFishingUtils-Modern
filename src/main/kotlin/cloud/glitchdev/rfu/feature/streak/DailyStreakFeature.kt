@@ -17,7 +17,7 @@ object DailyStreakFeature : Feature {
 
     override fun onInitialize() {
         registerJoinEvent(delayMillis = 1000) { _ ->
-            if (!DailyStreakSettings.dailyStreakEnabled) return@registerJoinEvent
+            if (!DailyStreakSettings.dailyStreakEnabled || !World.isOnHypixel || !World.isInSkyblock) return@registerJoinEvent
 
             DailyStreakManager.checkDailyReset()
             if (!wasInSkyblock && World.isInSkyblock) {

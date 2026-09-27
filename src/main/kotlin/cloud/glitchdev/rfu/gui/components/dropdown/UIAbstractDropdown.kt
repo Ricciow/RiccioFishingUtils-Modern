@@ -14,10 +14,9 @@ import gg.essential.elementa.constraints.*
 import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.*
 import gg.essential.universal.UKeyboard
-import gg.essential.universal.UMatrixStack
+import gg.essential.elementa.renderer.ElementaExtractor
 import cloud.glitchdev.rfu.gui.components.Colorable
 import cloud.glitchdev.rfu.utils.gui.isHidden
-import java.awt.Color
 import kotlin.math.min
 
 abstract class UIAbstractDropdown(
@@ -286,7 +285,7 @@ abstract class UIAbstractDropdown(
         }
     }
 
-    override fun draw(matrixStack: UMatrixStack) {
+    override fun extractComponent(extractor: ElementaExtractor) {
         val currentHeight = this.getHeight()
         if (lastHeight != currentHeight) {
             lastHeight = currentHeight
@@ -298,7 +297,7 @@ abstract class UIAbstractDropdown(
                 width = 100.percent() - 5.pixels
             }
         }
-        super.draw(matrixStack)
+        super.extractComponent(extractor)
     }
 
     open fun updateHeight() {

@@ -9,9 +9,9 @@ import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.toConstraint
-import gg.essential.universal.UMatrixStack
 import cloud.glitchdev.rfu.gui.components.Colorable
 import gg.essential.elementa.dsl.animate
+import gg.essential.elementa.dsl.max
 import gg.essential.elementa.dsl.minus
 import gg.essential.elementa.dsl.pixels
 
@@ -37,7 +37,7 @@ class UIDecoratedTextInput(
         }
     var isFocused = false
         private set
-    private var textChanged = false
+    private var isUpdatingText = false
     private val numberRegex = "[^0-9]".toRegex()
 
     lateinit var textInput : UISpecialTextInput
@@ -60,20 +60,27 @@ class UIDecoratedTextInput(
             this.animate {
                 setColorAnimation(Animations.IN_EXP, hoverDuration, primaryColor)
             }
+        }.onMouseClick {
+            if (!isEnabled) return@onMouseClick
+            if (::textInput.isInitialized) {
+                textInput.grabWindowFocus()
+            }
         }
 
-        textInput = (UISpecialTextInput(placeholder).constrain {
+        textInput = (UISpecialTextInput(placeholder).apply {
+            onUpdate { newText ->
+                if (!isEnabled) return@onUpdate
+                handleTextChange(newText)
+            }
+        }.constrain {
             x = CenterConstraint()
             y = CenterConstraint()
-            width = 100.percent() - 4.pixels
-            height = 100.percent() - 2.pixels
+            width = max(0.pixels, 100.percent() - 4.pixels)
+            height = max(0.pixels, 100.percent() - 2.pixels)
             color = if (isEnabled) unselectedTextColor else UIScheme.disabledTextColor.toConstraint()
         }.onMouseClick {
             if (!isEnabled) return@onMouseClick
             grabWindowFocus()
-        }.onKeyType { _, _ ->
-            if (!isEnabled) return@onKeyType
-            textChanged = true
         }.onFocus {
             isFocused = true
             updateTextColor()
@@ -83,25 +90,37 @@ class UIDecoratedTextInput(
         } childOf this) as UISpecialTextInput
     }
 
-    override fun draw(matrixStack: UMatrixStack) {
-        if(textChanged) {
-            val text = textInput.getText()
-            if(numberOnly && textInput.getText().contains(numberRegex)) {
-                textInput.setText(numberRegex.replace(text, ""))
+    private fun handleTextChange(text: String) {
+        if (isUpdatingText) return
+        isUpdatingText = true
+        try {
+            var filteredText = text
+            if (numberOnly && filteredText.contains(numberRegex)) {
+                filteredText = numberRegex.replace(filteredText, "")
             }
-            if(maxChars != 0 && text.length > maxChars) {
-                textInput.setText(text.slice(IntRange(0, maxChars-1)))
+            if (maxChars != 0 && filteredText.length > maxChars) {
+                filteredText = filteredText.slice(IntRange(0, maxChars - 1))
             }
-            onChange(textInput.getText())
-            textChanged = false
+            if (filteredText != text) {
+                textInput.setText(filteredText)
+            }
+            onChange(filteredText)
+        } finally {
+            isUpdatingText = false
         }
-
-        super.draw(matrixStack)
     }
 
     fun setText(text : String, triggerOnChange: Boolean = false) {
-        textInput.setText(text)
-        textChanged = triggerOnChange
+        if (triggerOnChange) {
+            handleTextChange(text)
+        } else {
+            isUpdatingText = true
+            try {
+                textInput.setText(text)
+            } finally {
+                isUpdatingText = false
+            }
+        }
         updateTextColor()
     }
 

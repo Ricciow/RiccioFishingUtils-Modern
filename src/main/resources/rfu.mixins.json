@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "ParsedConfigMixin",
+    "AtmosphericFogEnvironmentMixin",
     "ConfigScreenMixin",
     "OptionsMixin",
     "KeyMappingAccessor",
@@ -18,6 +19,10 @@
     "AbstractContainerScreenMixin",
     "AbstractContainerScreenAccessor",
     "EntityRenderDispatcherMixin",
+    "EntityRendererMixin",
+    "AvatarRenderStateMixin",
+    "AvatarRendererMixin",
+    "LivingEntityRendererMixin",
     "EntityMixin",
     "FontMixin",
     "CameraMixin",
@@ -38,8 +43,7 @@
     "elementa.MappedStateMixin",
     "elementa.AnimatingConstraintsMixin",
     "elementa.WindowScreenMixin",
-    "ScreenMixin",
-    "universalcraft.UScreenMixin"
+    "ScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

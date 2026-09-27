@@ -25,7 +25,7 @@ object FullInventoryAlert : Feature {
                     wasFull = true
                     lastAlertTime = System.currentTimeMillis()
 
-                    Title.showTitle("§c§lINVENTORY FULL!", "", 5, 20, 5)
+                    Title.showTitle("§c§lINVENTORY FULL!", "", 5, 20, 5, extraTicks = OtherSettings.fullInventoryTitleExtraTicks)
 
                     if (OtherSettings.fullInventorySound) {
                         Sounds.playSound("rfu:inventory_full", 1f, OtherSettings.fullInventoryVolume)

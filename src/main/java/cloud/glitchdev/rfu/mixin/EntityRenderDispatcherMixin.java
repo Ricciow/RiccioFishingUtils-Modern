@@ -23,6 +23,9 @@ public class EntityRenderDispatcherMixin {
             double x,
             double y,
             double z,
+            //? if >=26.3 {
+            float partialTicks,
+            //?}
             CallbackInfoReturnable<Boolean> cir
     ) {
         boolean isVisible = frustum.isVisible(entity.getBoundingBox());

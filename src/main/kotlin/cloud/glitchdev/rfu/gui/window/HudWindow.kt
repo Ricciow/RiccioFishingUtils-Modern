@@ -33,11 +33,11 @@ import gg.essential.elementa.dsl.minus
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.toConstraint
-import gg.essential.universal.UMatrixStack
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import java.awt.Color
+import gg.essential.universal.UScreen
 
 object HudWindow : BaseWindow(false) {
     val backgroundColor = UIScheme.darkBackground.toConstraint()
@@ -84,12 +84,20 @@ object HudWindow : BaseWindow(false) {
     var currentRenderPass: RenderPass = RenderPass.NONE
         private set
 
-    override fun onDrawScreen(matrixStack: UMatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float) {
-        if (currentRenderPass == RenderPass.NONE) {
-            super.onDrawScreen(matrixStack, mouseX, mouseY, partialTicks)
-        } else {
-            window.draw(matrixStack)
-        }
+    private var multiPassRenderer: HudMultiPassRenderer? = null
+
+    override fun uCreateRenderer(): UScreen.Renderer {
+        val renderer = HudMultiPassRenderer()
+        multiPassRenderer = renderer
+        return renderer
+    }
+
+    override fun uExtractRenderState(mouseX: Int, mouseY: Int, partialTicks: Float): UScreen.RenderState {
+        window.prepareFrame()
+        return HudMultiPassRenderState(window.extractRenderState())
+    }
+    fun onFrameExtractionStart() {
+        multiPassRenderer?.onFrameStart()
     }
 
     init {

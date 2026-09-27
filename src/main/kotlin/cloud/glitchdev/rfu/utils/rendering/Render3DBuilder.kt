@@ -7,8 +7,8 @@ import java.awt.Color
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext
 
 class Render3DBuilder(val shape: Shape, val context: LevelRenderContext) {
-    var location: Vec3 = Vec3.ZERO
-    var startLocation: Vec3 = Vec3.ZERO
+    var position: Vec3 = Vec3.ZERO
+    var startPosition: Vec3 = Vec3.ZERO
     var radius: Float = 1.0f
     var color: Color = Color.WHITE
     var borderColor: Color? = null
@@ -27,12 +27,12 @@ class Render3DBuilder(val shape: Shape, val context: LevelRenderContext) {
     var bottomBorder: Boolean = true
 
     var from: Vec3
-        get() = startLocation
-        set(value) { startLocation = value }
+        get() = startPosition
+        set(value) { startPosition = value }
 
     var to: Vec3
-        get() = location
-        set(value) { location = value }
+        get() = position
+        set(value) { position = value }
 
     val camera: Vec3
         get() {
@@ -54,22 +54,22 @@ class Render3DBuilder(val shape: Shape, val context: LevelRenderContext) {
         if (centered) {
             entityPos = entityPos.add(0.0, (entity.bbHeight / 2).toDouble(), 0.0)
         }
-        this.location = entityPos
+        this.position = entityPos
     }
 
     fun render() {
         when (shape) {
             Shape.SPHERE -> Render3D.renderSphere(
-                location, radius, color, context, stacks, slices, lineWidth, filled, borderColor, scaleWithDistance
+                position, radius, color, context, stacks, slices, lineWidth, filled, borderColor, scaleWithDistance
             )
             Shape.CYLINDER -> Render3D.renderCylinder(
-                location, radius, height, color, context, slices, borderColor, lineWidth, scaleWithDistance, topBorder, bottomBorder
+                position, radius, height, color, context, slices, borderColor, lineWidth, scaleWithDistance, topBorder, bottomBorder
             )
             Shape.LINE -> Render3D.renderLine(
-                startLocation, location, color, context, lineWidth, scaleWithDistance
+                startPosition, position, color, context, lineWidth, scaleWithDistance
             )
             Shape.TEXT -> Render3D.renderText(
-                location, text, color, context, scale, seeThrough, dropShadow, backgroundOpacity, scaleWithDistance
+                position, text, color, context, scale, seeThrough, dropShadow, backgroundOpacity, scaleWithDistance
             )
         }
     }

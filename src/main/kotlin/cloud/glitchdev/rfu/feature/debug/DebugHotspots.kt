@@ -26,7 +26,7 @@ object DebugHotspots : Feature {
             Render3D.draw(context) {
                 for (hotspot in HotSpotEvents.getAllHotspots()) {
                     sphere {
-                        location = hotspot.center
+                        position = hotspot.center
                         radius = 25f
                         color = Color(255, 255, 255, 30)
                         borderColor = Color.WHITE
@@ -34,7 +34,7 @@ object DebugHotspots : Feature {
                         filled = true
                     }
                     sphere {
-                        location = hotspot.center
+                        position = hotspot.center
                         radius = 10f
                         color = Color(255, 255, 255, 30)
                         borderColor = Color.WHITE
@@ -52,7 +52,7 @@ object DebugHotspots : Feature {
         override fun execute(context: CommandContext<FabricClientCommandSource>): Int {
             showSphere = !showSphere
             context.source.sendFeedback(
-                TextUtils.rfuLiteral(
+                TextUtils.debugLiteral(
                     "Hotspot debug sphere: ${if (showSphere) "§aENABLED" else "§cDISABLED"}",
                     TextStyle(TextColor.YELLOW)
                 )

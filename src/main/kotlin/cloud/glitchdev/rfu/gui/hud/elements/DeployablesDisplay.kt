@@ -13,6 +13,7 @@ import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.utils.dsl.toReadableString
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 @HudElement
 object DeployablesDisplay : AbstractTextHudElement("deployablesDisplay") {
@@ -74,7 +75,8 @@ object DeployablesDisplay : AbstractTextHudElement("deployablesDisplay") {
         }
 
         val remainingMillis = deployable.endTimeMillis - now
-        val remaining: Duration = if (remainingMillis > 0) remainingMillis.milliseconds else Duration.ZERO
+        val remaining: Duration = deployable.displayedSeconds?.seconds
+            ?: if (remainingMillis > 0) remainingMillis.milliseconds else Duration.ZERO
 
         return buildString {
             append(label)

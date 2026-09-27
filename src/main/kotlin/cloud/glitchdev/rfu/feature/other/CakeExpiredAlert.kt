@@ -17,8 +17,10 @@ import cloud.glitchdev.rfu.utils.command.SimpleCommand
 import cloud.glitchdev.rfu.utils.dsl.removeFormatting
 import com.mojang.brigadier.context.CommandContext
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
+import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
+import net.minecraft.network.chat.Style
 
 @RFUFeature
 object CakeExpiredAlert : Feature {
@@ -47,7 +49,11 @@ object CakeExpiredAlert : Feature {
             if(newOutDated.isNotEmpty()) {
                 val hoverText = buildHoverText(newOutDated)
                 val message = TextUtils.rfuLiteral("${newOutDated.size} ${TextColor.GOLD}of your cakes just expired!", TextColor.YELLOW)
-                    .withStyle { it.withHoverEvent(HoverEvent.ShowText(Component.literal(hoverText))) }
+                    .setStyle(
+                        Style.EMPTY
+                        .withHoverEvent(HoverEvent.ShowText(Component.literal(hoverText)))
+                        .withClickEvent(ClickEvent.RunCommand("visit ricciow"))
+                    )
                 Chat.sendMessage(message)
             }
 
@@ -55,7 +61,7 @@ object CakeExpiredAlert : Feature {
             lastOutdated.addAll(outdated)
         }
 
-        registerTickEvent(interval = 3000) {
+        registerTickEvent(interval = 6000) {
             if(!OtherSettings.outdatedCake) return@registerTickEvent
             if(!World.isInSkyblock) return@registerTickEvent
             val outdated = cakes.getOutdatedCakes()
@@ -63,7 +69,11 @@ object CakeExpiredAlert : Feature {
             if(outdated.isNotEmpty()) {
                 val hoverText = buildHoverText(outdated)
                 val message = TextUtils.rfuLiteral("You have ${TextColor.YELLOW}${outdated.size} ${TextColor.GOLD}expired cakes!", TextColor.GOLD)
-                    .withStyle { it.withHoverEvent(HoverEvent.ShowText(Component.literal(hoverText))) }
+                    .setStyle(
+                        Style.EMPTY
+                        .withHoverEvent(HoverEvent.ShowText(Component.literal(hoverText)))
+                        .withClickEvent(ClickEvent.RunCommand("visit ricciow"))
+                    )
                 Chat.sendMessage(message)
             }
         }
@@ -91,7 +101,7 @@ object CakeExpiredAlert : Feature {
     }
 
     private fun buildHoverText(cakes: Collection<CakesEntry.Cake>): String {
-        return "${TextColor.GOLD}Expired Cakes:\n${cakes.joinToString("\n") { "${TextColor.GRAY}- ${TextColor.YELLOW}${it.name}" }}\n${TextColor.DARK_GRAY}If this is incorrect run /rfuclearcakes to reset the cake data."
+        return "${TextColor.GOLD}Expired Cakes:\n${cakes.joinToString("\n") { "${TextColor.GRAY}- ${TextColor.YELLOW}${it.name}" }}\n${TextColor.DARK_GRAY}If this is incorrect run /rfuclearcakes to reset the cake data.\n${TextColor.GRAY}Click for cakes!"
     }
 
     @Command

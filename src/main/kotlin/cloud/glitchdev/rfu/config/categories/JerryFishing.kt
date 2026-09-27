@@ -19,6 +19,14 @@ object JerryFishing : Category("Jerry Fishing") {
         description = Literal("Sends an alert when someone summons a Reindrake!")
     }
 
+    var reindrakeTitleExtraTicks by int(0) {
+        name = Literal("Reindrake Title Duration")
+        description = Literal("Extra time for the Reindrake title, in ticks.")
+        range = 0..200
+        slider = true
+        condition = { reindrakeAlert }
+    }
+
     init {
         dualSeparator {
             title = "Blizzard"
@@ -34,6 +42,14 @@ object JerryFishing : Category("Jerry Fishing") {
     var blizzardExpiredAlert by reloadableBoolean(true) {
         name = Literal("Blizzard Expired Alert")
         description = Literal("Sends an alert whenever the blizzard expires.")
+    }
+
+    var blizzardTitleExtraTicks by int(0) {
+        name = Literal("Blizzard Title Duration")
+        description = Literal("Extra time for the Blizzard expired title, in ticks.")
+        range = 0..200
+        slider = true
+        condition = { blizzardExpiredAlert }
     }
 
     var blizzardExpiredSound by reloadableBoolean(true) {

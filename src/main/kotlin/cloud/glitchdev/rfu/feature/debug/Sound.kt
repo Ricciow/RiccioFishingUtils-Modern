@@ -29,7 +29,7 @@ object Sound : AbstractCommand("sound") {
                                 Sounds.playSound(id, pitch)
 
                                 context.source.sendFeedback(
-                                    TextUtils.rfuLiteral("Played sound: ${TextColor.YELLOW}$id")
+                                    TextUtils.debugLiteral("Played sound: ${TextColor.YELLOW}$id")
                                 )
 
                                 1
@@ -41,7 +41,7 @@ object Sound : AbstractCommand("sound") {
                         Sounds.playSound(id, 1.0f)
 
                         context.source.sendFeedback(
-                            TextUtils.rfuLiteral("Played sound: ${TextColor.YELLOW}$id")
+                            TextUtils.debugLiteral("Played sound: ${TextColor.YELLOW}$id")
                         )
 
                         1

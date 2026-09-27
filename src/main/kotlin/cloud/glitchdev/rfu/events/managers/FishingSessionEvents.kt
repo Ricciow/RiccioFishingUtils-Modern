@@ -1,8 +1,16 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.feature.fishing.FishingSession.FishingType
 
 object FishingSessionEvents {
+
+    fun registerFishingSessionUpdatedEvent(
+        priority: Int = 20,
+        callback: (fishingType: FishingType) -> Unit
+    ): FishingSessionUpdatedEventManager.FishingSessionUpdatedEvent {
+        return FishingSessionUpdatedEventManager.register(priority, callback)
+    }
 
     fun registerFishingSessionStartEvent(
         priority: Int = 20,
@@ -30,6 +38,26 @@ object FishingSessionEvents {
         callback: () -> Unit
     ): FishingSessionResumeEventManager.FishingSessionResumeEvent {
         return FishingSessionResumeEventManager.register(priority, callback)
+    }
+
+    object FishingSessionUpdatedEventManager : AbstractEventManager<(FishingType) -> Unit, FishingSessionUpdatedEventManager.FishingSessionUpdatedEvent>() {
+        override val runTasks: (FishingType) -> Unit = { fishingType ->
+            safeExecution {
+                tasks.forEach { task -> task.callback(fishingType) }
+            }
+        }
+
+        fun register(priority: Int = 20, callback: (FishingType) -> Unit): FishingSessionUpdatedEvent {
+            return FishingSessionUpdatedEvent(priority, callback).register()
+        }
+
+        class FishingSessionUpdatedEvent(
+            priority: Int = 20,
+            callback: (FishingType) -> Unit
+        ) : ManagedTask<(FishingType) -> Unit, FishingSessionUpdatedEvent>(priority, callback) {
+            override fun register() = submitTask(this)
+            override fun unregister() = removeTask(this)
+        }
     }
 
     object FishingSessionStartEventManager : AbstractEventManager<() -> Unit, FishingSessionStartEventManager.FishingSessionStartEvent>() {

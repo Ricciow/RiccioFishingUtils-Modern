@@ -9,6 +9,7 @@ import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.JsonFile
 import cloud.glitchdev.rfu.utils.Sounds
 import cloud.glitchdev.rfu.utils.TextUtils
+import cloud.glitchdev.rfu.utils.World
 import net.minecraft.network.chat.Component
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -20,7 +21,6 @@ object DailyStreakManager {
     private var listenersActivated = false
 
     fun getTodayDateString(): String = LocalDate.now(ZoneOffset.UTC).toString()
-    fun getYesterdayDateString(): String = LocalDate.now(ZoneOffset.UTC).minusDays(1).toString()
 
     fun saveData() {
         file.save()
@@ -28,7 +28,7 @@ object DailyStreakManager {
     }
 
     fun checkDailyReset() {
-        if (!DailyStreakSettings.dailyStreakEnabled) return
+        if (!DailyStreakSettings.dailyStreakEnabled || !World.isOnHypixel || !World.isInSkyblock) return
 
         val today = getTodayDateString()
         val expectedCount = ChallengeRegistry.getPoolChallenges().size.coerceAtMost(3).coerceAtLeast(1)
@@ -41,8 +41,7 @@ object DailyStreakManager {
     }
 
     private fun performDailyReset(today: String) {
-        val yesterday = getYesterdayDateString()
-        if (data.lastCompletedDate.isNotEmpty() && data.lastCompletedDate != yesterday && data.lastCompletedDate != today) {
+        if (data.currentDate.isNotEmpty() && data.currentDate != today && data.lastCompletedDate != data.currentDate) {
             data.currentStreak = 0
         }
 
@@ -77,7 +76,7 @@ object DailyStreakManager {
     }
 
     fun addProgressForChallenge(challengeId: String, amount: Int = 1) {
-        if (!DailyStreakSettings.dailyStreakEnabled) return
+        if (!DailyStreakSettings.dailyStreakEnabled || !World.isOnHypixel || !World.isInSkyblock) return
         checkDailyReset()
 
         var updated = false
@@ -125,7 +124,7 @@ object DailyStreakManager {
     fun canReroll(): Boolean = !data.hasRerolledToday
 
     fun rerollChallenge(challengeId: String): Boolean {
-        if (!DailyStreakSettings.dailyStreakEnabled) return false
+        if (!DailyStreakSettings.dailyStreakEnabled || !World.isOnHypixel || !World.isInSkyblock) return false
         checkDailyReset()
 
         if (data.hasRerolledToday) {

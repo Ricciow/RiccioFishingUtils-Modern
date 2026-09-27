@@ -27,18 +27,18 @@ object AchievementProgress : AbstractCommand("addprogress") {
                             val achievement = AchievementManager.getAchievement(id)
 
                             if (achievement == null) {
-                                context.source.sendFeedback(TextUtils.rfuLiteral("Achievement not found: $id", TextStyle(TextColor.LIGHT_RED)))
+                                context.source.sendFeedback(TextUtils.debugLiteral("Achievement not found: $id", TextStyle(TextColor.LIGHT_RED)))
                                 return@executes 1
                             }
 
                             if (achievement is NumericAchievement) {
                                 achievement.debugAddProgress(amount)
-                                context.source.sendFeedback(TextUtils.rfuLiteral("Added $amount progress to: $id", TextStyle(TextColor.LIGHT_GREEN)))
+                                context.source.sendFeedback(TextUtils.debugLiteral("Added $amount progress to: $id", TextStyle(TextColor.LIGHT_GREEN)))
                             } else if (achievement is NumericStageAchievement) {
                                 achievement.debugAddProgress(amount) 
-                                context.source.sendFeedback(TextUtils.rfuLiteral("Added $amount progress to: $id", TextStyle(TextColor.LIGHT_GREEN)))
+                                context.source.sendFeedback(TextUtils.debugLiteral("Added $amount progress to: $id", TextStyle(TextColor.LIGHT_GREEN)))
                             } else {
-                                context.source.sendFeedback(TextUtils.rfuLiteral("Achievement is not numeric: $id", TextStyle(TextColor.LIGHT_RED)))
+                                context.source.sendFeedback(TextUtils.debugLiteral("Achievement is not numeric: $id", TextStyle(TextColor.LIGHT_RED)))
                             }
                             1
                         }

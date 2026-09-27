@@ -22,8 +22,8 @@ import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.plus
 import gg.essential.elementa.dsl.toConstraint
+import gg.essential.elementa.renderer.ElementaExtractor
 import gg.essential.universal.UKeyboard
-import gg.essential.universal.UMatrixStack
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.round
@@ -83,12 +83,13 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
     } childOf this
 
     init {
+        this.enableEffect(HudRenderPassEffect(this))
+
         this.constrain {
             x = defaultX.pixels()
             y = defaultY.pixels()
             width = ChildBasedSizeConstraint()
             height = ChildBasedSizeConstraint()
-            isFloating = true
         }
 
         scaleText.hide()
@@ -124,7 +125,7 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
                     else -> 10
                 }
 
-                val effect = event.delta.toFloat() / supression
+                val effect = event.scrollY.toFloat() / supression
 
                 scale = round(max(0.3f, scale + effect) * 1000) / 1000
 
@@ -343,6 +344,8 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
 
     fun updateState() {
         if(hasParent) {
+            this.isFloating = isEditing || (isOnInventory && renderOnInventory)
+
             scaleText.setHidden(!scaleTextEnabled)
 
             val gap = 5f
@@ -399,7 +402,7 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
     open fun onOpenEdit() {}
     open fun onCloseEdit() {}
 
-    protected open fun shouldDrawInCurrentPass(): Boolean {
+    open fun shouldDrawInCurrentPass(): Boolean {
         if (HudWindow.isEditingOpen) {
             return isEditing && when (HudWindow.currentEditTarget) {
                 HudWindow.EditTarget.HUD -> renderOnHud
@@ -415,9 +418,9 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
         }
     }
 
-    override fun draw(matrixStack: UMatrixStack) {
+    override fun extractComponent(extractor: ElementaExtractor) {
         if (!shouldDrawInCurrentPass()) return
-        super.draw(matrixStack)
+        super.extractComponent(extractor)
     }
 
     companion object {

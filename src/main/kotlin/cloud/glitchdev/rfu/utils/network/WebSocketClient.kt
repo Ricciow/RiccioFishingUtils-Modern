@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.utils.network
 
-import cloud.glitchdev.rfu.RiccioFishingUtils.API_URL
+import cloud.glitchdev.rfu.RiccioFishingUtils.WS_URL
 import cloud.glitchdev.rfu.RiccioFishingUtils.RFU_VERSION
 import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.events.managers.ErrorEvents
@@ -13,8 +13,6 @@ import java.net.http.WebSocket
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
-import kotlin.time.Clock
-import kotlin.time.Instant
 import java.util.concurrent.CompletionStage
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.pow
@@ -39,15 +37,12 @@ object WebSocketClient {
             }
         }
 
-    var lastIncomingTime: Instant? = null
-        private set
-
     fun connect(authToken: String) {
         lastAuthToken = authToken
         if (isConnected || isReconnecting || isConnecting) return
         
         isConnecting = true
-        val wsUrl = API_URL.replace("https://", "wss://").replace("http://", "ws://").replace("/api", "") + "/ws"
+        val wsUrl = WS_URL
         RFULogger.dev("Connecting to WebSocket: $wsUrl")
         
         client.newWebSocketBuilder()
@@ -67,7 +62,6 @@ object WebSocketClient {
                 }
 
                 override fun onText(webSocket: WebSocket, data: CharSequence, last: Boolean): CompletionStage<*>? {
-                    lastIncomingTime = Clock.System.now()
                     val frame = data.toString()
                     if (frame.trim() != "") {
                         handleFrame(frame)
@@ -253,10 +247,11 @@ object WebSocketClient {
         }
     }
 
-    fun disconnect() {
+    fun disconnect(reason: String = "Disconnecting") {
+        if(webSocket != null) RFULogger.info("WebSocket Disconnecting: $reason")
         heartbeatJob?.cancel()
         heartbeatJob = null
-        webSocket?.sendClose(WebSocket.NORMAL_CLOSURE, "Disconnecting")
+        webSocket?.sendClose(WebSocket.NORMAL_CLOSURE, reason)
         webSocket = null
         isConnected = false
         isReconnecting = false

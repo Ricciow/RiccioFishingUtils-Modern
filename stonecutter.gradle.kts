@@ -1,5 +1,6 @@
 plugins {
     id("dev.kikugie.stonecutter")
+    kotlin("jvm") apply false
 }
 
 fun getProp(p: Project, name: String): String {
@@ -14,7 +15,7 @@ fun getProp(p: Project, name: String): String {
     return p.property(name).toString()
 }
 
-stonecutter active "26.2"
+stonecutter active "26.3"
 
 stonecutter parameters {
     swaps["mod_version"] = "\"" + getProp(project, "mod.version") + "\";"

@@ -14,14 +14,15 @@ fun Int.toInputKey(): InputConstants.Key? {
         if (button < 0) return null
         InputConstants.Type.MOUSE.getOrCreate(button)
     } else {
-        InputConstants.Type.KEYSYM.getOrCreate(this)
+        //~ if <26.3 'KEYBOARD' -> 'KEYSYM' {
+        InputConstants.Type.KEYBOARD.getOrCreate(this)
+        //~}
     }
 }
 
 fun InputConstants.Key.toConfigCode(): Int {
-    return when (type) {
-        InputConstants.Type.MOUSE -> -(100 + value)
-        InputConstants.Type.KEYSYM -> value
-        InputConstants.Type.SCANCODE -> value
+    if (type == InputConstants.Type.MOUSE) {
+        return -(100 + value)
     }
+    return value
 }

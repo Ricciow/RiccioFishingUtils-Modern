@@ -1,13 +1,11 @@
-﻿package cloud.glitchdev.rfu.events.managers
+package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.constants.fishing.Bait
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.SetSlotEvents.registerSetSlotEvent
-import cloud.glitchdev.rfu.utils.dsl.toExactRegex
-import gg.essential.universal.utils.toUnformattedString
-import net.minecraft.core.component.DataComponents
+import cloud.glitchdev.rfu.utils.fishing.BaitUtils
 
 @AutoRegister
 object BaitEventManager : AbstractEventManager<(Bait?, Int) -> Unit, BaitEventManager.BaitChangedEvent>(), RegisteredEvent {
@@ -16,7 +14,6 @@ object BaitEventManager : AbstractEventManager<(Bait?, Int) -> Unit, BaitEventMa
     private var currentCount: Int = 0
 
     private const val PLAYER_INVENTORY_ID = 0
-    private val BAIT_COUNT_REGEX = """Bait Remaining: ([\d,]+)""".toExactRegex()
 
     override fun register() {
         registerSetSlotEvent { id, slot, item ->
@@ -34,10 +31,7 @@ object BaitEventManager : AbstractEventManager<(Bait?, Int) -> Unit, BaitEventMa
 
             lastBait = bait
 
-            val loreLines = item[DataComponents.LORE]?.lines ?: return@registerSetSlotEvent
-            val count = loreLines.mapNotNull {
-                BAIT_COUNT_REGEX.find(it.toUnformattedString())?.groupValues?.getOrNull(1)?.replace(",", "")
-            }.getOrNull(0)?.toIntOrNull() ?: 0
+            val count = BaitUtils.getBaitRemainingCount(item) ?: 0
 
             if (lastCount == 0 || lastCount <= count) {
                 lastCount = count

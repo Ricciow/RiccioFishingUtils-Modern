@@ -7,6 +7,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.teamresourceful.resourcefulconfig.api.types.ResourcefulConfig;
 import com.teamresourceful.resourcefulconfig.api.types.ResourcefulConfigElement;
+import com.teamresourceful.resourcefulconfig.api.types.elements.ResourcefulConfigSeparatorElement;
 import com.teamresourceful.resourcefulconfig.client.ConfigScreen;
 import com.teamresourceful.resourcefulconfig.client.ConfigScreenContext;
 import com.teamresourceful.resourcefulconfig.client.components.options.OptionsListWidget;
@@ -68,7 +69,7 @@ public abstract class ConfigScreenMixin implements ConfigScreenInvoker {
         }
 
         List<ResourcefulConfigElement> rfuElements = new ArrayList<>();
-        rfu$collectMatchingElements(this.config, rfuElements);
+        rfu$collectMatchingElements(this.config, rfuElements, false);
         original.call(widget, rfuElements);
     }
 
@@ -80,16 +81,30 @@ public abstract class ConfigScreenMixin implements ConfigScreenInvoker {
     }
 
     @Unique
-    private void rfu$collectMatchingElements(ResourcefulConfig config, List<ResourcefulConfigElement> elements) {
+    private void rfu$collectMatchingElements(ResourcefulConfig config, List<ResourcefulConfigElement> elements, boolean includeAll) {
+        boolean matchingSeparator = false;
+        ResourcefulConfigSeparatorElement precedingSeparator = null;
+        boolean precedingSeparatorAdded = false;
         for (ResourcefulConfigElement element : config.elements()) {
-            if (this.context.fulfillsSearch(element)) {
+            if (element instanceof ResourcefulConfigSeparatorElement separator) {
+                precedingSeparator = separator;
+                matchingSeparator = this.context.fulfillsSearch(element);
+                precedingSeparatorAdded = includeAll || matchingSeparator;
+                if (precedingSeparatorAdded) elements.add(element);
+            } else if (includeAll || matchingSeparator || this.context.fulfillsSearch(element)) {
+                if (precedingSeparator != null && !precedingSeparatorAdded) {
+                    elements.add(precedingSeparator);
+                    precedingSeparatorAdded = true;
+                }
                 elements.add(element);
             }
         }
-        if (this.context != null && this.context.getQuery() != null && !this.context.getQuery().isBlank()) {
+        if (includeAll || !this.context.getQuery().isBlank()) {
             for (ResourcefulConfig category : config.categories().values()) {
                 if (category.info().isHidden()) continue;
-                rfu$collectMatchingElements(category, elements);
+                boolean categoryMatches = this.context.fulfillsSearch(category.info().title().toLocalizedString())
+                    || this.context.fulfillsSearch(category.info().description().toLocalizedString());
+                rfu$collectMatchingElements(category, elements, includeAll || categoryMatches);
             }
         }
     }

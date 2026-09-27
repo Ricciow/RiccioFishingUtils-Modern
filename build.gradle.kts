@@ -2,7 +2,7 @@ plugins {
     id("net.fabricmc.fabric-loom")
     kotlin("jvm")
     id("com.google.devtools.ksp")
-    id("com.modrinth.minotaur") version "2.8.7"
+    id("com.modrinth.minotaur") version "2.10.0"
 }
 
 stonecutter {
@@ -135,15 +135,18 @@ configure<net.fabricmc.loom.api.LoomGradleExtensionAPI> {
 
     val modsFolder = project.findProperty("stonecutter.redirect")?.toString() ?: stonecutter.current.version
     runConfigs.all {
-        ideConfigGenerated(true)
-        vmArgs(
+        generateRunConfig.set(true)
+        preferGradleTask.set(false)
+
+        jvmArguments.addAll(
             "-Dmixin.debug.export=true",
             "-Dfabric.addMods=mods/$modsFolder",
             "-Ddevauth.enabled=true",
             "-Ddevauth.account=main",
             "-Delementa.dev=true"
         )
-        runDir = "../../run"
+
+        runDirectory.set(rootProject.layout.projectDirectory.dir("run"))
     }
     rootProject.file("run/mods/$modsFolder").mkdirs()
 }

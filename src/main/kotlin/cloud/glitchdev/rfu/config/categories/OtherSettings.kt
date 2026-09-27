@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.config.categories
 import cloud.glitchdev.rfu.config.Category
 import cloud.glitchdev.rfu.constants.chat.MessageTypes
 import cloud.glitchdev.rfu.constants.ui.TooltipGuiScale
+import cloud.glitchdev.rfu.constants.ui.VisiblePlayerEquipment
 import cloud.glitchdev.rfu.constants.text.TextColor.LIGHT_RED
 
 object OtherSettings : Category("Other") {
@@ -42,6 +43,14 @@ object OtherSettings : Category("Other") {
         description = Literal("Sends an alert whenever a Littlefoot is found.")
     }
 
+    var littlefootTitleExtraTicks by int(0) {
+        name = Literal("Littlefoot Title Duration")
+        description = Literal("Extra time for the Littlefoot title, in ticks.")
+        range = 0..200
+        slider = true
+        condition = { littlefootAlert }
+    }
+
     var littlefootSound by reloadableBoolean(true) {
         name = Literal("Littlefoot Alert Sound")
         description = Literal("Plays a sound whenever a Littlefoot is found.")
@@ -65,6 +74,42 @@ object OtherSettings : Category("Other") {
         name = Literal("Tooltip GUI Scale")
         description = Literal("The GUI scale for tooltips.")
     }
+
+    var removeNetherFog by boolean(false) {
+        name = Literal("Remove Nether Fog")
+        description = Literal("Removes the nether fog")
+    }
+
+    init {
+        dualSeparator {
+            title = "Nearby Players"
+        }
+    }
+
+    var hideNearbyPlayers by reloadableBoolean(false) {
+        name = Literal("Hide Nearby Players")
+        description = Literal("Hides nearby players with a rank-style name tag on your screen.")
+    }
+
+    var hideNearbyPlayersRadius by int(5) {
+        name = Literal("Hide Players Within")
+        description = Literal("Distance in blocks at which other players are hidden.")
+        range = 1..10
+        slider = true
+        condition = { hideNearbyPlayers }
+    }
+
+    var visiblePlayerEquipment by enums(VisiblePlayerEquipment.BOOTS) {
+        name = Literal("Keep Visible")
+        description = Literal("Player parts and equipment to keep visible when nearby players are hidden.")
+        condition = { hideNearbyPlayers }
+    }
+
+    var partyInviteMsgs by boolean(true) {
+        name = Literal("Party invite messages")
+        description = Literal("Sends a prompt to invite player msg when some keywords are said by player")
+    }
+
 
     init {
         dualSeparator {
@@ -107,6 +152,14 @@ object OtherSettings : Category("Other") {
         description = Literal("Shows an alert on screen when your pet levels up.")
     }
 
+    var petLevelUpTitleExtraTicks by int(0) {
+        name = Literal("Pet Level Up Title Duration")
+        description = Literal("Extra time for the pet level up title, in ticks.")
+        range = 0..200
+        slider = true
+        condition = { petLevelUpAlert }
+    }
+
     var petLevelUpMinLevel by int(100) {
         name = Literal("Min Level for Alert")
         description = Literal("The minimum level for the alert to trigger.")
@@ -126,6 +179,14 @@ object OtherSettings : Category("Other") {
         description = Literal("Shows an alert when your inventory becomes full.")
     }
 
+    var fullInventoryTitleExtraTicks by int(0) {
+        name = Literal("Full Inventory Title Duration")
+        description = Literal("Extra time for the full inventory title, in ticks.")
+        range = 0..200
+        slider = true
+        condition = { fullInventoryAlert }
+    }
+
     var fullInventorySound by reloadableBoolean(true) {
         name = Literal("Full Inventory Sound")
         description = Literal("Plays a sound when your inventory becomes full.")
@@ -143,7 +204,7 @@ object OtherSettings : Category("Other") {
 
     init {
         separator {
-            title = "Party Finder Alert"
+            title = "Party Finder"
             description = "${LIGHT_RED}This feature requires backend acceptance!"
             condition = { !BackendSettings.backendAccepted }
         }
@@ -156,17 +217,23 @@ object OtherSettings : Category("Other") {
         condition = { BackendSettings.backendAccepted }
     }
 
+    var partyRequeueAlert by boolean(true) {
+        name = Literal("Party Requeue Alert")
+        description = Literal("Sends a message with a requeue button when your party is dequeued or stops being full.")
+        condition = { BackendSettings.backendAccepted }
+    }
+
+    var autoAcceptPlayers by boolean(false) {
+        name = Literal("Auto accept players")
+        description = Literal("Automatically invites players who request to join your Party Finder listing.")
+        condition = { BackendSettings.backendAccepted }
+    }
+
     var peekPartyFinderKeybind by key(0) {
         name = Literal("Peek Party Finder Keybind")
         description = Literal("Keybind to peek the party finder window without opening the GUI.")
         condition = { BackendSettings.backendAccepted }
     }
-
-    var partyInviteMsgs by boolean(true) {
-        name = Literal("Party invite messages")
-        description = Literal("Sends a prompt to invite player msg when some keywords are said by player")
-    }
-
 
     init {
         dualSeparator {
@@ -189,6 +256,11 @@ object OtherSettings : Category("Other") {
     var bestiaryDisplay by boolean(true) {
         name = Literal("Bestiary Display")
         description = Literal("Shows the bestiary progress from the tablist. Requires the Bestiary Tablist to work.")
+    }
+
+    var tpsDisplay by boolean(false) {
+        name = Literal("TPS Display")
+        description = Literal("Displays the server's current TPS.")
     }
 
     var outdatedCake by boolean(true) {

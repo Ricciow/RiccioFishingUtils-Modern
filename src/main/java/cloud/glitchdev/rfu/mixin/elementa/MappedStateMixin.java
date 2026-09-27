@@ -24,7 +24,6 @@ public abstract class MappedStateMixin<T, U> extends BasicState<U> {
         super(valueBacker);
     }
 
-    @SuppressWarnings("unchecked")
     @WrapOperation(
         method = {"<init>", "rebind"},
         at = @At(value = "INVOKE", target = "Lgg/essential/elementa/state/State;onSetValue(Lkotlin/jvm/functions/Function1;)Lkotlin/jvm/functions/Function0;")
@@ -34,13 +33,12 @@ public abstract class MappedStateMixin<T, U> extends BasicState<U> {
             return original.call(state, listener);
         }
 
-        WeakReference<MappedState<T, U>> weakRef = new WeakReference<>((MappedState<T, U>) (Object) this);
-        Function1<T, U> localMapper = this.mapper;
+        WeakReference<MappedStateMixin<T, U>> weakRef = new WeakReference<>(this);
 
         Function1<T, Unit> weakListener = value -> {
-            MappedState<T, U> mappedState = weakRef.get();
+            MappedStateMixin<T, U> mappedState = weakRef.get();
             if (mappedState != null) {
-                mappedState.set(localMapper.invoke(value));
+                mappedState.set(mappedState.mapper.invoke(value));
             }
             return Unit.INSTANCE;
         };

@@ -8,6 +8,7 @@ import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.data.mob.DeployableManager
 import cloud.glitchdev.rfu.data.mob.DeployableType
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
+import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.Sounds
 import cloud.glitchdev.rfu.utils.Title
 
@@ -30,7 +31,8 @@ object DeployableTimers : Feature {
                 val currentDeployable = active[type]
                 val isActive = currentDeployable != null
 
-                if (wasActive && !isActive && alertEnabled(type)) {
+                if (wasActive && !isActive && GeneralFishing.deployableAlertTypes.contains(type) &&
+                    (GeneralFishing.deployableExpiredAlert || GeneralFishing.deployableExpiredPartyMessage)) {
                     val wasInRadius = if (player != null) {
                         prevDeployable.isInRange(player.position())
                     } else true
@@ -40,10 +42,16 @@ object DeployableTimers : Feature {
                     val shouldAlert = wasInRadius && isExpired
 
                     if (shouldAlert) {
-                        Title.showTitle(type.expiredTitle)
+                        if (GeneralFishing.deployableExpiredAlert) {
+                            Title.showTitle(type.expiredTitle, extraTicks = GeneralFishing.deployableTitleExtraTicks)
 
-                        if (GeneralFishing.deployableExpiredSound) {
-                            Sounds.playSound("rfu:deployable_expired", 1f, GeneralFishing.deployableExpiredVolume)
+                            if (GeneralFishing.deployableExpiredSound) {
+                                Sounds.playSound("rfu:deployable_expired", 1f, GeneralFishing.deployableExpiredVolume)
+                            }
+                        }
+
+                        if (GeneralFishing.deployableExpiredPartyMessage) {
+                            Chat.sendPartyMessage("${type.displayName} expired!")
                         }
                     }
                 }
@@ -51,9 +59,5 @@ object DeployableTimers : Feature {
                 previouslyActive[type] = currentDeployable
             }
         }
-    }
-
-    private fun alertEnabled(type: DeployableType): Boolean {
-        return GeneralFishing.deployableExpiredAlert && GeneralFishing.deployableAlertTypes.contains(type)
     }
 }

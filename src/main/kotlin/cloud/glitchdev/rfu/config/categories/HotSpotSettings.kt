@@ -37,7 +37,8 @@ object HotSpotSettings : Category("Hot Spots") {
         HotspotType.SEA_CREATURE,
         HotspotType.FISHING_SPEED,
         HotspotType.TROPHY,
-        HotspotType.TREASURE
+        HotspotType.TREASURE,
+        HotspotType.SHARD
     ) {
         name = Literal("Pointer Priority")
         description = Literal("Drag to reorder the priority for the hotspot pointer.")
@@ -51,9 +52,30 @@ object HotSpotSettings : Category("Hot Spots") {
         }
     }
 
+    var noTikiMaskAlert by boolean(true) {
+        name = Literal("No Tiki Mask Alert")
+        description = Literal("Sends an alert when you are fishing in a hotspot without a Tiki Mask!")
+    }
+
+    var noTikiMaskTitleExtraTicks by int(0) {
+        name = Literal("No Tiki Mask Title Duration")
+        description = Literal("Extra time for the no Tiki Mask title, in ticks.")
+        range = 0..200
+        slider = true
+        condition = { noTikiMaskAlert }
+    }
+
     var hotspotExpiredAlert by boolean(true) {
         name = Literal("Hotspot Expired Alert")
         description = Literal("Sends an alert when the hotspot you're fishing in expires!")
+    }
+
+    var hotspotExpiredTitleExtraTicks by int(0) {
+        name = Literal("Hotspot Expired Title Duration")
+        description = Literal("Extra time for the hotspot expired title, in ticks.")
+        range = 0..200
+        slider = true
+        condition = { hotspotExpiredAlert }
     }
 
     var hotspotExpiredSound by reloadableBoolean(true) {

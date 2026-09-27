@@ -48,7 +48,7 @@ object DebugText : Feature, AbstractCommand("text") {
             Render3D.draw(context) {
                 for (t in activeTexts) {
                     text {
-                        location = t.location
+                        position = t.location
                         text = t.message
                         color = t.color
                         scale = t.scale
@@ -88,7 +88,7 @@ object DebugText : Feature, AbstractCommand("text") {
                     .executes { context ->
                         activeTexts.clear()
                         context.source.sendFeedback(
-                            TextUtils.rfuLiteral(
+                            TextUtils.debugLiteral(
                                 "Cleared all debug texts.",
                                 TextStyle(TextColor.LIGHT_GREEN)
                             )
@@ -146,7 +146,7 @@ object DebugText : Feature, AbstractCommand("text") {
         )
 
         context.source.sendFeedback(
-            TextUtils.rfuLiteral(
+            TextUtils.debugLiteral(
                 "Spawned debug text '${message.replace("\n", "\\n")}' at look position for ${durationSeconds}s (scale=$scale, seeThrough=$seeThrough, scaleWithDistance=$scaleWithDistance)",
                 TextStyle(TextColor.LIGHT_GREEN)
             )

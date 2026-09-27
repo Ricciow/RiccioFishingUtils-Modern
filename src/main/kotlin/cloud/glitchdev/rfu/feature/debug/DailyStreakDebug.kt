@@ -1,10 +1,12 @@
 package cloud.glitchdev.rfu.feature.debug
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
+import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.data.streak.DailyStreakManager
 import cloud.glitchdev.rfu.feature.streak.challenge.BaseChallenge
 import cloud.glitchdev.rfu.feature.streak.challenge.ChallengeRegistry
 import cloud.glitchdev.rfu.utils.Chat
+import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.command.AbstractCommand
 import cloud.glitchdev.rfu.utils.command.arguments.StringListArgumentType
@@ -30,15 +32,15 @@ object DailyStreakDebug : AbstractCommand("dailies") {
             DailyStreakManager.checkDailyReset()
             val challengeBase = ChallengeRegistry.getChallenge(id)
             if (challengeBase == null) {
-                Chat.sendMessage(Component.literal("§b[RFU Debug] §cChallenge not found: $id!"))
+                Chat.sendMessage(TextUtils.debugLiteral("Challenge not found: $id!", TextColor.LIGHT_RED))
             } else {
                 val success = DailyStreakManager.setChallenge(id, index)
                 if (success) {
                     val streak = DailyStreakManager.data.currentStreak
                     val title = challengeBase.getTitle(streak)
-                    Chat.sendMessage(Component.literal("§b[RFU Debug] §aSet daily challenge #${index + 1} to: §e$title §7($id)§a!"))
+                    Chat.sendMessage(TextUtils.debugLiteral("Set daily challenge #${index + 1} to: §e$title §7($id)§a!", TextColor.LIGHT_GREEN))
                 } else {
-                    Chat.sendMessage(Component.literal("§b[RFU Debug] §cFailed to set challenge $id!"))
+                    Chat.sendMessage(TextUtils.debugLiteral("Failed to set challenge $id!", TextColor.LIGHT_RED))
                 }
             }
             1
@@ -87,7 +89,7 @@ object DailyStreakDebug : AbstractCommand("dailies") {
                 DailyStreakManager.data.currentDate = ""
                 DailyStreakManager.data.todayChallenges = emptyList()
                 DailyStreakManager.checkDailyReset()
-                Chat.sendMessage(Component.literal("§b[RFU Debug] §aDaily challenges reset for today!"))
+                Chat.sendMessage(TextUtils.debugLiteral("Daily challenges reset for today!", TextColor.LIGHT_GREEN))
                 1
             }
         )
@@ -96,7 +98,7 @@ object DailyStreakDebug : AbstractCommand("dailies") {
             lit("resetreroll").executes {
                 DailyStreakManager.data.hasRerolledToday = false
                 DailyStreakManager.saveData()
-                Chat.sendMessage(Component.literal("§b[RFU Debug] §aDaily reroll reset! You can reroll again today."))
+                Chat.sendMessage(TextUtils.debugLiteral("Daily reroll reset! You can reroll again today.", TextColor.LIGHT_GREEN))
                 1
             }
         )
@@ -112,7 +114,7 @@ object DailyStreakDebug : AbstractCommand("dailies") {
                             }
                         }
                     }
-                    Chat.sendMessage(Component.literal("§b[RFU Debug] §aAll today's challenges completed!"))
+                    Chat.sendMessage(TextUtils.debugLiteral("All today's challenges completed!", TextColor.LIGHT_GREEN))
                     1
                 }
             ).then(
@@ -124,9 +126,9 @@ object DailyStreakDebug : AbstractCommand("dailies") {
                         if (needed > 0) {
                             DailyStreakManager.addProgressForChallenge(challenge.id, needed)
                         }
-                        Chat.sendMessage(Component.literal("§b[RFU Debug] §aCompleted challenge #${index + 1}: ${challenge.getTitle()}"))
+                        Chat.sendMessage(TextUtils.debugLiteral("Completed challenge #${index + 1}: ${challenge.getTitle()}", TextColor.LIGHT_GREEN))
                     } else {
-                        Chat.sendMessage(Component.literal("§cInvalid challenge index!"))
+                        Chat.sendMessage(TextUtils.debugLiteral("Invalid challenge index!", TextColor.LIGHT_RED))
                     }
                     1
                 }
@@ -142,9 +144,9 @@ object DailyStreakDebug : AbstractCommand("dailies") {
                         val challenge = DailyStreakManager.data.todayChallenges.getOrNull(index)
                         if (challenge != null) {
                             DailyStreakManager.addProgressForChallenge(challenge.id, amount)
-                            Chat.sendMessage(Component.literal("§b[RFU Debug] §aAdded $amount progress to #${index + 1}: ${challenge.getTitle()}"))
+                            Chat.sendMessage(TextUtils.debugLiteral("Added $amount progress to #${index + 1}: ${challenge.getTitle()}", TextColor.LIGHT_GREEN))
                         } else {
-                            Chat.sendMessage(Component.literal("§cInvalid challenge index!"))
+                            Chat.sendMessage(TextUtils.debugLiteral("Invalid challenge index!", TextColor.LIGHT_RED))
                         }
                         1
                     }
@@ -161,7 +163,7 @@ object DailyStreakDebug : AbstractCommand("dailies") {
                         DailyStreakManager.data.highestStreak = amount
                     }
                     DailyStreakManager.saveData()
-                    Chat.sendMessage(Component.literal("§b[RFU Debug] §aDaily streak set to $amount days!"))
+                    Chat.sendMessage(TextUtils.debugLiteral("Daily streak set to $amount days!", TextColor.LIGHT_GREEN))
                     1
                 }
             )
@@ -179,7 +181,7 @@ object DailyStreakDebug : AbstractCommand("dailies") {
                 DailyStreakManager.data.hasRerolledToday = false
                 DailyStreakManager.data.todayChallenges = emptyList()
                 DailyStreakManager.saveData()
-                Chat.sendMessage(Component.literal("§b[RFU Debug] §cCleared all daily streak data!"))
+                Chat.sendMessage(TextUtils.debugLiteral("Cleared all daily streak data!", TextColor.LIGHT_RED))
                 1
             }
         )
@@ -258,7 +260,7 @@ object DailyStreakDebug : AbstractCommand("dailies") {
     private fun generateDailyChallenges(days: Int) {
         val pool = ChallengeRegistry.getPoolChallenges()
         if (pool.isEmpty()) {
-            Chat.sendMessage(Component.literal("§b[RFU Debug] §cNo challenges found in ChallengeRegistry!"))
+            Chat.sendMessage(TextUtils.debugLiteral("No challenges found in ChallengeRegistry!", TextColor.LIGHT_RED))
             return
         }
 
@@ -289,7 +291,7 @@ object DailyStreakDebug : AbstractCommand("dailies") {
         }.sortedWith(compareByDescending<ChallengeStat> { it.appearances }.thenByDescending { it.challenge.weight })
 
         // Chat Output
-        Chat.sendMessage(Component.literal("§b[RFU Debug] §6=== Generated Tasks for $days Days ==="))
+        Chat.sendMessage(TextUtils.debugLiteral("=== Generated Tasks for $days Days ===", TextColor.GOLD))
 
         if (days <= 10) {
             dailySchedule.forEachIndexed { index, (dateStr, challenges) ->
@@ -305,21 +307,21 @@ object DailyStreakDebug : AbstractCommand("dailies") {
         }
 
         val uniquePicked = stats.count { it.appearances > 0 }
-        Chat.sendMessage(Component.literal("§b[RFU Debug] §7Pool: §e${pool.size} challenges §7| Picked: §a$uniquePicked/${pool.size} unique §7| Total Slots: §e${days * 3}"))
+        Chat.sendMessage(TextUtils.debugLiteral("Pool: §e${pool.size} challenges §7| Picked: §a$uniquePicked/${pool.size} unique §7| Total Slots: §e${days * 3}", TextColor.GRAY))
 
         val top3 = stats.take(3).filter { it.appearances > 0 }
         if (top3.isNotEmpty()) {
             val topStr = top3.joinToString("§7, §f") {
                 "${it.challenge.getTitle(0)} §a(${it.appearances}x / ${String.format(Locale.US, "%.1f", it.dayRate)}%)"
             }
-            Chat.sendMessage(Component.literal("§b[RFU Debug] §aTop Picked: §f$topStr"))
+            Chat.sendMessage(TextUtils.debugLiteral("Top Picked: §f$topStr", TextColor.LIGHT_GREEN))
         }
 
         val neverPicked = stats.filter { it.appearances == 0 }
         if (neverPicked.isNotEmpty()) {
             val unpickedStr = neverPicked.take(5).joinToString("§7, §c") { it.challenge.getTitle(0) }
             val extra = if (neverPicked.size > 5) " §7(+${neverPicked.size - 5} more)" else ""
-            Chat.sendMessage(Component.literal("§b[RFU Debug] §cNever Picked (${neverPicked.size}): §c$unpickedStr$extra"))
+            Chat.sendMessage(TextUtils.debugLiteral("Never Picked (${neverPicked.size}): §c$unpickedStr$extra", TextColor.LIGHT_RED))
         }
 
         // Generate full markdown report for clipboard
@@ -353,16 +355,16 @@ object DailyStreakDebug : AbstractCommand("dailies") {
 
         try {
             mc.keyboardHandler.clipboard = report
-            Chat.sendMessage(Component.literal("§b[RFU Debug] §aFull task list and distribution report copied to clipboard!"))
+            Chat.sendMessage(TextUtils.debugLiteral("Full task list and distribution report copied to clipboard!", TextColor.LIGHT_GREEN))
         } catch (_: Exception) {
-            Chat.sendMessage(Component.literal("§b[RFU Debug] §eCould not copy report to clipboard."))
+            Chat.sendMessage(TextUtils.debugLiteral("Could not copy report to clipboard.", TextColor.YELLOW))
         }
     }
 
     private fun simulateDailyChallenges(runs: Int) {
         val pool = ChallengeRegistry.getPoolChallenges()
         if (pool.isEmpty()) {
-            Chat.sendMessage(Component.literal("§b[RFU Debug] §cNo challenges found in ChallengeRegistry!"))
+            Chat.sendMessage(TextUtils.debugLiteral("No challenges found in ChallengeRegistry!", TextColor.LIGHT_RED))
             return
         }
 
@@ -389,15 +391,15 @@ object DailyStreakDebug : AbstractCommand("dailies") {
 
         // Chat Output
         val uniquePicked = stats.count { it.appearances > 0 }
-        Chat.sendMessage(Component.literal("§b[RFU Debug] §6=== Daily Challenge Monte Carlo Simulation ($runs Runs) ==="))
-        Chat.sendMessage(Component.literal("§b[RFU Debug] §7Pool: §e${pool.size} challenges §7| Picked: §a$uniquePicked/${pool.size} unique §7| Total Slots: §e${runs * 3}"))
+        Chat.sendMessage(TextUtils.debugLiteral("=== Daily Challenge Monte Carlo Simulation ($runs Runs) ===", TextColor.GOLD))
+        Chat.sendMessage(TextUtils.debugLiteral("Pool: §e${pool.size} challenges §7| Picked: §a$uniquePicked/${pool.size} unique §7| Total Slots: §e${runs * 3}", TextColor.GRAY))
 
         val top3 = stats.take(3).filter { it.appearances > 0 }
         if (top3.isNotEmpty()) {
             val topStr = top3.joinToString("§7, §f") {
                 "${it.challenge.getTitle(0)} §a(${String.format(Locale.US, "%.1f", it.dayRate)}%)"
             }
-            Chat.sendMessage(Component.literal("§b[RFU Debug] §aTop 3: §f$topStr"))
+            Chat.sendMessage(TextUtils.debugLiteral("Top 3: §f$topStr", TextColor.LIGHT_GREEN))
         }
 
         val bottom3 = stats.filter { it.appearances > 0 }.takeLast(3).reversed()
@@ -405,14 +407,14 @@ object DailyStreakDebug : AbstractCommand("dailies") {
             val botStr = bottom3.joinToString("§7, §e") {
                 "${it.challenge.getTitle(0)} §e(${String.format(Locale.US, "%.2f", it.dayRate)}%)"
             }
-            Chat.sendMessage(Component.literal("§b[RFU Debug] §eBottom 3: §f$botStr"))
+            Chat.sendMessage(TextUtils.debugLiteral("Bottom 3: §f$botStr", TextColor.YELLOW))
         }
 
         val neverPicked = stats.filter { it.appearances == 0 }
         if (neverPicked.isNotEmpty()) {
             val unpickedStr = neverPicked.take(5).joinToString("§7, §c") { it.challenge.getTitle(0) }
             val extra = if (neverPicked.size > 5) " §7(+${neverPicked.size - 5} more)" else ""
-            Chat.sendMessage(Component.literal("§b[RFU Debug] §cNever Picked (${neverPicked.size}): §c$unpickedStr$extra"))
+            Chat.sendMessage(TextUtils.debugLiteral("Never Picked (${neverPicked.size}): §c$unpickedStr$extra", TextColor.LIGHT_RED))
         }
 
         // Markdown Report
@@ -434,24 +436,24 @@ object DailyStreakDebug : AbstractCommand("dailies") {
 
         try {
             mc.keyboardHandler.clipboard = report
-            Chat.sendMessage(Component.literal("§b[RFU Debug] §aFull simulation report copied to clipboard!"))
+            Chat.sendMessage(TextUtils.debugLiteral("Full simulation report copied to clipboard!", TextColor.LIGHT_GREEN))
         } catch (_: Exception) {
-            Chat.sendMessage(Component.literal("§b[RFU Debug] §eCould not copy report to clipboard."))
+            Chat.sendMessage(TextUtils.debugLiteral("Could not copy report to clipboard.", TextColor.YELLOW))
         }
     }
 
     private fun listChallengePool() {
         val pool = ChallengeRegistry.getPoolChallenges()
         if (pool.isEmpty()) {
-            Chat.sendMessage(Component.literal("§b[RFU Debug] §cNo challenges found in ChallengeRegistry!"))
+            Chat.sendMessage(TextUtils.debugLiteral("No challenges found in ChallengeRegistry!", TextColor.LIGHT_RED))
             return
         }
 
         val totalPoolWeight = pool.sumOf { it.weight.coerceAtLeast(1) }
         val sorted = pool.sortedByDescending { it.weight.coerceAtLeast(1) }
 
-        Chat.sendMessage(Component.literal("§b[RFU Debug] §6=== Registered Challenge Pool (${pool.size} Challenges) ==="))
-        Chat.sendMessage(Component.literal("§b[RFU Debug] §7Total Pool Weight: §e$totalPoolWeight"))
+        Chat.sendMessage(TextUtils.debugLiteral("=== Registered Challenge Pool (${pool.size} Challenges) ===", TextColor.GOLD))
+        Chat.sendMessage(TextUtils.debugLiteral("Total Pool Weight: §e$totalPoolWeight", TextColor.GRAY))
 
         val report = buildString {
             appendLine("# Registered Daily Challenges Pool (${pool.size} Challenges)")
@@ -467,9 +469,9 @@ object DailyStreakDebug : AbstractCommand("dailies") {
 
         try {
             mc.keyboardHandler.clipboard = report
-            Chat.sendMessage(Component.literal("§b[RFU Debug] §aFull pool list copied to clipboard!"))
+            Chat.sendMessage(TextUtils.debugLiteral("Full pool list copied to clipboard!", TextColor.LIGHT_GREEN))
         } catch (_: Exception) {
-            Chat.sendMessage(Component.literal("§b[RFU Debug] §eCould not copy pool list to clipboard."))
+            Chat.sendMessage(TextUtils.debugLiteral("Could not copy pool list to clipboard.", TextColor.YELLOW))
         }
     }
 }

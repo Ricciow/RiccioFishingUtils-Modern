@@ -11,7 +11,6 @@ import gg.essential.elementa.dsl.minus
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.toConstraint
-import gg.essential.universal.UMatrixStack
 import cloud.glitchdev.rfu.gui.components.Colorable
 import cloud.glitchdev.rfu.gui.components.elementa.UISpecialMultilineTextInput
 import gg.essential.elementa.dsl.animate
@@ -30,7 +29,7 @@ class UIWrappedDecoratedTextInput(
     var isFocused = false
         private set
 
-    private var textChanged = false
+    private var isUpdatingText = false
 
     lateinit var textInput : UISpecialMultilineTextInput
 
@@ -50,17 +49,23 @@ class UIWrappedDecoratedTextInput(
             this.animate {
                 setColorAnimation(Animations.IN_EXP, hoverDuration, primaryColor)
             }
+        }.onMouseClick {
+            if (::textInput.isInitialized) {
+                textInput.grabWindowFocus()
+            }
         }
 
-        textInput = (UISpecialMultilineTextInput(placeholder).constrain {
+        textInput = (UISpecialMultilineTextInput(placeholder).apply {
+            onUpdate { newText ->
+                handleTextChange(newText)
+            }
+        }.constrain {
             x = CenterConstraint()
             y = CenterConstraint()
             width = max(90.percent(), 100.percent() - 5.pixels())
             height = max(90.percent(), 100.percent() - 5.pixels())
         }.onMouseClick {
             grabWindowFocus()
-        }.onKeyType { _, _ ->
-            textChanged = true
         }.onFocus {
             isFocused = true
             updateTextColor()
@@ -70,22 +75,34 @@ class UIWrappedDecoratedTextInput(
         } childOf this) as UISpecialMultilineTextInput
     }
 
-    override fun draw(matrixStack: UMatrixStack) {
-        if(textChanged) {
-            val text = textInput.getText()
-            if(maxChars != 0 && text.length > maxChars) {
-                textInput.setText(text.slice(IntRange(0, maxChars-1)))
+    private fun handleTextChange(text: String) {
+        if (isUpdatingText) return
+        isUpdatingText = true
+        try {
+            var filteredText = text
+            if (maxChars != 0 && filteredText.length > maxChars) {
+                filteredText = filteredText.slice(IntRange(0, maxChars - 1))
             }
-            onChange(textInput.getText())
-            textChanged = false
+            if (filteredText != text) {
+                textInput.setText(filteredText)
+            }
+            onChange(filteredText)
+        } finally {
+            isUpdatingText = false
         }
-
-        super.draw(matrixStack)
     }
 
-    fun setText(text : String) {
-        textInput.setText(text)
-        textChanged = true
+    fun setText(text : String, triggerOnChange: Boolean = false) {
+        if (triggerOnChange) {
+            handleTextChange(text)
+        } else {
+            isUpdatingText = true
+            try {
+                textInput.setText(text)
+            } finally {
+                isUpdatingText = false
+            }
+        }
         updateTextColor()
     }
 

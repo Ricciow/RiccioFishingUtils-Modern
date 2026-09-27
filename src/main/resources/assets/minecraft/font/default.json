@@ -314,6 +314,34 @@
       "ascent": 7,
       "height": 8,
       "chars": ["\uE12C"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/aquamarine_dye.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE12D"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/carmine_dye.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE12E"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/midnight_dye.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE12F"]
+    },
+    {
+      "type": "bitmap",
+      "file": "rfu:emoji/treasure_dye.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE130"]
     }
   ]
 }

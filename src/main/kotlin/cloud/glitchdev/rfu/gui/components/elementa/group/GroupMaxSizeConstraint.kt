@@ -12,9 +12,7 @@ class GroupMaxSizeConstraint(
     val baseConstraint: SizeConstraint = 0.pixel
 ) : SizeConstraint {
     override var cachedValue = 0f
-    override var recalculate: Boolean
-        get() = true
-        set(value) {}
+    override var recalculate = true
     override var constrainTo: UIComponent? = null
 
     override fun getWidthImpl(component: UIComponent): Float = getMaxValue(component, ConstraintType.WIDTH)
@@ -36,9 +34,9 @@ class GroupMaxSizeConstraint(
 
     internal fun getBaseValue(component: UIComponent, type: ConstraintType): Float {
         return when (type) {
-            ConstraintType.WIDTH -> baseConstraint.getWidthImpl(component)
-            ConstraintType.HEIGHT -> baseConstraint.getHeightImpl(component)
-            ConstraintType.RADIUS -> baseConstraint.getRadiusImpl(component)
+            ConstraintType.WIDTH -> baseConstraint.getWidth(component)
+            ConstraintType.HEIGHT -> baseConstraint.getHeight(component)
+            ConstraintType.RADIUS -> baseConstraint.getRadius(component)
             else -> 0f
         }
     }

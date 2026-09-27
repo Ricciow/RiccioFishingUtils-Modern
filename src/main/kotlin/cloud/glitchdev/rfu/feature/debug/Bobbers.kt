@@ -60,7 +60,7 @@ object Bobbers : SimpleCommand("bobbers"), Feature {
 
     private fun LevelRenderContext.renderLines(baseLoc: Vec3, lines: List<String>) {
         text {
-            location = baseLoc
+            position = baseLoc
             text = lines.joinToString("\n")
             color = Color.WHITE
             scale = 0.025f
@@ -73,7 +73,7 @@ object Bobbers : SimpleCommand("bobbers"), Feature {
         renderAll = !renderAll
 
         context.source.sendFeedback(
-            TextUtils.rfuLiteral(
+            TextUtils.debugLiteral(
                 "Tracked Bobber rendering: ${if (renderAll) "§aENABLED" else "§cDISABLED"}",
                 TextStyle(TextColor.YELLOW)
             )

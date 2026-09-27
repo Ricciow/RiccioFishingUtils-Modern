@@ -11,12 +11,14 @@ import cloud.glitchdev.rfu.utils.command.Command
 import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.User
+import cloud.glitchdev.rfu.utils.Coroutines
 import cloud.glitchdev.rfu.config.categories.BackendSettings
-import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.utils.World
+import cloud.glitchdev.rfu.events.managers.AfkEvents.registerAfkStatusChangedEvent
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.HoverEvent
 import net.minecraft.network.chat.Component
@@ -36,6 +38,8 @@ import java.net.http.HttpResponse
 import java.time.Instant
 import java.util.Base64
 import java.util.UUID
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 
 @AutoRegister
 object Network : RegisteredEvent {
@@ -52,23 +56,58 @@ object Network : RegisteredEvent {
     private var expiresAt : Long? = null
     private val client = HttpClient.newHttpClient()
     private val USER_AGENT = "Java-http-client/${System.getProperty("java.version")} rfu:${RFU_VERSION.friendlyString}"
+    private var disconnectJob: Job? = null
 
     override fun register() {
-        registerJoinEvent { wasConnected ->
-            if(!wasConnected) {
+        registerJoinEvent { _ ->
+            if (World.isOnHypixel) {
+                cancelDisconnect()
                 authenticateUser()
             }
         }
 
         registerDisconnectEvent {
-            WebSocketClient.disconnect()
+            scheduleDisconnect()
         }
 
         registerLocationEvent {
-            if (World.isOnHypixel) {
-                authenticateUser()
+            if (!World.isOnHypixel) {
+                scheduleDisconnect()
+            }
+        }
+
+        registerShutdownEvent {
+            cancelDisconnect()
+            WebSocketClient.disconnect()
+        }
+
+        registerAfkStatusChangedEvent { isAfk ->
+            if (isAfk) {
+                if (WebSocketClient.isConnected) {
+                    WebSocketClient.disconnect("AFK")
+                }
             } else {
-                WebSocketClient.disconnect()
+                if (!WebSocketClient.isConnected) {
+                    authenticateUser()
+                }
+            }
+        }
+    }
+
+    private fun cancelDisconnect() {
+        disconnectJob?.cancel()
+        disconnectJob = null
+    }
+
+    private fun scheduleDisconnect() {
+        if (disconnectJob != null) return
+        disconnectJob = Coroutines.launch {
+            delay(30_000)
+            mc.execute {
+                if (!World.isOnHypixel) {
+                    WebSocketClient.disconnect()
+                }
+                disconnectJob = null
             }
         }
     }
@@ -230,11 +269,13 @@ object Network : RegisteredEvent {
             return
         }
 
-        if (!BackendSettings.backendAccepted || !World.isOnHypixel) {
-            RFULogger.warn("Backend not accepted or not on hypixel")
+        if (!BackendSettings.backendAccepted) {
+            RFULogger.warn("Backend not accepted")
             WebSocketClient.disconnect()
             return
         }
+
+        if (!World.isOnHypixel) return
 
         if(isTokenExpired()) {
             val session = mc.user
@@ -282,12 +323,18 @@ object Network : RegisteredEvent {
     }
 
     private fun sendAcknowledgementMessage() {
-        val message = TextUtils.rfuLiteral("This mod utilizes a separate back-end for some features. Do you want to enable it? ", TextStyle(YELLOW))
+        val message = TextUtils.rfuLiteral("This mod uses a separate back-end for some features. Review the Privacy Policy, then choose whether to enable it. ", TextStyle(YELLOW))
 
         message.append(Component.literal("\n${YELLOW}Includes:"))
         message.append(Component.literal("\n${GRAY} - ${AQUAMARINE}Party Finder: ${WHITE}Find fishing parties with ease."))
         message.append(Component.literal("\n${GRAY} - ${AQUAMARINE}Dye Tracking: ${WHITE}See currently boosted dyes in rotation."))
         message.append(Component.literal("\n${GRAY} - ${AQUAMARINE}Announcements: ${WHITE}Get notified of updates instantly.\n"))
+
+        val privacyPolicy = Component.literal(" ${YELLOW}${BOLD}[PRIVACY POLICY]")
+            .withStyle {
+                it.withClickEvent(ClickEvent.OpenUrl(URI.create("https://rfu.ricciow.dev/privacy")))
+                    .withHoverEvent(HoverEvent.ShowText(Component.literal("${YELLOW}Open Privacy Policy")))
+            }
 
         val accept = Component.literal("$LIGHT_GREEN$BOLD[ACCEPT]")
             .withStyle { it.withClickEvent(ClickEvent.RunCommand("/rfubackend accept"))
@@ -297,7 +344,7 @@ object Network : RegisteredEvent {
             .withStyle { it.withClickEvent(ClickEvent.RunCommand("/rfubackend deny"))
                 .withHoverEvent(HoverEvent.ShowText(Component.literal("${LIGHT_RED}Deny backend connection"))) }
 
-        message.append(accept).append(deny)
+        message.append(accept).append(deny).append(privacyPolicy)
         Chat.sendMessage(message)
     }
 

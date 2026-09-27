@@ -39,7 +39,9 @@ public class ClientPacketListenerMixin {
 
     @Inject(method = "handleRemoveEntities", at = @At("HEAD"))
     private void onEntitiesRemoved(ClientboundRemoveEntitiesPacket packet, CallbackInfo ci) {
-        for (int entityId : packet.getEntityIds()) {
+        //~ if >=26.3 'getEntityIds' -> 'entityIds' {
+        for (int entityId : packet.entityIds()) {
+        //~}
             EntityRemovedEvents.INSTANCE.getRunTasks().invoke(entityId);
         }
     }
@@ -52,7 +54,7 @@ public class ClientPacketListenerMixin {
     @Inject(method = "handleParticleEvent", at = @At("HEAD"), cancellable = true)
     private void handleLevelParticles(ClientboundLevelParticlesPacket packet, CallbackInfo ci) {
         VoidCancelable cancelable = new VoidCancelable(ci);
-        ParticleEvents.INSTANCE.getRunTasks().invoke(packet, cancelable);
+        ParticleEvents.ParticleRenderEvents.INSTANCE.getRunTasks().invoke(packet, cancelable);
     }
 
     @Inject(method = "handleEntityEvent", at = @At("TAIL"))

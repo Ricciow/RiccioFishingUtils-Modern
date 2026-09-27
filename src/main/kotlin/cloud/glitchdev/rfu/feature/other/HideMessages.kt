@@ -1,89 +1,19 @@
 package cloud.glitchdev.rfu.feature.other
 
 import cloud.glitchdev.rfu.config.categories.OtherSettings
-import cloud.glitchdev.rfu.constants.chat.MessageTypes
-import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerAllowGameEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
-import cloud.glitchdev.rfu.utils.dsl.escapeForRegex
-import cloud.glitchdev.rfu.utils.dsl.toExactRegex
+import gg.essential.universal.utils.toUnformattedString
 
 @RFUFeature
 object HideMessages : Feature {
-    val SC_MESSAGE_REGEX = SeaCreatures.entries.joinToString("|") { it.catchMessage.escapeForRegex() }.toExactRegex()
-    val DOUBLE_HOOK_REGEX = """Double Hook!|It's a Double Hook! Woot woot!|It's a Double Hook!""".toExactRegex()
-    val AUTOPET_REGEX = """(?:Autopet equipped your .+! VIEW RULE|Autopet rule triggered but couldn't find your pet!)""".toExactRegex()
-    val HYPE_REGEX = """Your Implosion hit \d+ enem(?:y|ies) for [\d.,]+ damage\.""".toExactRegex()
-    val COMBO_REGEX = """\+\d+ Kill Combo (.+)""".toExactRegex()
-    val BLOCKS_REGEX = """There are blocks in the way!""".toExactRegex()
-    val LOOTSHARE_REGEX = """LOOT SHARE You received loot for assisting (.+?)!""".toExactRegex()
-    val THUNDER_SPARK_REGEX = """Try clicking this Thunder Spark with an Empty Thunder Bottle to collect it!""".toExactRegex()
-    val COCOON_REGEX = """CAUGHT! You cocooned (?:an? )?(.+)!""".toExactRegex()
-    val SACKS_REGEX = """\[Sacks\] \+\d+ items?\. \(Last \d+s\.\)""".toExactRegex()
-    val CHARM_REGEX = """CHARM! You charmed .+ and received .+""".toExactRegex()
-    val HURRICANE_BOTTLE_REGEX = """(?:> )?Your (?:Empty )?Hurricane (?:in a )?Bottle has absorbed .+""".toExactRegex()
-
     override fun onInitialize() {
-        registerAllowGameEvent(SC_MESSAGE_REGEX) { _, _, _ ->
-            return@registerAllowGameEvent !(OtherSettings.hideMessages &&
-                    OtherSettings.hiddenMessageTypes.contains(MessageTypes.CATCH))
-        }
+        registerAllowGameEvent { message, _, _ ->
+            if (!OtherSettings.hideMessages) return@registerAllowGameEvent true
 
-        registerAllowGameEvent(DOUBLE_HOOK_REGEX) { _, _, _ ->
-            return@registerAllowGameEvent !(OtherSettings.hideMessages &&
-                    OtherSettings.hiddenMessageTypes.contains(MessageTypes.CATCH))
-        }
-
-        registerAllowGameEvent(AUTOPET_REGEX) { _, _, _ ->
-            return@registerAllowGameEvent !(OtherSettings.hideMessages &&
-                    OtherSettings.hiddenMessageTypes.contains(MessageTypes.AUTOPET))
-        }
-
-        registerAllowGameEvent(HYPE_REGEX) { _, _, _ ->
-            return@registerAllowGameEvent !(OtherSettings.hideMessages &&
-                    OtherSettings.hiddenMessageTypes.contains(MessageTypes.HYPE))
-        }
-
-        registerAllowGameEvent(COMBO_REGEX) { _, _, matches ->
-            return@registerAllowGameEvent !(OtherSettings.hideMessages &&
-                    OtherSettings.hiddenMessageTypes.contains(MessageTypes.COMBO) &&
-                    !(matches?.groupValues?.getOrNull(1)?.contains("Magic Find") ?: false))
-        }
-
-        registerAllowGameEvent(BLOCKS_REGEX) { _, _, _ ->
-            return@registerAllowGameEvent !(OtherSettings.hideMessages &&
-                    OtherSettings.hiddenMessageTypes.contains(MessageTypes.BLOCKS))
-        }
-
-        registerAllowGameEvent(LOOTSHARE_REGEX) { _, _, _ ->
-            return@registerAllowGameEvent !(OtherSettings.hideMessages &&
-                    OtherSettings.hiddenMessageTypes.contains(MessageTypes.LOOTSHARE))
-        }
-
-        registerAllowGameEvent(THUNDER_SPARK_REGEX) { _, _, _ ->
-            return@registerAllowGameEvent !(OtherSettings.hideMessages &&
-                    OtherSettings.hiddenMessageTypes.contains(MessageTypes.THUNDER_SPARK))
-        }
-
-        registerAllowGameEvent(COCOON_REGEX) { _, _, _ ->
-            return@registerAllowGameEvent !(OtherSettings.hideMessages &&
-                    OtherSettings.hiddenMessageTypes.contains(MessageTypes.COCOON))
-        }
-
-        registerAllowGameEvent(SACKS_REGEX) { _, _, _ ->
-            return@registerAllowGameEvent !(OtherSettings.hideMessages &&
-                    OtherSettings.hiddenMessageTypes.contains(MessageTypes.SACKS))
-        }
-
-        registerAllowGameEvent(CHARM_REGEX) { _, _, _ ->
-            return@registerAllowGameEvent !(OtherSettings.hideMessages &&
-                    OtherSettings.hiddenMessageTypes.contains(MessageTypes.CHARM))
-        }
-
-        registerAllowGameEvent(HURRICANE_BOTTLE_REGEX) { _, _, _ ->
-            return@registerAllowGameEvent !(OtherSettings.hideMessages &&
-                    OtherSettings.hiddenMessageTypes.contains(MessageTypes.HURRICANE_BOTTLE))
+            val text = message.toUnformattedString()
+            OtherSettings.hiddenMessageTypes.none { it.matches(text) }
         }
     }
 }

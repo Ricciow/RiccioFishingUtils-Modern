@@ -13,10 +13,18 @@ import net.minecraft.network.chat.Style
 import net.minecraft.util.FormattedCharSequence
 
 object EmojiFeature {
-    val TRIGGER_TO_CODEPOINT: Map<String, Int> = Emoji.EMOJIS.flatMap { (unicode, aliases) ->
-        val cp = unicode.codePointAt(0)
-        aliases.map { ":${it.lowercase()}:" to cp }
+    val COLON_TRIGGERS: Map<String, Int> = Emoji.COLON_TRIGGERS.map { (trigger, unicode) ->
+        trigger.lowercase() to unicode.codePointAt(0)
     }.toMap()
+
+    val OTHER_TRIGGERS: Map<String, Int> = Emoji.CUSTOM_TRIGGERS.map { (trigger, unicode) ->
+        trigger.lowercase() to unicode.codePointAt(0)
+    }.toMap()
+
+    private fun hasPossibleEmoji(text: String): Boolean {
+        if (text.contains(':')) return true
+        return OTHER_TRIGGERS.keys.any { text.contains(it, ignoreCase = true) }
+    }
 
     @JvmStatic
     fun isEmojiCodepoint(codepoint: Int): Boolean {
@@ -28,36 +36,59 @@ object EmojiFeature {
     data class EmojiMatch(val start: Int, val end: Int, val emojiCodepoint: Int)
 
     fun findEmojiMatches(text: String): List<EmojiMatch> {
-        if (!text.contains(":")) return emptyList()
+        if (text.isEmpty() || !hasPossibleEmoji(text)) return emptyList()
 
         val lowerText = text.lowercase()
         val matches = mutableListOf<EmojiMatch>()
-        var searchIndex = 0
 
-        while (searchIndex < lowerText.length) {
-            val colonIndex = lowerText.indexOf(':', searchIndex)
-            if (colonIndex == -1) break
+        if (lowerText.contains(':')) {
+            var searchIndex = 0
+            while (searchIndex < lowerText.length) {
+                val colonIndex = lowerText.indexOf(':', searchIndex)
+                if (colonIndex == -1) break
 
-            val nextColonIndex = lowerText.indexOf(':', colonIndex + 1)
-            if (nextColonIndex == -1) break
+                val nextColonIndex = lowerText.indexOf(':', colonIndex + 1)
+                if (nextColonIndex == -1) break
 
-            val candidate = lowerText.substring(colonIndex, nextColonIndex + 1)
-            val emojiCp = TRIGGER_TO_CODEPOINT[candidate]
-            if (emojiCp != null) {
-                matches.add(EmojiMatch(colonIndex, nextColonIndex + 1, emojiCp))
-                searchIndex = nextColonIndex + 1
-            } else {
-                searchIndex = colonIndex + 1
+                val candidate = lowerText.substring(colonIndex, nextColonIndex + 1)
+                val emojiCp = COLON_TRIGGERS[candidate]
+                if (emojiCp != null) {
+                    matches.add(EmojiMatch(colonIndex, nextColonIndex + 1, emojiCp))
+                    searchIndex = nextColonIndex + 1
+                } else {
+                    searchIndex = colonIndex + 1
+                }
             }
         }
-        return matches
+
+        for ((trigger, emojiCp) in OTHER_TRIGGERS) {
+            var idx = lowerText.indexOf(trigger)
+            while (idx != -1) {
+                matches.add(EmojiMatch(idx, idx + trigger.length, emojiCp))
+                idx = lowerText.indexOf(trigger, idx + trigger.length)
+            }
+        }
+
+        if (matches.size <= 1) return matches
+
+        matches.sortBy { it.start }
+
+        val nonOverlapping = mutableListOf<EmojiMatch>()
+        var lastEnd = 0
+        for (match in matches) {
+            if (match.start >= lastEnd) {
+                nonOverlapping.add(match)
+                lastEnd = match.end
+            }
+        }
+        return nonOverlapping
     }
 
     /**
-     * Replaces ALL registered emoji triggers (e.g., :dog:) with their PUA characters in a String.
+     * Replaces ALL registered emoji triggers (e.g., :dog:, (ᵔᴥᵔ)) with their PUA characters in a String.
      */
     fun replaceEmojis(text: String?): String? {
-        if (text == null || !OtherSettings.emojis || !text.contains(":")) return text
+        if (text == null || !OtherSettings.emojis || !hasPossibleEmoji(text)) return text
         
         var result = text
         Emoji.ALL.forEach { (trigger, replacement) ->
@@ -67,9 +98,10 @@ object EmojiFeature {
     }
 
     fun replaceEmojisUnformatted(text: String?): String? {
+        if (text == null || !hasPossibleEmoji(text)) return text
         var result = text
         Emoji.ALL.forEach { (trigger, replacement) ->
-            result = result?.replace(trigger, replacement, false)
+            result = result?.replace(trigger, replacement, true)
         }
         return result
     }

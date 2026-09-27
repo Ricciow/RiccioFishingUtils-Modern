@@ -25,6 +25,7 @@ import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.utils.Coroutines
 import cloud.glitchdev.rfu.utils.World
 import cloud.glitchdev.rfu.utils.User
+import cloud.glitchdev.rfu.utils.gui.setHidden
 import cloud.glitchdev.rfu.utils.network.PartyWebSocket
 import gg.essential.elementa.UIComponent
 import gg.essential.elementa.components.ScrollComponent
@@ -33,7 +34,6 @@ import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIImage
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
-import gg.essential.elementa.components.inspector.Inspector
 import gg.essential.elementa.constraints.AspectConstraint
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
@@ -68,6 +68,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
     private var parties : List<FishingParty> = PartyFinderEvents.parties
     private var partyCards : MutableList<UIPartyCard> = mutableListOf()
     private var isPeeking = false
+    private lateinit var peekHoverBlocker: UIContainer
 
     lateinit var popup: UIPopup
     lateinit var presetsModal: UIPartyPresetsModal
@@ -115,15 +116,30 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             //~ if >=26.2 'screen' -> 'gui.screen()' {
             if (mc.gui.screen() == this && (origin == "/app/party/join" || origin == "/app/party/report" || origin == "/app/party/delete")) {
             //~}
-                if (message == "Target user is not currently connected to the WebSocket.") return@registerErrorMessageEvent
                 popup.show(message)
             }
         }
 
         registerKeybind {
             key = { OtherSettings.peekPartyFinderKeybind }
-            onPress = { if (!World.isOnAlpha) isPeeking = true }
-            onRelease = { isPeeking = false }
+            onPress = {
+                if (!World.isOnAlpha) {
+                    isPeeking = true
+                    peekHoverBlocker.unhide()
+                }
+                if(creationOpen) {
+                    creationOpen = false
+                    onUpdate()
+                }
+                presetsModal.setHidden(true)
+                popup.setHidden(true)
+            }
+            onRelease = {
+                if (isPeeking) {
+                    isPeeking = false
+                    peekHoverBlocker.hide(true)
+                }
+            }
         }
 
         registerHudRenderEvent(50) { context, ticks ->
@@ -176,6 +192,15 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             buttonHoverTextColor = UIScheme.pfCardTitleHoverColor.toConstraint()
         }
         popup.hide(instantly = true)
+
+        peekHoverBlocker = UIContainer().constrain {
+            x = 0.pixels
+            y = 0.pixels
+            width = 100.percent
+            height = 100.percent
+        } childOf window
+        peekHoverBlocker.isFloating = true
+        peekHoverBlocker.hide(true)
     }
 
     fun createHeader(background: UIComponent) {
@@ -203,7 +228,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             height = 100.percent - 5.pixels
         } childOf header
 
-        val createImage = UIImage.ofResource("/assets/rfu/ui/edit.png")
+        val createImage = UIImage.ofResourceCached("/assets/rfu/ui/edit.png")
         UIButton.withImage(createImage, 5f) {
             if (creationOpen && ::creationArea.isInitialized) {
                 creationArea.saveSessionState()
@@ -220,7 +245,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             hoverColor = UIScheme.pfInputBgHovered.toConstraint()
         } childOf rightArea
 
-        val filterImage = UIImage.ofResource("/assets/rfu/ui/filter.png")
+        val filterImage = UIImage.ofResourceCached("/assets/rfu/ui/filter.png")
         filterButton = UIButton.withImage(filterImage, 5f) {
             filtersOpen = !filtersOpen
             onUpdate()
@@ -234,7 +259,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             hoverColor = UIScheme.pfInputBgHovered.toConstraint()
         } childOf rightArea
 
-        val refreshImage = UIImage.ofResource("/assets/rfu/ui/refresh.png")
+        val refreshImage = UIImage.ofResourceCached("/assets/rfu/ui/refresh.png")
         refreshButton = UIButton.withImage(refreshImage, 5f) {
             PartyWebSocket.syncParties()
             refreshButton.disabled = true
@@ -316,6 +341,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             width = 100.percent
             height = 0.pixels
         } childOf background
+        creationArea.hide(instantly = true)
     }
 
     fun updateFiltering() {
@@ -355,6 +381,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
                 filtersOpen = false
                 wasFilterOpen = true
             }
+            creationArea.unhide()
             creationArea.animate {
                 setHeightAnimation(Animations.OUT_EXP, 0.5f, 100.percent)
                 onComplete {
@@ -369,6 +396,9 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             partiesContainer.unhide()
             creationArea.animate {
                 setHeightAnimation(Animations.OUT_EXP, 0.5f, 0.pixels)
+                onComplete {
+                    creationArea.hide()
+                }
             }
         }
 

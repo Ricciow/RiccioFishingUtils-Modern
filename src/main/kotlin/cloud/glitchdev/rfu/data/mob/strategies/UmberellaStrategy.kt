@@ -10,7 +10,7 @@ class UmberellaStrategy : DeployableStrategy {
     override val type = DeployableType.UMBERELLA
 
     private val umberellaRegex = """Umberella (\d+)s""".toRegex()
-    private var largestUmberellaSeconds: Double? = null
+    private var largestUmberellaSeconds: Int? = null
     private var umberellaEntity: ArmorStand? = null
 
     override fun resetSession() {
@@ -28,9 +28,9 @@ class UmberellaStrategy : DeployableStrategy {
         if (!entity.hasCustomName()) return
         val name = entity.name.toUnformattedString()
         val result = umberellaRegex.find(name) ?: return
-        val seconds = result.groupValues.getOrNull(1)?.toDoubleOrNull()?.minus(entity.tickCount % 10 * 0.05) ?: return
+        val seconds = result.groupValues.getOrNull(1)?.toIntOrNull() ?: return
 
-        if (seconds > (largestUmberellaSeconds ?: 0.0)) {
+        if (seconds > (largestUmberellaSeconds ?: 0)) {
             largestUmberellaSeconds = seconds
             umberellaEntity = entity
         }
@@ -41,10 +41,11 @@ class UmberellaStrategy : DeployableStrategy {
         val entity = umberellaEntity ?: return null
         return Deployable(
             type = DeployableType.UMBERELLA,
-            endTimeMillis = System.currentTimeMillis() + (seconds * 1_000).toLong(),
+            endTimeMillis = System.currentTimeMillis() + seconds * 1_000L,
             posX = entity.x,
             posZ = entity.z,
             highestY = entity.y,
+            displayedSeconds = seconds,
         )
     }
 }

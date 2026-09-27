@@ -58,6 +58,14 @@ object InkFishing : Category("Ink Fishing") {
         description = Literal("Show an alert when rain expires in the park")
     }
 
+    var rainTitleExtraTicks by int(0) {
+        name = Literal("Rain Title Duration")
+        description = Literal("Extra time for the rain expired title, in ticks.")
+        range = 0..200
+        slider = true
+        condition = { rainAlert }
+    }
+
     var rainAlertSound by reloadableBoolean(true) {
         name = Literal("Rain Alert Sound")
         description = Literal("Plays a sound when rain expires in the park")

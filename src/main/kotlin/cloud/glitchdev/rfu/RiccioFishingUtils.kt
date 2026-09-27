@@ -13,10 +13,16 @@ import net.fabricmc.loader.impl.FabricLoaderImpl
 
 object RiccioFishingUtils : ClientModInitializer {
     const val MOD_ID = "rfu"
-    val API_URL = "https://rfu.glitchdev.cloud/api"
+    val API_URL = "https://rfu.ricciow.dev/api"
         get() {
             if (DevSettings.devMode && DevSettings.useCustomBackend) return DevSettings.backEndEnvironment
             return field
+        }
+
+    val WS_URL: String
+        get() {
+            if (DevSettings.devMode && DevSettings.useCustomWebSocket) return DevSettings.webSocketEnvironment
+            return API_URL.replace("https://", "wss://").replace("http://", "ws://").replace("/api", "") + "/ws"
         }
 
     val CONFIG_DIR = FabricLoaderImpl.INSTANCE.configDir

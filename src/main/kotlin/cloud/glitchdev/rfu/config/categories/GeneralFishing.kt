@@ -105,10 +105,23 @@ object GeneralFishing : Category("General Fishing") {
         description = Literal("Toggles the alert for expired deployables")
     }
 
+    var deployableExpiredPartyMessage by boolean(false) {
+        name = Literal("Deployable Expired Party Message")
+        description = Literal("Sends a party message when a nearby deployable expires.")
+    }
+
+    var deployableTitleExtraTicks by int(0) {
+        name = Literal("Deployable Title Duration")
+        description = Literal("Extra time for expired deployable titles, in ticks.")
+        range = 0..200
+        slider = true
+        condition = { deployableExpiredAlert }
+    }
+
     var deployableAlertTypes by enums(*DeployableType.entries.toTypedArray()) {
         name = Literal("Deployable Alerts")
-        description = Literal("Select which deployable will cause an alert.")
-        condition = { deployableDisplay }
+        description = Literal("Select which deployables trigger alerts and party messages.")
+        condition = { deployableExpiredAlert || deployableExpiredPartyMessage }
     }
 
     var deployableExpiredSound by reloadableBoolean(true) {
@@ -179,6 +192,14 @@ object GeneralFishing : Category("General Fishing") {
         description = Literal("Sends an alert whenever a rod cast fails.")
     }
 
+    var failCastTitleExtraTicks by int(0) {
+        name = Literal("Failed Cast Title Duration")
+        description = Literal("Extra time for the failed cast title, in ticks.")
+        range = 0..200
+        slider = true
+        condition = { failCastAlert }
+    }
+
     var failCastSound by reloadableBoolean(true) {
         name = Literal("Failed Cast Sound")
         description = Literal("Plays a sound whenever a cast fails.")
@@ -198,14 +219,38 @@ object GeneralFishing : Category("General Fishing") {
         description = Literal("Sends an alert when you're fishing without bait.")
     }
 
+    var noBaitTitleExtraTicks by int(0) {
+        name = Literal("No Bait Title Duration")
+        description = Literal("Extra time for the no bait title, in ticks.")
+        range = 0..200
+        slider = true
+        condition = { noBaitAlert }
+    }
+
     var missingRodPieceAlert by boolean(true) {
         name = Literal("Missing Rod Piece Alert")
         description = Literal("Sends an alert when you're fishing with a rod that is missing a piece (Hook, Line, or Sinker).")
     }
 
+    var missingRodPieceTitleExtraTicks by int(0) {
+        name = Literal("Missing Rod Piece Title Duration")
+        description = Literal("Extra time for the missing rod piece title, in ticks.")
+        range = 0..200
+        slider = true
+        condition = { missingRodPieceAlert }
+    }
+
     var noFishingArmorAlert by boolean(true) {
         name = Literal("No Fishing Armor Alert")
         description = Literal("Sends an alert when you're fishing without a fishing armor.")
+    }
+
+    var noFishingArmorTitleExtraTicks by int(0) {
+        name = Literal("No Fishing Armor Title Duration")
+        description = Literal("Extra time for the no fishing armor title, in ticks.")
+        range = 0..200
+        slider = true
+        condition = { noFishingArmorAlert }
     }
 
     init {
@@ -215,9 +260,15 @@ object GeneralFishing : Category("General Fishing") {
         }
     }
 
-    var rodTimerDisplay by boolean(false) {
+    var rodTimerDisplay by reloadableBoolean(false) {
         name = Literal("Rod Timer Display")
         description = Literal("Display the current rod timer on screen")
+    }
+
+    var rodTimerReadyText by string("!!!") {
+        name = Literal("Rod Timer Ready Text")
+        description = Literal("Text shown when the rod timer ends. Supports & color and formatting codes.")
+        condition = { rodTimerDisplay }
     }
 
     var rodTimerSound by boolean(false) {
@@ -233,5 +284,10 @@ object GeneralFishing : Category("General Fishing") {
     var mobyDuckDisplay by reloadableBoolean(true) {
         name = Literal("Moby-Duck Timer Display")
         description = Literal("Display the Moby-Duck Fishing Wisdom buff timer on screen.")
+    }
+
+    var showActualBaitCount by boolean(true) {
+        name = Literal("Show Actual Bait Count")
+        description = Literal("Replaces the stack size in the 9th hotbar slot with the actual remaining bait count.")
     }
 }

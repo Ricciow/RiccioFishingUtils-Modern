@@ -19,7 +19,7 @@ class FluxStrategy : DeployableStrategy {
         val labelColor: TextColor,
     )
 
-    private var largestFluxSeconds: Double? = null
+    private var largestFluxSeconds: Int? = null
     private var fluxEntity: ArmorStand? = null
     private var activeFluxInfo: FluxInfo? = null
 
@@ -51,10 +51,10 @@ class FluxStrategy : DeployableStrategy {
         val name = entity.name.toUnformattedString()
         val result = fluxRegex.find(name) ?: return
         val matchedName = result.groupValues.getOrNull(1) ?: return
-        val seconds = result.groupValues.getOrNull(2)?.toDoubleOrNull()?.minus(entity.tickCount % 10 * 0.05) ?: return
+        val seconds = result.groupValues.getOrNull(2)?.toIntOrNull() ?: return
         val info = getFluxInfo(matchedName) ?: return
 
-        if (seconds > (largestFluxSeconds ?: 0.0)) {
+        if (seconds > (largestFluxSeconds ?: 0)) {
             largestFluxSeconds = seconds
             fluxEntity = entity
             activeFluxInfo = info
@@ -67,7 +67,7 @@ class FluxStrategy : DeployableStrategy {
         val info = activeFluxInfo ?: return null
         return Deployable(
             type = DeployableType.FLUX,
-            endTimeMillis = System.currentTimeMillis() + (seconds * 1_000).toLong(),
+            endTimeMillis = System.currentTimeMillis() + seconds * 1_000L,
             accentLabel = info.accentLabel,
             posX = entity.x,
             posZ = entity.z,
@@ -75,6 +75,7 @@ class FluxStrategy : DeployableStrategy {
             customName = info.name,
             labelColorOverride = info.labelColor,
             rangeOverride = info.range,
+            displayedSeconds = seconds,
         )
     }
 }

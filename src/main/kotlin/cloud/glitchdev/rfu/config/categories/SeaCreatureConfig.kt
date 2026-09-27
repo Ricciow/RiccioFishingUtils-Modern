@@ -6,6 +6,7 @@ import cloud.glitchdev.rfu.constants.fishing.RareScDisplayDataType
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.feature.fishing.CatchMessageReplacer
 import cloud.glitchdev.rfu.feature.fishing.RareScPartyMessage
+import cloud.glitchdev.rfu.feature.mob.RareAlert
 import cloud.glitchdev.rfu.gui.window.SeaCreatureEditWindow
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
@@ -50,6 +51,16 @@ object SeaCreatureConfig : Category("Sea Creatures") {
         description = Literal("Sends a message after killing a rare Sea Creature saying how long it took.")
     }
 
+    var killTimePersonalBest by boolean(true) {
+        name = Literal("Kill Time PB")
+        description = Literal("Sends personal best message for kill times on rare sea creatures.")
+    }
+
+    var invulnerabilityTimer by reloadableBoolean(true) {
+        name = Literal("Invulnerability Timer")
+        description = Literal("Displays the invulnerability timer on rare sea creatures and Vanquishers.")
+    }
+
     init {
         dualSeparator {
             title = "Catch Messages"
@@ -64,13 +75,13 @@ object SeaCreatureConfig : Category("Sea Creatures") {
 
     var catchMessageTemplate by string("&3&lSEA CREATURE! &eYou caught {article} {style}&l{name}") {
         name = Literal("Catch Message Template")
-        description = Literal("The template for the catch message. Available: {article}, {article_upper}, {name}, {style}, {plural}, {mob}, {mobs}")
+        description = Literal("The template for the catch message. Available: {article}, {article_upper}, {name}, {style}, {color}, {plural}, {mob}, {mobs}")
         condition = { replaceCatchMessages }
     }
 
     var doubleHookCatchMessageTemplate by string("&9&lDOUBLE HOOK! &eYou caught two {style}&l{plural}") {
         name = Literal("Double Hook Message Template")
-        description = Literal("The template for the double hook catch message. Available: {article}, {article_upper}, {name}, {style}, {plural}, {mob}, {mobs}")
+        description = Literal("The template for the double hook catch message. Available: {article}, {article_upper}, {name}, {style}, {color}, {plural}, {mob}, {mobs}")
         condition = { replaceCatchMessages }
     }
 
@@ -92,6 +103,28 @@ object SeaCreatureConfig : Category("Sea Creatures") {
     var detectionAlert by reloadableBoolean(true) {
         name = Literal("Rare Sc Alert")
         description = Literal("Sends an alert whenever a rare SC is found.")
+    }
+
+    var rareScTitleExtraTicks by int(0) {
+        name = Literal("Rare SC Title Duration")
+        description = Literal("Extra time for rare sea creature titles, in ticks.")
+        range = 0..200
+        slider = true
+        condition = { detectionAlert }
+    }
+
+    var rareScAlertPreset by string("&6&l[&fα&6&l] {color}&l{name} &6&l[&fα&6&l]") {
+        name = Literal("Rare Sc Alert Preset")
+        description = Literal("The template for the rare SC alert. Available: {article}, {article_upper}, {name}, {style}, {color}, {plural}, {mob}, {mobs}")
+        condition = { detectionAlert }
+    }
+
+    init {
+        previewButton(
+            RareAlert::preview,
+            "Preview Alert",
+            "Shows a preview of the rare SC alert."
+        ) { detectionAlert }
     }
 
     var rareScSound by reloadableBoolean(true) {
@@ -135,6 +168,14 @@ object SeaCreatureConfig : Category("Sea Creatures") {
     var goldenDragonAlert by reloadableBoolean(true) {
         name = Literal("Golden Dragon Alert")
         description = Literal("Sends an alert when a rare SC is low health and you don't have Golden Dragon equipped.")
+    }
+
+    var goldenDragonTitleExtraTicks by int(0) {
+        name = Literal("Golden Dragon Title Duration")
+        description = Literal("Extra time for the Golden Dragon alert title, in ticks.")
+        range = 0..200
+        slider = true
+        condition = { goldenDragonAlert }
     }
 
     var gdragAlertThreshold by int(20) {
@@ -223,7 +264,7 @@ object SeaCreatureConfig : Category("Sea Creatures") {
     }
 
     val HEALTH_BAR_REGEX
-        get() = SeaCreatures.entries.filter { it.special }.joinToString("|") { it.scName }.toExactRegex()
+        get() = SeaCreatures.entries.filter { it.special && it.bossbar }.joinToString("|") { it.scName }.toExactRegex()
 
 
     var coloredShurikenBar by boolean(true) {

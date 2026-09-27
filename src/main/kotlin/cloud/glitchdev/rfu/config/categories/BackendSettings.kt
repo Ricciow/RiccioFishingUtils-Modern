@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.config.categories
 import cloud.glitchdev.rfu.config.Category
 import cloud.glitchdev.rfu.config.seacreatures.SeaCreatureSettingsManager
 import cloud.glitchdev.rfu.utils.network.Network
+import cloud.glitchdev.rfu.utils.network.WebSocketClient
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 
 object BackendSettings : Category("Backend Settings") {
@@ -23,6 +24,8 @@ object BackendSettings : Category("Backend Settings") {
         if (newValue) {
             decisionMade = true
             Network.authenticateUser()
+        } else {
+            WebSocketClient.disconnect()
         }
     }
 

@@ -77,6 +77,14 @@ object DropsSettings : Category("Drops") {
         description = Literal("Shows a title on screen when you get a rare drop")
     }
 
+    var rareDropTitleExtraTicks by int(0) {
+        name = Literal("Rare Drop Title Duration")
+        description = Literal("Extra time for rare drop titles, in ticks.")
+        range = 0..200
+        slider = true
+        condition = { rareDropTitleAlert }
+    }
+
     var rareDropTitleFormat by string("{dropcolor}&l{drop}") {
         name = Literal("Rare Drop Title Format")
         description = Literal("The title to show on screen. Variables: {drop}, {dropcolor}, {mob}, {magic_find}, {count}, {time}, {total}")

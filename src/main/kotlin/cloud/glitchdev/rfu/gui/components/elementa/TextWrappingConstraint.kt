@@ -12,10 +12,30 @@ class TextWrappingConstraint(
     override var recalculate: Boolean = true,
     override var constrainTo: UIComponent? = null,
 ) : HeightConstraint {
+    private var lastText: String? = null
+    private var lastWidth: Float = -1f
+    private var lastTextScale: Float = -1f
+    private var memoizedHeight: Float = 0f
+
     override fun getHeightImpl(component: UIComponent): Float {
         val textComponent = (component as? UIWrappedText) ?: throw IllegalStateException("TextWrappingConstraint can only be used in UIWrappedText components")
-        val lines = getStringSplitToWidth(textComponent.getText(), textComponent.getWidth(), textComponent.getTextScale())
-        return lines.size * 9 * textComponent.getTextScale()
+        val text = textComponent.getText()
+        val width = textComponent.getWidth()
+        val scale = textComponent.getTextScale()
+
+        if (text == lastText && width == lastWidth && scale == lastTextScale) {
+            return memoizedHeight
+        }
+
+        val lines = getStringSplitToWidth(text, width, scale)
+        val calculated = lines.size * 9 * scale
+
+        lastText = text
+        lastWidth = width
+        lastTextScale = scale
+        memoizedHeight = calculated
+
+        return calculated
     }
 
     override fun visitImpl(
@@ -23,9 +43,11 @@ class TextWrappingConstraint(
         type: ConstraintType
     ) {
         when (type) {
-            ConstraintType.HEIGHT -> visitor.visitSelf(ConstraintType.HEIGHT)
+            ConstraintType.HEIGHT -> {
+                visitor.visitSelf(ConstraintType.WIDTH)
+                visitor.visitSelf(ConstraintType.TEXT_SCALE)
+            }
             else -> throw IllegalArgumentException(type.prettyName)
         }
     }
-
 }

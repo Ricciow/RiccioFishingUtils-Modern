@@ -5,8 +5,10 @@ import gg.essential.elementa.ElementaVersion
 import gg.essential.elementa.WindowScreen
 import gg.essential.universal.UKeyboard
 
-abstract class BaseWindow(drawDefaultBackground : Boolean = false) : WindowScreen(ElementaVersion.V10, drawDefaultBackground = drawDefaultBackground) {
+abstract class BaseWindow(drawDefaultBackground : Boolean = false) : WindowScreen(ElementaVersion.V11, drawDefaultBackground = drawDefaultBackground) {
     init {
+        useElementaRenderer = true
+
         window.onKeyType { _, id ->
             if(id == UKeyboard.KEY_ESCAPE) {
                 closeScreen()

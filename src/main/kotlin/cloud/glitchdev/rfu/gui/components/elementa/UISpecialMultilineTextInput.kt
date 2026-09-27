@@ -25,9 +25,9 @@ import gg.essential.elementa.constraints.HeightConstraint
 import gg.essential.elementa.dsl.coerceAtMost
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.width
-import gg.essential.elementa.utils.splitStringToWidthTruncated
 import gg.essential.universal.UKeyboard
-import gg.essential.universal.UMatrixStack
+import gg.essential.elementa.font.extractMcScale
+import gg.essential.elementa.renderer.ElementaExtractor
 import java.awt.Color
 import kotlin.math.abs
 
@@ -114,12 +114,10 @@ class UISpecialMultilineTextInput @JvmOverloads constructor(
         }
     }
 
-    override fun draw(matrixStack: UMatrixStack) {
-        beforeDraw(matrixStack)
-
+    override fun extractComponent(extractor: ElementaExtractor) {
         val currentWidth = getWidth()
         if (currentWidth <= 0f) {
-            super.draw(matrixStack)
+            super.extractComponent(extractor)
             return
         }
 
@@ -141,15 +139,15 @@ class UISpecialMultilineTextInput @JvmOverloads constructor(
         val textScale = getTextScale()
         if (!active && !hasText()) {
             if (placeholder.isNotEmpty()) {
-                val lines = splitStringToWidthTruncated(placeholder, currentWidth, textScale, 1)
+                val lines = splitTextForWrapping(placeholder, currentWidth)
                 if (lines.isNotEmpty()) {
-                    // MODIFIED: Draw placeholder with shadow
-                    getFontProvider().drawString(
-                        matrixStack, lines[0], getColor(), getLeft(), getTop(), 10f, textScale, shadow
+                    getFontProvider().extractMcScale(
+                        extractor, lines[0], getColor(), getLeft(), getTop(), textScale, shadow
                     )
                 }
             }
-            return super.draw(matrixStack)
+            super.extractComponent(extractor)
+            return
         }
 
         if (hasSelection()) {
@@ -168,13 +166,11 @@ class UISpecialMultilineTextInput @JvmOverloads constructor(
             if (topOffset < -lineHeight * textScale || topOffset > getHeight() + lineHeight * textScale)
                 continue
 
-            // Calculate the absolute Y position for the line
             val lineY = getTop() + topOffset
 
             if (!hasSelection() || i < selectionStart.line || i > selectionEnd.line) {
-                // MODIFIED: Draw standard line text with shadow
-                getFontProvider().drawString(
-                    matrixStack, visualLine.text, getColor(), getLeft(), lineY, 10f, textScale, shadow
+                getFontProvider().extractMcScale(
+                    extractor, visualLine.text, getColor(), getLeft(), lineY, textScale, shadow
                 )
             } else {
                 val startText = when {
@@ -208,15 +204,14 @@ class UISpecialMultilineTextInput @JvmOverloads constructor(
                 val newlinePadding = if (i < selectionEnd.line) ' '.width(textScale) else 0f
 
                 if (startText.isNotEmpty()) {
-                    // MODIFIED: Draw pre-selection text with shadow
-                    getFontProvider().drawString(
-                        matrixStack, startText, getColor(), getLeft(), lineY, 10f, textScale, shadow
+                    getFontProvider().extractMcScale(
+                        extractor, startText, getColor(), getLeft(), lineY, textScale, shadow
                     )
                 }
 
                 if (selectedText.isNotEmpty() || newlinePadding != 0f) {
-                    drawSelectedText(
-                        matrixStack,
+                    extractSelectedText(
+                        extractor,
                         selectedText,
                         getLeft() + startTextWidth,
                         getLeft() + startTextWidth + selectedTextWidth + newlinePadding,
@@ -225,15 +220,14 @@ class UISpecialMultilineTextInput @JvmOverloads constructor(
                 }
 
                 if (endText.isNotEmpty()) {
-                    // MODIFIED: Draw post-selection text with shadow
-                    getFontProvider().drawString(
-                        matrixStack, endText, getColor(), getLeft() + startTextWidth + selectedTextWidth, lineY, 10f, textScale, shadow
+                    getFontProvider().extractMcScale(
+                        extractor, endText, getColor(), getLeft() + startTextWidth + selectedTextWidth, lineY, textScale, shadow
                     )
                 }
             }
         }
 
-        super.draw(matrixStack)
+        super.extractComponent(extractor)
     }
 
     override fun screenPosToVisualPos(x: Float, y: Float): LinePosition {

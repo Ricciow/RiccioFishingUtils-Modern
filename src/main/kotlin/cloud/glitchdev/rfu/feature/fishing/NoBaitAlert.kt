@@ -19,7 +19,7 @@ object NoBaitAlert : Feature {
             if (mc.player?.fishing != null) return@registerItemUsedEvent
 
             if (BaitEventManager.lastBait == null) {
-                Title.showTitle("§c§lNO BAIT!")
+                Title.showTitle("§c§lNO BAIT!", extraTicks = GeneralFishing.noBaitTitleExtraTicks)
             }
         }
     }

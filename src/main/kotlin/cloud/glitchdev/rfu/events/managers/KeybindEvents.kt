@@ -15,6 +15,8 @@ import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.gui.components.EditBox
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+import gg.essential.elementa.WindowScreen
+import gg.essential.elementa.components.input.AbstractTextInput
 import java.util.concurrent.ConcurrentHashMap
 
 @AutoRegister
@@ -49,6 +51,10 @@ object KeybindEvents : AbstractEventManager<() -> Unit, KeybindTask>(), Register
     }
 
     private fun isTextInputFocused(screen: Screen?): Boolean {
+        if (screen is WindowScreen) {
+            val focused = screen.window.focusedComponent
+            return focused is AbstractTextInput && focused.isActive()
+        }
         val focused = screen?.focused ?: return false
         return focused is EditBox && focused.canConsumeInput()
     }
@@ -85,6 +91,7 @@ object KeybindEvents : AbstractEventManager<() -> Unit, KeybindTask>(), Register
     }
 
     private fun dispatchInput(code: Int, action: Int, modifiers: Int): Boolean {
+        RawInputEventManager.runTasks(code, action, modifiers)
         var consumed = false
         safeExecution {
             val currentScreen = getCurrentScreen()
@@ -213,4 +220,31 @@ object KeybindEvents : AbstractEventManager<() -> Unit, KeybindTask>(), Register
 
     fun registerKeybind(builder: KeybindBuilder.() -> Unit): KeybindTask =
         KeybindBuilder().apply(builder).build().register()
+
+    fun registerRawInputEvent(
+        priority: Int = 20,
+        callback: (code: Int, action: Int, modifiers: Int) -> Unit
+    ): RawInputEventManager.RawInputEvent {
+        return RawInputEventManager.register(priority, callback)
+    }
+
+    object RawInputEventManager : AbstractEventManager<(Int, Int, Int) -> Unit, RawInputEventManager.RawInputEvent>() {
+        override val runTasks: (Int, Int, Int) -> Unit = { code, action, modifiers ->
+            safeExecution {
+                tasks.forEach { task -> task.callback(code, action, modifiers) }
+            }
+        }
+
+        fun register(priority: Int = 20, callback: (Int, Int, Int) -> Unit): RawInputEvent {
+            return RawInputEvent(priority, callback).register()
+        }
+
+        class RawInputEvent(
+            priority: Int = 20,
+            callback: (Int, Int, Int) -> Unit
+        ) : ManagedTask<(Int, Int, Int) -> Unit, RawInputEvent>(priority, callback) {
+            override fun register() = submitTask(this)
+            override fun unregister() = removeTask(this)
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.feature.other
 
 import cloud.glitchdev.rfu.constants.text.Emoji
+import cloud.glitchdev.rfu.constants.text.EmojiData
 import cloud.glitchdev.rfu.constants.text.TextColor.*
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.command.Command
@@ -22,11 +23,11 @@ object EmojisCommand : SimpleCommand("rfuemojis") {
         val totalCount = Emoji.EMOJIS.size
         val message = TextUtils.rfuLiteral("Available Emojis $GRAY($GOLD$totalCount$GRAY):", GOLD)
 
-        Emoji.EMOJIS.entries.forEachIndexed { index, (unicode, aliases) ->
+        Emoji.EMOJIS.forEachIndexed { index, emoji ->
             if (index % 14 == 0) {
                 message.append(Component.literal("\n "))
             }
-            message.append(buildEmojiComponent(unicode, aliases))
+            message.append(buildEmojiComponent(emoji))
         }
 
         message.append(
@@ -37,23 +38,22 @@ object EmojisCommand : SimpleCommand("rfuemojis") {
         return 1
     }
 
-    private fun buildEmojiComponent(unicode: String, aliases: List<String>): MutableComponent {
-        val primaryAlias = aliases.firstOrNull() ?: ""
-        val longestAlias = aliases.maxByOrNull { it.length } ?: primaryAlias
-        val displayName = Emoji.formatDisplayName(longestAlias)
-
-        val hoverText = Component.literal("$GOLD§l$displayName $WHITE$unicode\n")
+    private fun buildEmojiComponent(emoji: EmojiData): MutableComponent {
+        val hoverText = Component.literal("$GOLD§l${emoji.displayName} $WHITE${emoji.unicode}\n")
         hoverText.append(Component.literal("$GRAY" + "Aliases:\n"))
-        aliases.forEach { alias ->
+        emoji.aliases.forEach { alias ->
             hoverText.append(Component.literal(" $YELLOW• $GOLD:$GOLD$alias:\n"))
         }
-        hoverText.append(Component.literal("\n$YELLOW" + "Click to insert $GOLD:$GOLD$primaryAlias: $YELLOW" + "into chat!"))
+        emoji.customTriggers.forEach { trigger ->
+            hoverText.append(Component.literal(" $YELLOW• $GOLD$trigger\n"))
+        }
+        hoverText.append(Component.literal("\n$YELLOW" + "Click to insert $GOLD:$GOLD${emoji.primaryAlias}: $YELLOW" + "into chat!"))
 
         val style = Style.EMPTY
             .withColor(ChatFormatting.WHITE)
             .withHoverEvent(HoverEvent.ShowText(hoverText))
-            .withClickEvent(ClickEvent.SuggestCommand(":$primaryAlias:"))
+            .withClickEvent(ClickEvent.SuggestCommand(":${emoji.primaryAlias}:"))
 
-        return Component.literal("$unicode  ").setStyle(style)
+        return Component.literal("${emoji.unicode}  ").setStyle(style)
     }
 }

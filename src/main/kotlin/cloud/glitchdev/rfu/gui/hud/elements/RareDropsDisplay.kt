@@ -21,7 +21,6 @@ import cloud.glitchdev.rfu.feature.fishing.FishingSession
 import cloud.glitchdev.rfu.gui.components.elementa.MultilineHudText
 import cloud.glitchdev.rfu.gui.hud.AbstractFishingHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
-import cloud.glitchdev.rfu.utils.dsl.isWearingTrophyHunterArmor
 import cloud.glitchdev.rfu.utils.dsl.toReadableString
 import cloud.glitchdev.rfu.utils.fishing.SeaCreatureAvailability
 import java.awt.Color
@@ -33,11 +32,13 @@ import kotlin.time.Duration.Companion.minutes
 @HudElement
 object RareDropsDisplay : AbstractFishingHudElement("rareDropsDisplay") {
     override val displaysWhilePaused: Boolean = true
+    override val hideWhileTrophyFishing: Boolean = true
+    override val hideWhileTreasureFishing: Boolean = true
     override val requiresFishing: Boolean
         get() = DropsSettings.rareDropsOnlyWhenFishing
 
     override val requirement: Boolean
-        get() = !isWearingTrophyHunterArmor() && DropsSettings.rareDropsDisplay
+        get() = DropsSettings.rareDropsDisplay
 
     override val isElementActive: Boolean
         get() = !requiresFishing || FishingSession.pausedDuration < 1.minutes

@@ -20,16 +20,17 @@ import cloud.glitchdev.rfu.feature.fishing.FishingSession
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.utils.fishing.SeaCreatureAvailability
-import cloud.glitchdev.rfu.utils.dsl.isWearingTrophyHunterArmor
 
 @HudElement
 object RareSCDisplay : AbstractFishingHudElement("rareSCDisplay") {
     override val displaysWhilePaused: Boolean = true
+    override val hideWhileTrophyFishing: Boolean = true
+    override val hideWhileTreasureFishing: Boolean = true
     override val requiresFishing: Boolean
         get() = SeaCreatureConfig.rareScOnlyWhenFishing
 
     override val requirement: Boolean
-        get() = !isWearingTrophyHunterArmor() && SeaCreatureConfig.rareScDisplay
+        get() = SeaCreatureConfig.rareScDisplay
 
     override val isElementActive: Boolean
         get() = !requiresFishing || FishingSession.pausedDuration < 1.minutes

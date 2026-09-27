@@ -15,8 +15,8 @@ import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext
 import net.minecraft.client.gui.Font
 import net.minecraft.network.chat.Component
 //?if < 26.2 {
-import net.minecraft.client.renderer.culling.Frustum
-//?}
+/*import net.minecraft.client.renderer.culling.Frustum
+*///?}
 
 object Render3D {
     val camera : Camera
@@ -438,7 +438,9 @@ object Render3D {
             vecToText.y,
             vecToText.z
         )
-        matrixStack.mulPose(camera.rotation())
+        //~ if >=26.3 'mulPose' -> 'rotate' {
+        matrixStack.rotate(camera.rotation())
+        //~}
         matrixStack.scale(finalScale, -finalScale, finalScale)
 
         val font = mc.font

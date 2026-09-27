@@ -103,7 +103,7 @@ class UIConditionCard(
             height = ChildBasedMaxSizeConstraint() + borderWidth * 2
         }
 
-        val image = UIImage.ofResource(icon) childOf innerContainer
+        val image = UIImage.ofResourceCached(icon) childOf innerContainer
 
         textUI = UIText(option.label).constrain {
             x = SiblingConstraint(UIScheme.pfConditionCardPadding)

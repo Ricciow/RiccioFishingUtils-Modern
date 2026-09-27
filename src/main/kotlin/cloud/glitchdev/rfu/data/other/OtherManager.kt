@@ -3,8 +3,10 @@ package cloud.glitchdev.rfu.data.other
 import cloud.glitchdev.rfu.data.other.data.BooleanEntry
 import cloud.glitchdev.rfu.data.other.data.CakesEntry
 import cloud.glitchdev.rfu.data.other.data.Entry
+import cloud.glitchdev.rfu.data.other.data.FrogcoinBlessingsEntry
 import cloud.glitchdev.rfu.data.other.data.InstantEntry
 import cloud.glitchdev.rfu.data.other.data.LongEntry
+import cloud.glitchdev.rfu.data.other.data.MobyDuckEntry
 import cloud.glitchdev.rfu.data.other.data.PartyPresetsEntry
 import cloud.glitchdev.rfu.data.other.data.StringEntry
 import cloud.glitchdev.rfu.data.other.data.StringSetEntry
@@ -39,6 +41,8 @@ object OtherManager {
                         "PartyPresetsEntry" -> context.deserialize(json, PartyPresetsEntry::class.java)
                         "InstantEntry" -> context.deserialize(json, InstantEntry::class.java)
                         "LongEntry" -> context.deserialize(json, LongEntry::class.java)
+                        "MobyDuckEntry" -> context.deserialize(json, MobyDuckEntry::class.java)
+                        "FrogcoinBlessingsEntry" -> context.deserialize(json, FrogcoinBlessingsEntry::class.java)
                         else -> throw JsonParseException("Unknown Entry type: $type")
                     }
                 }
