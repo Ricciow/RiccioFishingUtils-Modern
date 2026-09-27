@@ -1,6 +1,7 @@
 # v1.19.1 - Minor
 
 ### Fixes
+- Rod timer now hides the !!! armor stand.
 - Made the pb message not show duplicated with the normal time to kill message
 - Party Finder listings now keep their selected island when changing islands.
 - Party Finder now leaves your current party before joining a new one.
