@@ -90,6 +90,9 @@ object PartyWebSocket : RegisteredEvent {
             val now = Clock.System.now()
 
             if (inviter == lastJoinTarget && now - lastJoinTime!! < 30.seconds) {
+                if (Party.inParty) {
+                    Chat.sendCommand("p leave")
+                }
                 Chat.sendCommand("p join $inviter")
                 lastJoinTarget = null
                 return@registerAllowGameEvent false
