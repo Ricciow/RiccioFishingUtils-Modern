@@ -4,7 +4,7 @@
 #ksp_version = "2.3.12"
 
 #RFU
-mod.version = "1.19.0"
+mod.version = "1.19.1"
 mod.group = "cloud.glitchdev.rfu"
 mod.id = "rfu"
 mod.name = "RiccioFishingUtils"
@@ -17,7 +17,7 @@ devauth_version = "1.2.2"
 
 #Essential
 elementa_version = "774"
-universalcraft_version = "534"
+universalcraft_version = "536"
 
 #Faric_language_kotlin
 fabric_language_kotlin = "1.14.1+kotlin.2.4.20"

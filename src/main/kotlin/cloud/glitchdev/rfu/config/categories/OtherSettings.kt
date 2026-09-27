@@ -331,6 +331,16 @@ object OtherSettings : Category("Other") {
         description = Literal("Patches memory leaks in Elementa")
     }
 
+    var patchSkyOceanTextWidth by boolean(true) {
+        name = Literal("Patch SkyOcean Text Width")
+        description = Literal("Prevents text from being cut off in RFU HUDs and windows when SkyOcean Text Replacements is enabled.")
+    }
+
+    var patchElementaTextBleed by boolean(true) {
+        name = Literal("Patch Elementa Text Bleed")
+        description = Literal("Fix for thin fragments of other text appearing in HUDs and windows.")
+    }
+
     var fixFailedCasts by boolean(false) {
         name = Literal("Fix failed casts")
         description = Literal("Fixes failed casts caused by duplicate interaction packets when holding a fishing rod.\n${LIGHT_RED}Use at your own risk!")

@@ -40,6 +40,8 @@
     "EditBoxMixin",
     "FontPreparedTextBuilderMixin",
     "elementa.UIComponentMixin",
+    "elementa.ElementaRendererImplMixin",
+    "elementa.VanillaFontRendererMixin",
     "elementa.MappedStateMixin",
     "elementa.AnimatingConstraintsMixin",
     "elementa.WindowScreenMixin",
