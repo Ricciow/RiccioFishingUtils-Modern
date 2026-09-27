@@ -36,20 +36,24 @@ object TimeToKill : Feature {
             val player = mc.player ?: return@forEach
             if (player.distanceTo(entity.modelEntity) > 40f) return@forEach
             val duration = Clock.System.now() - entity.createdAt
+            val isPersonalBest = !avoidDead && entity.isOwn() &&
+                CatchTracker.catchHistory.registerKillTime(sc, duration.inWholeMilliseconds)
 
-            if (sc.special && SeaCreatureConfig.timeToKill) {
+            if (isPersonalBest) {
+                CatchTracker.catchesFile.save()
+            }
+            val showPersonalBest = sc.special && isPersonalBest && SeaCreatureConfig.killTimePersonalBest
+
+            if (sc.special && SeaCreatureConfig.timeToKill && !showPersonalBest) {
                 Chat.sendMessage(
                     TextUtils.rfuLiteral("${TextColor.YELLOW}${entity.sbName} ${TextColor.GOLD}took ${TextColor.YELLOW}${duration.toReadableString(true)} ${TextColor.GOLD}to kill!")
                 )
             }
 
-            if (!avoidDead && entity.isOwn() && CatchTracker.catchHistory.registerKillTime(sc, duration.inWholeMilliseconds)) {
-                CatchTracker.catchesFile.save()
-                if (sc.special && SeaCreatureConfig.killTimePersonalBest) {
-                    Chat.sendMessage(
-                        TextUtils.rfuLiteral("${TextColor.YELLOW}${encouragements.random()}! ${TextColor.GOLD}New ${TextColor.YELLOW}${entity.sbName} ${TextColor.GOLD}Personal Best! ${TextColor.YELLOW}${duration.toReadableString(true)}")
-                    )
-                }
+            if (showPersonalBest) {
+                Chat.sendMessage(
+                    TextUtils.rfuLiteral("${TextColor.YELLOW}${encouragements.random()}! ${TextColor.GOLD}New ${TextColor.YELLOW}${entity.sbName} ${TextColor.GOLD}Personal Best! ${TextColor.YELLOW}${duration.toReadableString(true)}")
+                )
             }
         }
     }
