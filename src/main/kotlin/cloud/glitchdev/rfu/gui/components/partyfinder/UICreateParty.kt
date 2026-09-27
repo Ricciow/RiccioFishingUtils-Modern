@@ -102,6 +102,7 @@ class UICreateParty : UIContainer() {
         }
 
         registerLocationEvent { event ->
+            if (PartyWebSocket.myParty != null) return@registerLocationEvent
             val islandName = event.map.getOrNull() ?: return@registerLocationEvent
             val newIsland = FishingIslands.findIslandObject(islandName)
             if (newIsland != null && newIsland != FishingIslands.OTHER && newIsland != FishingIslands.NOT_SB && newIsland != FishingIslands.UNKNOWN) {
