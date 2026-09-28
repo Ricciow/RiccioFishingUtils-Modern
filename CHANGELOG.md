@@ -2,6 +2,7 @@
 
 ### Features
 - Added /rfu gui /rfu hud /rfu move command aliases to open the HUD editor.
+- Added the !version party command to share your current RFU version.
 
 ### Fixes
 - Rod timer now hides the !!! armor stand.
