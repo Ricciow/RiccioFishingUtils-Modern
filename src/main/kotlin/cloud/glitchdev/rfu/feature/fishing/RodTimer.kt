@@ -44,7 +44,7 @@ object RodTimer : Feature {
                 return@registerEntityRenderEvent
             }
 
-            if (timer != null) return@registerEntityRenderEvent
+            if (timer != null && !(timer?.isRemoved ?: true)) return@registerEntityRenderEvent
             if(entity !is ArmorStand) return@registerEntityRenderEvent
             if(!entity.hasCustomName()) return@registerEntityRenderEvent
             if(!entity.name.toUnformattedString().matches(timerRegex)) return@registerEntityRenderEvent

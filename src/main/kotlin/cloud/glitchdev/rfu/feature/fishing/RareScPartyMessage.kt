@@ -21,6 +21,7 @@ object RareScPartyMessage : Feature {
 
             if(RARE_SC_REGEX.matches(seaCreature.scName)) {
                 val history = CatchTracker.catchHistory.getOrAdd(seaCreature)
+                val totalAfterCatch = history.total + if (isDoubleHook) 2 else 1
                 val timeSinceLast = if (history.total > 0) {
                     (Clock.System.now() - history.time).toReadableString()
                 } else {
@@ -44,7 +45,7 @@ object RareScPartyMessage : Feature {
                     }
                     .formatTemplate(
                         "name" to scName,
-                        "total" to history.total.toString(),
+                        "total" to totalAfterCatch.toString(),
                         "count" to (history.count + 1).toString(),
                         "time" to timeSinceLast,
                         "dh" to if (isDoubleHook) SeaCreatureConfig.dhText else "",

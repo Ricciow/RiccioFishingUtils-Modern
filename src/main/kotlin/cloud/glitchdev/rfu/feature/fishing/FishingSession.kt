@@ -47,7 +47,7 @@ object FishingSession : Feature {
     var lastHotspot : Hotspot? = null
 
     val isHotspotFishing : Boolean
-        get() = lastHotspot != null
+        get() = lastHotspot != null && fishingType == FishingType.NORMAL
 
     var fishingType: FishingType = FishingType.NORMAL
         private set
