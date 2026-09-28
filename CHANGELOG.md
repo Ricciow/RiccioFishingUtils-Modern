@@ -5,6 +5,7 @@
 - Added the !version party command to share your current RFU version.
 
 ### Fixes
+- Fixed skill menu XP parsing when progress contains decimal values.
 - Rod timer now hides the !!! armor stand.
 - Made the pb message not show duplicated with the normal time to kill message
 - Party Finder listings now keep their selected island when changing islands.

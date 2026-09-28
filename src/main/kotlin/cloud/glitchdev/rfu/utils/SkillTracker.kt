@@ -23,7 +23,7 @@ object SkillTracker : RegisteredEvent {
     private val ACTION_BAR_REGEX = """\+([0-9,]+(?:\.[0-9]+)?)\s+(Combat|Farming|Foraging|Fishing|Mining|Enchanting|Alchemy|Carpentry|Taming|Hunting)(?:\s+\(([^/]+)/([^)]+)\))?""".toRegex(RegexOption.IGNORE_CASE)
     private val SKILL_ITEM_NAME_REGEX = """^(Combat|Farming|Foraging|Fishing|Mining|Enchanting|Alchemy|Carpentry|Taming|Hunting)\s+([IVXLCDM]+|\d+)$""".toRegex(RegexOption.IGNORE_CASE)
     private val LORE_LEVEL_REGEX = """Progress to Level\s+([IVXLCDM]+|\d+)""".toRegex(RegexOption.IGNORE_CASE)
-    private val LORE_PROGRESS_REGEX = """([0-9,]+[kMB]?)/([0-9,]+[kMB]?)""".toRegex()
+    private val LORE_PROGRESS_REGEX = """(?<![0-9,.])([0-9][0-9,]*(?:\.[0-9]+)?[kMB]?)\s*/\s*([0-9][0-9,]*(?:\.[0-9]+)?[kMB]?)""".toRegex(RegexOption.IGNORE_CASE)
     private val LORE_TOTAL_XP_REGEX = """([0-9,]{5,}(?:\.[0-9]+)?)""".toRegex()
 
     override fun register() {
@@ -76,7 +76,13 @@ object SkillTracker : RegisteredEvent {
                         val nextLevel = parseLevel(nextLevelStr)
                         val currentLevel = nextLevel - 1
                         val currentXp = Skills.parseXp(progressMatch.groupValues[1])
-                        parsedTotalXp = xpRequiredForLevel(currentLevel) + currentXp
+                        val requiredXp = Skills.parseXp(progressMatch.groupValues[2])
+                        if (nextLevel in 1..skill.maxLevel &&
+                            requiredXp == Skills.getRequiredXpForLevel(nextLevel) &&
+                            currentXp in 0..requiredXp
+                        ) {
+                            parsedTotalXp = xpRequiredForLevel(currentLevel) + currentXp
+                        }
                     }
                 }
 
