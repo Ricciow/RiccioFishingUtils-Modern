@@ -71,7 +71,7 @@ object FishTrackingDisplay : AbstractFishingHudElement("fishTrackingDisplay") {
 
         if (items.contains(FishTrackingType.SC_H)) {
             val rate = FishingSession.scTracker.currentRatePerHour.toInt()
-            if (rate != 0) {
+            if (rate != 0 || isEditing) {
                 val total = FishingSession.scTracker.total.toInt()
                 val line = buildString {
                     append("$CYAN${BOLD}SC/h:")
