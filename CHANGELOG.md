@@ -2,6 +2,7 @@
 
 ### Features
 - Hover over the daily streak to see the reset countdown and daily challenges to see their descriptions.
+- Added :boop: and :boo: as emojis
 
 ### Changes
 - Inventory HUDs now only appear in the main inventory when not needed elsewhere.
