@@ -1,6 +1,7 @@
 # v1.19.2 - Minor
 
 ### Features
+- Hover over the daily streak to see the reset countdown and daily challenges to see their descriptions.
 
 ### Changes
 - Inventory HUDs now only appear in the main inventory when not needed elsewhere.

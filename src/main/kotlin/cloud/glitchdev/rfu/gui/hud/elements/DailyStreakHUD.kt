@@ -14,9 +14,11 @@ import cloud.glitchdev.rfu.events.managers.ArmorEvents.registerArmorChangeEvent
 import cloud.glitchdev.rfu.events.managers.DailyStreakEvents.registerStreakUpdatedEvent
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.elementa.BoundingBoxConstraint
+import cloud.glitchdev.rfu.gui.components.elementa.UIVanillaTooltip
 import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 import cloud.glitchdev.rfu.utils.dsl.compact
+import cloud.glitchdev.rfu.utils.dsl.toReadableString
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIImage
 import gg.essential.elementa.components.UIText
@@ -32,7 +34,9 @@ import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.toConstraint
+import net.minecraft.network.chat.Component
 import java.awt.Color
+import kotlin.time.toKotlinDuration
 
 @HudElement
 object DailyStreakHUD : AbstractTextHudElement("dailyStreakDisplay") {
@@ -72,7 +76,20 @@ object DailyStreakHUD : AbstractTextHudElement("dailyStreakDisplay") {
 
         val data = DailyStreakManager.data
 
-        text.addLine("${WHITE}\uE11F${GOLD}${BOLD}Daily Streak: ${YELLOW}${data.currentStreak} Days")
+        val streakHeader = UIVanillaTooltip(tooltip = {
+            val remaining = DailyStreakManager.getTimeUntilReset().toKotlinDuration().toReadableString()
+            listOf(Component.literal("Resets in: $remaining"))
+        }).constrain {
+            width = BoundingBoxConstraint()
+            height = ChildBasedMaxSizeConstraint()
+        }
+        UIText("${WHITE}\uE11F${GOLD}${BOLD}Daily Streak: ${YELLOW}${data.currentStreak} Days").constrain {
+            x = 0.pixels()
+            y = 0.pixels()
+            width = ScaledTextConstraint(scale)
+            height = TextAspectConstraint()
+        } childOf streakHeader
+        text.addLine(streakHeader)
 
         val canReroll = DailyStreakManager.canReroll()
         val showReroll = isOnInventory && canReroll
@@ -106,29 +123,31 @@ object DailyStreakHUD : AbstractTextHudElement("dailyStreakDisplay") {
                 }
                 val lineText = "$icon ${GOLD}${challenge.getTitle()}: $progressStr"
 
-                if (showReroll && !challenge.isCompleted) {
-                    val lineContainer = UIContainer().constrain {
-                        width = BoundingBoxConstraint()
-                        height = ChildBasedMaxSizeConstraint()
-                    }
-                    UIText(lineText).constrain {
-                        x = 0.pixels
-                        y = 0.pixels
-                        width = ScaledTextConstraint(scale)
-                        height = TextAspectConstraint()
-                    } childOf lineContainer
-                    createRerollButton(challenge, lineContainer)
-                    text.addLine(lineContainer)
-                } else {
-                    text.addLine(lineText)
+                val lineContainer = UIVanillaTooltip(tooltip = {
+                    challenge.getDescription().lines()
+                        .filter { it.isNotBlank() }
+                        .map { Component.literal(it) }
+                }).constrain {
+                    width = BoundingBoxConstraint()
+                    height = ChildBasedMaxSizeConstraint()
                 }
+                UIText(lineText).constrain {
+                    x = 0.pixels()
+                    y = 0.pixels()
+                    width = ScaledTextConstraint(scale)
+                    height = TextAspectConstraint()
+                } childOf lineContainer
+                if (showReroll && !challenge.isCompleted) {
+                    createRerollButton(challenge, lineContainer)
+                }
+                text.addLine(lineContainer)
             }
         }
     }
 
     private fun createRerollButton(challenge: DailyChallenge?, parent: UIContainer) {
         val iconSize = 7.5f * scale
-        val rerollBtn = UIContainer().constrain {
+        val rerollBtn = UIVanillaTooltip(Component.literal("Reroll")).constrain {
             x = SiblingConstraint(3f * scale)
             y = 0.pixels()
             width = iconSize.pixels()

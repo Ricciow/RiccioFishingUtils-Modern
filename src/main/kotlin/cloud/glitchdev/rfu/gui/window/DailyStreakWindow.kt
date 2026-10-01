@@ -30,9 +30,6 @@ import gg.essential.elementa.dsl.times
 import gg.essential.elementa.dsl.toConstraint
 import gg.essential.elementa.effects.ScissorEffect
 import java.awt.Color
-import java.time.Duration
-import java.time.LocalDateTime
-import java.time.ZoneOffset
 
 object DailyStreakWindow : BaseWindow(false) {
     private val primaryColor = UIScheme.pfWindowBackground.toConstraint()
@@ -205,9 +202,7 @@ object DailyStreakWindow : BaseWindow(false) {
 
     private fun updateResetTimer() {
         if (!::resetTimerTextComponent.isInitialized) return
-        val now = LocalDateTime.now(ZoneOffset.UTC)
-        val midnight = now.toLocalDate().plusDays(1).atStartOfDay()
-        val durationUntilReset = Duration.between(now, midnight)
+        val durationUntilReset = DailyStreakManager.getTimeUntilReset()
         val hours = durationUntilReset.toHours()
         val minutes = durationUntilReset.toMinutes() % 60
         resetTimerTextComponent.setText("Resets in: ${hours}h ${minutes}m (00:00 UTC)")
