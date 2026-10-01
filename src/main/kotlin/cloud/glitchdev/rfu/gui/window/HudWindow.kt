@@ -214,7 +214,7 @@ object HudWindow : BaseWindow(false) {
         val fx = x.toFloat()
         val fy = y.toFloat()
         for (element in hudElements.asReversed()) {
-            if (element.enabled && element.renderOnInventory && !element.isHidden() && element.isPointInside(fx, fy)) {
+            if (element.enabled && element.renderOnInventory && element.isOnInventory && !element.isHidden() && element.isPointInside(fx, fy)) {
                 return element
             }
         }

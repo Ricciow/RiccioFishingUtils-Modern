@@ -44,12 +44,13 @@ object TrophySackDisplay : AbstractTextHudElement("trophySackDisplay") {
 
     override val renderOnHud: Boolean = false
     override val renderOnInventory: Boolean = true
+    override val inventoryScreenFilter: (AbstractContainerScreen<*>) -> Boolean = { isTrophySack(it) }
     override val isClickableOnInventory: Boolean = true
     override val requirement: Boolean
         get() = TrophyFishing.trophySackDisplay
 
     override val isElementActive: Boolean
-        get() = isTrophySack(HudWindow.currentContainerScreen)
+        get() = isOnInventory
 
     enum class SackSortOrder(val displayName: String) {
         RARITY("Rarity"),
@@ -104,13 +105,13 @@ object TrophySackDisplay : AbstractTextHudElement("trophySackDisplay") {
         super.onInitialize()
 
         registerContainerOpenEvent { _, _, _ ->
-            if (isTrophySack(HudWindow.currentContainerScreen)) {
+            if (isOnInventory) {
                 updateState()
             }
         }
 
         registerSetSlotEvent { _, _, _ ->
-            if (isTrophySack(HudWindow.currentContainerScreen)) {
+            if (isOnInventory) {
                 updateState()
             }
         }
