@@ -36,11 +36,11 @@ object RodTimer : Feature {
         }
 
         registerEntityRenderEvent { entity, _, event ->
-            if(!GeneralFishing.rodTimerDisplay) return@registerEntityRenderEvent
+            if(!GeneralFishing.rodTimerDisplay && !GeneralFishing.rodTimerSound) return@registerEntityRenderEvent
             if(!isHoldingRod) return@registerEntityRenderEvent
 
             if (timer != null && entity.id == timer?.id) {
-                event.cancel()
+                if (GeneralFishing.rodTimerDisplay) event.cancel()
                 return@registerEntityRenderEvent
             }
 
@@ -50,7 +50,7 @@ object RodTimer : Feature {
             if(!entity.name.toUnformattedString().matches(timerRegex)) return@registerEntityRenderEvent
 
             timer = entity
-            event.cancel()
+            if (GeneralFishing.rodTimerDisplay) event.cancel()
         }
 
         registerLocationEvent {

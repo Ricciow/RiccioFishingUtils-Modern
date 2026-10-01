@@ -7,6 +7,7 @@
 - Inventory HUDs now only appear in the main inventory when not needed elsewhere.
 
 ### Fixes
+- Rod timer sounds now work when the rod timer HUD display is disabled.
 - Fixed the camera spinning after taking an Essential screenshot.
 
 ### Backend
