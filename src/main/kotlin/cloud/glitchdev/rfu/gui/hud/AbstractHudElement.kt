@@ -24,6 +24,8 @@ import gg.essential.elementa.dsl.plus
 import gg.essential.elementa.dsl.toConstraint
 import gg.essential.elementa.renderer.ElementaExtractor
 import gg.essential.universal.UKeyboard
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+import net.minecraft.client.gui.screens.inventory.InventoryScreen
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.round
@@ -51,8 +53,10 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
     var currentY = defaultY
     open val requirement: Boolean = true
     open val isElementActive: Boolean = true
+    open val inventoryScreenFilter: (AbstractContainerScreen<*>) -> Boolean = { it is InventoryScreen }
     open val isOnInventory: Boolean
-        get() = HudWindow.isOnInventory
+        get() = if (HudWindow.isEditingOpen) HudWindow.isOnInventory
+        else HudWindow.currentContainerScreen?.let(inventoryScreenFilter) == true
     open val renderOnHud: Boolean = true
     open val renderOnInventory: Boolean = false
     open val isClickableOnInventory: Boolean = true
@@ -412,9 +416,9 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
         if (forcePreview) return true
 
         return when (HudWindow.currentRenderPass) {
-            HudWindow.RenderPass.HUD -> renderOnHud && !(isOnInventory && renderOnInventory)
+            HudWindow.RenderPass.HUD -> renderOnHud && !(HudWindow.isOnInventory && renderOnInventory)
             HudWindow.RenderPass.INVENTORY -> isOnInventory && renderOnInventory
-            HudWindow.RenderPass.NONE -> !isOnInventory && renderOnHud
+            HudWindow.RenderPass.NONE -> !HudWindow.isOnInventory && renderOnHud
         }
     }
 

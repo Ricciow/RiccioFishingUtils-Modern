@@ -2,7 +2,7 @@ package cloud.glitchdev.rfu.constants.text
 
 
 data class EmojiData(
-    val unicode: String,
+    val text: String,
     val aliases: List<String>,
     val customTriggers: List<String> = emptyList()
 ) {
@@ -34,6 +34,8 @@ object Emoji {
         EmojiData("\uE12A", listOf("fish")),
         EmojiData("\uE12B", listOf("face_holding_back_tears", "fhbt")),
         EmojiData("\uE12C", listOf("rolling_eyes")),
+        EmojiData("§d§lBoop!", listOf("boop"), listOf("Boop!")),
+        EmojiData("§6§lBoo!", listOf("boo"), listOf("Boo!")),
 
         // Sea Creatures
         EmojiData("\uE116", listOf("abyssal_miner", "abyssalminer", "miner")),
@@ -65,15 +67,15 @@ object Emoji {
     )
 
     val ALL: Map<String, String> = EMOJIS.flatMap { emoji ->
-        emoji.triggers.map { it to emoji.unicode }
+        emoji.triggers.map { it to emoji.text }
     }.toMap()
 
     val COLON_TRIGGERS: Map<String, String> = EMOJIS.flatMap { emoji ->
-        emoji.aliases.map { ":$it:" to emoji.unicode }
+        emoji.aliases.map { ":$it:" to emoji.text }
     }.toMap()
 
     val CUSTOM_TRIGGERS: Map<String, String> = EMOJIS.flatMap { emoji ->
-        emoji.customTriggers.map { it to emoji.unicode }
+        emoji.customTriggers.map { it to emoji.text }
     }.toMap()
 
     fun String.whiteText() : String {

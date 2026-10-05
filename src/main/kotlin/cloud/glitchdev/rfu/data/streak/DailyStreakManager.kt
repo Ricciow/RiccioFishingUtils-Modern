@@ -11,7 +11,9 @@ import cloud.glitchdev.rfu.utils.Sounds
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.World
 import net.minecraft.network.chat.Component
+import java.time.Duration
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.ZoneOffset
 
 object DailyStreakManager {
@@ -21,6 +23,11 @@ object DailyStreakManager {
     private var listenersActivated = false
 
     fun getTodayDateString(): String = LocalDate.now(ZoneOffset.UTC).toString()
+
+    fun getTimeUntilReset(): Duration {
+        val now = LocalDateTime.now(ZoneOffset.UTC)
+        return Duration.between(now, now.toLocalDate().plusDays(1).atStartOfDay())
+    }
 
     fun saveData() {
         file.save()

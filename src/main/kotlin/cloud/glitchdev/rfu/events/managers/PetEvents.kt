@@ -72,7 +72,7 @@ object PetEvents {
                         val plain = line.toUnformattedString()
                         if (plain.startsWith("Pet: ")) {
                             val formattedLine = line.toFormattedString()
-                            petLineFormatted = formattedLine.substringAfter("Pet:").trim()
+                            petLineFormatted = formattedLine.substringBefore("Pet:") + formattedLine.substringAfter("Pet:").trim()
                             break
                         }
                     }
