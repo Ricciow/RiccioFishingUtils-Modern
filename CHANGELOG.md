@@ -4,6 +4,7 @@
 - Added Halloween decorations (Seasonal effects toggle in Other settings)
 
 ### Changes
+- Removed blizzard in a bottle timers
 
 ### Fixes
 

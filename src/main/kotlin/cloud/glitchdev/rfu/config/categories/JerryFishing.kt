@@ -26,43 +26,4 @@ object JerryFishing : Category("Jerry Fishing") {
         slider = true
         condition = { reindrakeAlert }
     }
-
-    init {
-        dualSeparator {
-            title = "Blizzard"
-            description = "Settings for the Jerry's Workshop blizzard!"
-        }
-    }
-
-    var blizzardTimerDisplay by reloadableBoolean(true) {
-        name = Literal("Blizzard Timer Display")
-        description = Literal("Display the current blizzard timer on screen")
-    }
-
-    var blizzardExpiredAlert by reloadableBoolean(true) {
-        name = Literal("Blizzard Expired Alert")
-        description = Literal("Sends an alert whenever the blizzard expires.")
-    }
-
-    var blizzardTitleExtraTicks by int(0) {
-        name = Literal("Blizzard Title Duration")
-        description = Literal("Extra time for the Blizzard expired title, in ticks.")
-        range = 0..200
-        slider = true
-        condition = { blizzardExpiredAlert }
-    }
-
-    var blizzardExpiredSound by reloadableBoolean(true) {
-        name = Literal("Blizzard Expired Sound")
-        description = Literal("Plays a sound whenever the blizzard expires.")
-        condition = { blizzardExpiredAlert }
-    }
-
-    var blizzardExpiredVolume by float(1f) {
-        name = Literal("Sound Volume")
-        description = Literal("The volume for the blizzard expired sound")
-        range = 0f..1f
-        slider = true
-        condition = { blizzardExpiredAlert && blizzardExpiredSound }
-    }
 }
