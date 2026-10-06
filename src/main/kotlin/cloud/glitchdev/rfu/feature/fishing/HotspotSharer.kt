@@ -30,7 +30,6 @@ object HotspotSharer : Feature {
     override fun onInitialize() {
         registerTickEvent(interval = 20) {
             if (!HotSpotSettings.shareHotspotAlert) return@registerTickEvent
-            if (!Party.inParty) return@registerTickEvent
 
             val player = mc.player ?: return@registerTickEvent
             HotSpotEvents.getAllHotspots().forEach { hotspot ->
@@ -40,7 +39,7 @@ object HotspotSharer : Feature {
                 val distance = player.position().distanceTo(hotspot.center)
                 if (distance < 10.0) {
                     notifiedHotspots.add(hotspot.blockPos)
-                    if (HotSpotSettings.autoShareHotspot) {
+                    if (HotSpotSettings.autoShareHotspot && Party.inParty) {
                         shareHotspot(hotspot)
                     } else {
                         showShareMessage(hotspot)
@@ -102,18 +101,31 @@ object HotspotSharer : Feature {
     private fun showShareMessage(hotspot: Hotspot) {
         val pos = hotspot.center
         val name = formatHotspotShareName(hotspot)
-        val shareCommand = "/pc $name Hotspot | ${ceil(pos.x).toInt()}, ${ceil(pos.y).toInt()}, ${ceil(pos.z).toInt()}"
+        val location = "${ceil(pos.x).toInt()}, ${ceil(pos.y).toInt()}, ${ceil(pos.z).toInt()}"
+        val shareMessage = "$name Hotspot | $location"
         
         val base = TextUtils.rfuLiteral("Near a ${TextColor.AQUAMARINE}$name ${TextColor.CYAN}hotspot! ", TextColor.CYAN)
         
-        val clickComponent = Component.literal("${TextColor.GOLD}${TextEffects.BOLD}[Share]")
+        val clickComponent = Component.literal("${TextColor.LIGHT_BLUE}${TextEffects.BOLD}[Party]")
             .setStyle(
                 Style.EMPTY
-                    .withClickEvent(ClickEvent.RunCommand(shareCommand))
-                    .withHoverEvent(HoverEvent.ShowText(Component.literal("${TextColor.YELLOW}Click to share this ${TextColor.AQUAMARINE}$name ${TextColor.YELLOW}hotspot with your party!\n${TextColor.GRAY}Location: ${ceil(pos.x).toInt()}, ${ceil(pos.y).toInt()}, ${ceil(pos.z).toInt()}")))
+                    .withClickEvent(ClickEvent.RunCommand("/pc $shareMessage"))
+                    .withHoverEvent(HoverEvent.ShowText(Component.literal("${TextColor.YELLOW}Click to share this ${TextColor.AQUAMARINE}$name ${TextColor.YELLOW}hotspot with your party!")))
             )
             
-        base.append(clickComponent)
+        if (Party.inParty) {
+            base.append(clickComponent)
+            base.append(" ")
+        }
+
+        base.append(
+            Component.literal("${TextColor.YELLOW}${TextEffects.BOLD}[All Chat]")
+                .setStyle(
+                    Style.EMPTY
+                        .withClickEvent(ClickEvent.RunCommand("/ac $shareMessage"))
+                        .withHoverEvent(HoverEvent.ShowText(Component.literal("${TextColor.YELLOW}Click to share this ${TextColor.AQUAMARINE}$name ${TextColor.YELLOW}hotspot in all chat!")))
+                )
+        )
         Chat.sendMessage(base)
     }
 }
