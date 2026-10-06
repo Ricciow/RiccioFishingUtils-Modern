@@ -19,7 +19,6 @@
     "AbstractContainerScreenMixin",
     "AbstractContainerScreenAccessor",
     "EntityRenderDispatcherMixin",
-    "EntityRendererMixin",
     "AvatarRenderStateMixin",
     "AvatarRendererMixin",
     "LivingEntityRendererMixin",

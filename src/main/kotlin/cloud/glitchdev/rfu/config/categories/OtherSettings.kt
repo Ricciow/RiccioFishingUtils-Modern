@@ -85,6 +85,11 @@ object OtherSettings : Category("Other") {
         description = Literal("Removes the nether fog")
     }
 
+    var partyInviteMsgs by boolean(true) {
+        name = Literal("Party invite messages")
+        description = Literal("Sends a prompt to invite player msg when some keywords are said by player")
+    }
+
     init {
         dualSeparator {
             title = "Nearby Players"
@@ -93,7 +98,13 @@ object OtherSettings : Category("Other") {
 
     var hideNearbyPlayers by reloadableBoolean(false) {
         name = Literal("Hide Nearby Players")
-        description = Literal("Hides nearby players with a rank-style name tag on your screen.")
+        description = Literal("Hides nearby players armors, nametags and held itens.")
+    }
+
+    var hideNearbyPlayersOnlyWhenFishing by boolean(true) {
+        name = Literal("Only When Fishing")
+        description = Literal("Only hides nearby players while fishing.")
+        condition = { hideNearbyPlayers }
     }
 
     var hideNearbyPlayersRadius by int(5) {
@@ -110,9 +121,25 @@ object OtherSettings : Category("Other") {
         condition = { hideNearbyPlayers }
     }
 
-    var partyInviteMsgs by boolean(true) {
-        name = Literal("Party invite messages")
-        description = Literal("Sends a prompt to invite player msg when some keywords are said by player")
+    init {
+        dualSeparator {
+            title = "Global Player Settings"
+        }
+    }
+
+    var hidePlayersGlobally by reloadableBoolean(false) {
+        name = Literal("Hide Global Player Armors")
+        description = Literal("Hides armors at any distance, including your own.")
+    }
+
+    var globallyVisiblePlayerEquipment by enums(
+        VisiblePlayerEquipment.NAME_TAG,
+        VisiblePlayerEquipment.PLAYER_MODEL,
+        VisiblePlayerEquipment.HELD_ITEMS
+    ) {
+        name = Literal("Keep Visible")
+        description = Literal("Select what to keep visible.")
+        condition = { hidePlayersGlobally }
     }
 
 

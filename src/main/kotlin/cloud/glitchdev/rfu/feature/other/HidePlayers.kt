@@ -1,11 +1,12 @@
 package cloud.glitchdev.rfu.feature.other
 
-import cloud.glitchdev.rfu.access.NearbyPlayerRenderStateAccess
+import cloud.glitchdev.rfu.access.PlayerVisibilityRenderStateAccess
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.ui.VisiblePlayerEquipment
 import cloud.glitchdev.rfu.events.managers.PlayerRenderStateEvents.registerPlayerRenderStateEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
+import cloud.glitchdev.rfu.feature.fishing.FishingSession
 import cloud.glitchdev.rfu.utils.World
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.entity.layers.CustomHeadLayer
@@ -20,28 +21,24 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 
 @RFUFeature
-object HideNearbyPlayers : Feature {
+object HidePlayers : Feature {
     override fun onInitialize() {
         registerPlayerRenderStateEvent { player, state -> prepareRenderState(player, state) }
     }
 
     private fun prepareRenderState(player: Avatar, state: AvatarRenderState) {
-        val localPlayer = Minecraft.getInstance().player
-        val radius = OtherSettings.hideNearbyPlayersRadius
-        val hidden =
-                World.isInSkyblock && OtherSettings.hideNearbyPlayers && localPlayer != null &&
-                player is Player && player !== localPlayer &&
-                localPlayer.distanceToSqr(player) <= radius.toDouble() * radius &&
-                player.displayName.string.startsWith("§8[")
-        (state as NearbyPlayerRenderStateAccess).`rfu$setHideNearbyPlayer`(hidden)
-        if (!hidden) return
+        val visible = getVisibleEquipment(player)?.toSet()
+        (state as PlayerVisibilityRenderStateAccess).`rfu$setVisiblePlayerEquipment`(visible)
+        if (visible == null) return
 
-        val visible = OtherSettings.visiblePlayerEquipment
         if (VisiblePlayerEquipment.NAME_TAG !in visible) {
             state.nameTag = null
             state.scoreText = null
         }
-        if (VisiblePlayerEquipment.PLAYER_MODEL !in visible) state.displayFireAnimation = false
+        if (VisiblePlayerEquipment.PLAYER_MODEL !in visible) {
+            state.displayFireAnimation = false
+            state.shadowPieces.clear()
+        }
 
         if (VisiblePlayerEquipment.HELMET !in visible) {
             state.headEquipment = ItemStack.EMPTY
@@ -53,15 +50,35 @@ object HideNearbyPlayers : Feature {
         if (VisiblePlayerEquipment.BOOTS !in visible) state.feetEquipment = ItemStack.EMPTY
     }
 
-    fun isHidden(state: EntityRenderState): Boolean =
-        state is NearbyPlayerRenderStateAccess && state.`rfu$hideNearbyPlayer`()
+    private fun getVisibleEquipment(player: Avatar): Array<out VisiblePlayerEquipment>? {
+        val localPlayer = Minecraft.getInstance().player
+        if (!World.isInSkyblock || localPlayer == null || player !is Player) return null
 
-    fun shouldRenderModel(state: EntityRenderState): Boolean =
-        !isHidden(state) || VisiblePlayerEquipment.PLAYER_MODEL in OtherSettings.visiblePlayerEquipment
+        val isFishing = FishingSession.isFishing && !FishingSession.isPaused
+        val radius = OtherSettings.hideNearbyPlayersRadius
+        if (player !== localPlayer && player.displayName.string.startsWith("§8[") &&
+            OtherSettings.hideNearbyPlayers &&
+            (!OtherSettings.hideNearbyPlayersOnlyWhenFishing || isFishing) &&
+            localPlayer.distanceToSqr(player) <= radius.toDouble() * radius) {
+            return OtherSettings.visiblePlayerEquipment
+        }
+
+        if (OtherSettings.hidePlayersGlobally) {
+            return OtherSettings.globallyVisiblePlayerEquipment
+        }
+        return null
+    }
+
+    private fun getVisibleEquipment(state: EntityRenderState): Set<VisiblePlayerEquipment>? =
+        (state as? PlayerVisibilityRenderStateAccess)?.`rfu$visiblePlayerEquipment`()
+
+    fun shouldRenderModel(state: EntityRenderState): Boolean {
+        val visible = getVisibleEquipment(state) ?: return true
+        return VisiblePlayerEquipment.PLAYER_MODEL in visible
+    }
 
     fun shouldRenderLayer(state: EntityRenderState, layer: RenderLayer<*, *>): Boolean {
-        if (!isHidden(state)) return true
-        val visible = OtherSettings.visiblePlayerEquipment
+        val visible = getVisibleEquipment(state) ?: return true
         return when (layer) {
             is HumanoidArmorLayer<*, *, *> -> true
             is CustomHeadLayer<*, *> -> VisiblePlayerEquipment.HELMET in visible
