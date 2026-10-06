@@ -7,6 +7,7 @@
 - Added Halloween decorations for pf, see them October 30th - Nov 1st! (Seasonal effects toggle in Other settings)
 
 ### Changes
+- Moved party finder requirements below the island and liquid cards for readability.
 - Removed blizzard in a bottle timers
 
 ### Fixes

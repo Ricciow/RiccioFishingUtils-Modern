@@ -266,10 +266,17 @@ class UIPartyCard(
             height = GroupMaxSizeConstraint("PartyCardTags", BoundingBoxConstraint())
         } childOf innerContainer
 
+        val locationContainer = UIContainer().constrain {
+            x = 0.pixels
+            y = 0.pixels
+            width = 100.percent
+            height = BoundingBoxConstraint()
+        } childOf tagsContainer
+
         UIConditionCard(DataOption("location", party.island.island)).constrain {
             x = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
             y = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
-        } childOf tagsContainer
+        } childOf locationContainer
 
         if(party.liquid == LiquidTypes.WATER) {
             UIConditionCard(
@@ -277,22 +284,30 @@ class UIPartyCard(
             ).constrain {
                 x = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
                 y = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
-            } childOf tagsContainer
+            } childOf locationContainer
         } else {
             UIConditionCard(
                 DataOption("lava", "Lava")
             ).constrain {
                 x = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
                 y = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
-            } childOf tagsContainer
+            } childOf locationContainer
         }
 
-        party.requisites.forEach { requisite ->
-            if(requisite.value) {
+        val activeRequisites = party.requisites.filter { it.value }
+        if (activeRequisites.isNotEmpty()) {
+            val requirementsContainer = UIContainer().constrain {
+                x = 0.pixels
+                y = SiblingConstraint(UIScheme.pfCardInnerPadding)
+                width = 100.percent
+                height = BoundingBoxConstraint()
+            } childOf tagsContainer
+
+            activeRequisites.forEach { requisite ->
                 UIConditionCard(requisite.toDataOption()).constrain {
                     x = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
                     y = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
-                } childOf tagsContainer
+                } childOf requirementsContainer
             }
         }
     }
