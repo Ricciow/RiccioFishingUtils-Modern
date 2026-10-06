@@ -5,9 +5,13 @@ import java.time.LocalDate
 import java.time.Month
 
 object SeasonalEffects {
-    private val isOctober
-        get() = LocalDate.now().month == Month.OCTOBER
+    private val isHalloweenSeason: Boolean
+        get() {
+            val today = LocalDate.now()
+            return (today.month == Month.OCTOBER && today.dayOfMonth >= 30) ||
+                (today.month == Month.NOVEMBER && today.dayOfMonth == 1)
+        }
 
     val halloweenActive: Boolean
-        get() = OtherSettings.seasonalEffects && isOctober
+        get() = OtherSettings.seasonalEffects && isHalloweenSeason
 }
