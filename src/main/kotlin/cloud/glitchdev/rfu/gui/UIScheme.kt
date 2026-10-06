@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.gui
 
 import cloud.glitchdev.rfu.constants.fishing.FishingIslands
+import cloud.glitchdev.rfu.utils.SeasonalEffects
 import java.awt.Color
 
 object UIScheme {
@@ -61,10 +62,10 @@ object UIScheme {
 
     //Party Finder Window
     val pfWindowBackground = Color(30, 30, 30, 220)
-    val pfWindowSeparator = Color(100, 128, 255)
+    val pfWindowSeparator: Color = SeasonalColor(Color(100, 128, 255), Color(160, 100, 230))
     val pfTitleText = pfWindowSeparator
     val pfInputBg = Color(100, 100, 100, 200)
-    val pfInputBgHovered = Color(45, 75, 200, 100)
+    val pfInputBgHovered: Color = SeasonalColor(Color(45, 75, 200, 100), Color(115, 45, 200, 100))
     val pfScrollBar = pfWindowSeparator
     val pfSpacing = 10f
     val pfSmallSpacing = 4f
@@ -77,7 +78,7 @@ object UIScheme {
     val pfCardInnerPadding = 5f
     val pfCardSmallPadding = 3f
     val pfCardBorder = Color(100, 100, 100, 100)
-    val pfCardBorderHovered = Color(45, 75, 200, 100)
+    val pfCardBorderHovered = pfInputBgHovered
     val pfCardUserColor = Color(100, 100, 100)
     val pfCardTitleColor = Color.WHITE
     val pfCardTitleHoverColor = pfWindowSeparator
@@ -89,6 +90,7 @@ object UIScheme {
     val pfCardLevelLabelColor = Color(180, 180, 180)
     val pfCardDescriptionColor = Color(150, 150, 150)
     val pfCardOverlayHoverColor = Color(255, 85, 85)
+
     //Pf presets
     val pfCardPresetsDeleteTextHoverColor = Color(255, 85, 85)
     val pfCardPresetsDeleteHoverColor = Color(255, 85, 85, 128)
@@ -134,6 +136,14 @@ object UIScheme {
 
     val pfConditionCardUnknown = Color(100, 100, 100)
     val pfConditionCardUnknownBorder = Color(200, 200, 200)
+
+    private class SeasonalColor(normal: Color, private val halloween: Color) : Color(normal.rgb, true) {
+        override fun getRGB(): Int = if (SeasonalEffects.halloweenActive) halloween.rgb else super.getRGB()
+
+        override fun equals(other: Any?): Boolean = other is Color && rgb == other.rgb
+
+        override fun hashCode(): Int = rgb
+    }
 
     const val HOVER_EFFECT_DURATION = 0.1f
 

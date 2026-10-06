@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.gui.window
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.OtherSettings
+import cloud.glitchdev.rfu.events.managers.CloseConfigEvents.registerCloseConfigEvent
 import cloud.glitchdev.rfu.events.managers.HudRenderEvents.registerHudRenderEvent
 import cloud.glitchdev.rfu.events.managers.KeybindEvents.registerKeybind
 import cloud.glitchdev.rfu.gui.UIScheme
@@ -14,6 +15,7 @@ import cloud.glitchdev.rfu.events.managers.PartyFinderEvents
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.gui.components.UIButton
+import cloud.glitchdev.rfu.gui.components.UIHalloweenComponent
 import cloud.glitchdev.rfu.gui.components.colors
 import cloud.glitchdev.rfu.gui.components.elementa.JustifiedCramSiblingConstraint
 import cloud.glitchdev.rfu.gui.components.elementa.group.GroupManager
@@ -70,6 +72,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
     private var isPeeking = false
     private lateinit var peekHoverBlocker: UIContainer
 
+    lateinit var halloweenComponent : UIHalloweenComponent
     lateinit var popup: UIPopup
     lateinit var presetsModal: UIPartyPresetsModal
     lateinit var filterButton : UIButton
@@ -92,6 +95,10 @@ object PartyFinderWindow : BaseWindow(false), Feature {
     init {
         create()
         onUpdate()
+
+        registerCloseConfigEvent {
+            halloweenComponent.update()
+        }
 
         registerPartyListChangedEvent { parties ->
             this.parties = parties
@@ -159,6 +166,9 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             height = 80.percent
             color = primaryColor
         } childOf window
+
+        halloweenComponent = UIHalloweenComponent() childOf background
+        halloweenComponent.update()
 
         val useableArea = UIContainer().constrain {
             x = CenterConstraint()

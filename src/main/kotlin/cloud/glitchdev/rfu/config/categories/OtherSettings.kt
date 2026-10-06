@@ -19,6 +19,11 @@ object OtherSettings : Category("Other") {
         description = Literal("Sends a message whenever you're in a lobby you've been in before.")
     }
 
+    var seasonalEffects by boolean(true) {
+        name = Literal("Seasonal Effects")
+        description = Literal("Shows seasonal decorations and themes.")
+    }
+
     var achievementTrackerDisplay by boolean(true) {
         name = Literal("Achievement Tracker Display")
         description = Literal("Shows the currently tracked achievements.")
