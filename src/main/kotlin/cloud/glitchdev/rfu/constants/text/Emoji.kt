@@ -32,6 +32,62 @@ data class EmojiData(
 }
 
 object Emoji {
+    private val legacyAliases = mapOf(
+        '\uE100' to ":dog:",
+        '\uE101' to ":goat:",
+        '\uE102' to ":pleading_face:",
+        '\uE103' to ":lord_jawbus:",
+        '\uE104' to ":thunder:",
+        '\uE105' to ":reindrake:",
+        '\uE106' to ":wiki_tiki:",
+        '\uE107' to ":titanoboa:",
+        '\uE108' to ":yeti:",
+        '\uE109' to ":ragnarok:",
+        '\uE10A' to ":fiery_scuttler:",
+        '\uE10B' to ":plhlegblast:",
+        '\uE10C' to ":water_hydra:",
+        '\uE10D' to ":blue_ringed_octopus:",
+        '\uE10E' to ":alligator:",
+        '\uE10F' to ":frog_prince:",
+        '\uE110' to ":puddle_jumper:",
+        '\uE111' to ":nessie:",
+        '\uE112' to ":the_loch_emperor:",
+        '\uE113' to ":great_white_shark:",
+        '\uE114' to ":grim_reaper:",
+        '\uE115' to ":phantom_fisher:",
+        '\uE116' to ":abyssal_miner:",
+        '\uE117' to ":github:",
+        '\uE118' to ":discord:",
+        '\uE119' to ":patreon:",
+        '\uE11A' to ":skull:",
+        '\uE11B' to ":sob:",
+        '\uE11C' to ":thumbsup:",
+        '\uE11D' to ":eyes:",
+        '\uE11E' to ":angry:",
+        '\uE11F' to ":fire:",
+        '\uE120' to ":scream:",
+        '\uE121' to ":thumbsupcat:",
+        '\uE122' to ":thumbsdown:",
+        '\uE123' to ":giant_isopod:",
+        '\uE124' to ":silkbreeze:",
+        '\uE125' to ":hog:",
+        '\uE126' to ":exploding_head:",
+        '\uE127' to ":kaboom:",
+        '\uE128' to ":carrot:",
+        '\uE129' to ":shark:",
+        '\uE12A' to ":fish:",
+        '\uE12B' to ":face_holding_back_tears:",
+        '\uE12C' to ":rolling_eyes:",
+        '\uE12D' to ":aquamarine:",
+        '\uE12E' to ":carmine:",
+        '\uE12F' to ":midnight:",
+        '\uE130' to ":treasure:",
+    )
+
+    fun convertLegacyEmojis(text: String): String = buildString(text.length) {
+        for (char in text) append(legacyAliases[char] ?: char.toString())
+    }
+
     val ICONS = listOf(
         EmojiData("github", listOf("github")),
         EmojiData("discord", listOf("discord")),

@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.utils.network
 import cloud.glitchdev.rfu.config.categories.BackendSettings
 import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.chat.RegexConstants.PLAYER_REGEX
+import cloud.glitchdev.rfu.constants.text.Emoji
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents
@@ -108,6 +109,7 @@ object PartyWebSocket : RegisteredEvent {
                 
                 if (event.type == WebSocketEventType.SYNC) {
                     val newParties = event.data ?: emptyList()
+                    newParties.forEach { it.convertLegacyEmojis() }
                     myParty = newParties.find { it.user == User.getUsername() }
                     PartyFinderEvents.handleSync(newParties)
                 }
@@ -124,6 +126,7 @@ object PartyWebSocket : RegisteredEvent {
                 when (event.type) {
                     WebSocketEventType.CREATED, WebSocketEventType.UPDATED -> {
                         event.data?.let { updatedParty ->
+                            updatedParty.convertLegacyEmojis()
                             if (updatedParty.user == User.getUsername()) {
                                 myParty = updatedParty
                                 if (event.type == WebSocketEventType.CREATED) {
@@ -178,6 +181,11 @@ object PartyWebSocket : RegisteredEvent {
         WebSocketClient.subscribe("/user/queue/parties", listCallback)
         WebSocketClient.subscribe("/user/queue/join-requests", joinRequestCallback)
         WebSocketClient.subscribe("/user/queue/party/requisites", requisitesCallback)
+    }
+
+    private fun FishingParty.convertLegacyEmojis() {
+        title = Emoji.convertLegacyEmojis(title)
+        description = Emoji.convertLegacyEmojis(description)
     }
 
     fun requestPlayerRequisites(profileId: String? = User.profileId, force: Boolean = false) {
