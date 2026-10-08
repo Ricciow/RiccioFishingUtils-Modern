@@ -1,12 +1,23 @@
 package cloud.glitchdev.rfu.utils
 
+import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.constants.text.TextStyle
+import net.fabricmc.loader.api.FabricLoader
+import net.minecraft.client.gui.Font
+import net.minecraft.locale.Language
+import net.minecraft.network.chat.FormattedText
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.network.chat.Component
 
 object TextUtils {
+    @JvmStatic
+    fun patchSkyOceanTextWidth(font: Font, text: String, width: Int): Int {
+        if (!OtherSettings.patchSkyOceanTextWidth || !FabricLoader.getInstance().isModLoaded("skyocean")) return width
+        return font.width(Language.getInstance().getVisualOrder(FormattedText.of(text)))
+    }
+
     fun rfuLiteral(string: String, textStyle: TextStyle) : MutableComponent {
         return Component.literal("§b§l[§f§lRFU§b§l] $textStyle$string")
     }

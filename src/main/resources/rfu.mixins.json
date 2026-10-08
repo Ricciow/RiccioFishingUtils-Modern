@@ -40,7 +40,7 @@
     "EditBoxMixin",
     "elementa.UIComponentMixin",
     "elementa.ElementaRendererImplMixin",
-    "elementa.VanillaFontRendererMixin",
+    "universalcraft.UGraphicsMixin",
     "elementa.MappedStateMixin",
     "elementa.AnimatingConstraintsMixin",
     "elementa.WindowScreenMixin",

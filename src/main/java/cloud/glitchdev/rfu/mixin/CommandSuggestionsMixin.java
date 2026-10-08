@@ -2,9 +2,11 @@ package cloud.glitchdev.rfu.mixin;
 
 import cloud.glitchdev.rfu.feature.other.EmojiAutocomplete;
 import cloud.glitchdev.rfu.feature.other.EmojiSuggestion;
+import cloud.glitchdev.rfu.utils.TextUtils;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.CommandSuggestions;
 import net.minecraft.client.gui.components.EditBox;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
@@ -43,6 +45,14 @@ public abstract class CommandSuggestionsMixin {
                 this.showSuggestions(false);
             }
         }
+    }
+
+    @WrapOperation(
+        method = "showSuggestions",
+        at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;width(Ljava/lang/String;)I")
+    )
+    private int rfu$includeRenderedSuggestionWidth(Font font, String str, Operation<Integer> original) {
+        return TextUtils.patchSkyOceanTextWidth(font, str, original.call(font, str));
     }
 
     @WrapOperation(
