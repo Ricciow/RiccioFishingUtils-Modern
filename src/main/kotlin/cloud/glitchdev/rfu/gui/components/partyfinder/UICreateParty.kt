@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.gui.components.partyfinder
 import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.fishing.FishingIslands
 import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
+import cloud.glitchdev.rfu.data.party.PartyPresetsManager
 import cloud.glitchdev.rfu.data.other.data.PartyPresetData
 import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.UIPopup
@@ -53,7 +54,7 @@ class UICreateParty : UIContainer() {
 
     private fun loadInitialParty(): FishingParty {
         val blank = FishingParty.blankParty()
-        val entry = UIPartyPresetsModal.getPresetsEntry()
+        val entry = PartyPresetsManager.getEntry()
         entry.lastPartyState?.applyTo(blank)
         return blank
     }
@@ -61,11 +62,11 @@ class UICreateParty : UIContainer() {
     fun saveSessionState() {
         if (!::titleField.isInitialized) return
         updatePartyModel()
-        val entry = UIPartyPresetsModal.getPresetsEntry()
+        val entry = PartyPresetsManager.getEntry()
         val state = entry.lastPartyState ?: PartyPresetData()
         state.copyFrom(party, "last_session")
         entry.lastPartyState = state
-        UIPartyPresetsModal.savePresetsEntry(entry)
+        PartyPresetsManager.saveEntry(entry)
     }
 
     private lateinit var titleField: UIDecoratedTextInput

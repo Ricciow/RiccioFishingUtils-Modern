@@ -25,7 +25,7 @@ import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerAllowGameEvent
 import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
 import cloud.glitchdev.rfu.events.managers.WebSocketEvents.registerConnectionStatusChangedEvent
-import cloud.glitchdev.rfu.gui.components.partyfinder.UIPartyPresetsModal
+import cloud.glitchdev.rfu.data.party.PartyPresetsManager
 import cloud.glitchdev.rfu.utils.dsl.isIgnored
 import cloud.glitchdev.rfu.utils.dsl.removeRankTag
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
@@ -208,7 +208,7 @@ object PartyWebSocket : RegisteredEvent {
 
     fun getPreviousParty(): FishingParty? {
         return lastParty?.deepCopy() ?: run {
-            val entry = UIPartyPresetsModal.getPresetsEntry()
+            val entry = PartyPresetsManager.getEntry()
             entry.lastPartyState?.let { state ->
                 val blank = FishingParty.blankParty()
                 state.applyTo(blank)
