@@ -26,6 +26,7 @@ data class EmojiData(
 
     fun spriteStyle(style: Style): Style = style.withFont(font).withColor(ChatFormatting.WHITE)
         .withShadowColor(0).withBold(false).withItalic(false).withObfuscated(false)
+        .withUnderlined(false).withStrikethrough(false)
 
     fun component(): MutableComponent = font?.let {
         Component.`object`(AtlasSprite(it.atlasId(), it.spriteId()), Component.literal(text))
