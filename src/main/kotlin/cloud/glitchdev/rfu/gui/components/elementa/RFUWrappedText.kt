@@ -75,7 +75,9 @@ class RFUWrappedText(
             }
             val font = Minecraft.getInstance().font
             val width = floor(maxLineWidth / scale - if (ensureSpaceAtEndOfLines) font.width(" ") else 0).toInt().coerceAtLeast(1)
-            if (processColorCodes) return splitStringToWidth(text, width, font.splitter)
+            if (processColorCodes) return text.split('\n').flatMap { line ->
+                splitStringToWidth(line, width, font.splitter).ifEmpty { listOf("") }
+            }
 
             val lines = mutableListOf<String>()
             var start = 0
