@@ -12,7 +12,9 @@ data class EmojiData(
     val sprite: String?,
     val aliases: List<String>,
     val customTriggers: List<String> = emptyList(),
-    val textReplacement: String? = null
+    val textReplacement: String? = null,
+    val height: Int = 8,
+    val ascent: Int = 7,
 ) {
     val primaryAlias: String get() = aliases.firstOrNull() ?: ""
     val text: String get() = textReplacement ?: ":$primaryAlias:"
@@ -89,9 +91,9 @@ object Emoji {
     }
 
     val ICONS = listOf(
-        EmojiData("github", listOf("github")),
-        EmojiData("discord", listOf("discord")),
-        EmojiData("patreon", listOf("patreon")),
+        EmojiData("github", listOf("github"), height = 16, ascent = 11),
+        EmojiData("discord", listOf("discord"), height = 16, ascent = 11),
+        EmojiData("patreon", listOf("patreon"), height = 16, ascent = 11),
     )
 
     val EMOJIS: List<EmojiData> = listOf(
@@ -121,7 +123,7 @@ object Emoji {
         EmojiData("abyssalminer", listOf("abyssal_miner", "abyssalminer", "miner")),
         EmojiData("alligator", listOf("alligator", "gator")),
         EmojiData("blueringedoctopus", listOf("blue_ringed_octopus", "blueringedoctopus", "octopus")),
-        EmojiData("fieryscuttler", listOf("fiery_scuttler", "fieryscuttler", "scuttler")),
+        EmojiData("fieryscuttler", listOf("fiery_scuttler", "fieryscuttler", "scuttler"), height = 16, ascent = 12),
         EmojiData("frogprince", listOf("frog_prince", "frogprince", "prince")),
         EmojiData("greatwhiteshark", listOf("great_white_shark", "greatwhiteshark", "great_white", "greatwhite", "gw")),
         EmojiData("grimreaper", listOf("grim_reaper", "grimreaper", "reaper", "grim")),
@@ -134,7 +136,7 @@ object Emoji {
         EmojiData("reindrake", listOf("reindrake", "drake")),
         EmojiData("lochemperor", listOf("the_loch_emperor", "thelochemperor", "loch_emperor", "lochemperor", "emperor", "emp")),
         EmojiData("thunder", listOf("thunder", "thun")),
-        EmojiData("titanoboa", listOf("titanoboa", "boa")),
+        EmojiData("titanoboa", listOf("titanoboa", "boa"), height = 16, ascent = 12),
         EmojiData("waterhydra", listOf("water_hydra", "waterhydra", "hydra")),
         EmojiData("wikitiki", listOf("wiki_tiki", "wikitiki", "tiki")),
         EmojiData("yeti", listOf("yeti")),
@@ -149,6 +151,13 @@ object Emoji {
         EmojiData(null, listOf("boop"), listOf("Boop!"), "§d§lBoop!"),
         EmojiData(null, listOf("boo"), listOf("Boo!"), "§6§lBoo!"),
     )
+
+    private val sprites = (EMOJIS + ICONS).mapNotNull { emoji ->
+        emoji.font?.spriteId()?.let { it to emoji }
+    }.toMap()
+
+    @JvmStatic
+    fun getSprite(spriteId: Identifier): EmojiData? = sprites[spriteId]
 
     val ALL: Map<String, EmojiData> = EMOJIS.flatMap { emoji ->
         emoji.triggers.map { it to emoji }

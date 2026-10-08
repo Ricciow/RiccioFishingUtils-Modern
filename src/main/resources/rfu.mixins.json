@@ -24,7 +24,7 @@
     "LivingEntityRendererMixin",
     "EntityMixin",
     "FontMixin",
-    "FontPreparedTextBuilderMixin",
+    "AtlasGlyphProviderMixin",
     "CameraMixin",
     "GuiMixin",
     "SquidRendererMixin",
