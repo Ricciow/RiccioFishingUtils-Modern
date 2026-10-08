@@ -46,7 +46,7 @@ object EmojisCommand : SimpleCommand("rfuemojis") {
             hoverText.append(Component.literal(" $YELLOW• $GOLD:$GOLD$alias:\n"))
         }
         emoji.customTriggers.forEach { trigger ->
-            hoverText.append(Component.literal(" $YELLOW• $GOLD$trigger\n"))
+            hoverText.append(Component.literal(" $YELLOW• $GOLD${trigger.take(1)}$GOLD${trigger.drop(1)}\n"))
         }
         hoverText.append(Component.literal("\n$YELLOW" + "Click to insert $GOLD:$GOLD${emoji.primaryAlias}: $YELLOW" + "into chat!"))
 
