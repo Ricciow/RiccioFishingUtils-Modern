@@ -178,12 +178,15 @@ object EmojiFeature {
     }
 
     @JvmStatic
-    fun getClickedRawPosition(font: Font, displayed: String, positionInText: Int): Int {
-        if (positionInText <= 0) return font.plainSubstrByWidth(displayed, positionInText).length
+    fun getClickedRawPosition(font: Font, displayed: String, positionInText: Int): Int =
+        getClickedRawPosition(font, displayed, positionInText.toFloat())
+
+    fun getClickedRawPosition(font: Font, displayed: String, positionInText: Float): Int {
+        if (positionInText <= 0) return 0
         val matches = findEmojiMatches(displayed)
-        if (matches.isEmpty()) return font.plainSubstrByWidth(displayed, positionInText).length
+        if (matches.isEmpty()) return font.plainSubstrByWidth(displayed, positionInText.toInt()).length
         val chars = replaceChars(readChars(displayed, Style.EMPTY, formatted = false), matches)
-        var x = 0
+        var x = 0f
         for (run in chars.groupBy { it.start to it.end }.values) {
             val advance = font.width(sequence(run))
             if (positionInText < x + advance / 2f) return run.first().start

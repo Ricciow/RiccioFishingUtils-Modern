@@ -20,7 +20,6 @@
 
 package cloud.glitchdev.rfu.gui.components.elementa
 
-import gg.essential.elementa.components.input.AbstractTextInput
 import gg.essential.elementa.constraints.HeightConstraint
 import gg.essential.elementa.dsl.coerceAtMost
 import gg.essential.elementa.dsl.pixels
@@ -40,7 +39,7 @@ class UISpecialMultilineTextInput @JvmOverloads constructor(
     inactiveSelectionBackgroundColor: Color = Color(176, 176, 176),
     inactiveSelectionForegroundColor: Color = Color.WHITE,
     cursorColor: Color = Color.WHITE
-) : AbstractTextInput(
+) : RFUTextInput(
     placeholder,
     shadow,
     selectionBackgroundColor,
@@ -137,6 +136,7 @@ class UISpecialMultilineTextInput @JvmOverloads constructor(
         }
 
         val textScale = getTextScale()
+        if (active) snapSelectionToEmojis()
         if (!active && !hasText()) {
             if (placeholder.isNotEmpty()) {
                 val lines = splitTextForWrapping(placeholder, currentWidth)
@@ -248,6 +248,8 @@ class UISpecialMultilineTextInput @JvmOverloads constructor(
             return LinePosition(line, 0, isVisual = true)
         if (x >= getWidth())
             return LinePosition(line, visualLines[line].text.length, isVisual = true)
+
+        emojiColumnAtX(text, x)?.let { return LinePosition(line, it, isVisual = true) }
 
         for (char in text.toCharArray()) {
             val charWidth = char.width(getTextScale())
