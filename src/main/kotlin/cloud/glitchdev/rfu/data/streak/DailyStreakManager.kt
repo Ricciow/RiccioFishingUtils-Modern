@@ -124,7 +124,7 @@ object DailyStreakManager {
             if (DailyStreakSettings.completionSound) {
                 Sounds.playSound("rfu:daily_challenge", 1f, DailyStreakSettings.completionVolume)
             }
-            Chat.sendMessage(Component.literal("§b§l[§f§lRFU§b§l] §f\uE11F§6 Daily Streak Maintained! §eCurrent Streak: ${data.currentStreak} Days! §f\uE11F"))
+            Chat.sendMessage(TextUtils.rfuLiteral(":fire:§6 Daily Streak Maintained! §eCurrent Streak: ${data.currentStreak} Days! §f:fire:"))
         }
     }
 

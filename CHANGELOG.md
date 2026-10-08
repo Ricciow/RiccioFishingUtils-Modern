@@ -11,5 +11,6 @@
 - Removed blizzard in a bottle timers
 
 ### Fixes
+- Switched emojis to vanilla inline sprites to not conflict with hypixel's texture pack.
 
 ### Backend

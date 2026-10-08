@@ -33,7 +33,7 @@ object DailyStreakCommand : AbstractCommand("rfudailies") {
                 if(DailyStreakSettings.dailyStreakEnabled) {
                     DailyStreakManager.checkDailyReset()
                     val data = DailyStreakManager.data
-                    Chat.sendMessage(TextUtils.rfuLiteral("$WHITE\uE11F$GOLD Daily Streak: $YELLOW{data.currentStreak} Days $GRAY(Highest: ${data.highestStreak})"))
+                    Chat.sendMessage(TextUtils.rfuLiteral("$WHITE:fire:$GOLD Daily Streak: $YELLOW{data.currentStreak} Days $GRAY(Highest: ${data.highestStreak})"))
                     data.todayChallenges.forEachIndexed { index, c ->
                         val status = if (c.isCompleted) "${LIGHT_GREEN}✔" else "$LIGHT_RED${c.currentProgress}/${c.getTargetProgress()}"
                         Chat.sendMessage(TextUtils.rfuLiteral("  $GRAY[${index + 1}] $YELLOW{c.getTitle()}$GRAY: ${c.getDescription()} - $status"))

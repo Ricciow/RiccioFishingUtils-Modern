@@ -44,7 +44,7 @@ object RFUSettings : ConfigKt("rfu/settings") {
         }
 
         button {
-            title = "\uE118 RFU Discord"
+            title = ":discord: RFU Discord"
             description = "\nJoin the rfu discord!"
             text = "Join"
 
@@ -54,7 +54,7 @@ object RFUSettings : ConfigKt("rfu/settings") {
         }
 
         button {
-            title = "\uE117 Github"
+            title = ":github: Github"
             description = "\nContribute to the mod's development! Leave a star <3"
             text = "Open"
 
@@ -64,7 +64,7 @@ object RFUSettings : ConfigKt("rfu/settings") {
         }
 
         button {
-            title = "\uE119 Patreon"
+            title = ":patreon: Patreon"
             description = "\nHelp me maintain the servers, not really a must but thanks if you do <3"
             text = "Open"
 

@@ -73,7 +73,7 @@ class UISpecialMultilineTextInput @JvmOverloads constructor(
             return listOf(text)
         }
         lastSplitWidth = maxLineWidth
-        return super.splitTextForWrapping(text, maxLineWidth)
+        return RFUWrappedText.wrapText(text, maxLineWidth, getTextScale(), getFontProvider(), processColorCodes = false)
     }
 
     override fun recalculateAllVisualLines() {

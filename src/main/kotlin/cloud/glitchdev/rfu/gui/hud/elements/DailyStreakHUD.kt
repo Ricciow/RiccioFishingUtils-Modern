@@ -83,7 +83,7 @@ object DailyStreakHUD : AbstractTextHudElement("dailyStreakDisplay") {
             width = BoundingBoxConstraint()
             height = ChildBasedMaxSizeConstraint()
         }
-        UIText("${WHITE}\uE11F${GOLD}${BOLD}Daily Streak: ${YELLOW}${data.currentStreak} Days").constrain {
+        UIText("${WHITE}:fire:${GOLD}${BOLD}Daily Streak: ${YELLOW}${data.currentStreak} Days").constrain {
             x = 0.pixels()
             y = 0.pixels()
             width = ScaledTextConstraint(scale)

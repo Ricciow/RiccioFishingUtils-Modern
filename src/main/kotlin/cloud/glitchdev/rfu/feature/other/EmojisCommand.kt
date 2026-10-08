@@ -54,6 +54,6 @@ object EmojisCommand : SimpleCommand("rfuemojis") {
             .withHoverEvent(HoverEvent.ShowText(hoverText))
             .withClickEvent(ClickEvent.SuggestCommand(":${emoji.primaryAlias}:"))
 
-        return Component.literal("${emoji.text}  ").setStyle(style)
+        return emoji.component().withStyle(style).append("  ")
     }
 }

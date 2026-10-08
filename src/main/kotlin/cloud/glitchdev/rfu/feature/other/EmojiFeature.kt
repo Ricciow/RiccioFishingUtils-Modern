@@ -2,243 +2,194 @@ package cloud.glitchdev.rfu.feature.other
 
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.text.Emoji
-import cloud.glitchdev.rfu.constants.text.Emoji.whiteText
-import cloud.glitchdev.rfu.constants.text.TextColor
-import cloud.glitchdev.rfu.constants.text.TextEffects
-import cloud.glitchdev.rfu.constants.text.TextStyle
-import net.minecraft.ChatFormatting
+import cloud.glitchdev.rfu.constants.text.EmojiData
+import net.minecraft.client.StringSplitter
 import net.minecraft.client.gui.Font
+import net.minecraft.network.chat.FormattedText
 import net.minecraft.network.chat.Style
 import net.minecraft.util.FormattedCharSequence
+import net.minecraft.util.FormattedCharSink
 import net.minecraft.util.StringDecomposer
+import java.util.Optional
 
 object EmojiFeature {
-    val COLON_TRIGGERS: Map<String, String> = Emoji.COLON_TRIGGERS.map { (trigger, replacement) ->
-        trigger.lowercase() to replacement
-    }.toMap()
+    private val colonTriggers = Emoji.COLON_TRIGGERS.mapKeys { it.key.lowercase() }
+    private val otherTriggers = Emoji.CUSTOM_TRIGGERS.mapKeys { it.key.lowercase() }
 
-    val OTHER_TRIGGERS: Map<String, String> = Emoji.CUSTOM_TRIGGERS.map { (trigger, replacement) ->
-        trigger.lowercase() to replacement
-    }.toMap()
-
-    private fun hasPossibleEmoji(text: String): Boolean {
-        if (text.contains(':')) return true
-        return OTHER_TRIGGERS.keys.any { text.contains(it, ignoreCase = true) }
-    }
+    private fun hasPossibleEmoji(text: String): Boolean = text.contains(':') ||
+        otherTriggers.keys.any { text.contains(it, ignoreCase = true) }
 
     @JvmStatic
-    fun isEmojiCodepoint(codepoint: Int): Boolean {
-        return codepoint in 0xE100..0xE1FF
-    }
+    fun hasEmojis(text: String): Boolean = OtherSettings.emojis && findEmojiMatches(text).isNotEmpty()
 
-    private val EMOJI_STYLE: Style = Style.EMPTY.withColor(ChatFormatting.WHITE).withShadowColor(0)
-    private val REPLACEMENT_STYLE: Style = Style.EMPTY.withColor(ChatFormatting.WHITE)
-
-    data class EmojiMatch(val start: Int, val end: Int, val replacement: String)
+    data class EmojiMatch(val start: Int, val end: Int, val emoji: EmojiData)
 
     fun findEmojiMatches(text: String): List<EmojiMatch> {
-        if (text.isEmpty() || !hasPossibleEmoji(text)) return emptyList()
+        if (!hasPossibleEmoji(text)) return emptyList()
         val matches = mutableListOf<EmojiMatch>()
-
-        if (text.contains(':')) {
-            var searchIndex = 0
-            while (searchIndex < text.length) {
-                val colonIndex = text.indexOf(':', searchIndex)
-                if (colonIndex == -1) break
-
-                val nextColonIndex = text.indexOf(':', colonIndex + 1)
-                if (nextColonIndex == -1) break
-
-                val candidate = text.substring(colonIndex, nextColonIndex + 1).lowercase()
-                val replacement = COLON_TRIGGERS[candidate]
-                if (replacement != null) {
-                    matches.add(EmojiMatch(colonIndex, nextColonIndex + 1, replacement))
-                    searchIndex = nextColonIndex + 1
-                } else {
-                    searchIndex = colonIndex + 1
-                }
-            }
+        var searchIndex = 0
+        while (searchIndex < text.length) {
+            val start = text.indexOf(':', searchIndex)
+            if (start == -1) break
+            val end = text.indexOf(':', start + 1)
+            if (end == -1) break
+            val emoji = colonTriggers[text.substring(start, end + 1).lowercase()]
+            if (emoji != null) matches.add(EmojiMatch(start, end + 1, emoji))
+            searchIndex = if (emoji != null) end + 1 else start + 1
         }
-
-        for ((trigger, replacement) in OTHER_TRIGGERS) {
-            var idx = text.indexOf(trigger, ignoreCase = true)
-            while (idx != -1) {
+        for ((trigger, emoji) in otherTriggers) {
+            var index = text.indexOf(trigger, ignoreCase = true)
+            while (index != -1) {
+                val replacement = emoji.textReplacement.orEmpty()
                 val triggerOffset = replacement.indexOf(trigger, ignoreCase = true)
                 val alreadyExpanded = triggerOffset >= 0 && text.regionMatches(
-                    idx - triggerOffset, replacement, 0, replacement.length, ignoreCase = true
+                    index - triggerOffset, replacement, 0, replacement.length, ignoreCase = true
                 )
-                if (!alreadyExpanded) {
-                    matches.add(EmojiMatch(idx, idx + trigger.length, replacement))
-                }
-                idx = text.indexOf(trigger, idx + trigger.length, ignoreCase = true)
+                if (!alreadyExpanded) matches.add(EmojiMatch(index, index + trigger.length, emoji))
+                index = text.indexOf(trigger, index + trigger.length, ignoreCase = true)
             }
         }
-
-        if (matches.size <= 1) return matches
-
         matches.sortBy { it.start }
-
-        val nonOverlapping = mutableListOf<EmojiMatch>()
         var lastEnd = 0
+        return matches.filter { match ->
+            (match.start >= lastEnd).also { if (it) lastEnd = match.end }
+        }
+    }
+
+    internal data class StyledChar(val start: Int, val end: Int, val style: Style, val codepoint: Int)
+
+    internal fun readChars(text: String, style: Style, formatted: Boolean): List<StyledChar> {
+        val chars = mutableListOf<StyledChar>()
+        val sink = FormattedCharSink { index, charStyle, codepoint ->
+            chars.add(StyledChar(index, index + Character.charCount(codepoint), charStyle, codepoint))
+            true
+        }
+        if (formatted) StringDecomposer.iterateFormatted(text, style, sink)
+        else StringDecomposer.iterate(text, style, sink)
+        return chars
+    }
+
+    internal fun replaceChars(chars: List<StyledChar>, matches: List<EmojiMatch>): List<StyledChar> {
+        val result = mutableListOf<StyledChar>()
+        var index = 0
         for (match in matches) {
-            if (match.start >= lastEnd) {
-                nonOverlapping.add(match)
-                lastEnd = match.end
+            while (index < chars.size && chars[index].start < match.start) result.add(chars[index++])
+            val style = chars[index].style
+            if (match.emoji.font != null) {
+                result.add(StyledChar(match.start, match.end, match.emoji.spriteStyle(style), 0xFFFC))
+            } else {
+                StringDecomposer.iterateFormatted(match.emoji.text, style) { _, replacementStyle, codepoint ->
+                    result.add(StyledChar(match.start, match.end, replacementStyle, codepoint))
+                    true
+                }
             }
+            while (index < chars.size && chars[index].start < match.end) index++
         }
-        return nonOverlapping
-    }
-
-    /**
-     * Replaces ALL registered emoji triggers (e.g., :dog:, (ᵔᴥᵔ)) with their PUA characters in a String.
-     */
-    fun replaceEmojis(text: String?): String? {
-        if (text == null || !OtherSettings.emojis || !hasPossibleEmoji(text)) return text
-        return replaceMatches(text, formatted = true)
-    }
-
-    fun replaceEmojisUnformatted(text: String?): String? {
-        if (text == null || !hasPossibleEmoji(text)) return text
-        return replaceMatches(text, formatted = false)
-    }
-
-    private fun replaceMatches(text: String, formatted: Boolean): String {
-        val matches = findEmojiMatches(text)
-        if (matches.isEmpty()) return text
-        return buildString {
-            var currentIndex = 0
-            for (match in matches) {
-                append(text, currentIndex, match.start)
-                append(if (formatted) match.replacement.whiteText() else match.replacement)
-                currentIndex = match.end
-            }
-            append(text, currentIndex, text.length)
-        }
-    }
-
-    fun clearAndApplyPostStyle(text: String?, style: TextStyle?): String? {
-        var result = text
-        Emoji.ALL.forEach { (_, replacement) ->
-            result = result?.replace(replacement, "${TextColor.WHITE}$replacement${TextEffects.RESET}${style?:""}", true)
-        }
+        result.addAll(chars.subList(index, chars.size))
         return result
     }
 
-    private data class StyledChar(val style: Style, val codepoint: Int)
+    private fun sequence(chars: List<StyledChar>): FormattedCharSequence = FormattedCharSequence { sink ->
+        var index = 0
+        for (char in chars) {
+            if (!sink.accept(index, char.style, char.codepoint)) return@FormattedCharSequence false
+            index += Character.charCount(char.codepoint)
+        }
+        true
+    }
 
-    private fun replacementSequence(replacement: String): FormattedCharSequence = FormattedCharSequence { sink ->
-        StringDecomposer.iterateFormatted(replacement, REPLACEMENT_STYLE) { index, style, codepoint ->
-            sink.accept(index, if (isEmojiCodepoint(codepoint)) EMOJI_STYLE else style, codepoint)
+    /** Returns null when vanilla can render the original string unchanged. */
+    @JvmStatic
+    fun replaceEmojisInString(text: String, style: Style): FormattedCharSequence? {
+        if (!OtherSettings.emojis) return null
+        val matches = findEmojiMatches(text)
+        if (matches.isEmpty()) return null
+        return sequence(replaceChars(readChars(text, style, formatted = true), matches))
+    }
+
+    /** Replace logical text before wrapping and bidi ordering; keep unstyled access to the original text. */
+    @JvmStatic
+    fun replaceEmojisInText(text: FormattedText): FormattedText {
+        if (!OtherSettings.emojis) return text
+        return object : FormattedText {
+            override fun <T : Any> visit(output: FormattedText.ContentConsumer<T>): Optional<T> = text.visit(output)
+
+            override fun <T : Any> visit(output: FormattedText.StyledContentConsumer<T>, parentStyle: Style): Optional<T> =
+                text.visit({ style, contents ->
+                    val matches = findEmojiMatches(contents)
+                    if (matches.isEmpty()) output.accept(style, contents)
+                    else {
+                        val chars = replaceChars(readChars(contents, style, formatted = true), matches)
+                        var start = 0
+                        var result = Optional.empty<T>()
+                        while (start < chars.size && result.isEmpty) {
+                            val runStyle = chars[start].style
+                            val run = StringBuilder()
+                            do {
+                                run.appendCodePoint(chars[start++].codepoint)
+                            } while (start < chars.size && chars[start].style == runStyle)
+                            result = output.accept(runStyle, run.toString())
+                        }
+                        result
+                    }
+                }, parentStyle)
         }
     }
 
-    /**
-     * Replaces emoji triggers in a FormattedCharSequence while preserving the original Style
-     * of surrounding characters. Glyphs are white without shadow; text uses its own formatting.
-     */
-    fun replaceEmojisInCharSequence(sequence: FormattedCharSequence?): FormattedCharSequence? {
-        if (sequence == null || !OtherSettings.emojis) return sequence
-
+    /** Used for input formatters and callers that already supply a character sequence. */
+    @JvmStatic
+    fun replaceEmojisInCharSequence(input: FormattedCharSequence): FormattedCharSequence {
+        if (!OtherSettings.emojis) return input
         val chars = mutableListOf<StyledChar>()
-        sequence.accept { _, style, codepoint ->
-            chars.add(StyledChar(style, codepoint))
+        val text = StringBuilder()
+        input.accept { _, style, codepoint ->
+            val start = text.length
+            text.appendCodePoint(codepoint)
+            chars.add(StyledChar(start, text.length, style, codepoint))
             true
         }
+        val matches = findEmojiMatches(text.toString())
+        return if (matches.isEmpty()) input else sequence(replaceChars(chars, matches))
+    }
 
-        if (chars.isEmpty()) return sequence
-
-        val sb = StringBuilder()
-        for (c in chars) {
-            sb.appendCodePoint(c.codepoint)
+    /** Raw UTF-16 positions remain valid when an entire trigger occupies a single sprite cell. */
+    @JvmStatic
+    fun plainIndexAtWidth(text: String, width: Int, style: Style, provider: StringSplitter.WidthProvider, reverse: Boolean): Int? {
+        if (!OtherSettings.emojis) return null
+        val matches = findEmojiMatches(text)
+        if (matches.isEmpty()) return null
+        val chars = replaceChars(readChars(text, style, formatted = false), matches)
+        var position = if (reverse) text.length else 0
+        var remaining = width.toFloat()
+        val runs = chars.groupBy { it.start to it.end }.values
+        for (run in if (reverse) runs.reversed() else runs) {
+            val advance = run.sumOf { provider.getWidth(it.codepoint, it.style).toDouble() }.toFloat()
+            if (advance > remaining) break
+            remaining -= advance
+            position = if (reverse) run.first().start else run.last().end
         }
-        val fullText = sb.toString()
-        val matches = findEmojiMatches(fullText)
-        if (matches.isEmpty()) return sequence
-
-        val newChars = mutableListOf<StyledChar>()
-        var currentIdx = 0
-        var currentOffset = 0
-
-        for (match in matches) {
-            while (currentOffset < match.start) {
-                val char = chars[currentIdx++]
-                newChars.add(char)
-                currentOffset += Character.charCount(char.codepoint)
-            }
-
-            replacementSequence(match.replacement).accept { _, style, codepoint ->
-                newChars.add(StyledChar(style, codepoint))
-                true
-            }
-            while (currentOffset < match.end) {
-                currentOffset += Character.charCount(chars[currentIdx++].codepoint)
-            }
-        }
-
-        while (currentIdx < chars.size) {
-            newChars.add(chars[currentIdx])
-            currentIdx++
-        }
-
-        return FormattedCharSequence { sink ->
-            var idx = 0
-            for (sc in newChars) {
-                if (!sink.accept(idx, sc.style, sc.codepoint)) {
-                    return@FormattedCharSequence false
-                }
-                idx += Character.charCount(sc.codepoint)
-            }
-            true
-        }
+        return position
     }
 
     @JvmStatic
     fun snapToEmojiBoundary(text: String?, pos: Int, preferEnd: Boolean): Int {
         if (text == null || !OtherSettings.emojis) return pos
-
-        val matches = findEmojiMatches(text)
-        for (match in matches) {
-            if (pos in (match.start + 1)..<match.end) {
-                return if (preferEnd) match.end else match.start
-            }
-        }
-        return pos
+        val match = findEmojiMatches(text).firstOrNull { pos in (it.start + 1)..<it.end } ?: return pos
+        return if (preferEnd) match.end else match.start
     }
 
     @JvmStatic
     fun getClickedRawPosition(font: Font, displayed: String, positionInText: Int): Int {
-        if (!OtherSettings.emojis || positionInText <= 0) {
-            return font.plainSubstrByWidth(displayed, positionInText).length
-        }
-
+        if (!OtherSettings.emojis || positionInText <= 0) return font.plainSubstrByWidth(displayed, positionInText).length
         val matches = findEmojiMatches(displayed)
-        if (matches.isEmpty()) {
-            return font.plainSubstrByWidth(displayed, positionInText).length
-        }
-
-        var currentX = 0
-        var rawIdx = 0
-        while (rawIdx < displayed.length) {
-            val match = matches.firstOrNull { it.start == rawIdx }
-            if (match != null) {
-                val emojiWidth = font.width(replacementSequence(match.replacement))
-                if (positionInText < currentX + emojiWidth / 2) {
-                    return match.start
-                } else if (positionInText <= currentX + emojiWidth) {
-                    return match.end
-                }
-                currentX += emojiWidth
-                rawIdx = match.end
-            } else {
-                val charLength = Character.charCount(displayed.codePointAt(rawIdx))
-                val charStr = displayed.substring(rawIdx, rawIdx + charLength)
-                val charWidth = font.width(charStr)
-                if (positionInText < currentX + charWidth / 2) {
-                    return rawIdx
-                }
-                currentX += charWidth
-                rawIdx += charLength
-            }
+        if (matches.isEmpty()) return font.plainSubstrByWidth(displayed, positionInText).length
+        val chars = replaceChars(readChars(displayed, Style.EMPTY, formatted = false), matches)
+        var x = 0
+        for (run in chars.groupBy { it.start to it.end }.values) {
+            val advance = font.width(sequence(run))
+            if (positionInText < x + advance / 2f) return run.first().start
+            if (positionInText <= x + advance) return run.last().end
+            x += advance
         }
         return displayed.length
     }

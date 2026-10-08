@@ -212,7 +212,7 @@ object DailyStreakWindow : BaseWindow(false) {
         val data = DailyStreakManager.data
 
         if (::streakTextComponent.isInitialized) {
-            streakTextComponent.setText("${TextColor.WHITE}\uE11F${TextEffects.RESET} ${data.currentStreak} Days")
+            streakTextComponent.setText("${TextColor.WHITE}:fire:${TextEffects.RESET} ${data.currentStreak} Days")
             highestTextComponent.setText("🏆 Best: ${data.highestStreak} Days")
             completedTextComponent.setText("✔ Total: ${data.totalChallengesCompleted}")
         }

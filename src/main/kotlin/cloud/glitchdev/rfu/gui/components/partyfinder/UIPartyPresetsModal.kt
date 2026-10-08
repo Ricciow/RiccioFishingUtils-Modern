@@ -1,11 +1,8 @@
 package cloud.glitchdev.rfu.gui.components.partyfinder
 
-import cloud.glitchdev.rfu.constants.text.TextColor
-import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.data.other.OtherManager
 import cloud.glitchdev.rfu.data.other.data.PartyPresetData
 import cloud.glitchdev.rfu.data.other.data.PartyPresetsEntry
-import cloud.glitchdev.rfu.feature.other.EmojiFeature
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.UIScheme.increaseOpacity
 import cloud.glitchdev.rfu.gui.components.Colorable
@@ -350,7 +347,7 @@ class UIPartyPresetsModal(
             hoverTextColor = UIScheme.pfCardTitleHoverColor.toConstraint()
         } childOf buttonArea
 
-        val presetName = EmojiFeature.clearAndApplyPostStyle(preset.name, null)
+        val presetName = preset.name
 
         UIButton("Delete", 4f) {
             PartyFinderWindow.popup.show("Are you sure you want to delete preset \"$presetName\"?") {
