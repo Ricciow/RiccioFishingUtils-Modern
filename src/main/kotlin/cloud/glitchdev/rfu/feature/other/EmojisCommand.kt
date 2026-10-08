@@ -39,7 +39,8 @@ object EmojisCommand : SimpleCommand("rfuemojis") {
     }
 
     private fun buildEmojiComponent(emoji: EmojiData): MutableComponent {
-        val hoverText = Component.literal("$GOLD§l${emoji.displayName} $WHITE${emoji.text}\n")
+        val hoverText = Component.literal("$GOLD§l${emoji.displayName} $WHITE")
+            .append(emoji.component()).append("\n")
         hoverText.append(Component.literal("$GRAY" + "Aliases:\n"))
         emoji.aliases.forEach { alias ->
             hoverText.append(Component.literal(" $YELLOW• $GOLD:$GOLD$alias:\n"))

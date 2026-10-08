@@ -159,6 +159,10 @@ object Emoji {
     @JvmStatic
     fun getSprite(spriteId: Identifier): EmojiData? = sprites[spriteId]
 
+    fun icon(sprite: String): EmojiData = requireNotNull(
+        getSprite(Identifier.fromNamespaceAndPath("rfu", "emoji/$sprite"))
+    ) { "Unknown emoji sprite: $sprite" }
+
     val ALL: Map<String, EmojiData> = EMOJIS.flatMap { emoji ->
         emoji.triggers.map { it to emoji }
     }.toMap()

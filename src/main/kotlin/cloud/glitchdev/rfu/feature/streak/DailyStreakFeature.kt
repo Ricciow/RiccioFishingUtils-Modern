@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.feature.streak
 
 import cloud.glitchdev.rfu.config.categories.DailyStreakSettings
+import cloud.glitchdev.rfu.constants.text.Emoji
 import cloud.glitchdev.rfu.data.streak.DailyStreakManager
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
@@ -26,7 +27,8 @@ object DailyStreakFeature : Feature {
                     val data = DailyStreakManager.data
                     val completedCount = data.todayChallenges.count { it.isCompleted }
                     val totalCount = data.todayChallenges.size
-                    Chat.sendMessage(TextUtils.rfuLiteral("§f:fire:§6 Daily Streak: Day ${data.currentStreak} §7(${completedCount}/${totalCount} done) §e[/rfudailies]"))
+                    Chat.sendMessage(TextUtils.rfuLiteral("").append(Emoji.icon("fire").component())
+                        .append("§6 Daily Streak: Day ${data.currentStreak} §7(${completedCount}/${totalCount} done) §e[/rfudailies]"))
                 }
             }
             wasInSkyblock = World.isInSkyblock

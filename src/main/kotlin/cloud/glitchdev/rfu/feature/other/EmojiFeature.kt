@@ -20,12 +20,12 @@ object EmojiFeature {
         otherTriggers.keys.any { text.contains(it, ignoreCase = true) }
 
     @JvmStatic
-    fun hasEmojis(text: String): Boolean = OtherSettings.emojis && findEmojiMatches(text).isNotEmpty()
+    fun hasEmojis(text: String): Boolean = findEmojiMatches(text).isNotEmpty()
 
     data class EmojiMatch(val start: Int, val end: Int, val emoji: EmojiData)
 
     fun findEmojiMatches(text: String): List<EmojiMatch> {
-        if (!hasPossibleEmoji(text)) return emptyList()
+        if (!OtherSettings.emojis || !hasPossibleEmoji(text)) return emptyList()
         val matches = mutableListOf<EmojiMatch>()
         var searchIndex = 0
         while (searchIndex < text.length) {
@@ -33,7 +33,8 @@ object EmojiFeature {
             if (start == -1) break
             val end = text.indexOf(':', start + 1)
             if (end == -1) break
-            val emoji = colonTriggers[text.substring(start, end + 1).lowercase()]
+            val trigger = text.substring(start, end + 1).lowercase()
+            val emoji = colonTriggers[trigger]
             if (emoji != null) matches.add(EmojiMatch(start, end + 1, emoji))
             searchIndex = if (emoji != null) end + 1 else start + 1
         }
@@ -101,7 +102,6 @@ object EmojiFeature {
     /** Returns null when vanilla can render the original string unchanged. */
     @JvmStatic
     fun replaceEmojisInString(text: String, style: Style): FormattedCharSequence? {
-        if (!OtherSettings.emojis) return null
         val matches = findEmojiMatches(text)
         if (matches.isEmpty()) return null
         return sequence(replaceChars(readChars(text, style, formatted = true), matches))
@@ -155,7 +155,6 @@ object EmojiFeature {
     /** Raw UTF-16 positions remain valid when an entire trigger occupies a single sprite cell. */
     @JvmStatic
     fun plainIndexAtWidth(text: String, width: Int, style: Style, provider: StringSplitter.WidthProvider, reverse: Boolean): Int? {
-        if (!OtherSettings.emojis) return null
         val matches = findEmojiMatches(text)
         if (matches.isEmpty()) return null
         val chars = replaceChars(readChars(text, style, formatted = false), matches)
@@ -173,14 +172,14 @@ object EmojiFeature {
 
     @JvmStatic
     fun snapToEmojiBoundary(text: String?, pos: Int, preferEnd: Boolean): Int {
-        if (text == null || !OtherSettings.emojis) return pos
+        if (text == null) return pos
         val match = findEmojiMatches(text).firstOrNull { pos in (it.start + 1)..<it.end } ?: return pos
         return if (preferEnd) match.end else match.start
     }
 
     @JvmStatic
     fun getClickedRawPosition(font: Font, displayed: String, positionInText: Int): Int {
-        if (!OtherSettings.emojis || positionInText <= 0) return font.plainSubstrByWidth(displayed, positionInText).length
+        if (positionInText <= 0) return font.plainSubstrByWidth(displayed, positionInText).length
         val matches = findEmojiMatches(displayed)
         if (matches.isEmpty()) return font.plainSubstrByWidth(displayed, positionInText).length
         val chars = replaceChars(readChars(displayed, Style.EMPTY, formatted = false), matches)

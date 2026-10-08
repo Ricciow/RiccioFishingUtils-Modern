@@ -1,12 +1,12 @@
 package cloud.glitchdev.rfu.gui.window
 
 import cloud.glitchdev.rfu.RiccioFishingUtils
-import cloud.glitchdev.rfu.constants.text.TextColor
-import cloud.glitchdev.rfu.constants.text.TextEffects
+import cloud.glitchdev.rfu.constants.text.Emoji
 import cloud.glitchdev.rfu.data.streak.DailyStreakManager
 import cloud.glitchdev.rfu.events.managers.DailyStreakEvents.registerStreakUpdatedEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.gui.UIScheme
+import cloud.glitchdev.rfu.gui.components.elementa.UIEmoji
 import cloud.glitchdev.rfu.gui.components.streak.UIDailyChallengeCard
 import gg.essential.elementa.components.ScrollComponent
 import gg.essential.elementa.components.UIBlock
@@ -16,6 +16,7 @@ import gg.essential.elementa.components.UIText
 import gg.essential.elementa.components.inspector.Inspector
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
+import gg.essential.elementa.constraints.ChildBasedMaxSizeConstraint
 import gg.essential.elementa.constraints.FillConstraint
 import gg.essential.elementa.constraints.ScaledTextConstraint
 import gg.essential.elementa.constraints.SiblingConstraint
@@ -118,13 +119,21 @@ object DailyStreakWindow : BaseWindow(false) {
             height = 100.percent()
         } childOf header
 
-        streakTextComponent = UIText("").constrain {
+        val streakStat = UIContainer().constrain {
             x = 0.pixels()
             y = CenterConstraint()
+            width = ChildBasedSizeConstraint()
+            height = ChildBasedMaxSizeConstraint()
+        } childOf statsArea
+
+        UIEmoji(Emoji.icon("fire")) childOf streakStat
+        streakTextComponent = UIText("").constrain {
+            x = SiblingConstraint()
+            y = 0.pixels()
             width = ScaledTextConstraint(1.0f)
             height = TextAspectConstraint()
             color = Color(255, 170, 0).toConstraint()
-        } childOf statsArea
+        } childOf streakStat
 
         highestTextComponent = UIText("").constrain {
             x = SiblingConstraint(12f)
@@ -212,7 +221,7 @@ object DailyStreakWindow : BaseWindow(false) {
         val data = DailyStreakManager.data
 
         if (::streakTextComponent.isInitialized) {
-            streakTextComponent.setText("${TextColor.WHITE}:fire:${TextEffects.RESET} ${data.currentStreak} Days")
+            streakTextComponent.setText(" ${data.currentStreak} Days")
             highestTextComponent.setText("🏆 Best: ${data.highestStreak} Days")
             completedTextComponent.setText("✔ Total: ${data.totalChallengesCompleted}")
         }
