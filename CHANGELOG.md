@@ -11,6 +11,7 @@
 - Removed blizzard in a bottle timers
 
 ### Fixes
+- Fixed Alpha server changes overwriting saved utility data.
 - Extended the SkyOcean text width fix to emoji suggestions.
   - Also fixed inconsistency on the sizes of text with the patch.
 - Switched emojis to vanilla inline sprites to not conflict with hypixel's texture pack.

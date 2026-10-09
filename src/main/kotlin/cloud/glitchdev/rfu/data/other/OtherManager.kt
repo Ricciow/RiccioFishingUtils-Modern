@@ -23,6 +23,7 @@ object OtherManager {
         filename = "other.json",
         type = OtherData::class.java,
         defaultFactory = { OtherData() },
+        revertOnAlpha = true,
         builder = { builder ->
             builder.registerTypeAdapter(Entry::class.java, object : JsonSerializer<Entry>, JsonDeserializer<Entry> {
                 override fun serialize(src: Entry, typeOfSrc: java.lang.reflect.Type, context: JsonSerializationContext): JsonElement {
