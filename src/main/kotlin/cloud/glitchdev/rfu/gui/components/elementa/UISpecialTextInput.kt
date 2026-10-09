@@ -20,7 +20,6 @@
 
 package cloud.glitchdev.rfu.gui.components.elementa
 
-import gg.essential.elementa.components.input.AbstractTextInput
 import gg.essential.elementa.constraints.WidthConstraint
 import gg.essential.elementa.dsl.basicYConstraint
 import gg.essential.elementa.dsl.coerceIn
@@ -42,7 +41,7 @@ open class UISpecialTextInput @JvmOverloads constructor(
     inactiveSelectionBackgroundColor: Color = Color(176, 176, 176),
     inactiveSelectionForegroundColor: Color = Color.WHITE,
     cursorColor: Color = Color.WHITE
-) : AbstractTextInput(
+) : RFUTextInput(
     placeholder,
     shadow,
     selectionBackgroundColor,
@@ -105,6 +104,7 @@ open class UISpecialTextInput @JvmOverloads constructor(
         var currentX = 0f
 
         val line = getTextForRender()
+        emojiColumnAtX(line, targetXPos)?.let { return LinePosition(0, it, isVisual = true) }
 
         for (i in line.indices) {
             val charWidth = line[i].width(getTextScale())
@@ -161,6 +161,7 @@ open class UISpecialTextInput @JvmOverloads constructor(
         val lineText = getTextForRender()
 
         if (active) {
+            snapSelectionToEmojis()
             cursorComponent.setY(basicYConstraint {
                 lineY
             })
@@ -174,7 +175,7 @@ open class UISpecialTextInput @JvmOverloads constructor(
             if (!selectionStart().isAtLineStart) {
                 val preSelectionText = lineText.substring(0, selectionStart().column)
                 getFontProvider().extractMcScale(
-                    extractor, preSelectionText, getColor(), currentX, lineY, getTextScale(), shadow
+                    extractor, preSelectionText, getColor(), currentX - horizontalScrollingOffset, lineY, getTextScale(), shadow
                 )
                 currentX += preSelectionText.width(getTextScale())
             }
@@ -187,7 +188,7 @@ open class UISpecialTextInput @JvmOverloads constructor(
             if (!selectionEnd().isAtLineEnd) {
                 val postSelectionText = lineText.substring(selectionEnd().column)
                 getFontProvider().extractMcScale(
-                    extractor, postSelectionText, getColor(), currentX, lineY, getTextScale(), shadow
+                    extractor, postSelectionText, getColor(), currentX - horizontalScrollingOffset, lineY, getTextScale(), shadow
                 )
             }
         } else {
@@ -195,7 +196,7 @@ open class UISpecialTextInput @JvmOverloads constructor(
                 extractor,
                 lineText,
                 getColor(),
-                getLeft(),
+                getLeft() - horizontalScrollingOffset,
                 lineY,
                 getTextScale(),
                 shadow

@@ -39,13 +39,14 @@ object EmojisCommand : SimpleCommand("rfuemojis") {
     }
 
     private fun buildEmojiComponent(emoji: EmojiData): MutableComponent {
-        val hoverText = Component.literal("$GOLD§l${emoji.displayName} $WHITE${emoji.text}\n")
+        val hoverText = Component.literal("$GOLD§l${emoji.displayName} $WHITE")
+            .append(emoji.component()).append("\n")
         hoverText.append(Component.literal("$GRAY" + "Aliases:\n"))
         emoji.aliases.forEach { alias ->
             hoverText.append(Component.literal(" $YELLOW• $GOLD:$GOLD$alias:\n"))
         }
         emoji.customTriggers.forEach { trigger ->
-            hoverText.append(Component.literal(" $YELLOW• $GOLD$trigger\n"))
+            hoverText.append(Component.literal(" $YELLOW• $GOLD${trigger.take(1)}$GOLD${trigger.drop(1)}\n"))
         }
         hoverText.append(Component.literal("\n$YELLOW" + "Click to insert $GOLD:$GOLD${emoji.primaryAlias}: $YELLOW" + "into chat!"))
 
@@ -54,6 +55,6 @@ object EmojisCommand : SimpleCommand("rfuemojis") {
             .withHoverEvent(HoverEvent.ShowText(hoverText))
             .withClickEvent(ClickEvent.SuggestCommand(":${emoji.primaryAlias}:"))
 
-        return Component.literal("${emoji.text}  ").setStyle(style)
+        return emoji.component().withStyle(style).append("  ")
     }
 }

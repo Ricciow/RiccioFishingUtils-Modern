@@ -2,8 +2,6 @@ package cloud.glitchdev.rfu.gui.components.partyfinder
 
 import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
 import cloud.glitchdev.rfu.constants.text.TextEffects
-import cloud.glitchdev.rfu.constants.text.TextStyle
-import cloud.glitchdev.rfu.feature.other.EmojiFeature
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.UIPopup
@@ -14,7 +12,7 @@ import cloud.glitchdev.rfu.gui.components.elementa.BoundingBoxConstraint
 import cloud.glitchdev.rfu.gui.components.elementa.CenteredPixelConstraint
 import cloud.glitchdev.rfu.gui.components.elementa.CopyComponentSizeConstraint
 import cloud.glitchdev.rfu.gui.components.elementa.group.GroupMaxSizeConstraint
-import cloud.glitchdev.rfu.gui.components.elementa.TextWrappingConstraint
+import cloud.glitchdev.rfu.gui.components.elementa.RFUWrappedText
 import cloud.glitchdev.rfu.model.data.DataOption
 import cloud.glitchdev.rfu.party.PartyRequirementsManager
 import cloud.glitchdev.rfu.utils.Party
@@ -26,7 +24,6 @@ import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIImage
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
-import gg.essential.elementa.components.UIWrappedText
 import gg.essential.elementa.constraints.AspectConstraint
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
@@ -187,7 +184,7 @@ class UIPartyCard(
         val userText = UIText(party.user) childOf textContainer
         val title = party.title
             .takeIf { it.isNotEmpty() }
-            ?.let { TextEffects.BOLD.toString() + EmojiFeature.clearAndApplyPostStyle(it, TextStyle(TextEffects.BOLD)) }
+            ?.let { TextEffects.BOLD.toString() + it }
             ?: party.island.island
 
         titleText = UIText(title).constrain {
@@ -237,14 +234,12 @@ class UIPartyCard(
 
         val descriptionText = party.description
             .takeIf { it.isNotEmpty() }
-            ?.let { EmojiFeature.clearAndApplyPostStyle(it, TextStyle()) }
             ?: "${party.island.island} fishing."
 
-        val description = UIWrappedText(descriptionText).constrain {
+        val description = RFUWrappedText(descriptionText).constrain {
             x = SiblingConstraint(UIScheme.pfCardSmallPadding)
             y = UIScheme.pfCardSmallPadding.pixels
             width = FillConstraint()
-            height = TextWrappingConstraint()
             textScale = CopyComponentSizeConstraint(titleText) * 0.75 / 9
             color = UIScheme.pfCardDescriptionColor.toConstraint()
         } childOf descriptionContainer

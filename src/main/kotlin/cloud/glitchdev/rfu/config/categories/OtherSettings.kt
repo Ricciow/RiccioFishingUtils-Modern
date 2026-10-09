@@ -365,7 +365,7 @@ object OtherSettings : Category("Other") {
 
     var patchSkyOceanTextWidth by boolean(true) {
         name = Literal("Patch SkyOcean Text Width")
-        description = Literal("Prevents text from being cut off in RFU HUDs and windows when SkyOcean Text Replacements is enabled.")
+        description = Literal("Prevents text from being cut off in RFU HUDs, windows and chat suggestions when SkyOcean Text Replacements is enabled.")
     }
 
     var patchElementaTextBleed by boolean(true) {

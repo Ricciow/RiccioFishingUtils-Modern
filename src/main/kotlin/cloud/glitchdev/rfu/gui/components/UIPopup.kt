@@ -2,11 +2,10 @@ package cloud.glitchdev.rfu.gui.components
 
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.UIScheme.increaseOpacity
-import cloud.glitchdev.rfu.gui.components.elementa.TextWrappingConstraint
+import cloud.glitchdev.rfu.gui.components.elementa.RFUWrappedText
 import gg.essential.elementa.components.UIBlock
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
-import gg.essential.elementa.components.UIWrappedText
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
 import gg.essential.elementa.constraints.RelativeWindowConstraint
@@ -38,7 +37,7 @@ class UIPopup(
     var buttonTextColor = UIScheme.primaryTextColor.toConstraint()
     var buttonHoverTextColor = UIScheme.primaryTextColor.toConstraint()
 
-    lateinit var uiText : UIWrappedText
+    lateinit var uiText : RFUWrappedText
     lateinit var popupContainer : UIRoundedRectangle
     lateinit var innerBg : UIRoundedRectangle
     private val buttons = mutableListOf<UIButton>()
@@ -122,11 +121,10 @@ class UIPopup(
             height = ChildBasedSizeConstraint() + (padVal * 2).pixels
         } childOf contentParent
 
-        uiText = UIWrappedText(text).constrain {
+        uiText = RFUWrappedText(text).constrain {
             x = CenterConstraint()
             y = padding
             width = 100.percent
-            height = TextWrappingConstraint()
             color = textColor
         } childOf container
 

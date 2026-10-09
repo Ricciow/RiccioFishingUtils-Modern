@@ -17,6 +17,7 @@ import cloud.glitchdev.rfu.config.categories.PartySettings
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
 import cloud.glitchdev.rfu.config.categories.TrophyFishing
 import cloud.glitchdev.rfu.config.migration.ConfigMigration
+import cloud.glitchdev.rfu.constants.text.Emoji
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.network.VersionHttp.isOutdated
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
@@ -43,35 +44,17 @@ object RFUSettings : ConfigKt("rfu/settings") {
             condition = { isOutdated }
         }
 
-        button {
-            title = "\uE118 RFU Discord"
-            description = "\nJoin the rfu discord!"
-            text = "Join"
+        element(EmojiConfigButton(Emoji.icon("discord"), "RFU Discord", "\nJoin the rfu discord!", "Join") {
+            PlatformUtils.openUri("https://discord.gg/JfrXm6TqXz")
+        })
 
-            onClick {
-                PlatformUtils.openUri("https://discord.gg/JfrXm6TqXz")
-            }
-        }
+        element(EmojiConfigButton(Emoji.icon("github"), "Github", "\nContribute to the mod's development! Leave a star <3", "Open") {
+            PlatformUtils.openUri("https://github.com/ricciow/ricciofishingutils-modern")
+        })
 
-        button {
-            title = "\uE117 Github"
-            description = "\nContribute to the mod's development! Leave a star <3"
-            text = "Open"
-
-            onClick {
-                PlatformUtils.openUri("https://github.com/ricciow/ricciofishingutils-modern")
-            }
-        }
-
-        button {
-            title = "\uE119 Patreon"
-            description = "\nHelp me maintain the servers, not really a must but thanks if you do <3"
-            text = "Open"
-
-            onClick {
-                PlatformUtils.openUri("https://www.patreon.com/cw/Ricciow")
-            }
-        }
+        element(EmojiConfigButton(Emoji.icon("patreon"), "Patreon", "\nHelp me maintain the servers, not really a must but thanks if you do <3", "Open") {
+            PlatformUtils.openUri("https://www.patreon.com/cw/Ricciow")
+        })
 
         button {
             title = "Achievements"

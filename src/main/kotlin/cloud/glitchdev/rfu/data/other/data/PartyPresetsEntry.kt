@@ -7,7 +7,8 @@ import cloud.glitchdev.rfu.party.PartyRequirementsManager
 
 data class PartyPresetsEntry(
     var lastPartyState: PartyPresetData? = null,
-    var presets: MutableMap<String, PartyPresetData> = mutableMapOf()
+    var presets: MutableMap<String, PartyPresetData> = mutableMapOf(),
+    var version: Int = 0,
 ) : Entry
 
 data class PartyPresetData(

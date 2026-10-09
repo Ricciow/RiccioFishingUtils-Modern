@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.utils.network
 import cloud.glitchdev.rfu.config.categories.BackendSettings
 import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.chat.RegexConstants.PLAYER_REGEX
+import cloud.glitchdev.rfu.constants.text.Emoji
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents
@@ -24,7 +25,7 @@ import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerAllowGameEvent
 import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
 import cloud.glitchdev.rfu.events.managers.WebSocketEvents.registerConnectionStatusChangedEvent
-import cloud.glitchdev.rfu.gui.components.partyfinder.UIPartyPresetsModal
+import cloud.glitchdev.rfu.data.party.PartyPresetsManager
 import cloud.glitchdev.rfu.utils.dsl.isIgnored
 import cloud.glitchdev.rfu.utils.dsl.removeRankTag
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
@@ -108,6 +109,7 @@ object PartyWebSocket : RegisteredEvent {
                 
                 if (event.type == WebSocketEventType.SYNC) {
                     val newParties = event.data ?: emptyList()
+                    newParties.forEach { it.convertLegacyEmojis() }
                     myParty = newParties.find { it.user == User.getUsername() }
                     PartyFinderEvents.handleSync(newParties)
                 }
@@ -124,6 +126,7 @@ object PartyWebSocket : RegisteredEvent {
                 when (event.type) {
                     WebSocketEventType.CREATED, WebSocketEventType.UPDATED -> {
                         event.data?.let { updatedParty ->
+                            updatedParty.convertLegacyEmojis()
                             if (updatedParty.user == User.getUsername()) {
                                 myParty = updatedParty
                                 if (event.type == WebSocketEventType.CREATED) {
@@ -180,6 +183,11 @@ object PartyWebSocket : RegisteredEvent {
         WebSocketClient.subscribe("/user/queue/party/requisites", requisitesCallback)
     }
 
+    private fun FishingParty.convertLegacyEmojis() {
+        title = Emoji.convertLegacyEmojis(title)
+        description = Emoji.convertLegacyEmojis(description)
+    }
+
     fun requestPlayerRequisites(profileId: String? = User.profileId, force: Boolean = false) {
         if (!force) {
             val cachedProfile = PartyRequirementsManager.cachedProfileId
@@ -200,7 +208,7 @@ object PartyWebSocket : RegisteredEvent {
 
     fun getPreviousParty(): FishingParty? {
         return lastParty?.deepCopy() ?: run {
-            val entry = UIPartyPresetsModal.getPresetsEntry()
+            val entry = PartyPresetsManager.getEntry()
             entry.lastPartyState?.let { state ->
                 val blank = FishingParty.blankParty()
                 state.applyTo(blank)
