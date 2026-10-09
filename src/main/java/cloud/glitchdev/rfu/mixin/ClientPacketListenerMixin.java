@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.mixin;
 
 import cloud.glitchdev.rfu.events.managers.*;
 import cloud.glitchdev.rfu.events.wrappers.VoidCancelable;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.protocol.game.*;
@@ -65,7 +66,7 @@ public class ClientPacketListenerMixin {
         }
     }
 
-    @Inject(method = "handleSetTime", at = @At("TAIL"))
+    @Inject(method = "handleSetTime", at = @At("HEAD"))
     private void onSetTime(ClientboundSetTimePacket packet, CallbackInfo ci) {
         SetTimeEvents.INSTANCE.getRunTasks().invoke(packet.gameTime());
     }

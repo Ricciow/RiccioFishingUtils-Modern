@@ -11,6 +11,7 @@
 - Removed blizzard in a bottle timers
 
 ### Fixes
+- Fixed Slugfish and flare timers freezing when NoammAddons' Time Changer is enabled.
 - Fixed Alpha server changes overwriting saved utility data.
 - Extended the SkyOcean text width fix to emoji suggestions.
   - Also fixed inconsistency on the sizes of text with the patch.
