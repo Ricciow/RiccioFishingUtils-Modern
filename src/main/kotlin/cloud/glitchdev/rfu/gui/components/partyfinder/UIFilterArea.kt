@@ -1,12 +1,12 @@
 package cloud.glitchdev.rfu.gui.components.partyfinder
 
-import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.textinput.UIDecoratedTextInput
 import cloud.glitchdev.rfu.gui.components.colors
 import cloud.glitchdev.rfu.gui.components.elementa.CramAwareMaxSizeConstraint
 import cloud.glitchdev.rfu.model.data.DataOption
 import cloud.glitchdev.rfu.model.party.FishingParty
+import cloud.glitchdev.rfu.model.party.PartyTypeOption
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.CramSiblingConstraint
@@ -24,8 +24,7 @@ class UIFilterArea(private val filterHeight : YConstraint, var onFilterChange: (
     lateinit var searchField: UIDecoratedTextInput
     lateinit var levelField: UIDecoratedTextInput
     lateinit var canJoinToggle: UIToggleCard
-    lateinit var waterToggle: UIToggleCard
-    lateinit var lavaToggle: UIToggleCard
+    private val partyTypeToggles = linkedMapOf<PartyTypeOption, UIToggleCard>()
     lateinit var killerToggle: UIToggleCard
     lateinit var endermanToggle: UIToggleCard
     lateinit var lootingToggle: UIToggleCard
@@ -79,25 +78,19 @@ class UIFilterArea(private val filterHeight : YConstraint, var onFilterChange: (
             y = CramSiblingConstraint()
         } childOf bottomArea
 
-        waterToggle = UIToggleCard(DataOption("water", "Water"), false) { selected ->
-            if (selected) {
-                lavaToggle.selected = false
-            }
-            onFilterChange()
-        }.constrain {
-            x = CramSiblingConstraint(4f)
-            y = CramSiblingConstraint()
-        } childOf bottomArea
-
-        lavaToggle = UIToggleCard(DataOption("lava", "Lava"), false) { selected ->
-            if (selected) {
-                waterToggle.selected = false
-            }
-            onFilterChange()
-        }.constrain {
-            x = CramSiblingConstraint(4f)
-            y = CramSiblingConstraint()
-        } childOf bottomArea
+        for (type in PartyTypeOption.entries) {
+            partyTypeToggles[type] = UIToggleCard(DataOption(type.name.lowercase(), type.label)) { selected ->
+                if (selected) {
+                    for ((otherType, toggle) in partyTypeToggles) {
+                        if (otherType != type) toggle.selected = false
+                    }
+                }
+                onFilterChange()
+            }.constrain {
+                x = CramSiblingConstraint(4f)
+                y = CramSiblingConstraint()
+            } childOf bottomArea
+        }
 
         killerToggle = UIToggleCard(DataOption("has_killer", "Has Killer")) {
             onFilterChange()
@@ -145,6 +138,7 @@ class UIFilterArea(private val filterHeight : YConstraint, var onFilterChange: (
     }
 
     fun applyFilter(parties: List<FishingParty>): MutableList<FishingParty> {
+        val selectedType = partyTypeToggles.entries.firstOrNull { it.value.selected }?.key
         return parties.filter { party ->
             val text = searchField.getText().lowercase()
             if (!(
@@ -155,8 +149,7 @@ class UIFilterArea(private val filterHeight : YConstraint, var onFilterChange: (
             )) return@filter false
             if (levelField.getText().isNotEmpty() && party.level < levelField.getText().toInt()) return@filter false
 
-            if (waterToggle.selected && party.liquid != LiquidTypes.WATER) return@filter false
-            if (lavaToggle.selected && party.liquid != LiquidTypes.LAVA) return@filter false
+            if (selectedType != null && PartyTypeOption.from(party.fishingType, party.liquid) != selectedType) return@filter false
 
             if (canJoinToggle.selected && party.players.current >= party.players.max) return@filter false
 

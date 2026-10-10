@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.data.other.data
 
 import cloud.glitchdev.rfu.constants.fishing.FishingIslands
 import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
+import cloud.glitchdev.rfu.constants.chat.PartyTypes
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.party.PartyRequirementsManager
 
@@ -17,6 +18,7 @@ data class PartyPresetData(
     var description: String = "",
     var island: FishingIslands = FishingIslands.ISLE,
     var liquid: LiquidTypes = LiquidTypes.LAVA,
+    var fishingType: PartyTypes = PartyTypes.REGULAR,
     var level: Int = 0,
     var maxPlayers: Int = 6,
     var hasKiller: Boolean = false,
@@ -30,6 +32,7 @@ data class PartyPresetData(
         party.description = description
         party.island = island
         party.liquid = liquid
+        party.fishingType = fishingType
         party.level = level
         party.players.max = if (maxPlayers > 0) maxPlayers else 6
         party.setRequisite("has_killer", "Has Killer", hasKiller)
@@ -45,6 +48,7 @@ data class PartyPresetData(
         description = party.description
         island = party.island
         liquid = party.liquid
+        fishingType = party.fishingType
         level = party.level
         maxPlayers = party.players.max
         hasKiller = party.getRequisite("has_killer", "Has Killer").value

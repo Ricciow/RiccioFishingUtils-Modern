@@ -2,7 +2,6 @@ package cloud.glitchdev.rfu.gui.components.partyfinder
 
 import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.fishing.FishingIslands
-import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
 import cloud.glitchdev.rfu.data.party.PartyPresetsManager
 import cloud.glitchdev.rfu.data.other.data.PartyPresetData
 import cloud.glitchdev.rfu.gui.components.UIButton
@@ -12,6 +11,7 @@ import cloud.glitchdev.rfu.gui.components.dropdown.UIDropdown
 import cloud.glitchdev.rfu.gui.components.textinput.UIWrappedDecoratedTextInput
 import cloud.glitchdev.rfu.model.data.DataOption
 import cloud.glitchdev.rfu.model.party.FishingParty
+import cloud.glitchdev.rfu.model.party.PartyTypeOption
 import cloud.glitchdev.rfu.party.PartyRequirementsManager
 import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.User
@@ -74,8 +74,7 @@ class UICreateParty : UIContainer() {
     private lateinit var islandField: UIDropdown
     private lateinit var levelField: UIDecoratedTextInput
     private lateinit var maxPlayersField: UIDecoratedTextInput
-    private lateinit var waterToggle: UIToggleCard
-    private lateinit var lavaToggle: UIToggleCard
+    private val partyTypeToggles = linkedMapOf<PartyTypeOption, UIToggleCard>()
     private lateinit var killerToggle: UIToggleCard
     private lateinit var endermanToggle: UIToggleCard
     private lateinit var lootingToggle: UIToggleCard
@@ -109,7 +108,7 @@ class UICreateParty : UIContainer() {
                 if (party.island != newIsland) {
                     party.island = newIsland
                     islandField.setSelected(newIsland.toDataOption())
-                    updateLiquidVisibility(newIsland)
+                    updatePartyTypeVisibility(newIsland)
                 }
             }
         }
@@ -144,14 +143,14 @@ class UICreateParty : UIContainer() {
         createRow1(formContainer)
         createRow2(formContainer)
         createRow3(formContainer)
-        createLiquidSection(formContainer)
+        createPartyTypeSection(formContainer)
         createRequirementsSection(formContainer)
         createSubmitButton(formContainer)
 
         updateButtonLabel()
         setupInteractions()
 
-        updateLiquidVisibility(party.island)
+        updatePartyTypeVisibility(party.island)
     }
 
     private fun createRow1(parent: UIContainer) {
@@ -263,8 +262,8 @@ class UICreateParty : UIContainer() {
         maxPlayersField.setText(party.players.max.toString())
     }
 
-    private fun createLiquidSection(parent: UIContainer) {
-        createLabel("LIQUID", parent, UIScheme.pfSectionSpacing)
+    private fun createPartyTypeSection(parent: UIContainer) {
+        createLabel("PARTY TYPE", parent, UIScheme.pfSectionSpacing)
 
         val envContainer = UIContainer().constrain {
             x = 0.pixels()
@@ -273,29 +272,15 @@ class UICreateParty : UIContainer() {
             height = ChildBasedMaxSizeConstraint()
         } childOf parent
 
-        waterToggle = UIToggleCard(DataOption("water", "Water"), party.liquid == LiquidTypes.WATER) { selected ->
-            if (selected) {
-                party.liquid = LiquidTypes.WATER
-                lavaToggle.selected = false
-            } else if (!lavaToggle.selected) {
-                waterToggle.selected = true
-            }
-        }.constrain {
-            x = SiblingConstraint(2f)
-            y = CenterConstraint()
-        } childOf envContainer
-
-        lavaToggle = UIToggleCard(DataOption("lava", "Lava"), party.liquid == LiquidTypes.LAVA) { selected ->
-            if (selected) {
-                party.liquid = LiquidTypes.LAVA
-                waterToggle.selected = false
-            } else if (!waterToggle.selected) {
-                lavaToggle.selected = true
-            }
-        }.constrain {
-            x = SiblingConstraint(2f)
-            y = CenterConstraint()
-        } childOf envContainer
+        val currentType = PartyTypeOption.from(party.fishingType, party.liquid)
+        for (type in PartyTypeOption.entries) {
+            partyTypeToggles[type] = UIToggleCard(
+                DataOption(type.name.lowercase(), type.label), currentType == type
+            ) { selectPartyType(type) }.constrain {
+                x = SiblingConstraint(2f)
+                y = CenterConstraint()
+            } childOf envContainer
+        }
     }
 
     private fun createRequirementsSection(parent: UIContainer) {
@@ -464,32 +449,26 @@ class UICreateParty : UIContainer() {
         islandField.onSelect = { option ->
             val island = option.value as FishingIslands
             party.island = island
-            updateLiquidVisibility(island)
+            updatePartyTypeVisibility(island)
         }
     }
 
-    private fun updateLiquidVisibility(island: FishingIslands) {
-        val liquids = island.availableLiquids
-        val hasWater = liquids.contains(LiquidTypes.WATER)
-        val hasLava = liquids.contains(LiquidTypes.LAVA)
+    private fun updatePartyTypeVisibility(island: FishingIslands) {
+        for ((type, toggle) in partyTypeToggles) {
+            toggle.hide(true)
+            if (type.liquidFor(island) != null) toggle.unhide(useLastPosition = false)
+        }
+        val currentType = PartyTypeOption.from(party.fishingType, party.liquid)
+        selectPartyType(currentType.takeIf { it.liquidFor(island) != null }
+            ?: PartyTypeOption.entries.first { it.liquidFor(island) != null })
+    }
 
-        if (hasWater && hasLava) {
-            waterToggle.unhide()
-            lavaToggle.unhide()
-        } else if (hasWater) {
-            waterToggle.selected = true
-            lavaToggle.selected = false
-            party.liquid = LiquidTypes.WATER
-
-            waterToggle.unhide()
-            lavaToggle.hide(true)
-        } else if (hasLava) {
-            waterToggle.selected = false
-            lavaToggle.selected = true
-            party.liquid = LiquidTypes.LAVA
-
-            waterToggle.hide(true)
-            lavaToggle.unhide()
+    private fun selectPartyType(type: PartyTypeOption) {
+        val liquid = type.liquidFor(party.island) ?: return
+        party.fishingType = type.fishingType
+        party.liquid = liquid
+        for ((option, toggle) in partyTypeToggles) {
+            toggle.selected = option == type
         }
     }
 
@@ -498,7 +477,7 @@ class UICreateParty : UIContainer() {
         party.title = titleField.getText()
         party.description = descriptionField.getText()
         party.island = islandField.getSelectedItem().value as FishingIslands
-        party.liquid = if (waterToggle.selected) LiquidTypes.WATER else LiquidTypes.LAVA
+        updatePartyTypeVisibility(party.island)
         party.level = levelField.getText().toIntOrNull() ?: 0
         party.players.current = if (Party.inParty) Party.memberCount else 1
         party.players.max = maxPlayersField.getText().toIntOrNull() ?: 6
@@ -515,10 +494,7 @@ class UICreateParty : UIContainer() {
         descriptionField.setText(party.description)
         islandField.setSelected(party.island.toDataOption())
 
-        updateLiquidVisibility(party.island)
-
-        waterToggle.selected = party.liquid == LiquidTypes.WATER
-        lavaToggle.selected = party.liquid == LiquidTypes.LAVA
+        updatePartyTypeVisibility(party.island)
 
         levelField.setText(party.level.toString())
         maxPlayersField.setText(party.players.max.toString())

@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.gui.components.partyfinder
 
+import cloud.glitchdev.rfu.constants.chat.PartyTypes
 import cloud.glitchdev.rfu.data.party.PartyPresetsManager
 import cloud.glitchdev.rfu.data.other.data.PartyPresetData
 import cloud.glitchdev.rfu.gui.UIScheme
@@ -295,7 +296,7 @@ class UIPartyPresetsModal(
         val details = buildString {
             append(preset.island.island)
             append(" • ")
-            append(preset.liquid.liquid)
+            append(if (preset.fishingType == PartyTypes.REGULAR) preset.liquid.liquid else preset.fishingType.type)
             if (preset.level > 0) {
                 append(" • Lvl ")
                 append(preset.level)

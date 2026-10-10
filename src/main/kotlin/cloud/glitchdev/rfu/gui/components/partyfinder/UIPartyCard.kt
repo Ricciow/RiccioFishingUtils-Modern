@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.gui.components.partyfinder
 
 import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
+import cloud.glitchdev.rfu.constants.chat.PartyTypes
 import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.UIButton
@@ -273,21 +274,18 @@ class UIPartyCard(
             y = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
         } childOf locationContainer
 
-        if(party.liquid == LiquidTypes.WATER) {
-            UIConditionCard(
+        val typeOption = when (party.fishingType) {
+            PartyTypes.REGULAR -> if (party.liquid == LiquidTypes.WATER) {
                 DataOption("water", "Water")
-            ).constrain {
-                x = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
-                y = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
-            } childOf locationContainer
-        } else {
-            UIConditionCard(
+            } else {
                 DataOption("lava", "Lava")
-            ).constrain {
-                x = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
-                y = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
-            } childOf locationContainer
+            }
+            else -> DataOption(party.fishingType.name.lowercase(), party.fishingType.type)
         }
+        UIConditionCard(typeOption).constrain {
+            x = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
+            y = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
+        } childOf locationContainer
 
         val activeRequisites = party.requisites.filter { it.value }
         if (activeRequisites.isNotEmpty()) {
