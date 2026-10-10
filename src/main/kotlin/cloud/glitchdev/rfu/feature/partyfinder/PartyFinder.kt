@@ -13,6 +13,8 @@ import cloud.glitchdev.rfu.utils.command.SimpleCommand
 import cloud.glitchdev.rfu.utils.network.WebSocketClient
 import com.mojang.brigadier.context.CommandContext
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
+import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.HoverEvent
 
 @Command
 object PartyFinder : SimpleCommand("rfupf") {
@@ -49,7 +51,12 @@ object PartyFinder : SimpleCommand("rfupf") {
                 TextUtils.rfuLiteral(
                     "RFU websocket isn't connected! (Sorry :/)",
                     TextStyle(TextColor.LIGHT_RED, TextEffects.UNDERLINE)
-                )
+                ).withStyle { style ->
+                    style.withHoverEvent(HoverEvent.ShowText(Component.literal(
+                        "${TextColor.YELLOW}If this keeps happening, it may be a DNS issue.\n" +
+                            "Try using Cloudflare DNS (primary: 1.1.1.1, secondary: 1.0.0.1), then restart Minecraft."
+                    )))
+                }
             )
             return 1
         }
