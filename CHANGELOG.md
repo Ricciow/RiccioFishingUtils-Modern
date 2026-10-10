@@ -23,3 +23,4 @@
 - Switched emojis to vanilla inline sprites to not conflict with hypixel's texture pack.
 
 ### Backend
+- Bloodshot requirements now checks through the back-end.

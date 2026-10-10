@@ -3,7 +3,6 @@ package cloud.glitchdev.rfu.party
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.data.other.OtherManager
 import cloud.glitchdev.rfu.data.other.data.BooleanEntry
-import cloud.glitchdev.rfu.events.managers.EquipmentEvents
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ContainerEvents.registerContainerOpenEvent
@@ -37,7 +36,7 @@ object PartyRequirementsManager : RegisteredEvent {
                 is Success -> ""
                 is Invalid -> failures.joinToString("\n\n") { it.getErrorMessage() }
                 is MissingBrainFood -> "You must have 5 Brain Food!\n${TextColor.GRAY}If you already have it, open\n${TextColor.GRAY}Sb Menu->Skyblock Leveling->Ways to Level Up->Consumable Tasks"
-                is MissingBloodshot -> "You must be wearing a Bloodshot belt!\n${TextColor.GRAY}If you already are, open your equipment menu."
+                is MissingBloodshot -> "You must have a belt with the Bloodshot reforge!"
                 is MissingRequisite -> "You do not meet the requirement: $requisiteName!"
             }
         }
@@ -94,8 +93,7 @@ object PartyRequirementsManager : RegisteredEvent {
     }
 
     fun hasBloodshotBelt(): Boolean {
-        val belt = EquipmentEvents.currentEquipmentSet.belt
-        return belt.startsWith("Bloodshot", ignoreCase = true)
+        return playerRequisites?.requisites?.get("bloodshot") ?: false
     }
 
     fun validatePartyRequirements(party: FishingParty): PartyValidationResult {
