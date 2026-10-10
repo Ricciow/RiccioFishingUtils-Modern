@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.gui.components.partyfinder
 
 import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
 import cloud.glitchdev.rfu.constants.chat.PartyTypes
+import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.UIButton
@@ -198,7 +199,12 @@ class UIPartyCard(
         }
         createListingAction(userRow, userText)
 
-        memberBadge = UIPartyBadge("PARTY", party.players.getString(), titleText).constrain {
+        val isFull = party.players.current >= party.players.max
+        memberBadge = UIPartyBadge(
+            if (isFull) "${TextColor.LIGHT_RED}FULL" else "PARTY",
+            (if (isFull) TextColor.LIGHT_RED.toString() else "") + party.players.getString(),
+            titleText
+        ).constrain {
             y = 0.pixels
             x = 0.pixels(true)
             width = AspectConstraint(1f)
