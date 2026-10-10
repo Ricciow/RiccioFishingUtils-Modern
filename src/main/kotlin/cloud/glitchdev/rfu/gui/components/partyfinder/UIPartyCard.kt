@@ -104,20 +104,20 @@ class UIPartyCard(
             actionButton.hide(true)
         }.onMouseClick {
             if (!WebSocketClient.isConnected) {
-                joinErrorPopup.show("Not connected to RFU Backend!")
+                joinErrorPopup.showWarning("Not connected to RFU Backend!")
                 return@onMouseClick
             } else if (party.user.isUser()) {
-                joinErrorPopup.show("You are already the leader of this party!")
+                joinErrorPopup.showWarning("You are already the leader of this party!")
             } else if (Party.members.contains(party.user)) {
-                joinErrorPopup.show("You are already in this party!")
+                joinErrorPopup.showWarning("You are already in this party!")
             } else if (party.players.current >= party.players.max) {
-                joinErrorPopup.show("This party is full!")
+                joinErrorPopup.showWarning("This party is full!")
             } else if (PartyWebSocket.myParty != null) {
-                joinErrorPopup.show("You are already hosting a party! Please delete your current party listing before joining another.")
+                joinErrorPopup.showWarning("You are already hosting a party! Please delete your current party listing before joining another.")
             } else {
                 val validation = PartyRequirementsManager.canJoinParty(party)
                 if (!validation.isSuccess) {
-                    joinErrorPopup.show(validation.getErrorMessage())
+                    joinErrorPopup.showWarning(validation.getErrorMessage())
                     return@onMouseClick
                 }
                 PartyWebSocket.joinParty(party.user)
@@ -336,7 +336,7 @@ class UIPartyCard(
         actionButton = UIButton.withImage(image, 2f) {
             val action = if (isUser) "delete your party?" else "report ${party.user}'s party?\nThis is only for the party finder listing, not what happens inside the party, use hypixel's reporting for that."
             val pcText = postConfirmationText ?: if (isUser) null else "Party reported"
-            PartyFinderWindow.popup.show("Are you sure you want to $action", pcText) {
+            PartyFinderWindow.popup.showWarning("Are you sure you want to $action", pcText) {
                 if (isUser) {
                     PartyWebSocket.deleteParty(party.user)
                 } else {

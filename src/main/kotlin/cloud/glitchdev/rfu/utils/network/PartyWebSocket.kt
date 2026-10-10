@@ -31,6 +31,7 @@ import cloud.glitchdev.rfu.utils.dsl.removeRankTag
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import cloud.glitchdev.rfu.feature.partyfinder.PartyRequeueAlert
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -177,11 +178,28 @@ object PartyWebSocket : RegisteredEvent {
             }
         }
 
+        val infoCallback: (String) -> Unit = { msg ->
+            try {
+                val payload = gson.fromJson(msg, JsonObject::class.java)
+                val message = payload?.get("message")
+                val isWarning = payload?.get("isWarning")
+                if (message != null && message.isJsonPrimitive && message.asJsonPrimitive.isString &&
+                    (isWarning == null || (isWarning.isJsonPrimitive && isWarning.asJsonPrimitive.isBoolean))) {
+                    message.asString.takeIf { it.isNotBlank() }?.let {
+                        PartyFinderEvents.InfoMessage.runTasks(it, isWarning?.asBoolean ?: false)
+                    }
+                }
+            } catch (e: Exception) {
+                RFULogger.error("Error parsing party info message: ", e)
+            }
+        }
+
         WebSocketClient.subscribe("/topic/parties", updateCallback)
         WebSocketClient.subscribe("/app/topic/parties", listCallback)
         WebSocketClient.subscribe("/user/queue/parties", listCallback)
         WebSocketClient.subscribe("/user/queue/join-requests", joinRequestCallback)
         WebSocketClient.subscribe("/user/queue/party/requisites", requisitesCallback)
+        WebSocketClient.subscribe("/topic/party/info", infoCallback)
     }
 
     private fun FishingParty.convertLegacyEmojis() {

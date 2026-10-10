@@ -50,6 +50,16 @@ class UIPopup(
     }
 
     fun show(text: String, postConfirmationText: String? = null, onConfirm: (() -> Unit)? = null) {
+        textColor = UIScheme.primaryTextColor.toConstraint()
+        showPopup(text, postConfirmationText, onConfirm)
+    }
+
+    fun showWarning(text: String, postConfirmationText: String? = null, onConfirm: (() -> Unit)? = null) {
+        textColor = UIScheme.errorPopupColor.toConstraint()
+        showPopup(text, postConfirmationText, onConfirm)
+    }
+
+    private fun showPopup(text: String, postConfirmationText: String?, onConfirm: (() -> Unit)?) {
         this.text = text
         this.postConfirmationText = postConfirmationText
         if (::uiText.isInitialized) {

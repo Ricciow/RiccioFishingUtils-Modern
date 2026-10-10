@@ -31,4 +31,5 @@
 - Switched emojis to vanilla inline sprites to not conflict with hypixel's texture pack.
 
 ### Backend
+- Added support for future party finder info messages.
 - Bloodshot requirements now checks through the back-end.

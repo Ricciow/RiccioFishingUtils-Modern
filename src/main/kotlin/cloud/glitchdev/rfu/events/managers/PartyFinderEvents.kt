@@ -119,6 +119,23 @@ object PartyFinderEvents {
         }
     }
 
+    object InfoMessage : AbstractEventManager<(String, Boolean) -> Unit, InfoMessage.InfoMessageEvent>() {
+        override val runTasks: (String, Boolean) -> Unit = { message, isWarning ->
+            safeExecution {
+                tasks.forEach { it.callback(message, isWarning) }
+            }
+        }
+
+        fun register(priority: Int = 20, callback: (String, Boolean) -> Unit): InfoMessageEvent {
+            return InfoMessageEvent(priority, callback).register()
+        }
+
+        class InfoMessageEvent(priority: Int, callback: (String, Boolean) -> Unit) : ManagedTask<(String, Boolean) -> Unit, InfoMessageEvent>(priority, callback) {
+            override fun register() = submitTask(this)
+            override fun unregister() = removeTask(this)
+        }
+    }
+
     object MyPartyChanged : AbstractEventManager<(FishingParty?) -> Unit, MyPartyChanged.MyPartyChangedEvent>() {
         override val runTasks: (FishingParty?) -> Unit = { party ->
             safeExecution {
@@ -188,6 +205,7 @@ object PartyFinderEvents {
 
     fun registerPartyListChangedEvent(priority: Int = 20, callback: (List<FishingParty>) -> Unit) = PartyListChanged.register(priority, callback)
     fun registerJoinRequestEvent(priority: Int = 20, callback: (String) -> Unit) = JoinRequest.register(priority, callback)
+    fun registerInfoMessageEvent(priority: Int = 20, callback: (String, Boolean) -> Unit) = InfoMessage.register(priority, callback)
     fun registerMyPartyChangedEvent(priority: Int = 20, callback: (FishingParty?) -> Unit) = MyPartyChanged.register(priority, callback)
 
     fun runPartyJoinedTasks() {

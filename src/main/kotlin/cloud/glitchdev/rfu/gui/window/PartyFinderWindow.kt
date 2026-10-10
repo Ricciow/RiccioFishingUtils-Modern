@@ -11,6 +11,7 @@ import cloud.glitchdev.rfu.gui.components.UIPopup
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyListChangedEvent
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyCreatedEvent
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyUpdatedEvent
+import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerInfoMessageEvent
 import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents
 import cloud.glitchdev.rfu.events.managers.SkillEvents.registerSkillXpUpdateEvent
@@ -72,6 +73,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
     private var parties : List<FishingParty> = PartyFinderEvents.parties
     private var partyCards : MutableList<UIPartyCard> = mutableListOf()
     private var isPeeking = false
+    private var pendingInfoMessage: Pair<String, Boolean>? = null
     private lateinit var peekHoverBlocker: UIContainer
 
     lateinit var halloweenComponent : UIHalloweenComponent
@@ -92,6 +94,14 @@ object PartyFinderWindow : BaseWindow(false), Feature {
     override fun onOpenWindow() {
         super.onOpenWindow()
         PartyWebSocket.requestPlayerRequisites()
+        pendingInfoMessage?.let { (message, isWarning) ->
+            showInfoMessage(message, isWarning)
+            pendingInfoMessage = null
+        }
+    }
+
+    private fun showInfoMessage(message: String, isWarning: Boolean) {
+        if (isWarning) popup.showWarning(message) else popup.show(message)
     }
 
     init {
@@ -127,7 +137,17 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             //~ if >=26.2 'screen' -> 'gui.screen()' {
             if (mc.gui.screen() == this && (origin == "/app/party/join" || origin == "/app/party/report" || origin == "/app/party/delete")) {
             //~}
-                popup.show(message)
+                popup.showWarning(message)
+            }
+        }
+
+        registerInfoMessageEvent { message, isWarning ->
+            //~ if >=26.2 'screen' -> 'gui.screen()' {
+            if (mc.gui.screen() == this) {
+            //~}
+                showInfoMessage(message, isWarning)
+            } else {
+                pendingInfoMessage = message to isWarning
             }
         }
 
@@ -200,7 +220,6 @@ object PartyFinderWindow : BaseWindow(false), Feature {
         popup = UIPopup(5f, "", isBordered = true).childOf(window).colors {
             primaryColor = UIScheme.pfCardBorder.toConstraint()
             innerColor = UIScheme.pfCardBg.toConstraint()
-            textColor = UIScheme.errorPopupColor.toConstraint()
             buttonPrimaryColor = UIScheme.pfCardBorder.toConstraint()
             buttonHoverColor = UIScheme.pfCardBorderHovered.toConstraint()
             buttonHoverTextColor = UIScheme.pfCardTitleHoverColor.toConstraint()

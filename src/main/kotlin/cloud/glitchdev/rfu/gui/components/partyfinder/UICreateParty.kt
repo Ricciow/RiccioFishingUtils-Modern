@@ -91,7 +91,7 @@ class UICreateParty : UIContainer() {
     init {
         registerErrorMessageEvent { message, origin ->
             if (!this.isHidden() && (origin == "/app/party/publish" || origin == "/app/party/edit")) {
-                popup.show(message)
+                popup.showWarning(message)
                 submitButton.disabled = false
             }
         }
@@ -330,7 +330,7 @@ class UICreateParty : UIContainer() {
             if (selected && !PartyRequirementsManager.hasEnderman9()) {
                 endermanToggle.selected = false
                 val result = PartyRequirementsManager.PartyValidationResult.MissingRequisite("enderman_9", "Enderman 9")
-                popup.show(result.getErrorMessage())
+                popup.showWarning(result.getErrorMessage())
             } else {
                 updatePartyModel()
             }
@@ -343,7 +343,7 @@ class UICreateParty : UIContainer() {
             if (selected && !PartyRequirementsManager.hasLooting5()) {
                 lootingToggle.selected = false
                 val result = PartyRequirementsManager.PartyValidationResult.MissingRequisite("looting_5", "Looting 5")
-                popup.show(result.getErrorMessage())
+                popup.showWarning(result.getErrorMessage())
             } else {
                 updatePartyModel()
             }
@@ -357,7 +357,7 @@ class UICreateParty : UIContainer() {
             if (selected && !PartyRequirementsManager.hasBrainFood()) {
                 brainFoodToggle.selected = false
                 val result = PartyRequirementsManager.PartyValidationResult.MissingBrainFood
-                popup.show(result.getErrorMessage())
+                popup.showWarning(result.getErrorMessage())
             } else {
                 updatePartyModel()
             }
@@ -370,7 +370,7 @@ class UICreateParty : UIContainer() {
             if (selected && !PartyRequirementsManager.hasBloodshotBelt()) {
                 bloodshotToggle.selected = false
                 val result = PartyRequirementsManager.PartyValidationResult.MissingRequisite("bloodshot", "Bloodshot")
-                popup.show(result.getErrorMessage())
+                popup.showWarning(result.getErrorMessage())
             } else {
                 updatePartyModel()
             }
@@ -383,7 +383,7 @@ class UICreateParty : UIContainer() {
             if (selected && !PartyRequirementsManager.hasWitherImpact()) {
                 witherImpactToggle.selected = false
                 val result = PartyRequirementsManager.PartyValidationResult.MissingRequisite("wither_impact", "Wither Impact")
-                popup.show(result.getErrorMessage())
+                popup.showWarning(result.getErrorMessage())
             } else {
                 updatePartyModel()
             }
@@ -424,17 +424,17 @@ class UICreateParty : UIContainer() {
             val elapsed = now - lastSubmitTime
             if (elapsed < 5000L) {
                 val secondsLeft = ((5000L - elapsed) / 1000L) + 1
-                popup.show("Please wait ${secondsLeft}s before trying again!")
+                popup.showWarning("Please wait ${secondsLeft}s before trying again!")
                 return@UIButton
             }
 
             if (!WebSocketClient.isConnected) {
-                popup.show("Not connected to RFU Backend!")
+                popup.showWarning("Not connected to RFU Backend!")
                 return@UIButton
             }
 
             if (overflowField.isEnabled && parseOverflow() == null) {
-                popup.show("Enter a valid overflow XP amount, such as 1.5b or 500m.")
+                popup.showWarning("Enter a valid overflow XP amount, such as 1.5b or 500m.")
                 return@UIButton
             }
 
@@ -442,7 +442,7 @@ class UICreateParty : UIContainer() {
             saveSessionState()
             val validation = PartyRequirementsManager.canCreateParty(party)
             if (!validation.isSuccess) {
-                popup.show(validation.getErrorMessage())
+                popup.showWarning(validation.getErrorMessage())
                 return@UIButton
             }
 
@@ -459,7 +459,7 @@ class UICreateParty : UIContainer() {
             } else {
                 Party.requestPartyInfo {
                     if (Party.inParty && !Party.isLeader) {
-                        popup.show("You must be the party leader to do this!")
+                        popup.showWarning("You must be the party leader to do this!")
                         submitButton.disabled = false
                     } else {
                         PartyWebSocket.submitParty(party)

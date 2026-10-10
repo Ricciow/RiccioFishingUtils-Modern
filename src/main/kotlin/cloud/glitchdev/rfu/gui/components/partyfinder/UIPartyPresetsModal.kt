@@ -177,7 +177,7 @@ class UIPartyPresetsModal(
         saveButton = UIButton("Save", 5f) {
             val name = presetNameInput.getText().trim()
             if (name.isEmpty()) {
-                PartyFinderWindow.popup.show("Please enter a preset name!")
+                PartyFinderWindow.popup.showWarning("Please enter a preset name!")
                 return@UIButton
             }
             val party = currentParty ?: return@UIButton
@@ -343,7 +343,7 @@ class UIPartyPresetsModal(
         val presetName = preset.name
 
         UIButton("Delete", 4f) {
-            PartyFinderWindow.popup.show("Are you sure you want to delete preset \"$presetName\"?") {
+            PartyFinderWindow.popup.showWarning("Are you sure you want to delete preset \"$presetName\"?") {
                 val currentEntry = PartyPresetsManager.getEntry()
                 currentEntry.presets.remove(key)
                 PartyPresetsManager.saveEntry(currentEntry)
