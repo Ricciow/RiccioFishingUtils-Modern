@@ -12,6 +12,7 @@
 - Full parties now stay in Party Finder and are ordered by newest non-full first.
 - Moved party finder requirements below the island and liquid cards for readability.
 - Moved Party Finder report/delete icons next to the leader's name and added tooltips.
+- Party Finder descriptions now fill spare card space
 - Removed blizzard in a bottle timers
 
 ### Fixes

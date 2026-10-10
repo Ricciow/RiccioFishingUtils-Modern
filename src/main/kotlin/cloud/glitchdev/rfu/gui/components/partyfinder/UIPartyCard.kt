@@ -63,6 +63,7 @@ class UIPartyCard(
     lateinit var memberBadge : UIPartyBadge
     lateinit var descriptionSeparator : UIBlock
     lateinit var actionButton : UIButton
+    private val tagsContainer = UIContainer()
 
     init {
         create()
@@ -220,7 +221,6 @@ class UIPartyCard(
             x = CenterConstraint()
             y = SiblingConstraint(UIScheme.pfCardInnerPadding)
             width = 100.percent
-            height = GroupMaxSizeConstraint("PartyCardDescription", BoundingBoxConstraint())
         } childOf innerContainer
 
         descriptionSeparator = UIBlock() childOf descriptionContainer
@@ -231,27 +231,34 @@ class UIPartyCard(
 
         val description = RFUWrappedText(descriptionText).constrain {
             x = SiblingConstraint(UIScheme.pfCardSmallPadding)
-            y = UIScheme.pfCardSmallPadding.pixels
+            y = CenterConstraint()
             width = FillConstraint()
             textScale = CopyComponentSizeConstraint(titleText) * 0.75 / 9
             color = UIScheme.pfCardDescriptionColor.toConstraint()
         } childOf descriptionContainer
 
+        descriptionContainer.constrain {
+            val textHeight = CopyComponentSizeConstraint(description) + (UIScheme.pfCardSmallPadding * 2).pixels
+            val tagsHeight = ChildBasedSizeConstraint().apply { constrainTo = tagsContainer }
+            height = GroupMaxSizeConstraint("PartyCardDescription", textHeight) +
+                GroupMaxSizeConstraint("PartyCardTags", tagsHeight) - tagsHeight
+        }
+
         descriptionSeparator.constrain {
             x = SiblingConstraint(UIScheme.pfCardSmallPadding)
             y = 0.pixels
             width = 1.pixels
-            height = CopyComponentSizeConstraint(description) + (UIScheme.pfCardSmallPadding * 2).pixels
+            height = CopyComponentSizeConstraint(descriptionContainer)
             color = UIScheme.pfCardSeparator.toConstraint()
         }
     }
 
     fun createTags() {
-        val tagsContainer = UIContainer().constrain {
+        tagsContainer.constrain {
             x = CenterConstraint()
             y = SiblingConstraint(UIScheme.pfCardInnerPadding)
             width = 100.percent
-            height = GroupMaxSizeConstraint("PartyCardTags", BoundingBoxConstraint())
+            height = ChildBasedSizeConstraint()
         } childOf innerContainer
 
         val locationContainer = UIContainer().constrain {
