@@ -26,7 +26,8 @@ data class PartyPresetData(
     var looting5: Boolean = false,
     var brainFood: Boolean = false,
     var bloodshot: Boolean = false,
-    var overflow: Long? = null
+    var overflow: Long? = null,
+    var witherImpact: Boolean = false
 ) {
     fun applyTo(party: FishingParty) {
         party.title = title
@@ -42,6 +43,7 @@ data class PartyPresetData(
         party.setRequisite("looting_5", "Looting 5", looting5 && PartyRequirementsManager.hasLooting5())
         party.setRequisite("brain_food", "Brain Food", brainFood && PartyRequirementsManager.hasBrainFood())
         party.setRequisite("bloodshot", "Bloodshot", bloodshot && PartyRequirementsManager.hasBloodshotBelt())
+        party.setRequisite("wither_impact", "Wither Impact", witherImpact && PartyRequirementsManager.hasWitherImpact())
     }
 
     fun copyFrom(party: FishingParty, presetName: String = name) {
@@ -59,5 +61,6 @@ data class PartyPresetData(
         looting5 = party.getRequisite("looting_5", "Looting 5").value
         brainFood = party.getRequisite("brain_food", "Brain Food").value
         bloodshot = party.getRequisite("bloodshot", "Bloodshot").value
+        witherImpact = party.getRequisite("wither_impact", "Wither Impact").value
     }
 }

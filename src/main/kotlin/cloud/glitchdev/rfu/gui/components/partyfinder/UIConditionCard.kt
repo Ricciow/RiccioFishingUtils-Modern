@@ -35,6 +35,7 @@ class UIConditionCard(
                 "treasure" -> UIScheme.pfConditionCardTreasure
                 "trophy" -> UIScheme.pfConditionCardTrophy
                 "has_killer" -> UIScheme.pfConditionCardKiller
+                "wither_impact" -> UIScheme.pfConditionCardWitherImpact
                 "looting_5" -> UIScheme.pfConditionCardLooting5
                 "enderman_9" -> UIScheme.pfConditionCardEnderman9
                 "brain_food" -> UIScheme.pfConditionCardBrainFood
@@ -53,6 +54,7 @@ class UIConditionCard(
                 "treasure" -> UIScheme.pfConditionCardTreasureBorder
                 "trophy" -> UIScheme.pfConditionCardTrophyBorder
                 "has_killer" -> UIScheme.pfConditionCardKillerBorder
+                "wither_impact" -> UIScheme.pfConditionCardWitherImpactBorder
                 "looting_5" -> UIScheme.pfConditionCardLooting5Border
                 "enderman_9" -> UIScheme.pfConditionCardEnderman9Border
                 "brain_food" -> UIScheme.pfConditionCardBrainFoodBorder
@@ -72,6 +74,7 @@ class UIConditionCard(
                 "treasure" -> "/assets/rfu/ui/treasure.png"
                 "trophy" -> "/assets/rfu/ui/trophy.png"
                 "has_killer" -> "/assets/rfu/ui/has_killer.png"
+                "wither_impact" -> "/assets/rfu/ui/wither_impact.png"
                 "looting_5" -> "/assets/rfu/ui/looting_5.png"
                 "enderman_9" -> "/assets/rfu/ui/enderman_9.png"
                 "brain_food" -> "/assets/rfu/ui/brain_food.png"

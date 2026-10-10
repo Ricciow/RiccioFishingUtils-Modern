@@ -77,6 +77,7 @@ data class FishingParty(
                     Requisite("looting_5", "Looting 5", false),
                     Requisite("brain_food", "Brain Food", false),
                     Requisite("bloodshot", "Bloodshot", false),
+                    Requisite("wither_impact", "Wither Impact", false),
                 ),
                 listOf(),
                 Players(maxOf(Party.memberCount, 1), 6)

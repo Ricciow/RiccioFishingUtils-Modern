@@ -7,6 +7,7 @@
 - Added configurable global player armor hiding, the nearby player one takes priority.
 - Added Halloween decorations for pf, see them October 30th - Nov 1st! (Seasonal effects toggle in Other settings)
 - Added DNS troubleshooting advice when hovering over the websocket connection warning.
+- Added a Wither Impact requirement to Party Finder.
 
 ### Changes
 - Party Finder now supports exact overflow XP requirements after Fishing 50.

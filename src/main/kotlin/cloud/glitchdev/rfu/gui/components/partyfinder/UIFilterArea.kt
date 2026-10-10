@@ -31,6 +31,7 @@ class UIFilterArea(private val filterHeight : YConstraint, var onFilterChange: (
     lateinit var lootingToggle: UIToggleCard
     lateinit var brainFoodToggle: UIToggleCard
     lateinit var bloodshotToggle: UIToggleCard
+    lateinit var witherImpactToggle: UIToggleCard
 
     init {
         create()
@@ -127,6 +128,13 @@ class UIFilterArea(private val filterHeight : YConstraint, var onFilterChange: (
             x = CramSiblingConstraint(4f)
             y = CramSiblingConstraint()
         } childOf bottomArea
+
+        witherImpactToggle = UIToggleCard(DataOption("wither_impact", "Wither Impact")) {
+            onFilterChange()
+        }.constrain {
+            x = CramSiblingConstraint(4f)
+            y = CramSiblingConstraint()
+        } childOf bottomArea
     }
 
     fun createInteractions() {
@@ -162,6 +170,7 @@ class UIFilterArea(private val filterHeight : YConstraint, var onFilterChange: (
             if (lootingToggle.selected && !party.getRequisite("looting_5", "Looting 5").value) return@filter false
             if (brainFoodToggle.selected && !party.getRequisite("brain_food", "Brain Food").value) return@filter false
             if (bloodshotToggle.selected && !party.getRequisite("bloodshot", "Bloodshot").value) return@filter false
+            if (witherImpactToggle.selected && !party.getRequisite("wither_impact", "Wither Impact").value) return@filter false
 
             return@filter true
         } as MutableList<FishingParty>

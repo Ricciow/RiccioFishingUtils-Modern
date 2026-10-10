@@ -126,6 +126,8 @@ object UIScheme {
     val pfConditionCardBrainFoodBorder = Color(255, 85, 255)
     val pfConditionCardBloodshot = Color(100, 20, 20)
     val pfConditionCardBloodshotBorder = veryHardDifficultyColor
+    val pfConditionCardWitherImpact = Color(55, 55, 55)
+    val pfConditionCardWitherImpactBorder = Color(170, 170, 170)
     val pfConditionCardCanJoin = Color(11, 104, 25)
     val pfConditionCardCanJoinBorder = Color(23, 209, 51)
     val pfConditionCardIsland = Color(45, 45, 45)

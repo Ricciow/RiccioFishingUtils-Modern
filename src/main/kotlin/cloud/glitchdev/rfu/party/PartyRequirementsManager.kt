@@ -102,6 +102,10 @@ object PartyRequirementsManager : RegisteredEvent {
         return playerRequisites?.requisites?.get("bloodshot") ?: false
     }
 
+    fun hasWitherImpact(): Boolean {
+        return playerRequisites?.requisites?.get("wither_impact") ?: false
+    }
+
     fun validatePartyRequirements(party: FishingParty): PartyValidationResult {
         val failures = mutableListOf<PartyValidationResult>()
 
@@ -120,6 +124,7 @@ object PartyRequirementsManager : RegisteredEvent {
                 "bloodshot" -> if (!hasBloodshotBelt()) failures.add(PartyValidationResult.MissingRequisite("bloodshot", requisite.name))
                 "enderman_9" -> if (!hasEnderman9()) failures.add(PartyValidationResult.MissingRequisite("enderman_9", requisite.name))
                 "looting_5" -> if (!hasLooting5()) failures.add(PartyValidationResult.MissingRequisite("looting_5", requisite.name))
+                "wither_impact" -> if (!hasWitherImpact()) failures.add(PartyValidationResult.MissingRequisite("wither_impact", requisite.name))
             }
         }
 

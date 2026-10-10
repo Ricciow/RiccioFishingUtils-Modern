@@ -26,6 +26,7 @@ import kotlin.jvm.optionals.getOrNull
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.colors
 import cloud.glitchdev.rfu.gui.components.elementa.BoundingBoxConstraint
+import cloud.glitchdev.rfu.gui.components.elementa.CramAwareMaxSizeConstraint
 import cloud.glitchdev.rfu.gui.window.PartyFinderWindow
 import cloud.glitchdev.rfu.utils.gui.isHidden
 import cloud.glitchdev.rfu.utils.network.WebSocketClient
@@ -36,6 +37,7 @@ import gg.essential.elementa.components.UIText
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedMaxSizeConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
+import gg.essential.elementa.constraints.CramSiblingConstraint
 import gg.essential.elementa.constraints.ScaledTextConstraint
 import gg.essential.elementa.constraints.SiblingConstraint
 import gg.essential.elementa.constraints.TextAspectConstraint
@@ -82,6 +84,7 @@ class UICreateParty : UIContainer() {
     private lateinit var lootingToggle: UIToggleCard
     private lateinit var brainFoodToggle: UIToggleCard
     private lateinit var bloodshotToggle: UIToggleCard
+    private lateinit var witherImpactToggle: UIToggleCard
     private lateinit var submitButton: UIButton
     private var lastSubmitTime = 0L
 
@@ -313,14 +316,14 @@ class UICreateParty : UIContainer() {
             x = 0.pixels()
             y = SiblingConstraint(3f)
             width = 100.percent()
-            height = ChildBasedMaxSizeConstraint()
+            height = CramAwareMaxSizeConstraint()
         } childOf parent
 
         killerToggle = UIToggleCard(party.getRequisite("has_killer", "Has Killer").toDataOption(), party.getRequisite("has_killer", "Has Killer").value) {
             updatePartyModel()
         }.constrain {
-            x = SiblingConstraint(5f)
-            y = CenterConstraint()
+            x = CramSiblingConstraint(5f)
+            y = CramSiblingConstraint(3f)
         } childOf reqContainer
 
         endermanToggle = UIToggleCard(party.getRequisite("enderman_9", "Enderman 9").toDataOption(), party.getRequisite("enderman_9", "Enderman 9").value) { selected ->
@@ -332,8 +335,8 @@ class UICreateParty : UIContainer() {
                 updatePartyModel()
             }
         }.constrain {
-            x = SiblingConstraint(5f)
-            y = CenterConstraint()
+            x = CramSiblingConstraint(5f)
+            y = CramSiblingConstraint(3f)
         } childOf reqContainer
 
         lootingToggle = UIToggleCard(party.getRequisite("looting_5", "Looting 5").toDataOption(), party.getRequisite("looting_5", "Looting 5").value) { selected ->
@@ -345,8 +348,8 @@ class UICreateParty : UIContainer() {
                 updatePartyModel()
             }
         }.constrain {
-            x = SiblingConstraint(5f)
-            y = CenterConstraint()
+            x = CramSiblingConstraint(5f)
+            y = CramSiblingConstraint(3f)
         } childOf reqContainer
 
 
@@ -359,8 +362,8 @@ class UICreateParty : UIContainer() {
                 updatePartyModel()
             }
         }.constrain {
-            x = SiblingConstraint(5f)
-            y = CenterConstraint()
+            x = CramSiblingConstraint(5f)
+            y = CramSiblingConstraint(3f)
         } childOf reqContainer
 
         bloodshotToggle = UIToggleCard(party.getRequisite("bloodshot", "Bloodshot").toDataOption(), party.getRequisite("bloodshot", "Bloodshot").value) { selected ->
@@ -372,8 +375,21 @@ class UICreateParty : UIContainer() {
                 updatePartyModel()
             }
         }.constrain {
-            x = SiblingConstraint(5f)
-            y = CenterConstraint()
+            x = CramSiblingConstraint(5f)
+            y = CramSiblingConstraint(3f)
+        } childOf reqContainer
+
+        witherImpactToggle = UIToggleCard(party.getRequisite("wither_impact", "Wither Impact").toDataOption(), party.getRequisite("wither_impact", "Wither Impact").value) { selected ->
+            if (selected && !PartyRequirementsManager.hasWitherImpact()) {
+                witherImpactToggle.selected = false
+                val result = PartyRequirementsManager.PartyValidationResult.MissingRequisite("wither_impact", "Wither Impact")
+                popup.show(result.getErrorMessage())
+            } else {
+                updatePartyModel()
+            }
+        }.constrain {
+            x = CramSiblingConstraint(5f)
+            y = CramSiblingConstraint(3f)
         } childOf reqContainer
     }
 
@@ -521,6 +537,7 @@ class UICreateParty : UIContainer() {
         party.setRequisite("looting_5", "Looting 5", lootingToggle.selected)
         party.setRequisite("brain_food", "Brain Food", brainFoodToggle.selected)
         party.setRequisite("bloodshot", "Bloodshot", bloodshotToggle.selected)
+        party.setRequisite("wither_impact", "Wither Impact", witherImpactToggle.selected)
     }
 
     private fun updateFields() {
@@ -540,6 +557,7 @@ class UICreateParty : UIContainer() {
         lootingToggle.selected = party.getRequisite("looting_5", "Looting 5").value
         brainFoodToggle.selected = party.getRequisite("brain_food", "Brain Food").value
         bloodshotToggle.selected = party.getRequisite("bloodshot", "Bloodshot").value
+        witherImpactToggle.selected = party.getRequisite("wither_impact", "Wither Impact").value
 
         updateButtonLabel()
     }
