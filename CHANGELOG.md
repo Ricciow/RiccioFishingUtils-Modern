@@ -11,6 +11,7 @@
 - Treasure buttons and party badges now use a dedicated icon.
 - Full parties now stay in Party Finder and are ordered by newest non-full first.
 - Moved party finder requirements below the island and liquid cards for readability.
+- Moved Party Finder report/delete icons next to the leader's name and added tooltips.
 - Removed blizzard in a bottle timers
 
 ### Fixes

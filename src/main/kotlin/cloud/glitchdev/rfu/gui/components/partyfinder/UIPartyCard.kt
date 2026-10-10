@@ -10,10 +10,10 @@ import cloud.glitchdev.rfu.gui.components.colors
 import cloud.glitchdev.rfu.gui.window.PartyFinderWindow
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.gui.components.elementa.BoundingBoxConstraint
-import cloud.glitchdev.rfu.gui.components.elementa.CenteredPixelConstraint
 import cloud.glitchdev.rfu.gui.components.elementa.CopyComponentSizeConstraint
 import cloud.glitchdev.rfu.gui.components.elementa.group.GroupMaxSizeConstraint
 import cloud.glitchdev.rfu.gui.components.elementa.RFUWrappedText
+import cloud.glitchdev.rfu.gui.components.elementa.UIVanillaTooltip
 import cloud.glitchdev.rfu.model.data.DataOption
 import cloud.glitchdev.rfu.party.PartyRequirementsManager
 import cloud.glitchdev.rfu.utils.Party
@@ -46,6 +46,7 @@ import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.plus
 import gg.essential.elementa.dsl.times
 import gg.essential.elementa.dsl.toConstraint
+import net.minecraft.network.chat.Component
 
 class UIPartyCard(
     val party: FishingParty,
@@ -61,20 +62,7 @@ class UIPartyCard(
     lateinit var levelBadge : UIPartyBadge
     lateinit var memberBadge : UIPartyBadge
     lateinit var descriptionSeparator : UIBlock
-    lateinit var overlayButton : UIButton
-    var hiddenOverlay = true
-        set(value) {
-            field = value
-            if(value) {
-                delay(500) {
-                    if(::overlayButton.isInitialized &&
-                        hiddenOverlay
-                    ) {
-                        overlayButton.hide(true)
-                    }
-                }
-            }
-        }
+    lateinit var actionButton : UIButton
 
     init {
         create()
@@ -96,8 +84,7 @@ class UIPartyCard(
             descriptionSeparator.animate {
                 setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, UIScheme.pfCardSeparatorHover.toConstraint())
             }
-            hiddenOverlay = false
-            overlayButton.unhide()
+            actionButton.unhide()
         }.onMouseLeave {
             animate {
                 setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, UIScheme.pfCardBorder.toConstraint())
@@ -110,9 +97,7 @@ class UIPartyCard(
             descriptionSeparator.animate {
                 setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, UIScheme.pfCardSeparator.toConstraint())
             }
-            if(!overlayButton.isHovered()) {
-                hiddenOverlay = true
-            }
+            actionButton.hide(true)
         }.onMouseClick {
             if (!WebSocketClient.isConnected) {
                 joinErrorPopup.show("Not connected to RFU Backend!")
@@ -153,11 +138,9 @@ class UIPartyCard(
         createHeader()
         createDescription()
         createTags()
-        createFloating()
 
         if (wasHovered) {
-            hiddenOverlay = false
-            overlayButton.unhide()
+            actionButton.unhide()
             titleText.constrain { color = UIScheme.pfCardTitleHoverColor.toConstraint() }
             levelBadge.constrain { color = UIScheme.pfCardLevelBorderHoveredColor.toConstraint() }
             levelBadge.valueText.constrain { color = UIScheme.pfCardTitleHoverColor.toConstraint() }
@@ -182,7 +165,12 @@ class UIPartyCard(
             height = BoundingBoxConstraint()
         } childOf header
 
-        val userText = UIText(party.user) childOf textContainer
+        val userRow = UIContainer().constrain {
+            x = 0.pixels
+            y = 0.pixels
+            width = BoundingBoxConstraint()
+        } childOf textContainer
+        val userText = UIText(party.user) childOf userRow
         val title = party.title
             .takeIf { it.isNotEmpty() }
             ?.let { TextEffects.BOLD.toString() + it }
@@ -195,13 +183,17 @@ class UIPartyCard(
             height = TextAspectConstraint()
         } childOf textContainer
 
+        userRow.constrain {
+            height = CopyComponentSizeConstraint(titleText) * 0.75
+        }
         userText.constrain {
             x = 0.pixels
-            y = SiblingConstraint()
+            y = 0.pixels
             width = TextAspectConstraint()
-            height = CopyComponentSizeConstraint(titleText) * 0.75
+            height = 100.percent
             color = UIScheme.pfCardUserColor.toConstraint()
         }
+        createListingAction(userRow, userText)
 
         memberBadge = UIPartyBadge("PARTY", party.players.getString(), titleText).constrain {
             y = 0.pixels
@@ -305,11 +297,17 @@ class UIPartyCard(
         }
     }
 
-    fun createFloating() {
+    private fun createListingAction(parent: UIContainer, userText: UIText) {
         val isUser = party.user.isUser()
         val icon = if(isUser) "delete" else "report"
+        val actionSlot = UIVanillaTooltip(Component.literal(if (isUser) "Delete listing" else "Report listing")).constrain {
+            x = SiblingConstraint(UIScheme.pfCardTinyPadding)
+            y = CenterConstraint()
+            width = AspectConstraint(1f)
+            height = CopyComponentSizeConstraint(userText) * 1.5
+        } childOf parent
         val image = UIImage.ofResourceCached("/assets/rfu/ui/$icon.png")
-        overlayButton = UIButton.withImage(image, 5f, isBordered = true) {
+        actionButton = UIButton.withImage(image, 2f) {
             val action = if (isUser) "delete your party?" else "report ${party.user}'s party?\nThis is only for the party finder listing, not what happens inside the party, use hypixel's reporting for that."
             val pcText = postConfirmationText ?: if (isUser) null else "Party reported"
             PartyFinderWindow.popup.show("Are you sure you want to $action", pcText) {
@@ -320,24 +318,17 @@ class UIPartyCard(
                 }
             }
         }.constrain {
-            x = CenteredPixelConstraint(0f, true)
-            y = CenteredPixelConstraint(0f)
-            height = AspectConstraint()
-            width = 10.percent
-        } childOf this
-        overlayButton.colors {
-            primaryColor = UIScheme.pfCardBorder.toConstraint()
-            hoverColor = UIScheme.pfCardBorderHovered.toConstraint()
+            x = 0.pixels
+            y = 0.pixels
+            width = 100.percent
+            height = 100.percent
+        } childOf actionSlot
+        actionButton.colors {
+            primaryColor = UIScheme.transparent.toConstraint()
+            hoverColor = UIScheme.transparent.toConstraint()
+            textColor = UIScheme.pfCardUserColor.toConstraint()
             hoverTextColor = UIScheme.pfCardOverlayHoverColor.toConstraint()
         }
-
-        overlayButton.isFloating = true
-        overlayButton.hide(true)
-
-        overlayButton.onMouseLeave {
-            if(!this@UIPartyCard.isHovered()) {
-                hiddenOverlay = true
-            }
-        }
+        actionButton.hide(true)
     }
 }

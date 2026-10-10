@@ -76,6 +76,7 @@ object UIScheme {
     val pfCardBg = pfWindowBackground
     val pfCardBorderWidth = 1.5f
     val pfCardInnerPadding = 5f
+    val pfCardTinyPadding = 1f
     val pfCardSmallPadding = 3f
     val pfCardBorder = Color(100, 100, 100, 100)
     val pfCardBorderHovered = pfInputBgHovered
