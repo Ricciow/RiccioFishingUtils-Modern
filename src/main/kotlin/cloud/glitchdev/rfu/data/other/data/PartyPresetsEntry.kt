@@ -25,7 +25,8 @@ data class PartyPresetData(
     var enderman9: Boolean = false,
     var looting5: Boolean = false,
     var brainFood: Boolean = false,
-    var bloodshot: Boolean = false
+    var bloodshot: Boolean = false,
+    var overflow: Long? = null
 ) {
     fun applyTo(party: FishingParty) {
         party.title = title
@@ -34,6 +35,7 @@ data class PartyPresetData(
         party.liquid = liquid
         party.fishingType = fishingType
         party.level = level
+        party.overflow = overflow
         party.players.max = if (maxPlayers > 0) maxPlayers else 6
         party.setRequisite("has_killer", "Has Killer", hasKiller)
         party.setRequisite("enderman_9", "Enderman 9", enderman9 && PartyRequirementsManager.hasEnderman9())
@@ -50,6 +52,7 @@ data class PartyPresetData(
         liquid = party.liquid
         fishingType = party.fishingType
         level = party.level
+        overflow = party.overflow
         maxPlayers = party.players.max
         hasKiller = party.getRequisite("has_killer", "Has Killer").value
         enderman9 = party.getRequisite("enderman_9", "Enderman 9").value

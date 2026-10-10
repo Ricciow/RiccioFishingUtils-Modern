@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.gui.components.partyfinder
 
 import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.fishing.FishingIslands
+import cloud.glitchdev.rfu.constants.skyblock.Skills
 import cloud.glitchdev.rfu.data.party.PartyPresetsManager
 import cloud.glitchdev.rfu.data.other.data.PartyPresetData
 import cloud.glitchdev.rfu.gui.components.UIButton
@@ -73,6 +74,7 @@ class UICreateParty : UIContainer() {
     private lateinit var descriptionField: UIWrappedDecoratedTextInput
     private lateinit var islandField: UIDropdown
     private lateinit var levelField: UIDecoratedTextInput
+    private lateinit var overflowField: UIDecoratedTextInput
     private lateinit var maxPlayersField: UIDecoratedTextInput
     private val partyTypeToggles = linkedMapOf<PartyTypeOption, UIToggleCard>()
     private lateinit var killerToggle: UIToggleCard
@@ -240,7 +242,27 @@ class UICreateParty : UIContainer() {
             primaryColor = UIScheme.pfInputBg.toConstraint()
             hoverColor = UIScheme.pfInputBgHovered.toConstraint()
         } childOf levelGroup
-        levelField.setText(party.level.toString())
+        levelField.setText(party.level.coerceIn(0, 50).toString())
+
+        val overflowGroup = UIContainer().constrain {
+            x = SiblingConstraint(10f)
+            y = 0.pixels()
+            width = 20.percent()
+            height = ChildBasedSizeConstraint()
+        } childOf row3
+
+        createLabel("OVERFLOW", overflowGroup, 0f)
+        overflowField = UIDecoratedTextInput("e.g. 1.5b, 500m", 2f, maxChars = 32).constrain {
+            x = 0.pixels()
+            y = SiblingConstraint(UIScheme.pfLabelSpacing)
+            width = 100.percent()
+            height = UIScheme.pfInputHeight.pixels()
+        }.colors {
+            primaryColor = UIScheme.pfInputBg.toConstraint()
+            hoverColor = UIScheme.pfInputBgHovered.toConstraint()
+        } childOf overflowGroup
+        overflowField.setText(party.requiredOverflow().toString())
+        overflowField.isEnabled = party.level >= 50
 
         val playersGroup = UIContainer().constrain {
             x = SiblingConstraint(10f)
@@ -394,6 +416,11 @@ class UICreateParty : UIContainer() {
                 return@UIButton
             }
 
+            if (overflowField.isEnabled && parseOverflow() == null) {
+                popup.show("Enter a valid overflow XP amount, such as 1.5b or 500m.")
+                return@UIButton
+            }
+
             updatePartyModel()
             saveSessionState()
             val validation = PartyRequirementsManager.canCreateParty(party)
@@ -446,6 +473,11 @@ class UICreateParty : UIContainer() {
     }
 
     private fun setupInteractions() {
+        levelField.onChange = { text ->
+            val level = (text.toIntOrNull() ?: 0).coerceIn(0, 50)
+            if (text.toIntOrNull() != null && text.toInt() != level) levelField.setText(level.toString())
+            overflowField.isEnabled = level == 50
+        }
         islandField.onSelect = { option ->
             val island = option.value as FishingIslands
             party.island = island
@@ -478,7 +510,8 @@ class UICreateParty : UIContainer() {
         party.description = descriptionField.getText()
         party.island = islandField.getSelectedItem().value as FishingIslands
         updatePartyTypeVisibility(party.island)
-        party.level = levelField.getText().toIntOrNull() ?: 0
+        party.level = (levelField.getText().toIntOrNull() ?: 0).coerceIn(0, 50)
+        party.overflow = if (party.level == 50) parseOverflow() ?: party.overflow else 0L
         party.players.current = if (Party.inParty) Party.memberCount else 1
         party.players.max = maxPlayersField.getText().toIntOrNull() ?: 6
 
@@ -496,7 +529,9 @@ class UICreateParty : UIContainer() {
 
         updatePartyTypeVisibility(party.island)
 
-        levelField.setText(party.level.toString())
+        levelField.setText(party.level.coerceIn(0, 50).toString())
+        overflowField.setText(party.requiredOverflow().toString())
+        overflowField.isEnabled = party.level >= 50
         maxPlayersField.setText(party.players.max.toString())
 
         killerToggle.selected = party.getRequisite("has_killer", "Has Killer").value
@@ -511,5 +546,11 @@ class UICreateParty : UIContainer() {
     private fun updateButtonLabel() {
         submitButton.updateText(if (PartyWebSocket.myParty == null) "Publish Party" else "Update Party")
         submitButton.disabled = false
+    }
+
+    private fun parseOverflow(): Long? {
+        val text = overflowField.getText()
+        if (text.isBlank()) return 0L
+        return Skills.parseXpOrNull(text)?.takeIf { it <= Long.MAX_VALUE - Skills.getTotalXpAtLevel(50) }
     }
 }

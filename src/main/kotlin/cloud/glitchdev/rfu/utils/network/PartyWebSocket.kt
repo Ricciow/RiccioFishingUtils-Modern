@@ -221,13 +221,13 @@ object PartyWebSocket : RegisteredEvent {
     fun publishParty(party: FishingParty) {
         party.profileId = User.profileId
         lastParty = party.deepCopy()
-        WebSocketClient.send("/app/party/publish", party)
+        WebSocketClient.send("/app/party/publish", party.copy(level = party.level.coerceAtMost(50), overflow = party.requiredOverflow()))
     }
 
     fun editParty(party: FishingParty) {
         party.profileId = User.profileId
         lastParty = party.deepCopy()
-        WebSocketClient.send("/app/party/edit", party)
+        WebSocketClient.send("/app/party/edit", party.copy(level = party.level.coerceAtMost(50), overflow = party.requiredOverflow()))
     }
 
     fun submitParty(party: FishingParty) {

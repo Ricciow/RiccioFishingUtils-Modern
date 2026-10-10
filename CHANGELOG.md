@@ -8,6 +8,7 @@
 - Added Halloween decorations for pf, see them October 30th - Nov 1st! (Seasonal effects toggle in Other settings)
 
 ### Changes
+- Party Finder now supports exact overflow XP requirements after Fishing 50.
 - Treasure buttons and party badges now use a dedicated icon.
 - Full parties now stay in Party Finder and are ordered by newest non-full first.
 - Moved party finder requirements below the island and liquid cards for readability.

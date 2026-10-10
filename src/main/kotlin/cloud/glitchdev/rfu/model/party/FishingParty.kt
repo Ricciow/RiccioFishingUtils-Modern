@@ -4,6 +4,7 @@ import cloud.glitchdev.rfu.constants.fishing.FishingIslands
 import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
 import cloud.glitchdev.rfu.constants.chat.PartyTypes
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
+import cloud.glitchdev.rfu.constants.skyblock.Skills
 import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.World
@@ -26,8 +27,12 @@ data class FishingParty(
     var requisites: MutableList<Requisite>,
     @SerializedName("sea_creatures")
     var seaCreatures: List<SeaCreatures>,
-    var players: Players
+    var players: Players,
+    var overflow: Long? = null
 ) {
+    fun requiredOverflow(): Long = overflow
+        ?: (Skills.getTotalXpAtLevel(level) - Skills.getTotalXpAtLevel(50)).coerceAtLeast(0)
+
     fun getRequisite(id: String, name: String): Requisite {
         for (req in requisites) {
             if (req.id == id) return req

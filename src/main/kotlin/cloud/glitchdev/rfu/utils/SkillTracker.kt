@@ -109,34 +109,7 @@ object SkillTracker : RegisteredEvent {
         return getSkillXp(skill).toSkillLevel()
     }
 
-    fun xpRequiredForLevel(desiredLevel: Int): Long {
-        var totalXP = 0L
-        val maxLevel = 60
-
-        if (desiredLevel <= maxLevel) {
-            for (level in 1..desiredLevel) {
-                totalXP += Skills.getRequiredXpForLevel(level)
-            }
-        } else {
-            val xpNeeded = Skills.TOTAL_XP_MAX_LEVEL // 111,672,425L
-
-            totalXP += xpNeeded
-
-            var level = 60
-            var xpForNext = 7_000_000L + 600_000L
-            var slope = 600_000L
-
-            while (level < desiredLevel) {
-                totalXP += xpForNext
-                level++
-                xpForNext += slope
-
-                if (level % 10 == 0) slope *= 2
-            }
-        }
-
-        return totalXP
-    }
+    fun xpRequiredForLevel(desiredLevel: Int): Long = Skills.getTotalXpAtLevel(desiredLevel)
 
     private fun getXpForLevelIndex(index: Int): Long {
         return Skills.XP_REQUIRED_FOR_LEVEL.getOrNull(index) ?: 4_000_000L

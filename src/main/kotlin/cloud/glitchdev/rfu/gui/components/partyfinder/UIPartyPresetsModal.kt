@@ -1,5 +1,7 @@
 package cloud.glitchdev.rfu.gui.components.partyfinder
 
+import cloud.glitchdev.rfu.utils.dsl.compact
+
 import cloud.glitchdev.rfu.constants.chat.PartyTypes
 import cloud.glitchdev.rfu.data.party.PartyPresetsManager
 import cloud.glitchdev.rfu.data.other.data.PartyPresetData
@@ -297,7 +299,11 @@ class UIPartyPresetsModal(
             append(preset.island.island)
             append(" • ")
             append(if (preset.fishingType == PartyTypes.REGULAR) preset.liquid.liquid else preset.fishingType.type)
-            if (preset.level > 0) {
+            if ((preset.overflow ?: 0) > 0) {
+                append(" • ")
+                append(preset.overflow!!.compact())
+                append(" Overflow")
+            } else if (preset.level > 0) {
                 append(" • Lvl ")
                 append(preset.level)
             }

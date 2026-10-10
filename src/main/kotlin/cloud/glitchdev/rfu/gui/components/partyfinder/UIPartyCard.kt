@@ -18,6 +18,7 @@ import cloud.glitchdev.rfu.model.data.DataOption
 import cloud.glitchdev.rfu.party.PartyRequirementsManager
 import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.dsl.isUser
+import cloud.glitchdev.rfu.utils.dsl.compact
 import cloud.glitchdev.rfu.utils.network.PartyWebSocket
 import cloud.glitchdev.rfu.utils.network.WebSocketClient
 import gg.essential.elementa.components.UIBlock
@@ -203,7 +204,12 @@ class UIPartyCard(
             height = CopyComponentSizeConstraint(textContainer)
         } childOf header
 
-        levelBadge = UIPartyBadge("LEVEL", "${party.level}", titleText).constrain {
+        val overflow = party.requiredOverflow()
+        levelBadge = UIPartyBadge(
+            if (overflow > 0) "OVERFL" else "LEVEL",
+            if (overflow > 0) overflow.compact() else "${party.level.coerceAtMost(50)}",
+            titleText
+        ).constrain {
             y = 0.pixels
             x = SiblingConstraint(UIScheme.pfCardSmallPadding, alignOpposite = true)
             width = AspectConstraint(1f)
@@ -211,7 +217,7 @@ class UIPartyCard(
         } childOf header
 
 
-        if(party.level == 0) {
+        if(party.level == 0 && overflow == 0L) {
             levelBadge.hide()
         }
     }
