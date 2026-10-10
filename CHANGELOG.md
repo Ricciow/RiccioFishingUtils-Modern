@@ -14,6 +14,7 @@
 - Removed blizzard in a bottle timers
 
 ### Fixes
+- Fixed Party Finder cards overlapping or leaving gaps after updates and improved layout performance.
 - Fixed Slugfish and flare timers freezing when NoammAddons' Time Changer is enabled.
 - Fixed Alpha server changes overwriting saved utility data.
 - Extended the SkyOcean text width fix to emoji suggestions.

@@ -21,10 +21,13 @@
 package cloud.glitchdev.rfu.gui.components.elementa
 
 import gg.essential.elementa.UIComponent
+import gg.essential.elementa.components.Window
 import gg.essential.elementa.constraints.ConstraintType
 import gg.essential.elementa.constraints.SiblingConstraint
 import gg.essential.elementa.constraints.resolution.ConstraintVisitor
 import java.lang.UnsupportedOperationException
+import java.lang.ref.WeakReference
+import java.util.WeakHashMap
 import kotlin.math.min
 
 /**
@@ -44,34 +47,35 @@ class JustifiedCramSiblingConstraint(private val basePadding: Float = 0f) : Sibl
         val verticalPadding: Float
     )
 
-    private class ParentLayout(
+    private data class CachedLayout(
         val parentLeft: Float,
         val parentTop: Float,
         val parentWidth: Float,
-        val childrenCount: Int,
-        val firstChild: UIComponent?,
-        val lastChild: UIComponent?,
         val positions: Map<UIComponent, ChildPos>
     )
 
-    private fun getLayout(parent: UIComponent): ParentLayout {
-        val cached = layoutCache[parent]
+    private class ParentCache {
+        val layouts = mutableMapOf<Float, CachedLayout>()
+    }
+
+    private fun getLayout(parent: UIComponent): Map<UIComponent, ChildPos> {
+        val cache = if (Window.ofOrNull(parent) == null) null else {
+            parentCaches[parent]?.get() ?: ParentCache().also { cache ->
+                parentCaches[parent] = WeakReference(cache)
+                // Clear on actual frames (including zero-duration frames) and child-list changes.
+                parent.addUpdateFunc { _, _ -> cache.layouts.clear() }
+                parent.children.addObserver { _, _ -> cache.layouts.clear() }
+            }
+        }
         val children = parent.children
         val parentLeft = parent.getLeft()
         val parentTop = parent.getTop()
         val parentWidth = parent.getWidth()
-        val firstChild = children.firstOrNull()
-        val lastChild = children.lastOrNull()
-
-        if (cached != null &&
-            cached.parentLeft == parentLeft &&
-            cached.parentTop == parentTop &&
-            cached.parentWidth == parentWidth &&
-            cached.childrenCount == children.size &&
-            cached.firstChild === firstChild &&
-            cached.lastChild === lastChild
+        val cached = cache?.layouts?.get(basePadding)
+        if (cached != null && cached.parentLeft == parentLeft &&
+            cached.parentTop == parentTop && cached.parentWidth == parentWidth
         ) {
-            return cached
+            return cached.positions
         }
 
         val lines = mutableListOf<List<UIComponent>>()
@@ -126,35 +130,24 @@ class JustifiedCramSiblingConstraint(private val basePadding: Float = 0f) : Sibl
             currentLineTop += maxChildHeight + basePadding
         }
 
-        val newLayout = ParentLayout(
-            parentLeft,
-            parentTop,
-            parentWidth,
-            children.size,
-            firstChild,
-            lastChild,
-            positions
-        )
-        layoutCache[parent] = newLayout
-        return newLayout
+        cache?.layouts?.set(basePadding, CachedLayout(parentLeft, parentTop, parentWidth, positions))
+        return positions
     }
 
     override fun getXPositionImpl(component: UIComponent): Float {
         val parent = component.parent
-        val index = parent.children.indexOf(component)
-        if (index == 0) return parent.getLeft()
+        if (parent.children.firstOrNull() === component) return parent.getLeft()
 
         val layout = getLayout(parent)
-        return layout.positions[component]?.x ?: parent.getLeft()
+        return layout[component]?.x ?: parent.getLeft()
     }
 
     override fun getYPositionImpl(component: UIComponent): Float {
         val parent = component.parent
-        val index = parent.children.indexOf(component)
-        if (index == 0) return parent.getTop()
+        if (parent.children.firstOrNull() === component) return parent.getTop()
 
         val layout = getLayout(parent)
-        return layout.positions[component]?.y ?: parent.getTop()
+        return layout[component]?.y ?: parent.getTop()
     }
 
     override fun to(component: UIComponent) = apply {
@@ -186,24 +179,23 @@ class JustifiedCramSiblingConstraint(private val basePadding: Float = 0f) : Sibl
 
     override fun getHorizontalPadding(component: UIComponent): Float {
         val parent = component.parent
-        val index = parent.children.indexOf(component)
-        if (index == 0) return 0f
+        if (parent.children.firstOrNull() === component) return 0f
 
         val layout = getLayout(parent)
-        return layout.positions[component]?.horizontalPadding ?: 0f
+        return layout[component]?.horizontalPadding ?: 0f
     }
 
     override fun getVerticalPadding(component: UIComponent): Float {
         val parent = component.parent
-        val index = parent.children.indexOf(component)
-        if (index == 0) return 0f
+        if (parent.children.firstOrNull() === component) return 0f
 
         val layout = getLayout(parent)
-        return layout.positions[component]?.verticalPadding ?: 0f
+        return layout[component]?.verticalPadding ?: 0f
     }
 
     private companion object {
         private const val precisionAdjustmentFactor = 0.01f
-        private val layoutCache = java.util.WeakHashMap<UIComponent, ParentLayout>()
+        // Parents own their caches through callbacks; weak values avoid retaining detached component trees.
+        private val parentCaches = WeakHashMap<UIComponent, WeakReference<ParentCache>>()
     }
 }
