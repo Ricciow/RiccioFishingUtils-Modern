@@ -95,6 +95,12 @@ object PartySettings : Category("Party") {
         condition = { togglePartyCommands }
     }
 
+    var toggleXphCommand by boolean(true) {
+        name = Literal("Enable Xph Command")
+        description = Literal("Enables or disables the !xph party command.")
+        condition = { togglePartyCommands }
+    }
+
     var toggleScCommand by boolean(true) {
         name = Literal("Enable SC Command")
         description = Literal("Enables or disables the !sc party command.")

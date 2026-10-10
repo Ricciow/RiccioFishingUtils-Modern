@@ -1,6 +1,7 @@
 # v1.19.3 - Minor
 
 ### Features
+- Added the !xph party command.
 - Added Hotspot, Treasure, and Trophy party creation buttons.
 - Added an all chat share button in the hotspot message.
 - Made the nearby player hiding trigger only while fishing (configurable in other settings)
