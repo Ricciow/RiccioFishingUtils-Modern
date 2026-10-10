@@ -129,11 +129,12 @@ object PartyWebSocket : RegisteredEvent {
                             updatedParty.convertLegacyEmojis()
                             if (updatedParty.user == User.getUsername()) {
                                 myParty = updatedParty
-                                if (event.type == WebSocketEventType.CREATED) {
-                                    PartyFinderEvents.handleCreated(updatedParty)
-                                }
                             }
-                            PartyFinderEvents.handleUpdate(updatedParty)
+                            if (event.type == WebSocketEventType.CREATED) {
+                                PartyFinderEvents.handleCreated(updatedParty)
+                            } else {
+                                PartyFinderEvents.handleUpdate(updatedParty)
+                            }
                         }
                     }
                     WebSocketEventType.DELETED -> {

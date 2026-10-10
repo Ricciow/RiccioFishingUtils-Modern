@@ -3,12 +3,15 @@ package cloud.glitchdev.rfu.events.managers
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.utils.dsl.isIgnored
+import cloud.glitchdev.rfu.utils.dsl.isUser
 import cloud.glitchdev.rfu.utils.network.PartyWebSocket
 import java.util.concurrent.CopyOnWriteArrayList
 
 object PartyFinderEvents {
     private val _parties = CopyOnWriteArrayList<FishingParty>()
-    val parties: List<FishingParty> get() = _parties.filter { !it.user.isIgnored() }
+    val parties: List<FishingParty> get() = _parties
+        .filter { !it.user.isIgnored() }
+        .sortedBy { it.players.current >= it.players.max }
 
     object PartyCreated : AbstractEventManager<(FishingParty) -> Unit, PartyCreated.PartyCreatedEvent>() {
         override val runTasks: (FishingParty) -> Unit = { party ->
@@ -140,8 +143,12 @@ object PartyFinderEvents {
     }
 
     fun handleUpdate(party: FishingParty) {
-        _parties.removeIf { it.user == party.user }
-        _parties.add(party)
+        val index = _parties.indexOfFirst { it.user == party.user }
+        if (index >= 0) {
+            _parties[index] = party
+        } else {
+            _parties.add(0, party)
+        }
         refreshParties()
         PartyUpdated.runTasks(party)
     }
@@ -156,14 +163,15 @@ object PartyFinderEvents {
         if (existed) {
             PartyWebSocket.syncParties()
         }
-        _parties.add(party)
+        _parties.add(0, party)
         refreshParties()
-        PartyCreated.runTasks(party)
+        if (party.user.isUser()) {
+            PartyCreated.runTasks(party)
+        }
     }
 
     fun refreshParties() {
-        val filteredParties = _parties.filter { !it.user.isIgnored() }
-        PartyListChanged.runTasks(filteredParties)
+        PartyListChanged.runTasks(parties)
     }
 
     fun registerPartyCreatedEvent(priority: Int = 20, callback: (FishingParty) -> Unit): PartyCreated.PartyCreatedEvent {
