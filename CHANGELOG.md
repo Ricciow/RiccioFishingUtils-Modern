@@ -10,6 +10,7 @@
 - Added a Wither Impact requirement to Party Finder.
 
 ### Changes
+- Added the session timer to the !sch party command.
 - Party Finder now supports exact overflow XP requirements after Fishing 50.
 - Removed blizzard in a bottle timers
 - Improved the background contrast of unhovered island options when creating a party.

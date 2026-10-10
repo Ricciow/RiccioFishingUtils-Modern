@@ -6,6 +6,7 @@ import cloud.glitchdev.rfu.party.AbstractPartyCommand
 import cloud.glitchdev.rfu.party.PartyCommand
 import cloud.glitchdev.rfu.party.PartyCommandPermission
 import cloud.glitchdev.rfu.utils.User
+import cloud.glitchdev.rfu.utils.dsl.toReadableString
 import java.util.Locale
 
 @PartyCommand
@@ -14,6 +15,7 @@ object SchCommand : AbstractPartyCommand(
     description = "Shows your current and average Sea Creatures per hour.",
     aliases = listOf("scph"),
     responseTemplates = listOf(
+        "Current SC/h: {current} | Average: {avg} | Timer: {time}" to "&9&l{sender} &b- &6SC/h&b:\n &f{1} &eCurrent &7| &f{2} &eAverage &7| &eTimer: &f{3}",
         "Current SC/h: {current} | Average: {avg}" to "&9&l{sender} &b- &6SC/h&b:\n &f{1} &eCurrent &7| &f{2} &eAverage"
     ),
     permission = listOf(PartyCommandPermission.SELF_TRIGGER)
@@ -38,7 +40,8 @@ object SchCommand : AbstractPartyCommand(
         val response = formatResponse(
             responseTemplates[0].first,
             "current" to current,
-            "avg" to avg
+            "avg" to avg,
+            "time" to FishingSession.duration.toReadableString()
         )
         sendPartyMessage(response)
     }
