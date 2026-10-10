@@ -2,7 +2,6 @@ package cloud.glitchdev.rfu.mixin;
 
 import cloud.glitchdev.rfu.events.managers.*;
 import cloud.glitchdev.rfu.events.wrappers.VoidCancelable;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.protocol.game.*;
