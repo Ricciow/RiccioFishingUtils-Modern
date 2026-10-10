@@ -7,6 +7,7 @@ import cloud.glitchdev.rfu.gui.components.elementa.CramAwareMaxSizeConstraint
 import cloud.glitchdev.rfu.model.data.DataOption
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.model.party.PartyTypeOption
+import cloud.glitchdev.rfu.party.PartyRequirementsManager
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.CramSiblingConstraint
@@ -151,7 +152,10 @@ class UIFilterArea(private val filterHeight : YConstraint, var onFilterChange: (
 
             if (selectedType != null && PartyTypeOption.from(party.fishingType, party.liquid) != selectedType) return@filter false
 
-            if (canJoinToggle.selected && party.players.current >= party.players.max) return@filter false
+            if (canJoinToggle.selected && (
+                party.players.current >= party.players.max ||
+                !PartyRequirementsManager.canJoinParty(party).isSuccess
+            )) return@filter false
 
             if (killerToggle.selected && !party.getRequisite("has_killer", "Has Killer").value) return@filter false
             if (endermanToggle.selected && !party.getRequisite("enderman_9", "Enderman 9").value) return@filter false

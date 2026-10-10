@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.gui.window
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.OtherSettings
+import cloud.glitchdev.rfu.constants.skyblock.SkillType
 import cloud.glitchdev.rfu.events.managers.CloseConfigEvents.registerCloseConfigEvent
 import cloud.glitchdev.rfu.events.managers.HudRenderEvents.registerHudRenderEvent
 import cloud.glitchdev.rfu.events.managers.KeybindEvents.registerKeybind
@@ -12,6 +13,7 @@ import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyCreate
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyUpdatedEvent
 import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents
+import cloud.glitchdev.rfu.events.managers.SkillEvents.registerSkillXpUpdateEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.gui.components.UIButton
@@ -104,6 +106,8 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             this.parties = parties
             onUpdate()
         }
+
+        registerSkillXpUpdateEvent(SkillType.FISHING) { _, _ -> updateFiltering() }
 
         registerPartyCreatedEvent { party ->
             if (party.user == User.getUsername()) {
@@ -357,7 +361,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
     fun updateFiltering() {
         if (!::scrollArea.isInitialized) return
 
-        val currentFilteredParties = if (filtersOpen) filterContainer.applyFilter(parties) else parties
+        val currentFilteredParties = filterContainer.applyFilter(parties)
         val existingCardsMap = partyCards.associateBy { it.party.user }
 
         val newCards = currentFilteredParties.map { party ->

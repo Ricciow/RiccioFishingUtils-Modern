@@ -14,8 +14,10 @@
 - Full parties now stay in Party Finder and are ordered by newest non-full first.
 - Moved party finder requirements below the island and liquid cards for readability.
 - Moved Party Finder report/delete icons next to the leader's name and added tooltips.
+- Party finder filters now stay active when the panel is closed.
 
 ### Fixes
+- Fixed Can Join filtering.
 - Fixed Party Finder cards overlapping or leaving gaps after updates and improved layout performance.
 - Fixed Slugfish and flare timers freezing when NoammAddons' Time Changer is enabled.
 - Fixed Alpha server changes overwriting saved utility data.

@@ -366,7 +366,7 @@ class UICreateParty : UIContainer() {
         bloodshotToggle = UIToggleCard(party.getRequisite("bloodshot", "Bloodshot").toDataOption(), party.getRequisite("bloodshot", "Bloodshot").value) { selected ->
             if (selected && !PartyRequirementsManager.hasBloodshotBelt()) {
                 bloodshotToggle.selected = false
-                val result = PartyRequirementsManager.PartyValidationResult.MissingBloodshot
+                val result = PartyRequirementsManager.PartyValidationResult.MissingRequisite("bloodshot", "Bloodshot")
                 popup.show(result.getErrorMessage())
             } else {
                 updatePartyModel()
