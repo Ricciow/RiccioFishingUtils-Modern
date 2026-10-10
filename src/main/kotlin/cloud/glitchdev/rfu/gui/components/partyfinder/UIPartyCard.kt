@@ -48,6 +48,7 @@ import gg.essential.elementa.dsl.plus
 import gg.essential.elementa.dsl.times
 import gg.essential.elementa.dsl.toConstraint
 import net.minecraft.network.chat.Component
+import java.util.Locale
 
 class UIPartyCard(
     val party: FishingParty,
@@ -216,6 +217,12 @@ class UIPartyCard(
             height = CopyComponentSizeConstraint(textContainer)
         } childOf header
 
+        if (overflow > 0) {
+            UIVanillaTooltip(Component.literal("Overflow XP required: ${String.format(Locale.US, "%,d", overflow)}")).constrain {
+                width = 100.percent
+                height = 100.percent
+            } childOf levelBadge
+        }
 
         if(party.level == 0 && overflow == 0L) {
             levelBadge.hide()
