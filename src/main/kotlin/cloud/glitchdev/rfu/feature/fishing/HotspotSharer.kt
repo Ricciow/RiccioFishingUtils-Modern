@@ -103,14 +103,21 @@ object HotspotSharer : Feature {
         val name = formatHotspotShareName(hotspot)
         val location = "${ceil(pos.x).toInt()}, ${ceil(pos.y).toInt()}, ${ceil(pos.z).toInt()}"
         val shareMessage = "$name Hotspot | $location"
+        val effectName = Component.literal(name).withStyle(Style.EMPTY.withColor(hotspot.color.rgb))
         
-        val base = TextUtils.rfuLiteral("Near a ${TextColor.AQUAMARINE}$name ${TextColor.CYAN}hotspot! ", TextColor.CYAN)
+        val base = TextUtils.rfuLiteral("Near a ", TextColor.CYAN)
+            .append(effectName.copy())
+            .append(" ${TextColor.CYAN}hotspot! ")
         
         val clickComponent = Component.literal("${TextColor.LIGHT_BLUE}${TextEffects.BOLD}[Party]")
             .setStyle(
                 Style.EMPTY
                     .withClickEvent(ClickEvent.RunCommand("/pc $shareMessage"))
-                    .withHoverEvent(HoverEvent.ShowText(Component.literal("${TextColor.YELLOW}Click to share this ${TextColor.AQUAMARINE}$name ${TextColor.YELLOW}hotspot with your party!")))
+                    .withHoverEvent(HoverEvent.ShowText(
+                        Component.literal("${TextColor.YELLOW}Click to share this ")
+                            .append(effectName.copy())
+                            .append(" ${TextColor.YELLOW}hotspot with your party!")
+                    ))
             )
             
         if (Party.inParty) {
@@ -123,7 +130,11 @@ object HotspotSharer : Feature {
                 .setStyle(
                     Style.EMPTY
                         .withClickEvent(ClickEvent.RunCommand("/ac $shareMessage"))
-                        .withHoverEvent(HoverEvent.ShowText(Component.literal("${TextColor.YELLOW}Click to share this ${TextColor.AQUAMARINE}$name ${TextColor.YELLOW}hotspot in all chat!")))
+                        .withHoverEvent(HoverEvent.ShowText(
+                            Component.literal("${TextColor.YELLOW}Click to share this ")
+                                .append(effectName.copy())
+                                .append(" ${TextColor.YELLOW}hotspot in all chat!")
+                        ))
                 )
         )
         Chat.sendMessage(base)

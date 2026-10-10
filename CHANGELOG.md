@@ -17,6 +17,7 @@
 - Party finder filters now stay active when the panel is closed.
 
 ### Fixes
+- Fixed hotspot messages now show the correct color.
 - Fixed Can Join filtering.
 - Fixed Party Finder cards overlapping or leaving gaps after updates and improved layout performance.
 - Fixed Slugfish and flare timers freezing when NoammAddons' Time Changer is enabled.
