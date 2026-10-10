@@ -27,6 +27,7 @@ abstract class UIAbstractDropdown(
 ) : UIContainer(), Colorable {
 
     var primaryColor = UIScheme.secondaryColorOpaque.toConstraint()
+    var optionColor: ColorConstraint? = null
     var hoverColor = UIScheme.secondaryColor.toConstraint()
     var textColor = UIScheme.primaryTextColor.toConstraint()
     var selectedColor = UIScheme.primaryColor.toConstraint()
@@ -182,7 +183,7 @@ abstract class UIAbstractDropdown(
             y = SiblingConstraint(2f)
             width = 100.percent()
             height = optionHeightPixels.pixels()
-            color = primaryColor
+            color = optionColor ?: primaryColor
         } childOf scrollComponent
 
         uiOptions.add(uiOption)
@@ -203,7 +204,7 @@ abstract class UIAbstractDropdown(
             }
         }.onMouseLeave {
             if (shouldHover() || isOptionSelected(index)) {
-                val targetColor = if (isOptionSelected(index)) selectedColor else primaryColor
+                val targetColor = if (isOptionSelected(index)) selectedColor else optionColor ?: primaryColor
                 uiOption.animate { setColorAnimation(Animations.IN_EXP, hoverDuration, targetColor) }
             }
         }
@@ -279,7 +280,7 @@ abstract class UIAbstractDropdown(
     fun refreshOptionColors() {
         uiOptions.forEachIndexed { index, uiOption ->
             if (index < values.size) {
-                val targetColor = if (isOptionSelected(index)) selectedColor else if (isOptionDisabled(index)) disabledColor else primaryColor
+                val targetColor = if (isOptionSelected(index)) selectedColor else if (isOptionDisabled(index)) disabledColor else optionColor ?: primaryColor
                 uiOption.constrain { color = targetColor }
             }
         }

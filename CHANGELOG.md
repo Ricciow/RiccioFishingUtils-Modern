@@ -9,12 +9,11 @@
 
 ### Changes
 - Party Finder now supports exact overflow XP requirements after Fishing 50.
-- Treasure buttons and party badges now use a dedicated icon.
+- Removed blizzard in a bottle timers
+- Improved the background contrast of unhovered island options when creating a party.
 - Full parties now stay in Party Finder and are ordered by newest non-full first.
 - Moved party finder requirements below the island and liquid cards for readability.
 - Moved Party Finder report/delete icons next to the leader's name and added tooltips.
-- Party Finder descriptions now fill spare card space
-- Removed blizzard in a bottle timers
 
 ### Fixes
 - Fixed Party Finder cards overlapping or leaving gaps after updates and improved layout performance.

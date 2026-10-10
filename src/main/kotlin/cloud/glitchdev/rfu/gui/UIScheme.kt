@@ -72,6 +72,7 @@ object UIScheme {
     val pfFilterButtonSelected = pfWindowSeparator
     val pfFilterButtonSelectedBg = Color(70, 70, 70, 200)
     val pfDropdownSelected = pfWindowSeparator
+    val pfDropdownOptionBg = Color(60, 60, 60)
     //Pf card
     val pfCardBg = pfWindowBackground
     val pfCardBorderWidth = 1.5f
