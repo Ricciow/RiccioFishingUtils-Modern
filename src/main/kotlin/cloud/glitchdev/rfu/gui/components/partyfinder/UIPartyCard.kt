@@ -252,7 +252,7 @@ class UIPartyCard(
             x = SiblingConstraint(UIScheme.pfCardSmallPadding)
             y = CenterConstraint()
             width = FillConstraint()
-            textScale = CopyComponentSizeConstraint(titleText) * 0.75 / 9
+            textScale = CopyComponentSizeConstraint(titleText) * 0.8 / 9
             color = UIScheme.pfCardDescriptionColor.toConstraint()
         } childOf descriptionContainer
 
