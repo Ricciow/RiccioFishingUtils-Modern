@@ -44,8 +44,35 @@ object Skills {
      * Level 0 returns 0.
      */
     fun getTotalXpAtLevel(level: Int): Long {
-        if (level !in 0..MAX_LEVEL) return 0L
-        return TOTAL_XP_ACCUMULATED_PREVIOUS_LEVEL[level]
+        if (level < 0) return 0L
+        if (level <= MAX_LEVEL) return TOTAL_XP_ACCUMULATED_PREVIOUS_LEVEL[level]
+        var total = TOTAL_XP_MAX_LEVEL
+        var slope = 600_000L
+        var next = 7_600_000L
+        for (current in 61..level) {
+            total = Math.addExact(total, next)
+            next = Math.addExact(next, slope)
+            if (current % 10 == 0) slope = Math.multiplyExact(slope, 2)
+        }
+        return total
+    }
+
+    /** Parses whole XP amounts without silently replacing malformed input with zero. */
+    fun parseXpOrNull(str: String): Long? {
+        val text = str.replace(",", "").trim().lowercase()
+        if (!text.matches(Regex("[0-9]+(?:\\.[0-9]+)?[kmb]?"))) return null
+        val multiplier = when (text.last()) {
+            'k' -> 1_000L
+            'm' -> 1_000_000L
+            'b' -> 1_000_000_000L
+            else -> 1L
+        }
+        val number = if (text.last().isLetter()) text.dropLast(1) else text
+        return try {
+            number.toBigDecimal().multiply(multiplier.toBigDecimal()).longValueExact()
+        } catch (e: ArithmeticException) {
+            null
+        }
     }
 
     fun parseXp(str: String): Long {

@@ -12,9 +12,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 
 @Mixin(EditBox.class)
 public abstract class EditBoxMixin {
@@ -29,22 +28,10 @@ public abstract class EditBoxMixin {
     @Inject(method = "applyFormat", at = @At("RETURN"), cancellable = true)
     private void rfu$replaceEmojisInEditBox(String text, int offset, CallbackInfoReturnable<FormattedCharSequence> cir) {
         FormattedCharSequence original = cir.getReturnValue();
-        FormattedCharSequence replaced = EmojiFeature.INSTANCE.replaceEmojisInCharSequence(original);
+        FormattedCharSequence replaced = EmojiFeature.replaceEmojisInCharSequence(original);
         if (replaced != null && replaced != original) {
             cir.setReturnValue(replaced);
         }
-    }
-
-    @WrapOperation(
-        method = "extractWidgetRenderState",
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/client/gui/Font;width(Ljava/lang/String;)I"
-        )
-    )
-    private int rfu$redirectWidthInExtractWidgetRenderState(Font font, String str, Operation<Integer> original) {
-        String replaced = EmojiFeature.INSTANCE.replaceEmojis(str);
-        return original.call(font, replaced != null ? replaced : str);
     }
 
     @Inject(method = "findClickedPositionInText", at = @At("HEAD"), cancellable = true)
@@ -67,5 +54,10 @@ public abstract class EditBoxMixin {
         int refAnchor = (this.highlightPos != this.cursorPos) ? this.cursorPos : this.highlightPos;
         boolean preferEnd = pos >= refAnchor;
         return EmojiFeature.snapToEmojiBoundary(this.value, pos, preferEnd);
+    }
+
+    @Inject(method = "scrollTo", at = @At("TAIL"))
+    private void rfu$keepScrolledTokensWhole(int pos, CallbackInfo ci) {
+        this.displayPos = EmojiFeature.snapToEmojiBoundary(this.value, this.displayPos, true);
     }
 }

@@ -65,7 +65,7 @@ public class ClientPacketListenerMixin {
         }
     }
 
-    @Inject(method = "handleSetTime", at = @At("TAIL"))
+    @Inject(method = "handleSetTime", at = @At("HEAD"))
     private void onSetTime(ClientboundSetTimePacket packet, CallbackInfo ci) {
         SetTimeEvents.INSTANCE.getRunTasks().invoke(packet.gameTime());
     }

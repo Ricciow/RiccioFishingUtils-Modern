@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.data.streak
 
 import cloud.glitchdev.rfu.config.categories.DailyStreakSettings
+import cloud.glitchdev.rfu.constants.text.Emoji
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.events.managers.DailyStreakEvents
 import cloud.glitchdev.rfu.feature.streak.challenge.ChallengeRegistry
@@ -124,7 +125,9 @@ object DailyStreakManager {
             if (DailyStreakSettings.completionSound) {
                 Sounds.playSound("rfu:daily_challenge", 1f, DailyStreakSettings.completionVolume)
             }
-            Chat.sendMessage(Component.literal("§b§l[§f§lRFU§b§l] §f\uE11F§6 Daily Streak Maintained! §eCurrent Streak: ${data.currentStreak} Days! §f\uE11F"))
+            Chat.sendMessage(TextUtils.rfuLiteral("").append(Emoji.icon("fire").component())
+                .append("§6 Daily Streak Maintained! §eCurrent Streak: ${data.currentStreak} Days! §f")
+                .append(Emoji.icon("fire").component()))
         }
     }
 

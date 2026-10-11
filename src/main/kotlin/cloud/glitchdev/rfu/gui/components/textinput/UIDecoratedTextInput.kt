@@ -30,6 +30,7 @@ class UIDecoratedTextInput(
     var isEnabled = true
         set(value) {
             field = value
+            if (!value && ::textInput.isInitialized && isFocused) textInput.releaseWindowFocus()
             this.constrain {
                 color = (if (value) primaryColor else UIScheme.disabledColor.toConstraint())
             }
@@ -67,7 +68,11 @@ class UIDecoratedTextInput(
             }
         }
 
-        textInput = (UISpecialTextInput(placeholder).apply {
+        textInput = (object : UISpecialTextInput(placeholder) {
+            override fun keyType(typedChar: Char, keyCode: Int) {
+                if (isEnabled) super.keyType(typedChar, keyCode)
+            }
+        }.apply {
             onUpdate { newText ->
                 if (!isEnabled) return@onUpdate
                 handleTextChange(newText)
@@ -82,6 +87,10 @@ class UIDecoratedTextInput(
             if (!isEnabled) return@onMouseClick
             grabWindowFocus()
         }.onFocus {
+            if (!isEnabled) {
+                releaseWindowFocus()
+                return@onFocus
+            }
             isFocused = true
             updateTextColor()
         }.onFocusLost {
@@ -140,7 +149,7 @@ class UIDecoratedTextInput(
     }
 
     override fun refreshColors() {
-        this.constrain { color = primaryColor }
+        this.constrain { color = if (isEnabled) primaryColor else UIScheme.disabledColor.toConstraint() }
         if (::textInput.isInitialized) {
             updateTextColor()
         }

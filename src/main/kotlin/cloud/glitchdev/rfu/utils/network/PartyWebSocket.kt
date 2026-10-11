@@ -1,8 +1,11 @@
 package cloud.glitchdev.rfu.utils.network
 
 import cloud.glitchdev.rfu.config.categories.BackendSettings
+import cloud.glitchdev.rfu.RiccioFishingUtils.API_URL
+import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.chat.RegexConstants.PLAYER_REGEX
+import cloud.glitchdev.rfu.constants.text.Emoji
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents
@@ -24,12 +27,13 @@ import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerAllowGameEvent
 import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
 import cloud.glitchdev.rfu.events.managers.WebSocketEvents.registerConnectionStatusChangedEvent
-import cloud.glitchdev.rfu.gui.components.partyfinder.UIPartyPresetsModal
+import cloud.glitchdev.rfu.data.party.PartyPresetsManager
 import cloud.glitchdev.rfu.utils.dsl.isIgnored
 import cloud.glitchdev.rfu.utils.dsl.removeRankTag
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import cloud.glitchdev.rfu.feature.partyfinder.PartyRequeueAlert
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -108,6 +112,7 @@ object PartyWebSocket : RegisteredEvent {
                 
                 if (event.type == WebSocketEventType.SYNC) {
                     val newParties = event.data ?: emptyList()
+                    newParties.forEach { it.convertLegacyEmojis() }
                     myParty = newParties.find { it.user == User.getUsername() }
                     PartyFinderEvents.handleSync(newParties)
                 }
@@ -124,13 +129,15 @@ object PartyWebSocket : RegisteredEvent {
                 when (event.type) {
                     WebSocketEventType.CREATED, WebSocketEventType.UPDATED -> {
                         event.data?.let { updatedParty ->
+                            updatedParty.convertLegacyEmojis()
                             if (updatedParty.user == User.getUsername()) {
                                 myParty = updatedParty
-                                if (event.type == WebSocketEventType.CREATED) {
-                                    PartyFinderEvents.handleCreated(updatedParty)
-                                }
                             }
-                            PartyFinderEvents.handleUpdate(updatedParty)
+                            if (event.type == WebSocketEventType.CREATED) {
+                                PartyFinderEvents.handleCreated(updatedParty)
+                            } else {
+                                PartyFinderEvents.handleUpdate(updatedParty)
+                            }
                         }
                     }
                     WebSocketEventType.DELETED -> {
@@ -173,11 +180,33 @@ object PartyWebSocket : RegisteredEvent {
             }
         }
 
+        val infoCallback: (String) -> Unit = { msg ->
+            try {
+                val payload = gson.fromJson(msg, JsonObject::class.java)
+                val message = payload?.get("message")
+                val isWarning = payload?.get("isWarning")
+                if (message != null && message.isJsonPrimitive && message.asJsonPrimitive.isString &&
+                    (isWarning == null || (isWarning.isJsonPrimitive && isWarning.asJsonPrimitive.isBoolean))) {
+                    message.asString.takeIf { it.isNotBlank() }?.let {
+                        PartyFinderEvents.InfoMessage.runTasks(it, isWarning?.asBoolean ?: false)
+                    }
+                }
+            } catch (e: Exception) {
+                RFULogger.error("Error parsing party info message: ", e)
+            }
+        }
+
         WebSocketClient.subscribe("/topic/parties", updateCallback)
         WebSocketClient.subscribe("/app/topic/parties", listCallback)
         WebSocketClient.subscribe("/user/queue/parties", listCallback)
         WebSocketClient.subscribe("/user/queue/join-requests", joinRequestCallback)
         WebSocketClient.subscribe("/user/queue/party/requisites", requisitesCallback)
+        WebSocketClient.subscribe("/topic/party/info", infoCallback)
+    }
+
+    private fun FishingParty.convertLegacyEmojis() {
+        title = Emoji.convertLegacyEmojis(title)
+        description = Emoji.convertLegacyEmojis(description)
     }
 
     fun requestPlayerRequisites(profileId: String? = User.profileId, force: Boolean = false) {
@@ -198,9 +227,24 @@ object PartyWebSocket : RegisteredEvent {
         WebSocketClient.send("/app/party/sync", "")
     }
 
+    fun requestRules(callback: (String?) -> Unit) {
+        Network.getRequest("$API_URL/party/rules") { response ->
+            val rules = try {
+                if (response.isSuccessful()) {
+                    gson.fromJson(response.body, JsonObject::class.java)?.get("rules")
+                        ?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isString }?.asString
+                } else null
+            } catch (e: Exception) {
+                RFULogger.error("Error parsing Party Finder rules: ", e)
+                null
+            }
+            mc.execute { callback(rules) }
+        }
+    }
+
     fun getPreviousParty(): FishingParty? {
         return lastParty?.deepCopy() ?: run {
-            val entry = UIPartyPresetsModal.getPresetsEntry()
+            val entry = PartyPresetsManager.getEntry()
             entry.lastPartyState?.let { state ->
                 val blank = FishingParty.blankParty()
                 state.applyTo(blank)
@@ -212,13 +256,13 @@ object PartyWebSocket : RegisteredEvent {
     fun publishParty(party: FishingParty) {
         party.profileId = User.profileId
         lastParty = party.deepCopy()
-        WebSocketClient.send("/app/party/publish", party)
+        WebSocketClient.send("/app/party/publish", party.copy(level = party.level.coerceAtMost(50), overflow = party.requiredOverflow()))
     }
 
     fun editParty(party: FishingParty) {
         party.profileId = User.profileId
         lastParty = party.deepCopy()
-        WebSocketClient.send("/app/party/edit", party)
+        WebSocketClient.send("/app/party/edit", party.copy(level = party.level.coerceAtMost(50), overflow = party.requiredOverflow()))
     }
 
     fun submitParty(party: FishingParty) {

@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.gui
 
 import cloud.glitchdev.rfu.constants.fishing.FishingIslands
+import cloud.glitchdev.rfu.utils.SeasonalEffects
 import java.awt.Color
 
 object UIScheme {
@@ -61,23 +62,25 @@ object UIScheme {
 
     //Party Finder Window
     val pfWindowBackground = Color(30, 30, 30, 220)
-    val pfWindowSeparator = Color(100, 128, 255)
+    val pfWindowSeparator: Color = SeasonalColor(Color(100, 128, 255), Color(160, 100, 230))
     val pfTitleText = pfWindowSeparator
     val pfInputBg = Color(100, 100, 100, 200)
-    val pfInputBgHovered = Color(45, 75, 200, 100)
+    val pfInputBgHovered: Color = SeasonalColor(Color(45, 75, 200, 100), Color(115, 45, 200, 100))
     val pfScrollBar = pfWindowSeparator
     val pfSpacing = 10f
     val pfSmallSpacing = 4f
     val pfFilterButtonSelected = pfWindowSeparator
     val pfFilterButtonSelectedBg = Color(70, 70, 70, 200)
     val pfDropdownSelected = pfWindowSeparator
+    val pfDropdownOptionBg = Color(60, 60, 60)
     //Pf card
     val pfCardBg = pfWindowBackground
     val pfCardBorderWidth = 1.5f
     val pfCardInnerPadding = 5f
+    val pfCardTinyPadding = 1f
     val pfCardSmallPadding = 3f
     val pfCardBorder = Color(100, 100, 100, 100)
-    val pfCardBorderHovered = Color(45, 75, 200, 100)
+    val pfCardBorderHovered = pfInputBgHovered
     val pfCardUserColor = Color(100, 100, 100)
     val pfCardTitleColor = Color.WHITE
     val pfCardTitleHoverColor = pfWindowSeparator
@@ -89,6 +92,7 @@ object UIScheme {
     val pfCardLevelLabelColor = Color(180, 180, 180)
     val pfCardDescriptionColor = Color(150, 150, 150)
     val pfCardOverlayHoverColor = Color(255, 85, 85)
+
     //Pf presets
     val pfCardPresetsDeleteTextHoverColor = Color(255, 85, 85)
     val pfCardPresetsDeleteHoverColor = Color(255, 85, 85, 128)
@@ -108,6 +112,12 @@ object UIScheme {
     val pfConditionCardLooting5Border = Color(85, 255, 255)
     val pfConditionCardLava = Color(128, 85, 0)
     val pfConditionCardLavaBorder = Color(255, 170, 0)
+    val pfConditionCardHotspot = Color(128, 42, 85)
+    val pfConditionCardHotspotBorder = Color(255, 105, 180)
+    val pfConditionCardTreasure = Color(128, 128, 42)
+    val pfConditionCardTreasureBorder = Color(255, 255, 85)
+    val pfConditionCardTrophy = Color(128, 85, 30)
+    val pfConditionCardTrophyBorder = Color(255, 190, 60)
     val pfConditionCardKiller = Color(128, 42, 42)
     val pfConditionCardKillerBorder = Color(255, 85, 85)
     val pfConditionCardEnderman9 = Color(85, 0, 85)
@@ -116,6 +126,8 @@ object UIScheme {
     val pfConditionCardBrainFoodBorder = Color(255, 85, 255)
     val pfConditionCardBloodshot = Color(100, 20, 20)
     val pfConditionCardBloodshotBorder = veryHardDifficultyColor
+    val pfConditionCardWitherImpact = Color(55, 55, 55)
+    val pfConditionCardWitherImpactBorder = Color(170, 170, 170)
     val pfConditionCardCanJoin = Color(11, 104, 25)
     val pfConditionCardCanJoinBorder = Color(23, 209, 51)
     val pfConditionCardIsland = Color(45, 45, 45)
@@ -134,6 +146,14 @@ object UIScheme {
 
     val pfConditionCardUnknown = Color(100, 100, 100)
     val pfConditionCardUnknownBorder = Color(200, 200, 200)
+
+    private class SeasonalColor(normal: Color, private val halloween: Color) : Color(normal.rgb, true) {
+        override fun getRGB(): Int = if (SeasonalEffects.halloweenActive) halloween.rgb else super.getRGB()
+
+        override fun equals(other: Any?): Boolean = other is Color && rgb == other.rgb
+
+        override fun hashCode(): Int = rgb
+    }
 
     const val HOVER_EFFECT_DURATION = 0.1f
 

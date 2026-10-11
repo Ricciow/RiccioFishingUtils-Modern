@@ -2,6 +2,8 @@ package cloud.glitchdev.rfu.gui.window
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.OtherSettings
+import cloud.glitchdev.rfu.constants.skyblock.SkillType
+import cloud.glitchdev.rfu.events.managers.CloseConfigEvents.registerCloseConfigEvent
 import cloud.glitchdev.rfu.events.managers.HudRenderEvents.registerHudRenderEvent
 import cloud.glitchdev.rfu.events.managers.KeybindEvents.registerKeybind
 import cloud.glitchdev.rfu.gui.UIScheme
@@ -9,11 +11,14 @@ import cloud.glitchdev.rfu.gui.components.UIPopup
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyListChangedEvent
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyCreatedEvent
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyUpdatedEvent
+import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerInfoMessageEvent
 import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents
+import cloud.glitchdev.rfu.events.managers.SkillEvents.registerSkillXpUpdateEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.gui.components.UIButton
+import cloud.glitchdev.rfu.gui.components.UIHalloweenComponent
 import cloud.glitchdev.rfu.gui.components.colors
 import cloud.glitchdev.rfu.gui.components.elementa.JustifiedCramSiblingConstraint
 import cloud.glitchdev.rfu.gui.components.elementa.group.GroupManager
@@ -26,6 +31,7 @@ import cloud.glitchdev.rfu.utils.Coroutines
 import cloud.glitchdev.rfu.utils.World
 import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.gui.setHidden
+import cloud.glitchdev.rfu.utils.gui.isHidden
 import cloud.glitchdev.rfu.utils.network.PartyWebSocket
 import gg.essential.elementa.UIComponent
 import gg.essential.elementa.components.ScrollComponent
@@ -68,9 +74,12 @@ object PartyFinderWindow : BaseWindow(false), Feature {
     private var parties : List<FishingParty> = PartyFinderEvents.parties
     private var partyCards : MutableList<UIPartyCard> = mutableListOf()
     private var isPeeking = false
+    private var pendingInfoMessage: Pair<String, Boolean>? = null
     private lateinit var peekHoverBlocker: UIContainer
 
+    lateinit var halloweenComponent : UIHalloweenComponent
     lateinit var popup: UIPopup
+    private lateinit var rulesPopup: UIPopup
     lateinit var presetsModal: UIPartyPresetsModal
     lateinit var filterButton : UIButton
     lateinit var refreshButton : UIButton
@@ -87,16 +96,43 @@ object PartyFinderWindow : BaseWindow(false), Feature {
     override fun onOpenWindow() {
         super.onOpenWindow()
         PartyWebSocket.requestPlayerRequisites()
+        pendingInfoMessage?.let { (message, isWarning) ->
+            showInfoMessage(message, isWarning)
+            pendingInfoMessage = null
+        }
+    }
+
+    private fun showInfoMessage(message: String, isWarning: Boolean) {
+        if (isWarning) popup.showWarning(message) else popup.show(message)
+    }
+
+    fun showRules() {
+        rulesPopup.show("Loading Party Finder rules...")
+        PartyWebSocket.requestRules { rules ->
+            if (!rulesPopup.isHidden()) {
+                if (rules == null) {
+                    rulesPopup.showWarning("Couldn't load the rules. Please try again later.")
+                } else {
+                    rulesPopup.show(rules.ifBlank { "No Party Finder rules have been published yet." })
+                }
+            }
+        }
     }
 
     init {
         create()
         onUpdate()
 
+        registerCloseConfigEvent {
+            halloweenComponent.update()
+        }
+
         registerPartyListChangedEvent { parties ->
             this.parties = parties
             onUpdate()
         }
+
+        registerSkillXpUpdateEvent(SkillType.FISHING) { _, _ -> updateFiltering() }
 
         registerPartyCreatedEvent { party ->
             if (party.user == User.getUsername()) {
@@ -116,7 +152,17 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             //~ if >=26.2 'screen' -> 'gui.screen()' {
             if (mc.gui.screen() == this && (origin == "/app/party/join" || origin == "/app/party/report" || origin == "/app/party/delete")) {
             //~}
-                popup.show(message)
+                popup.showWarning(message)
+            }
+        }
+
+        registerInfoMessageEvent { message, isWarning ->
+            //~ if >=26.2 'screen' -> 'gui.screen()' {
+            if (mc.gui.screen() == this) {
+            //~}
+                showInfoMessage(message, isWarning)
+            } else {
+                pendingInfoMessage = message to isWarning
             }
         }
 
@@ -133,6 +179,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
                 }
                 presetsModal.setHidden(true)
                 popup.setHidden(true)
+                rulesPopup.setHidden(true)
             }
             onRelease = {
                 if (isPeeking) {
@@ -160,6 +207,9 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             color = primaryColor
         } childOf window
 
+        halloweenComponent = UIHalloweenComponent() childOf background
+        halloweenComponent.update()
+
         val useableArea = UIContainer().constrain {
             x = CenterConstraint()
             y = (radius/2).pixels
@@ -183,15 +233,23 @@ object PartyFinderWindow : BaseWindow(false), Feature {
         presetsModal = UIPartyPresetsModal(5f).childOf(window)
         presetsModal.hideModal()
 
-        popup = UIPopup(5f, "", isBordered = true).childOf(window).colors {
+        popup = UIPopup(5f, "", isBordered = true, scrollableText = true).childOf(window).colors {
             primaryColor = UIScheme.pfCardBorder.toConstraint()
             innerColor = UIScheme.pfCardBg.toConstraint()
-            textColor = UIScheme.errorPopupColor.toConstraint()
             buttonPrimaryColor = UIScheme.pfCardBorder.toConstraint()
             buttonHoverColor = UIScheme.pfCardBorderHovered.toConstraint()
             buttonHoverTextColor = UIScheme.pfCardTitleHoverColor.toConstraint()
         }
         popup.hide(instantly = true)
+
+        rulesPopup = UIPopup(5f, "", isBordered = true, scrollableText = true).childOf(window).colors {
+            primaryColor = UIScheme.pfCardBorder.toConstraint()
+            innerColor = UIScheme.pfCardBg.toConstraint()
+            buttonPrimaryColor = UIScheme.pfCardBorder.toConstraint()
+            buttonHoverColor = UIScheme.pfCardBorderHovered.toConstraint()
+            buttonHoverTextColor = UIScheme.pfCardTitleHoverColor.toConstraint()
+        }
+        rulesPopup.hide(instantly = true)
 
         peekHoverBlocker = UIContainer().constrain {
             x = 0.pixels
@@ -327,6 +385,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
         val scrollBar = UIRoundedRectangle(5f).constrain {
             x = 0.pixels(true)
             width = 3.pixels
+            color = UIScheme.pfScrollBar.toConstraint()
         } childOf partiesContainer
 
         scrollArea.setScrollBarComponent(scrollBar, hideWhenUseless = true, isHorizontal = false)
@@ -347,7 +406,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
     fun updateFiltering() {
         if (!::scrollArea.isInitialized) return
 
-        val currentFilteredParties = if (filtersOpen) filterContainer.applyFilter(parties) else parties
+        val currentFilteredParties = filterContainer.applyFilter(parties)
         val existingCardsMap = partyCards.associateBy { it.party.user }
 
         val newCards = currentFilteredParties.map { party ->

@@ -2,7 +2,8 @@ package cloud.glitchdev.rfu.gui.components.partyfinder
 
 import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.fishing.FishingIslands
-import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
+import cloud.glitchdev.rfu.constants.skyblock.Skills
+import cloud.glitchdev.rfu.data.party.PartyPresetsManager
 import cloud.glitchdev.rfu.data.other.data.PartyPresetData
 import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.UIPopup
@@ -11,6 +12,7 @@ import cloud.glitchdev.rfu.gui.components.dropdown.UIDropdown
 import cloud.glitchdev.rfu.gui.components.textinput.UIWrappedDecoratedTextInput
 import cloud.glitchdev.rfu.model.data.DataOption
 import cloud.glitchdev.rfu.model.party.FishingParty
+import cloud.glitchdev.rfu.model.party.PartyTypeOption
 import cloud.glitchdev.rfu.party.PartyRequirementsManager
 import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.User
@@ -18,13 +20,13 @@ import cloud.glitchdev.rfu.utils.network.PartyWebSocket
 import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerMyPartyChangedEvent
-import cloud.glitchdev.rfu.feature.other.EmojiFeature
 import cloud.glitchdev.rfu.utils.Coroutines
 import kotlinx.coroutines.delay
 import kotlin.jvm.optionals.getOrNull
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.colors
 import cloud.glitchdev.rfu.gui.components.elementa.BoundingBoxConstraint
+import cloud.glitchdev.rfu.gui.components.elementa.CramAwareMaxSizeConstraint
 import cloud.glitchdev.rfu.gui.window.PartyFinderWindow
 import cloud.glitchdev.rfu.utils.gui.isHidden
 import cloud.glitchdev.rfu.utils.network.WebSocketClient
@@ -35,6 +37,7 @@ import gg.essential.elementa.components.UIText
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedMaxSizeConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
+import gg.essential.elementa.constraints.CramSiblingConstraint
 import gg.essential.elementa.constraints.ScaledTextConstraint
 import gg.essential.elementa.constraints.SiblingConstraint
 import gg.essential.elementa.constraints.TextAspectConstraint
@@ -54,7 +57,7 @@ class UICreateParty : UIContainer() {
 
     private fun loadInitialParty(): FishingParty {
         val blank = FishingParty.blankParty()
-        val entry = UIPartyPresetsModal.getPresetsEntry()
+        val entry = PartyPresetsManager.getEntry()
         entry.lastPartyState?.applyTo(blank)
         return blank
     }
@@ -62,32 +65,33 @@ class UICreateParty : UIContainer() {
     fun saveSessionState() {
         if (!::titleField.isInitialized) return
         updatePartyModel()
-        val entry = UIPartyPresetsModal.getPresetsEntry()
+        val entry = PartyPresetsManager.getEntry()
         val state = entry.lastPartyState ?: PartyPresetData()
         state.copyFrom(party, "last_session")
         entry.lastPartyState = state
-        UIPartyPresetsModal.savePresetsEntry(entry)
+        PartyPresetsManager.saveEntry(entry)
     }
 
     private lateinit var titleField: UIDecoratedTextInput
     private lateinit var descriptionField: UIWrappedDecoratedTextInput
     private lateinit var islandField: UIDropdown
     private lateinit var levelField: UIDecoratedTextInput
+    private lateinit var overflowField: UIDecoratedTextInput
     private lateinit var maxPlayersField: UIDecoratedTextInput
-    private lateinit var waterToggle: UIToggleCard
-    private lateinit var lavaToggle: UIToggleCard
+    private val partyTypeToggles = linkedMapOf<PartyTypeOption, UIToggleCard>()
     private lateinit var killerToggle: UIToggleCard
     private lateinit var endermanToggle: UIToggleCard
     private lateinit var lootingToggle: UIToggleCard
     private lateinit var brainFoodToggle: UIToggleCard
     private lateinit var bloodshotToggle: UIToggleCard
+    private lateinit var witherImpactToggle: UIToggleCard
     private lateinit var submitButton: UIButton
     private var lastSubmitTime = 0L
 
     init {
         registerErrorMessageEvent { message, origin ->
             if (!this.isHidden() && (origin == "/app/party/publish" || origin == "/app/party/edit")) {
-                popup.show(message)
+                popup.showWarning(message)
                 submitButton.disabled = false
             }
         }
@@ -109,7 +113,7 @@ class UICreateParty : UIContainer() {
                 if (party.island != newIsland) {
                     party.island = newIsland
                     islandField.setSelected(newIsland.toDataOption())
-                    updateLiquidVisibility(newIsland)
+                    updatePartyTypeVisibility(newIsland)
                 }
             }
         }
@@ -144,14 +148,14 @@ class UICreateParty : UIContainer() {
         createRow1(formContainer)
         createRow2(formContainer)
         createRow3(formContainer)
-        createLiquidSection(formContainer)
+        createPartyTypeSection(formContainer)
         createRequirementsSection(formContainer)
         createSubmitButton(formContainer)
 
         updateButtonLabel()
         setupInteractions()
 
-        updateLiquidVisibility(party.island)
+        updatePartyTypeVisibility(party.island)
     }
 
     private fun createRow1(parent: UIContainer) {
@@ -198,6 +202,7 @@ class UICreateParty : UIContainer() {
             primaryColor = UIScheme.pfInputBg.toConstraint()
             hoverColor = UIScheme.pfInputBgHovered.toConstraint()
             selectedColor = UIScheme.pfDropdownSelected.toConstraint()
+            optionColor = UIScheme.pfDropdownOptionBg.toConstraint()
         } childOf islandGroup
         islandField.setSelected(party.island.toDataOption())
     }
@@ -241,7 +246,27 @@ class UICreateParty : UIContainer() {
             primaryColor = UIScheme.pfInputBg.toConstraint()
             hoverColor = UIScheme.pfInputBgHovered.toConstraint()
         } childOf levelGroup
-        levelField.setText(party.level.toString())
+        levelField.setText(party.level.coerceIn(0, 50).toString())
+
+        val overflowGroup = UIContainer().constrain {
+            x = SiblingConstraint(10f)
+            y = 0.pixels()
+            width = 20.percent()
+            height = ChildBasedSizeConstraint()
+        } childOf row3
+
+        createLabel("OVERFLOW", overflowGroup, 0f)
+        overflowField = UIDecoratedTextInput("e.g. 1.5b, 500m", 2f, maxChars = 32).constrain {
+            x = 0.pixels()
+            y = SiblingConstraint(UIScheme.pfLabelSpacing)
+            width = 100.percent()
+            height = UIScheme.pfInputHeight.pixels()
+        }.colors {
+            primaryColor = UIScheme.pfInputBg.toConstraint()
+            hoverColor = UIScheme.pfInputBgHovered.toConstraint()
+        } childOf overflowGroup
+        overflowField.setText(party.requiredOverflow().toString())
+        overflowField.isEnabled = party.level >= 50
 
         val playersGroup = UIContainer().constrain {
             x = SiblingConstraint(10f)
@@ -263,8 +288,8 @@ class UICreateParty : UIContainer() {
         maxPlayersField.setText(party.players.max.toString())
     }
 
-    private fun createLiquidSection(parent: UIContainer) {
-        createLabel("LIQUID", parent, UIScheme.pfSectionSpacing)
+    private fun createPartyTypeSection(parent: UIContainer) {
+        createLabel("PARTY TYPE", parent, UIScheme.pfSectionSpacing)
 
         val envContainer = UIContainer().constrain {
             x = 0.pixels()
@@ -273,29 +298,15 @@ class UICreateParty : UIContainer() {
             height = ChildBasedMaxSizeConstraint()
         } childOf parent
 
-        waterToggle = UIToggleCard(DataOption("water", "Water"), party.liquid == LiquidTypes.WATER) { selected ->
-            if (selected) {
-                party.liquid = LiquidTypes.WATER
-                lavaToggle.selected = false
-            } else if (!lavaToggle.selected) {
-                waterToggle.selected = true
-            }
-        }.constrain {
-            x = SiblingConstraint(2f)
-            y = CenterConstraint()
-        } childOf envContainer
-
-        lavaToggle = UIToggleCard(DataOption("lava", "Lava"), party.liquid == LiquidTypes.LAVA) { selected ->
-            if (selected) {
-                party.liquid = LiquidTypes.LAVA
-                waterToggle.selected = false
-            } else if (!waterToggle.selected) {
-                lavaToggle.selected = true
-            }
-        }.constrain {
-            x = SiblingConstraint(2f)
-            y = CenterConstraint()
-        } childOf envContainer
+        val currentType = PartyTypeOption.from(party.fishingType, party.liquid)
+        for (type in PartyTypeOption.entries) {
+            partyTypeToggles[type] = UIToggleCard(
+                DataOption(type.name.lowercase(), type.label), currentType == type
+            ) { selectPartyType(type) }.constrain {
+                x = SiblingConstraint(2f)
+                y = CenterConstraint()
+            } childOf envContainer
+        }
     }
 
     private fun createRequirementsSection(parent: UIContainer) {
@@ -305,40 +316,40 @@ class UICreateParty : UIContainer() {
             x = 0.pixels()
             y = SiblingConstraint(3f)
             width = 100.percent()
-            height = ChildBasedMaxSizeConstraint()
+            height = CramAwareMaxSizeConstraint()
         } childOf parent
 
         killerToggle = UIToggleCard(party.getRequisite("has_killer", "Has Killer").toDataOption(), party.getRequisite("has_killer", "Has Killer").value) {
             updatePartyModel()
         }.constrain {
-            x = SiblingConstraint(5f)
-            y = CenterConstraint()
+            x = CramSiblingConstraint(5f)
+            y = CramSiblingConstraint(3f)
         } childOf reqContainer
 
         endermanToggle = UIToggleCard(party.getRequisite("enderman_9", "Enderman 9").toDataOption(), party.getRequisite("enderman_9", "Enderman 9").value) { selected ->
             if (selected && !PartyRequirementsManager.hasEnderman9()) {
                 endermanToggle.selected = false
                 val result = PartyRequirementsManager.PartyValidationResult.MissingRequisite("enderman_9", "Enderman 9")
-                popup.show(result.getErrorMessage())
+                popup.showWarning(result.getErrorMessage())
             } else {
                 updatePartyModel()
             }
         }.constrain {
-            x = SiblingConstraint(5f)
-            y = CenterConstraint()
+            x = CramSiblingConstraint(5f)
+            y = CramSiblingConstraint(3f)
         } childOf reqContainer
 
         lootingToggle = UIToggleCard(party.getRequisite("looting_5", "Looting 5").toDataOption(), party.getRequisite("looting_5", "Looting 5").value) { selected ->
             if (selected && !PartyRequirementsManager.hasLooting5()) {
                 lootingToggle.selected = false
                 val result = PartyRequirementsManager.PartyValidationResult.MissingRequisite("looting_5", "Looting 5")
-                popup.show(result.getErrorMessage())
+                popup.showWarning(result.getErrorMessage())
             } else {
                 updatePartyModel()
             }
         }.constrain {
-            x = SiblingConstraint(5f)
-            y = CenterConstraint()
+            x = CramSiblingConstraint(5f)
+            y = CramSiblingConstraint(3f)
         } childOf reqContainer
 
 
@@ -346,36 +357,70 @@ class UICreateParty : UIContainer() {
             if (selected && !PartyRequirementsManager.hasBrainFood()) {
                 brainFoodToggle.selected = false
                 val result = PartyRequirementsManager.PartyValidationResult.MissingBrainFood
-                popup.show(result.getErrorMessage())
+                popup.showWarning(result.getErrorMessage())
             } else {
                 updatePartyModel()
             }
         }.constrain {
-            x = SiblingConstraint(5f)
-            y = CenterConstraint()
+            x = CramSiblingConstraint(5f)
+            y = CramSiblingConstraint(3f)
         } childOf reqContainer
 
         bloodshotToggle = UIToggleCard(party.getRequisite("bloodshot", "Bloodshot").toDataOption(), party.getRequisite("bloodshot", "Bloodshot").value) { selected ->
             if (selected && !PartyRequirementsManager.hasBloodshotBelt()) {
                 bloodshotToggle.selected = false
-                val result = PartyRequirementsManager.PartyValidationResult.MissingBloodshot
-                popup.show(result.getErrorMessage())
+                val result = PartyRequirementsManager.PartyValidationResult.MissingRequisite("bloodshot", "Bloodshot")
+                popup.showWarning(result.getErrorMessage())
             } else {
                 updatePartyModel()
             }
         }.constrain {
-            x = SiblingConstraint(5f)
-            y = CenterConstraint()
+            x = CramSiblingConstraint(5f)
+            y = CramSiblingConstraint(3f)
+        } childOf reqContainer
+
+        witherImpactToggle = UIToggleCard(party.getRequisite("wither_impact", "Wither Impact").toDataOption(), party.getRequisite("wither_impact", "Wither Impact").value) { selected ->
+            if (selected && !PartyRequirementsManager.hasWitherImpact()) {
+                witherImpactToggle.selected = false
+                val result = PartyRequirementsManager.PartyValidationResult.MissingRequisite("wither_impact", "Wither Impact")
+                popup.showWarning(result.getErrorMessage())
+            } else {
+                updatePartyModel()
+            }
+        }.constrain {
+            x = CramSiblingConstraint(5f)
+            y = CramSiblingConstraint(3f)
         } childOf reqContainer
     }
 
     private fun createSubmitButton(parent: UIContainer) {
-        val buttonWrapper = UIContainer().constrain {
+        val footer = UIContainer().constrain {
             x = CenterConstraint()
             y = SiblingConstraint(12f)
-            width = 50.percent()
+            width = 100.percent()
             height = UIScheme.pfInputHeight.pixels()
         } childOf parent
+
+        UIButton("Rules", baseTextScale = 0.85f) {
+            PartyFinderWindow.showRules()
+        }.constrain {
+            x = 0.pixels
+            y = CenterConstraint()
+            width = 30.pixels
+            height = 100.percent()
+        }.colors {
+            primaryColor = UIScheme.transparent.toConstraint()
+            hoverColor = UIScheme.transparent.toConstraint()
+            textColor = UIScheme.secondaryTextColor.toConstraint()
+            hoverTextColor = UIScheme.primaryTextColor.toConstraint()
+        } childOf footer
+
+        val buttonWrapper = UIContainer().constrain {
+            x = CenterConstraint()
+            y = CenterConstraint()
+            width = 50.percent()
+            height = UIScheme.pfInputHeight.pixels()
+        } childOf footer
 
         UIButton("Presets", 5f) {
             saveSessionState()
@@ -385,7 +430,7 @@ class UICreateParty : UIContainer() {
                 saveSessionState()
             }
         }.constrain {
-            x = 0.pixels()
+            x = SiblingConstraint(6f)
             y = CenterConstraint()
             width = 28.percent()
             height = 100.percent()
@@ -400,12 +445,17 @@ class UICreateParty : UIContainer() {
             val elapsed = now - lastSubmitTime
             if (elapsed < 5000L) {
                 val secondsLeft = ((5000L - elapsed) / 1000L) + 1
-                popup.show("Please wait ${secondsLeft}s before trying again!")
+                popup.showWarning("Please wait ${secondsLeft}s before trying again!")
                 return@UIButton
             }
 
             if (!WebSocketClient.isConnected) {
-                popup.show("Not connected to RFU Backend!")
+                popup.showWarning("Not connected to RFU Backend!")
+                return@UIButton
+            }
+
+            if (overflowField.isEnabled && parseOverflow() == null) {
+                popup.showWarning("Enter a valid overflow XP amount, such as 1.5b or 500m.")
                 return@UIButton
             }
 
@@ -413,7 +463,7 @@ class UICreateParty : UIContainer() {
             saveSessionState()
             val validation = PartyRequirementsManager.canCreateParty(party)
             if (!validation.isSuccess) {
-                popup.show(validation.getErrorMessage())
+                popup.showWarning(validation.getErrorMessage())
                 return@UIButton
             }
 
@@ -430,7 +480,7 @@ class UICreateParty : UIContainer() {
             } else {
                 Party.requestPartyInfo {
                     if (Party.inParty && !Party.isLeader) {
-                        popup.show("You must be the party leader to do this!")
+                        popup.showWarning("You must be the party leader to do this!")
                         submitButton.disabled = false
                     } else {
                         PartyWebSocket.submitParty(party)
@@ -461,45 +511,45 @@ class UICreateParty : UIContainer() {
     }
 
     private fun setupInteractions() {
+        levelField.onChange = { text ->
+            val level = (text.toIntOrNull() ?: 0).coerceIn(0, 50)
+            if (text.toIntOrNull() != null && text.toInt() != level) levelField.setText(level.toString())
+            overflowField.isEnabled = level == 50
+        }
         islandField.onSelect = { option ->
             val island = option.value as FishingIslands
             party.island = island
-            updateLiquidVisibility(island)
+            updatePartyTypeVisibility(island)
         }
     }
 
-    private fun updateLiquidVisibility(island: FishingIslands) {
-        val liquids = island.availableLiquids
-        val hasWater = liquids.contains(LiquidTypes.WATER)
-        val hasLava = liquids.contains(LiquidTypes.LAVA)
+    private fun updatePartyTypeVisibility(island: FishingIslands) {
+        for ((type, toggle) in partyTypeToggles) {
+            toggle.hide(true)
+            if (type.liquidFor(island) != null) toggle.unhide(useLastPosition = false)
+        }
+        val currentType = PartyTypeOption.from(party.fishingType, party.liquid)
+        selectPartyType(currentType.takeIf { it.liquidFor(island) != null }
+            ?: PartyTypeOption.entries.first { it.liquidFor(island) != null })
+    }
 
-        if (hasWater && hasLava) {
-            waterToggle.unhide()
-            lavaToggle.unhide()
-        } else if (hasWater) {
-            waterToggle.selected = true
-            lavaToggle.selected = false
-            party.liquid = LiquidTypes.WATER
-
-            waterToggle.unhide()
-            lavaToggle.hide(true)
-        } else if (hasLava) {
-            waterToggle.selected = false
-            lavaToggle.selected = true
-            party.liquid = LiquidTypes.LAVA
-
-            waterToggle.hide(true)
-            lavaToggle.unhide()
+    private fun selectPartyType(type: PartyTypeOption) {
+        val liquid = type.liquidFor(party.island) ?: return
+        party.fishingType = type.fishingType
+        party.liquid = liquid
+        for ((option, toggle) in partyTypeToggles) {
+            toggle.selected = option == type
         }
     }
 
     private fun updatePartyModel() {
         party.profileId = User.profileId
-        party.title = EmojiFeature.replaceEmojisUnformatted(titleField.getText()).toString()
-        party.description = EmojiFeature.replaceEmojisUnformatted(descriptionField.getText()).toString()
+        party.title = titleField.getText()
+        party.description = descriptionField.getText()
         party.island = islandField.getSelectedItem().value as FishingIslands
-        party.liquid = if (waterToggle.selected) LiquidTypes.WATER else LiquidTypes.LAVA
-        party.level = levelField.getText().toIntOrNull() ?: 0
+        updatePartyTypeVisibility(party.island)
+        party.level = (levelField.getText().toIntOrNull() ?: 0).coerceIn(0, 50)
+        party.overflow = if (party.level == 50) parseOverflow() ?: party.overflow else 0L
         party.players.current = if (Party.inParty) Party.memberCount else 1
         party.players.max = maxPlayersField.getText().toIntOrNull() ?: 6
 
@@ -508,6 +558,7 @@ class UICreateParty : UIContainer() {
         party.setRequisite("looting_5", "Looting 5", lootingToggle.selected)
         party.setRequisite("brain_food", "Brain Food", brainFoodToggle.selected)
         party.setRequisite("bloodshot", "Bloodshot", bloodshotToggle.selected)
+        party.setRequisite("wither_impact", "Wither Impact", witherImpactToggle.selected)
     }
 
     private fun updateFields() {
@@ -515,12 +566,11 @@ class UICreateParty : UIContainer() {
         descriptionField.setText(party.description)
         islandField.setSelected(party.island.toDataOption())
 
-        updateLiquidVisibility(party.island)
+        updatePartyTypeVisibility(party.island)
 
-        waterToggle.selected = party.liquid == LiquidTypes.WATER
-        lavaToggle.selected = party.liquid == LiquidTypes.LAVA
-
-        levelField.setText(party.level.toString())
+        levelField.setText(party.level.coerceIn(0, 50).toString())
+        overflowField.setText(party.requiredOverflow().toString())
+        overflowField.isEnabled = party.level >= 50
         maxPlayersField.setText(party.players.max.toString())
 
         killerToggle.selected = party.getRequisite("has_killer", "Has Killer").value
@@ -528,6 +578,7 @@ class UICreateParty : UIContainer() {
         lootingToggle.selected = party.getRequisite("looting_5", "Looting 5").value
         brainFoodToggle.selected = party.getRequisite("brain_food", "Brain Food").value
         bloodshotToggle.selected = party.getRequisite("bloodshot", "Bloodshot").value
+        witherImpactToggle.selected = party.getRequisite("wither_impact", "Wither Impact").value
 
         updateButtonLabel()
     }
@@ -535,5 +586,11 @@ class UICreateParty : UIContainer() {
     private fun updateButtonLabel() {
         submitButton.updateText(if (PartyWebSocket.myParty == null) "Publish Party" else "Update Party")
         submitButton.disabled = false
+    }
+
+    private fun parseOverflow(): Long? {
+        val text = overflowField.getText()
+        if (text.isBlank()) return 0L
+        return Skills.parseXpOrNull(text)?.takeIf { it <= Long.MAX_VALUE - Skills.getTotalXpAtLevel(50) }
     }
 }

@@ -1,11 +1,10 @@
 package cloud.glitchdev.rfu.gui.components.partyfinder
 
-import cloud.glitchdev.rfu.constants.text.TextColor
-import cloud.glitchdev.rfu.constants.text.TextStyle
-import cloud.glitchdev.rfu.data.other.OtherManager
+import cloud.glitchdev.rfu.utils.dsl.compact
+
+import cloud.glitchdev.rfu.constants.chat.PartyTypes
+import cloud.glitchdev.rfu.data.party.PartyPresetsManager
 import cloud.glitchdev.rfu.data.other.data.PartyPresetData
-import cloud.glitchdev.rfu.data.other.data.PartyPresetsEntry
-import cloud.glitchdev.rfu.feature.other.EmojiFeature
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.UIScheme.increaseOpacity
 import cloud.glitchdev.rfu.gui.components.Colorable
@@ -57,20 +56,6 @@ class UIPartyPresetsModal(
     private lateinit var scrollComponent: ScrollComponent
     private lateinit var listContainer: UIContainer
     private lateinit var emptyNotice: UIWrappedText
-
-    companion object {
-        const val PRESETS_KEY = "party_finder_presets"
-
-        fun getPresetsEntry(): PartyPresetsEntry {
-            return (OtherManager.getField(PRESETS_KEY) { PartyPresetsEntry() } as? PartyPresetsEntry)
-                ?: PartyPresetsEntry()
-        }
-
-        fun savePresetsEntry(entry: PartyPresetsEntry) {
-            OtherManager.setField(PRESETS_KEY, entry)
-            OtherManager.file.save()
-        }
-    }
 
     init {
         create()
@@ -192,14 +177,15 @@ class UIPartyPresetsModal(
         saveButton = UIButton("Save", 5f) {
             val name = presetNameInput.getText().trim()
             if (name.isEmpty()) {
-                PartyFinderWindow.popup.show("Please enter a preset name!")
+                PartyFinderWindow.popup.showWarning("Please enter a preset name!")
                 return@UIButton
             }
             val party = currentParty ?: return@UIButton
-            val entry = getPresetsEntry()
-            val preset = entry.presets.getOrPut(name) { PartyPresetData() }
+            val entry = PartyPresetsManager.getEntry()
+            val preset = entry.presets.values.firstOrNull { it.name == name }
+                ?: entry.presets.getOrPut(name) { PartyPresetData() }
             preset.copyFrom(party, name)
-            savePresetsEntry(entry)
+            PartyPresetsManager.saveEntry(entry)
 
             presetNameInput.setText(party.title.trim())
             refreshPresetsList()
@@ -272,20 +258,20 @@ class UIPartyPresetsModal(
         if (!::scrollComponent.isInitialized) return
 
         scrollComponent.clearChildren()
-        val entry = getPresetsEntry()
-        val presets = entry.presets.values.toList()
+        val entry = PartyPresetsManager.getEntry()
+        val presets = entry.presets.entries.toList()
 
         if (presets.isEmpty()) {
             emptyNotice.unhide()
         } else {
             emptyNotice.hide(true)
-            for (preset in presets) {
-                createPresetCard(preset, scrollComponent)
+            for ((key, preset) in presets) {
+                createPresetCard(key, preset, scrollComponent)
             }
         }
     }
 
-    private fun createPresetCard(preset: PartyPresetData, parent: UIContainer) {
+    private fun createPresetCard(key: String, preset: PartyPresetData, parent: UIContainer) {
         val card = UIRoundedRectangle(4f).constrain {
             x = 0.pixels()
             y = SiblingConstraint(4f)
@@ -312,8 +298,12 @@ class UIPartyPresetsModal(
         val details = buildString {
             append(preset.island.island)
             append(" • ")
-            append(preset.liquid.liquid)
-            if (preset.level > 0) {
+            append(if (preset.fishingType == PartyTypes.REGULAR) preset.liquid.liquid else preset.fishingType.type)
+            if ((preset.overflow ?: 0) > 0) {
+                append(" • ")
+                append(preset.overflow!!.compact())
+                append(" Overflow")
+            } else if (preset.level > 0) {
                 append(" • Lvl ")
                 append(preset.level)
             }
@@ -350,13 +340,13 @@ class UIPartyPresetsModal(
             hoverTextColor = UIScheme.pfCardTitleHoverColor.toConstraint()
         } childOf buttonArea
 
-        val presetName = EmojiFeature.clearAndApplyPostStyle(preset.name, null)
+        val presetName = preset.name
 
         UIButton("Delete", 4f) {
-            PartyFinderWindow.popup.show("Are you sure you want to delete preset \"$presetName\"?") {
-                val currentEntry = getPresetsEntry()
-                currentEntry.presets.remove(preset.name)
-                savePresetsEntry(currentEntry)
+            PartyFinderWindow.popup.showWarning("Are you sure you want to delete preset \"$presetName\"?") {
+                val currentEntry = PartyPresetsManager.getEntry()
+                currentEntry.presets.remove(key)
+                PartyPresetsManager.saveEntry(currentEntry)
                 refreshPresetsList()
             }
         }.constrain {

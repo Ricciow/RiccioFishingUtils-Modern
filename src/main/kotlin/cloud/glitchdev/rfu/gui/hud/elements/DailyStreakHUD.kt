@@ -1,10 +1,10 @@
 package cloud.glitchdev.rfu.gui.hud.elements
 
 import cloud.glitchdev.rfu.config.categories.DailyStreakSettings
+import cloud.glitchdev.rfu.constants.text.Emoji
 import cloud.glitchdev.rfu.constants.text.TextColor.GOLD
 import cloud.glitchdev.rfu.constants.text.TextColor.LIGHT_GREEN
 import cloud.glitchdev.rfu.constants.text.TextColor.LIGHT_RED
-import cloud.glitchdev.rfu.constants.text.TextColor.WHITE
 import cloud.glitchdev.rfu.constants.text.TextColor.YELLOW
 import cloud.glitchdev.rfu.constants.text.TextEffects.BOLD
 import cloud.glitchdev.rfu.data.streak.DailyChallenge
@@ -14,6 +14,7 @@ import cloud.glitchdev.rfu.events.managers.ArmorEvents.registerArmorChangeEvent
 import cloud.glitchdev.rfu.events.managers.DailyStreakEvents.registerStreakUpdatedEvent
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.elementa.BoundingBoxConstraint
+import cloud.glitchdev.rfu.gui.components.elementa.UIEmoji
 import cloud.glitchdev.rfu.gui.components.elementa.UIVanillaTooltip
 import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
@@ -83,8 +84,9 @@ object DailyStreakHUD : AbstractTextHudElement("dailyStreakDisplay") {
             width = BoundingBoxConstraint()
             height = ChildBasedMaxSizeConstraint()
         }
-        UIText("${WHITE}\uE11F${GOLD}${BOLD}Daily Streak: ${YELLOW}${data.currentStreak} Days").constrain {
-            x = 0.pixels()
+        UIEmoji(Emoji.icon("fire"), scale) childOf streakHeader
+        UIText("${GOLD}${BOLD}Daily Streak: ${YELLOW}${data.currentStreak} Days").constrain {
+            x = SiblingConstraint()
             y = 0.pixels()
             width = ScaledTextConstraint(scale)
             height = TextAspectConstraint()
