@@ -1,4 +1,4 @@
-# v1.19.3 - Minor
+# v1.19.3 - Party Finder upgrades
 
 ### Features
 - Added the !xph party command.
