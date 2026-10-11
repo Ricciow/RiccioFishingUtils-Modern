@@ -9,6 +9,7 @@
 - Added Halloween decorations for pf, see them October 30th - Nov 1st! (Seasonal effects toggle in Other settings)
 - Added DNS troubleshooting advice when hovering over the websocket connection warning.
 - Added a Wither Impact requirement to Party Finder.
+- Added the party finder rules on the party creation window.
 
 ### Changes
 - Added the session timer to the !sch party command.

@@ -31,6 +31,7 @@ import cloud.glitchdev.rfu.utils.Coroutines
 import cloud.glitchdev.rfu.utils.World
 import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.gui.setHidden
+import cloud.glitchdev.rfu.utils.gui.isHidden
 import cloud.glitchdev.rfu.utils.network.PartyWebSocket
 import gg.essential.elementa.UIComponent
 import gg.essential.elementa.components.ScrollComponent
@@ -78,6 +79,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
 
     lateinit var halloweenComponent : UIHalloweenComponent
     lateinit var popup: UIPopup
+    private lateinit var rulesPopup: UIPopup
     lateinit var presetsModal: UIPartyPresetsModal
     lateinit var filterButton : UIButton
     lateinit var refreshButton : UIButton
@@ -102,6 +104,19 @@ object PartyFinderWindow : BaseWindow(false), Feature {
 
     private fun showInfoMessage(message: String, isWarning: Boolean) {
         if (isWarning) popup.showWarning(message) else popup.show(message)
+    }
+
+    fun showRules() {
+        rulesPopup.show("Loading Party Finder rules...")
+        PartyWebSocket.requestRules { rules ->
+            if (!rulesPopup.isHidden()) {
+                if (rules == null) {
+                    rulesPopup.showWarning("Couldn't load the rules. Please try again later.")
+                } else {
+                    rulesPopup.show(rules.ifBlank { "No Party Finder rules have been published yet." })
+                }
+            }
+        }
     }
 
     init {
@@ -164,6 +179,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
                 }
                 presetsModal.setHidden(true)
                 popup.setHidden(true)
+                rulesPopup.setHidden(true)
             }
             onRelease = {
                 if (isPeeking) {
@@ -217,7 +233,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
         presetsModal = UIPartyPresetsModal(5f).childOf(window)
         presetsModal.hideModal()
 
-        popup = UIPopup(5f, "", isBordered = true).childOf(window).colors {
+        popup = UIPopup(5f, "", isBordered = true, scrollableText = true).childOf(window).colors {
             primaryColor = UIScheme.pfCardBorder.toConstraint()
             innerColor = UIScheme.pfCardBg.toConstraint()
             buttonPrimaryColor = UIScheme.pfCardBorder.toConstraint()
@@ -225,6 +241,15 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             buttonHoverTextColor = UIScheme.pfCardTitleHoverColor.toConstraint()
         }
         popup.hide(instantly = true)
+
+        rulesPopup = UIPopup(5f, "", isBordered = true, scrollableText = true).childOf(window).colors {
+            primaryColor = UIScheme.pfCardBorder.toConstraint()
+            innerColor = UIScheme.pfCardBg.toConstraint()
+            buttonPrimaryColor = UIScheme.pfCardBorder.toConstraint()
+            buttonHoverColor = UIScheme.pfCardBorderHovered.toConstraint()
+            buttonHoverTextColor = UIScheme.pfCardTitleHoverColor.toConstraint()
+        }
+        rulesPopup.hide(instantly = true)
 
         peekHoverBlocker = UIContainer().constrain {
             x = 0.pixels

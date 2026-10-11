@@ -70,7 +70,7 @@ class RFUWrappedText(
             ensureSpaceAtEndOfLines: Boolean = true,
             processColorCodes: Boolean = true,
         ): List<String> {
-            if (fontProvider !is VanillaFontRenderer || scale <= 0f || !EmojiFeature.hasEmojis(text)) {
+            if (fontProvider !is VanillaFontRenderer || scale <= 0f || (!processColorCodes && !EmojiFeature.hasEmojis(text))) {
                 return getStringSplitToWidth(text, maxLineWidth, scale, ensureSpaceAtEndOfLines, processColorCodes, fontProvider)
             }
             val font = Minecraft.getInstance().font

@@ -394,12 +394,33 @@ class UICreateParty : UIContainer() {
     }
 
     private fun createSubmitButton(parent: UIContainer) {
-        val buttonWrapper = UIContainer().constrain {
+        val footer = UIContainer().constrain {
             x = CenterConstraint()
             y = SiblingConstraint(12f)
-            width = 50.percent()
+            width = 100.percent()
             height = UIScheme.pfInputHeight.pixels()
         } childOf parent
+
+        UIButton("Rules", baseTextScale = 0.85f) {
+            PartyFinderWindow.showRules()
+        }.constrain {
+            x = 0.pixels
+            y = CenterConstraint()
+            width = 30.pixels
+            height = 100.percent()
+        }.colors {
+            primaryColor = UIScheme.transparent.toConstraint()
+            hoverColor = UIScheme.transparent.toConstraint()
+            textColor = UIScheme.secondaryTextColor.toConstraint()
+            hoverTextColor = UIScheme.primaryTextColor.toConstraint()
+        } childOf footer
+
+        val buttonWrapper = UIContainer().constrain {
+            x = CenterConstraint()
+            y = CenterConstraint()
+            width = 50.percent()
+            height = UIScheme.pfInputHeight.pixels()
+        } childOf footer
 
         UIButton("Presets", 5f) {
             saveSessionState()
@@ -409,7 +430,7 @@ class UICreateParty : UIContainer() {
                 saveSessionState()
             }
         }.constrain {
-            x = 0.pixels()
+            x = SiblingConstraint(6f)
             y = CenterConstraint()
             width = 28.percent()
             height = 100.percent()

@@ -1,6 +1,8 @@
 package cloud.glitchdev.rfu.utils.network
 
 import cloud.glitchdev.rfu.config.categories.BackendSettings
+import cloud.glitchdev.rfu.RiccioFishingUtils.API_URL
+import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.chat.RegexConstants.PLAYER_REGEX
 import cloud.glitchdev.rfu.constants.text.Emoji
@@ -223,6 +225,21 @@ object PartyWebSocket : RegisteredEvent {
 
     fun syncParties() {
         WebSocketClient.send("/app/party/sync", "")
+    }
+
+    fun requestRules(callback: (String?) -> Unit) {
+        Network.getRequest("$API_URL/party/rules") { response ->
+            val rules = try {
+                if (response.isSuccessful()) {
+                    gson.fromJson(response.body, JsonObject::class.java)?.get("rules")
+                        ?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isString }?.asString
+                } else null
+            } catch (e: Exception) {
+                RFULogger.error("Error parsing Party Finder rules: ", e)
+                null
+            }
+            mc.execute { callback(rules) }
+        }
     }
 
     fun getPreviousParty(): FishingParty? {

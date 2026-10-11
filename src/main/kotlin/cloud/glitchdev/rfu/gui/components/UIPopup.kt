@@ -3,9 +3,11 @@ package cloud.glitchdev.rfu.gui.components
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.UIScheme.increaseOpacity
 import cloud.glitchdev.rfu.gui.components.elementa.RFUWrappedText
+import cloud.glitchdev.rfu.gui.components.elementa.CopyComponentSizeConstraint
 import gg.essential.elementa.components.UIBlock
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
+import gg.essential.elementa.components.ScrollComponent
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
 import gg.essential.elementa.constraints.RelativeWindowConstraint
@@ -13,6 +15,7 @@ import gg.essential.elementa.constraints.SiblingConstraint
 import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.dsl.minus
+import gg.essential.elementa.dsl.min
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.plus
@@ -23,6 +26,7 @@ class UIPopup(
     val radiusPopup: Float,
     var text: String,
     val isBordered: Boolean = false,
+    val scrollableText: Boolean = false,
     var onConfirm: (() -> Unit)? = null
 ) : UIBlock(), Colorable {
     var backgroundColor = Color.BLACK.increaseOpacity(127).toConstraint()
@@ -133,10 +137,21 @@ class UIPopup(
 
         uiText = RFUWrappedText(text).constrain {
             x = CenterConstraint()
-            y = padding
+            y = if (scrollableText) 0.pixels else padding
             width = 100.percent
             color = textColor
-        } childOf container
+        }
+
+        val textParent = if (scrollableText) {
+            ScrollComponent().constrain {
+                x = CenterConstraint()
+                y = padding
+                width = 100.percent
+                height = min(CopyComponentSizeConstraint(uiText), RelativeWindowConstraint(0.45f))
+            } childOf container
+        } else container
+
+        uiText childOf textParent
 
         val buttonWrapper = UIContainer().constrain {
             x = CenterConstraint()
