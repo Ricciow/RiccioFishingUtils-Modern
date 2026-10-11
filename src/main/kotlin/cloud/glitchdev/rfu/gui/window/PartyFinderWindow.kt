@@ -385,6 +385,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
         val scrollBar = UIRoundedRectangle(5f).constrain {
             x = 0.pixels(true)
             width = 3.pixels
+            color = UIScheme.pfScrollBar.toConstraint()
         } childOf partiesContainer
 
         scrollArea.setScrollBarComponent(scrollBar, hideWhenUseless = true, isHorizontal = false)
