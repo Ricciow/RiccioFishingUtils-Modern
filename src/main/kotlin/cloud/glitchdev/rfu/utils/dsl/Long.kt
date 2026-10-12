@@ -1,23 +1,29 @@
 package cloud.glitchdev.rfu.utils.dsl
 
 import cloud.glitchdev.rfu.constants.skyblock.Skills
-import java.util.Locale
+import java.math.BigDecimal
+import java.math.MathContext
+import java.math.RoundingMode
 
 fun Long.compact(): String {
-    return when {
-        this >= 1_000_000_000L -> formatDecimal(this / 1_000_000_000.0) + "B"
-        this >= 1_000_000L -> formatDecimal(this / 1_000_000.0) + "M"
-        this >= 10_000L -> formatDecimal(this / 1_000.0) + "k"
-        else -> String.format(Locale.US, "%,d", this)
+    val suffixes = arrayOf("", "k", "M", "B")
+    val thousand = BigDecimal.valueOf(1_000)
+    var value = BigDecimal.valueOf(this)
+    var suffixIndex = 0
+    while (value.abs() >= thousand && suffixIndex < suffixes.lastIndex) {
+        value = value.movePointLeft(3)
+        suffixIndex++
     }
+
+    value = value.round(MathContext(3, RoundingMode.HALF_UP))
+    if (value.abs() >= thousand && suffixIndex < suffixes.lastIndex) {
+        value = value.movePointLeft(3)
+        suffixIndex++
+    }
+    return value.stripTrailingZeros().toPlainString() + suffixes[suffixIndex]
 }
 
 fun Int.compact(): String = this.toLong().compact()
-
-private fun formatDecimal(value: Double): String {
-    val s = String.format(Locale.US, "%.1f", value)
-    return if (s.endsWith(".0")) s.dropLast(2) else s
-}
 
 fun Long.toSkillLevel(): Int {
     if (this >= Skills.TOTAL_XP_MAX_LEVEL) {
