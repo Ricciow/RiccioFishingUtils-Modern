@@ -213,7 +213,8 @@ class UIPartyCard(
         memberBadge = UIPartyBadge(
             if (isFull) "${TextColor.LIGHT_RED}FULL" else "PARTY",
             (if (isFull) TextColor.LIGHT_RED.toString() else "") + party.players.getString(),
-            titleText
+            titleText,
+            valueScale = if (party.players.current >= 10 && party.players.max >= 10) 0.55f else 0.65f,
         ).constrain {
             y = 0.pixels
             x = 0.pixels(true)

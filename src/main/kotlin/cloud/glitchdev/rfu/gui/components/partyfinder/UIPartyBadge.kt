@@ -6,7 +6,6 @@ import gg.essential.elementa.UIComponent
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
-import gg.essential.elementa.constraints.AspectConstraint
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedMaxSizeConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
@@ -20,6 +19,7 @@ class UIPartyBadge(
     val value: String,
     val titleText: UIComponent,
     labelScale: Float = 0.45f,
+    valueScale: Float = 0.65f,
 ) : UIRoundedRectangle(5f) {
     val valueText: UIText
 
@@ -55,7 +55,7 @@ class UIPartyBadge(
             x = CenterConstraint()
             y = SiblingConstraint(1f)
             width = TextAspectConstraint()
-            height = CopyComponentSizeConstraint(titleText) * 0.65
+            height = CopyComponentSizeConstraint(titleText) * valueScale
         } childOf container
     }
 
