@@ -223,9 +223,10 @@ class UIPartyCard(
 
         val overflow = party.requiredOverflow()
         levelBadge = UIPartyBadge(
-            if (overflow > 0) "OVERFL" else "LEVEL",
+            if (overflow > 0) "OVERFLOW" else "LEVEL",
             if (overflow > 0) overflow.compact() else "${party.level.coerceAtMost(50)}",
-            titleText
+            titleText,
+            labelScale = if (overflow > 0) 0.35f else 0.45f,
         ).constrain {
             y = 0.pixels
             x = SiblingConstraint(UIScheme.pfCardSmallPadding, alignOpposite = true)
