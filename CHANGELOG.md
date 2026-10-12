@@ -4,6 +4,7 @@
 - Added a reminder when the mod considers the user is muted.
 
 ### Changes
+- Made Party Finder cards more compact.
 
 ### Fixes
 - Fixed emoji suggestion backgrounds becoming too narrow when SkyHanni's Modify Words is enabled.

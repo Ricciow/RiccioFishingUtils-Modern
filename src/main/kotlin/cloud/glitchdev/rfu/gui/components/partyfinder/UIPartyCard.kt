@@ -38,6 +38,7 @@ import gg.essential.elementa.constraints.SiblingConstraint
 import gg.essential.elementa.constraints.TextAspectConstraint
 import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.animate
+import gg.essential.elementa.dsl.basicHeightConstraint
 import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.dsl.div
@@ -48,6 +49,7 @@ import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.plus
 import gg.essential.elementa.dsl.times
 import gg.essential.elementa.dsl.toConstraint
+import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component
 import java.util.Locale
 
@@ -67,6 +69,7 @@ class UIPartyCard(
     lateinit var descriptionSeparator : UIBlock
     lateinit var actionButton : UIButton
     private val tagsContainer = UIContainer()
+    private val maxDescriptionLines = 2
 
     init {
         create()
@@ -236,7 +239,7 @@ class UIPartyCard(
     }
 
     fun createDescription() {
-        val descriptionContainer = UIContainer().constrain {
+        val descriptionContainer = UIVanillaTooltip(emptyList<Component>()).constrain {
             x = CenterConstraint()
             y = SiblingConstraint(UIScheme.pfCardInnerPadding)
             width = 100.percent
@@ -248,7 +251,7 @@ class UIPartyCard(
             .takeIf { it.isNotEmpty() }
             ?: "${party.island.island} fishing."
 
-        val description = RFUWrappedText(descriptionText).constrain {
+        val description = RFUWrappedText(descriptionText, maxLines = maxDescriptionLines).constrain {
             x = SiblingConstraint(UIScheme.pfCardSmallPadding)
             y = CenterConstraint()
             width = FillConstraint()
@@ -256,10 +259,19 @@ class UIPartyCard(
             color = UIScheme.pfCardDescriptionColor.toConstraint()
         } childOf descriptionContainer
 
+        descriptionContainer.tooltip = {
+            val lines = description.getFullWrappedLines()
+            if (lines.size > maxDescriptionLines) {
+                listOf(Component.literal("Description:").withStyle(ChatFormatting.DARK_GRAY)) +
+                    lines.map { Component.literal(it).withStyle(ChatFormatting.GRAY) }
+            } else emptyList()
+        }
+
         descriptionContainer.constrain {
-            val textHeight = CopyComponentSizeConstraint(description) + (UIScheme.pfCardSmallPadding * 2).pixels
+            val previewHeight = basicHeightConstraint { description.getHeightForLines(maxDescriptionLines) } +
+                (UIScheme.pfCardSmallPadding * 2).pixels
             val tagsHeight = ChildBasedSizeConstraint().apply { constrainTo = tagsContainer }
-            height = GroupMaxSizeConstraint("PartyCardDescription", textHeight) +
+            height = GroupMaxSizeConstraint("PartyCardDescription", previewHeight) +
                 GroupMaxSizeConstraint("PartyCardTags", tagsHeight) - tagsHeight
         }
 
@@ -305,21 +317,47 @@ class UIPartyCard(
             y = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
         } childOf locationContainer
 
-        val activeRequisites = party.requisites.filter { it.value }
-        if (activeRequisites.isNotEmpty()) {
-            val requirementsContainer = UIContainer().constrain {
-                x = 0.pixels
-                y = SiblingConstraint(UIScheme.pfCardInnerPadding)
-                width = 100.percent
-                height = BoundingBoxConstraint()
-            } childOf tagsContainer
+        party.requisites.firstOrNull { it.id == "has_killer" && it.value }?.let { requisite ->
+            UIConditionCard(requisite.toDataOption()).constrain {
+                x = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
+                y = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
+            } childOf locationContainer
+        }
 
-            activeRequisites.forEach { requisite ->
-                UIConditionCard(requisite.toDataOption()).constrain {
-                    x = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
-                    y = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
-                } childOf requirementsContainer
+        val activeRequisites = party.requisites
+            .filter { it.value && it.id != "has_killer" }
+            .sortedBy {
+                when (it.id) {
+                    "looting_5" -> 0
+                    "bloodshot" -> 1
+                    "enderman_9" -> 2
+                    "brain_food" -> 3
+                    "wither_impact" -> 4
+                    else -> 5
+                }
             }
+        val requirementsContainer = UIContainer().constrain {
+            x = 0.pixels
+            y = SiblingConstraint(UIScheme.pfCardInnerPadding)
+            width = 100.percent
+            height = (4.5f + (UIScheme.pfConditionCardPadding + UIScheme.pfConditionCardWidth) * 2).pixels
+        } childOf tagsContainer
+
+        if (activeRequisites.isNotEmpty()) {
+            UICompactRequirements(activeRequisites.map { it.toDataOption() }).constrain {
+                x = 0.pixels
+                y = 0.pixels
+                width = 100.percent
+                height = 100.percent
+            } childOf requirementsContainer
+        } else {
+            UIText("No requirements").constrain {
+                x = 0.pixels
+                y = CenterConstraint()
+                width = MinConstraint(ScaledTextConstraint(0.5f), 100.percent)
+                height = TextAspectConstraint()
+                color = UIScheme.pfCardUserColor.toConstraint()
+            } childOf requirementsContainer
         }
     }
 
