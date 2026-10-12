@@ -59,7 +59,8 @@ class UIPartyCard(
     val party: FishingParty,
     val radiusProps: Float,
     var postConfirmationText: String? = null,
-    val wasHovered: Boolean = false
+    val wasHovered: Boolean = false,
+    val showNoRequirements: Boolean = false,
 ) : UIRoundedRectangle(radiusProps) {
     val borderWidth = UIScheme.pfCardBorderWidth
     val innerPadding = UIScheme.pfCardInnerPadding
@@ -342,6 +343,8 @@ class UIPartyCard(
                     else -> 5
                 }
             }
+        if (activeRequisites.isEmpty() && !showNoRequirements) return
+
         val requirementsContainer = UIContainer().constrain {
             x = 0.pixels
             y = SiblingConstraint(UIScheme.pfCardInnerPadding)
@@ -356,7 +359,7 @@ class UIPartyCard(
                 width = 100.percent
                 height = 100.percent
             } childOf requirementsContainer
-        } else {
+        } else if (showNoRequirements) {
             UIText("No requirements").constrain {
                 x = 0.pixels
                 y = CenterConstraint()
