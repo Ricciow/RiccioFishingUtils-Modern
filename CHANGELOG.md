@@ -13,3 +13,4 @@
 - Fixed other mute messages triggering the muted state in rfu, if you've been affected you can use /rfuunmuteme
 
 ### Backend
+- Added a developer setting to suppress the texture errors/warning caused by hypixel.
