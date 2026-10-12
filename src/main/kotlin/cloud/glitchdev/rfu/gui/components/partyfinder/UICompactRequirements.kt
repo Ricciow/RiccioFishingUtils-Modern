@@ -53,19 +53,22 @@ class UICompactRequirements(private val options: List<DataOption>) : UIContainer
         height = (4.5f + badgePadding).pixels
     } childOf this
 
+    private val moreBorder: UIRoundedRectangle
+    private val moreBackground: UIRoundedRectangle
+
     init {
-        val border = UIRoundedRectangle(5f).constrain {
+        moreBorder = UIRoundedRectangle(5f).constrain {
             width = 100.percent
             height = 100.percent
             color = UIScheme.pfConditionCardUnknownBorder.toConstraint()
         } childOf more
-        val background = UIRoundedRectangle(4f).constrain {
+        moreBackground = UIRoundedRectangle(4f).constrain {
             x = CenterConstraint()
             y = CenterConstraint()
             width = max(0.pixels, 100.percent - (UIScheme.pfConditionCardWidth * 2).pixels)
             height = max(0.pixels, 100.percent - (UIScheme.pfConditionCardWidth * 2).pixels)
             color = UIScheme.pfConditionCardUnknown.toConstraint()
-        } childOf border
+        } childOf moreBorder
         moreText.constrain {
             x = CenterConstraint()
             y = CenterConstraint()
@@ -74,13 +77,22 @@ class UICompactRequirements(private val options: List<DataOption>) : UIContainer
             )
             height = TextAspectConstraint()
             color = UIScheme.pfConditionCardUnknownBorder.toConstraint()
-        } childOf background
+        } childOf moreBackground
         more.onMouseClick { it.stopPropagation() }
         more.hide(true)
     }
 
     private fun summaryWidth(hiddenCount: Int): Float =
         "+$hiddenCount more".width(0.5f, moreText.getFontProvider()) + badgePadding
+
+    private fun updateSummaryColors(hiddenCount: Int) {
+        val singleRequirement = cards.lastOrNull().takeIf { hiddenCount == 1 }
+        val borderColor = singleRequirement?.borderColor ?: UIScheme.pfConditionCardUnknownBorder.toConstraint()
+        val backgroundColor = singleRequirement?.innerColor ?: UIScheme.pfConditionCardUnknown.toConstraint()
+        moreBorder.constrain { color = borderColor }
+        moreBackground.constrain { color = backgroundColor }
+        moreText.constrain { color = borderColor }
+    }
 
     override fun extractComponent(extractor: ElementaExtractor) {
         val availableWidth = getWidth().coerceAtLeast(0f)
@@ -105,6 +117,7 @@ class UICompactRequirements(private val options: List<DataOption>) : UIContainer
                 } else card.hide(true)
             }
             if (count < options.size) {
+                updateSummaryColors(options.size - count)
                 moreText.setText("+${options.size - count} more")
                 more.setX(offset.pixels)
                 more.unhide(true)
