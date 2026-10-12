@@ -4,6 +4,7 @@
 - Added a reminder when the mod considers the user is muted.
 - Added a Party Finder block button.
 - Added personal best kill time achievements for Jawbus and Thunder.
+- Added the !pb party command.
 
 ### Changes
 - Made Party Finder cards more compact.

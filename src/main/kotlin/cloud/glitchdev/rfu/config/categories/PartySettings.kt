@@ -107,6 +107,12 @@ object PartySettings : Category("Party") {
         condition = { togglePartyCommands }
     }
 
+    var togglePbCommand by boolean(true) {
+        name = Literal("Enable PB Command")
+        description = Literal("Enables or disables the !pb party command.")
+        condition = { togglePartyCommands }
+    }
+
     var toggleDropCommand by boolean(true) {
         name = Literal("Enable Drop Command")
         description = Literal("Enables or disables the !drop party command.")
