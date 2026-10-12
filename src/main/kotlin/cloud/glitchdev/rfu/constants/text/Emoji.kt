@@ -149,8 +149,8 @@ object Emoji {
         EmojiData("treasure_dye", listOf("treasure", "treasure_dye")),
 
         // Other
-        EmojiData(null, listOf("boop"), listOf("Boop!"), "§d§lBoop!"),
-        EmojiData(null, listOf("boo"), listOf("Boo!"), "§6§lBoo!"),
+        EmojiData(null, listOf("boop"), listOf("Boop!"), "§d§lBoop!§r"),
+        EmojiData(null, listOf("boo"), listOf("Boo!"), "§6§lBoo!§r"),
     )
 
     private val sprites = (EMOJIS + ICONS).mapNotNull { emoji ->
