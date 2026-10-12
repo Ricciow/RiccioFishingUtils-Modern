@@ -4,6 +4,8 @@ import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
 import cloud.glitchdev.rfu.constants.chat.PartyTypes
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
+import cloud.glitchdev.rfu.events.managers.PartyFinderEvents
+import cloud.glitchdev.rfu.feature.other.ignore.IgnoreUtils
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.UIPopup
@@ -68,6 +70,7 @@ class UIPartyCard(
     lateinit var memberBadge : UIPartyBadge
     lateinit var descriptionSeparator : UIBlock
     lateinit var actionButton : UIButton
+    private var blockButton: UIButton? = null
     private val tagsContainer = UIContainer()
     private val maxDescriptionLines = 2
 
@@ -92,6 +95,7 @@ class UIPartyCard(
                 setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, UIScheme.pfCardSeparatorHover.toConstraint())
             }
             actionButton.unhide()
+            blockButton?.unhide()
         }.onMouseLeave {
             animate {
                 setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, UIScheme.pfCardBorder.toConstraint())
@@ -105,6 +109,7 @@ class UIPartyCard(
                 setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, UIScheme.pfCardSeparator.toConstraint())
             }
             actionButton.hide(true)
+            blockButton?.hide(true)
         }.onMouseClick {
             if (!WebSocketClient.isConnected) {
                 joinErrorPopup.showWarning("Not connected to RFU Backend!")
@@ -148,6 +153,7 @@ class UIPartyCard(
 
         if (wasHovered) {
             actionButton.unhide()
+            blockButton?.unhide()
             titleText.constrain { color = UIScheme.pfCardTitleHoverColor.toConstraint() }
             levelBadge.constrain { color = UIScheme.pfCardLevelBorderHoveredColor.toConstraint() }
             levelBadge.valueText.constrain { color = UIScheme.pfCardTitleHoverColor.toConstraint() }
@@ -363,36 +369,74 @@ class UIPartyCard(
 
     private fun createListingAction(parent: UIContainer, userText: UIText) {
         val isUser = party.user.isUser()
+        if (!isUser) {
+            blockButton = createListingButton(parent, userText, "block", "Block player") {
+                showBlockConfirmation()
+            }
+        }
         val icon = if(isUser) "delete" else "report"
-        val actionSlot = UIVanillaTooltip(Component.literal(if (isUser) "Delete listing" else "Report listing")).constrain {
-            x = SiblingConstraint(UIScheme.pfCardTinyPadding)
-            y = CenterConstraint()
-            width = AspectConstraint(1f)
-            height = CopyComponentSizeConstraint(userText) * 1.5
-        } childOf parent
-        val image = UIImage.ofResourceCached("/assets/rfu/ui/$icon.png")
-        actionButton = UIButton.withImage(image, 2f) {
+        actionButton = createListingButton(parent, userText, icon, if (isUser) "Delete listing" else "Report listing") {
             val action = if (isUser) "delete your party?" else "report ${party.user}'s party?\nThis is only for the party finder listing, not what happens inside the party, use hypixel's reporting for that."
             val pcText = postConfirmationText ?: if (isUser) null else "Party reported"
             PartyFinderWindow.popup.showWarning("Are you sure you want to $action", pcText) {
                 if (isUser) {
                     PartyWebSocket.deleteParty(party.user)
                 } else {
+                    if (!WebSocketClient.isConnected) {
+                        PartyFinderWindow.popup.showWarning("Not connected to RFU Backend!")
+                        return@showWarning
+                    }
                     PartyWebSocket.reportParty(party.user)
+                    showBlockConfirmation("${postConfirmationText ?: "Report sent."}\nWould you also like to block ${party.user}?")
                 }
             }
-        }.constrain {
+        }
+    }
+
+    private fun showBlockConfirmation(prompt: String = "Are you sure you want to block ${party.user}?") {
+        PartyFinderWindow.popup.showWarning(
+            "$prompt\nThis adds them to your RFU ignore list.",
+            "Blocked ${party.user}.\nUnblock with /rfuignore remove ${party.user}."
+        ) {
+            val entry = IgnoreUtils.getIgnoredEntry()
+            if (entry.add(party.user)) IgnoreUtils.saveIgnoredEntry(entry)
+            PartyFinderEvents.refreshParties()
+        }
+    }
+
+    private fun createListingButton(
+        parent: UIContainer,
+        userText: UIText,
+        icon: String,
+        tooltip: String,
+        onClick: () -> Unit,
+    ): UIButton {
+        val actionSlot = UIVanillaTooltip(Component.literal(tooltip)).constrain {
+            x = SiblingConstraint(UIScheme.pfCardTinyPadding)
+            y = CenterConstraint()
+            width = AspectConstraint(1f)
+            height = CopyComponentSizeConstraint(userText) * 1.5
+        } childOf parent
+        val imagePath = "/assets/rfu/ui/$icon.png"
+        val image = javaClass.getResource(imagePath)?.let { UIImage.ofResourceCached(imagePath) }
+        val button = if (image != null) {
+            UIButton.withImage(image, 2f, onClick = onClick)
+        } else {
+            UIButton("×", 2f, baseTextScale = 0.75f, onClick = onClick)
+        }
+        button.constrain {
             x = 0.pixels
             y = 0.pixels
             width = 100.percent
             height = 100.percent
         } childOf actionSlot
-        actionButton.colors {
+        button.colors {
             primaryColor = UIScheme.transparent.toConstraint()
             hoverColor = UIScheme.transparent.toConstraint()
             textColor = UIScheme.pfCardUserColor.toConstraint()
             hoverTextColor = UIScheme.pfCardOverlayHoverColor.toConstraint()
         }
-        actionButton.hide(true)
+        button.hide(true)
+        return button
     }
 }

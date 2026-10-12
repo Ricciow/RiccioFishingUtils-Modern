@@ -2,6 +2,7 @@
 
 ### Features
 - Added a reminder when the mod considers the user is muted.
+- Added a Party Finder block button.
 
 ### Changes
 - Made Party Finder cards more compact.

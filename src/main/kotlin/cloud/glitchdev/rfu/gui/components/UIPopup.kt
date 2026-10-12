@@ -48,6 +48,7 @@ class UIPopup(
     private lateinit var okButton: UIButton
     private lateinit var confirmCancelContainer: UIContainer
     var postConfirmationText: String? = null
+    private var popupRevision = 0L
 
     init {
         create()
@@ -64,6 +65,7 @@ class UIPopup(
     }
 
     private fun showPopup(text: String, postConfirmationText: String?, onConfirm: (() -> Unit)?) {
+        popupRevision++
         this.text = text
         this.postConfirmationText = postConfirmationText
         if (::uiText.isInitialized) {
@@ -178,7 +180,9 @@ class UIPopup(
         } childOf buttonWrapper
 
         val confirmButton = UIButton("Confirm", 5f, isBordered = isBordered) {
+            val confirmedRevision = popupRevision
             this@UIPopup.onConfirm?.invoke()
+            if (popupRevision != confirmedRevision) return@UIButton
             if (this@UIPopup.postConfirmationText != null) {
                 this@UIPopup.uiText.setText(this@UIPopup.postConfirmationText!!)
                 this@UIPopup.uiText.constrain { color = postConfirmationTextColor }

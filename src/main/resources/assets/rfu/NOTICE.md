@@ -63,13 +63,16 @@ SOFTWARE.
    Author: Konstantin Filatov (via SVG Repo)
    License: Creative Commons Attribution License (CC BY)
    Source: https://www.svgrepo.com/collection/gentlecons-interface-icons/
-   Note: These icons are used under the CC BY license, requiring
-   attribution to the original creator.
 
    C. Bigmug Interface Icons
    Author: Catalin Fertu
    License: Creative Commons Attribution License (CC BY)
    Source: https://www.svgrepo.com/collection/bigmug-interface-icons/
+
+   D. Tetrisly Interface Icons
+   Author: tetrisly (via SVG Repo)
+   License: Creative Commons Attribution License (CC BY)
+   Source: https://www.svgrepo.com/collection/tetrisly-interface-icons/
 
 ========================================================================
 
