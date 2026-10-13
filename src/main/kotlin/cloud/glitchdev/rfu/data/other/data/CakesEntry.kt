@@ -1,7 +1,9 @@
 package cloud.glitchdev.rfu.data.other.data
 
 import kotlin.time.Clock
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
 data class CakesEntry(
@@ -17,6 +19,25 @@ data class CakesEntry(
 
     fun getOutdatedCakes() : List<Cake> {
         return cakes.filter { it.isOutdated() }
+    }
+
+    fun expireAllCakes(): Boolean {
+        val activeCakes = cakes.filterNot { it.isOutdated() }
+        if (activeCakes.isEmpty()) return false
+
+        val expiredDate = Clock.System.now() - 2.days - 1.seconds
+        activeCakes.forEach { it.date = expiredDate }
+        return true
+    }
+
+    fun refreshOutdatedCakes(remaining: Duration): Boolean {
+        if (remaining <= Duration.ZERO) return false
+        val outdatedCakes = getOutdatedCakes()
+        if (outdatedCakes.isEmpty()) return false
+
+        val refreshedDate = Clock.System.now() - 2.days + remaining
+        outdatedCakes.forEach { it.date = refreshedDate }
+        return true
     }
 
     fun eatCake(name: String) {

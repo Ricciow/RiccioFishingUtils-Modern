@@ -21,11 +21,13 @@ import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
 import net.minecraft.network.chat.Style
+import kotlin.time.Duration
 
 @RFUFeature
 object CakeExpiredAlert : Feature {
     val CAKE_EATEN_REGEX = """(?:Big )?Yum! You (?:gain|refresh) \+\d+. (.+) for 48 hours!""".toRegex()
-    val CENTURY_CAKES_REGEX = """Century Cakes:\s*\d+[hms]\s*\((\d+)/(\d+)\)""".toRegex()
+    val CENTURY_CAKES_REGEX = """Century Cakes:\s*(\d+[hms])\s*\((\d+)/(\d+)\)""".toRegex()
+    private val CENTURY_CAKES_INACTIVE_REGEX = """Century Cakes:\s*INACTIVE\b""".toRegex()
     private val lastOutdated : HashSet<CakesEntry.Cake> = hashSetOf()
 
     override fun onInitialize() {
@@ -37,7 +39,7 @@ object CakeExpiredAlert : Feature {
             if(!OtherSettings.outdatedCake) return@registerTickEvent
             if(!World.isInSkyblock) return@registerTickEvent
 
-            checkTablistAndClearIfNeeded(cakes)
+            checkTablist(cakes)
         }
 
         registerTickEvent(interval = 300) {
@@ -85,14 +87,19 @@ object CakeExpiredAlert : Feature {
         }
     }
 
-    private fun checkTablistAndClearIfNeeded(cakes: CakesEntry) {
-        if (cakes.getOutdatedCakes().isEmpty()) return
+    private fun checkTablist(cakes: CakesEntry) {
         for (line in Tablist.getTablistAsStrings()) {
-            val match = CENTURY_CAKES_REGEX.find(line.removeFormatting()) ?: continue
-            val current = match.groupValues[1].toIntOrNull()
-            val total = match.groupValues[2].toIntOrNull()
-            if (current != null && total != null && current == total) {
-                cakes.clearCakeList()
+            val text = line.removeFormatting()
+            if (CENTURY_CAKES_INACTIVE_REGEX.containsMatchIn(text)) {
+                if (cakes.expireAllCakes()) OtherManager.file.save()
+                break
+            }
+
+            val match = CENTURY_CAKES_REGEX.find(text) ?: continue
+            val remaining = Duration.parseOrNull(match.groupValues[1]) ?: continue
+            val current = match.groupValues[2].toIntOrNull()
+            val total = match.groupValues[3].toIntOrNull()
+            if (current != null && total != null && total > 0 && current == total && cakes.refreshOutdatedCakes(remaining)) {
                 OtherManager.file.save()
                 lastOutdated.clear()
                 break

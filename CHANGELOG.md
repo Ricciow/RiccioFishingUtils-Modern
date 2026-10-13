@@ -9,6 +9,7 @@
 ### Changes
 - Made Party Finder cards more compact.
 - Compact numbers now use up to three digits of precision.
+- Improved cake timers a bit more with the tablist
 
 ### Fixes
 - Fixed emoji suggestion backgrounds becoming too narrow when SkyHanni's Modify Words is enabled.
