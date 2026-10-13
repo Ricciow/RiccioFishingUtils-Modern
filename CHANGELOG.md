@@ -5,6 +5,7 @@
 - Added a Party Finder block button.
 - Added personal best kill time achievements for Jawbus and Thunder.
 - Added the !pb party command.
+- Added a message hiding option for the Stealth enchantment.
 
 ### Changes
 - Made Party Finder cards more compact.
