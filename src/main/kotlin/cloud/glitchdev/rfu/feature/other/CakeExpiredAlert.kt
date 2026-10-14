@@ -3,6 +3,8 @@ package cloud.glitchdev.rfu.feature.other
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
@@ -22,12 +24,17 @@ import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
 import net.minecraft.network.chat.Style
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.TimeMark
+import kotlin.time.TimeSource
 
 @RFUFeature
 object CakeExpiredAlert : Feature {
     val CAKE_EATEN_REGEX = """(?:Big )?Yum! You (?:gain|refresh) \+\d+. (.+) for 48 hours!""".toRegex()
     val CENTURY_CAKES_REGEX = """Century Cakes:\s*(\d+[hms])\s*\((\d+)/(\d+)\)""".toRegex()
     private val CENTURY_CAKES_INACTIVE_REGEX = """Century Cakes:\s*INACTIVE\b""".toRegex()
+    private val INACTIVE_GRACE_PERIOD = 5.seconds
+    private var inactiveSince: TimeMark? = null
     private val lastOutdated : HashSet<CakesEntry.Cake> = hashSetOf()
 
     override fun onInitialize() {
@@ -35,9 +42,14 @@ object CakeExpiredAlert : Feature {
             CakesEntry()
         } as? CakesEntry ?: CakesEntry()
 
+        registerJoinEvent { inactiveSince = null }
+        registerDisconnectEvent { inactiveSince = null }
+
         registerTickEvent(interval = 20) {
-            if(!OtherSettings.outdatedCake) return@registerTickEvent
-            if(!World.isInSkyblock) return@registerTickEvent
+            if (!OtherSettings.outdatedCake || !World.isInSkyblock) {
+                inactiveSince = null
+                return@registerTickEvent
+            }
 
             checkTablist(cakes)
         }
@@ -82,16 +94,18 @@ object CakeExpiredAlert : Feature {
 
         registerGameEvent(CAKE_EATEN_REGEX) { _, _, match ->
             val effect = match?.groupValues?.getOrNull(1) ?: return@registerGameEvent
+            inactiveSince = null
             cakes.eatCake(effect)
             OtherManager.file.save()
         }
     }
 
     private fun checkTablist(cakes: CakesEntry) {
+        var inactive = false
         for (line in Tablist.getTablistAsStrings()) {
             val text = line.removeFormatting()
             if (CENTURY_CAKES_INACTIVE_REGEX.containsMatchIn(text)) {
-                if (cakes.expireAllCakes()) OtherManager.file.save()
+                inactive = true
                 break
             }
 
@@ -104,6 +118,16 @@ object CakeExpiredAlert : Feature {
                 lastOutdated.clear()
                 break
             }
+        }
+
+        if (!inactive) {
+            inactiveSince = null
+            return
+        }
+
+        val since = inactiveSince ?: TimeSource.Monotonic.markNow().also { inactiveSince = it }
+        if (since.elapsedNow() >= INACTIVE_GRACE_PERIOD && cakes.expireAllCakes()) {
+            OtherManager.file.save()
         }
     }
 
