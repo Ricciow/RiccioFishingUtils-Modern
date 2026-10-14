@@ -113,13 +113,8 @@ object HotSpotEvents : RegisteredEvent {
 
                         // Check if there is a virtual hotspot at this location and remove it
                         val virtualUuid = UUID.nameUUIDFromBytes("virtual_${blockPos}".toByteArray())
-                        if (hotspots.containsKey(virtualUuid)) {
-                            val virtualHotspot = hotspots.remove(virtualUuid)
-                            virtualUuids.remove(virtualUuid)
-                            if (virtualHotspot != null && virtualHotspot.isNotified) {
-                                HotSpotDisposedEventManager.runTasks(virtualHotspot)
-                            }
-                        }
+                        val virtualHotspot = hotspots.remove(virtualUuid)
+                        virtualUuids.remove(virtualUuid)
 
                         // Try to find cached buff first, otherwise start as UNKNOWN
                         val cachedBuff = findCachedBuff(blockPos, World.island)
@@ -128,6 +123,9 @@ object HotSpotEvents : RegisteredEvent {
                         val hotspot = Hotspot(uuid, pos, buff, 0f, liquid)
                         hotspot.isNotified = true
                         hotspots[uuid] = hotspot
+                        if (virtualHotspot != null && virtualHotspot.isNotified) {
+                            HotSpotDisposedEventManager.runTasks(virtualHotspot)
+                        }
                         HotSpotDetectedEventManager.runTasks(hotspot)
                     } else {
                         val hotspot = hotspots[uuid]!!
@@ -137,6 +135,23 @@ object HotSpotEvents : RegisteredEvent {
                             HotSpotDetectedEventManager.runTasks(hotspot)
                         }
                     }
+                }
+            }
+
+            val playerPos = client.player?.position()
+            if (playerPos != null) {
+                seenUuids.forEach { uuid ->
+                    val hotspot = hotspots[uuid] ?: return@forEach
+                    if (hotspot.type != HotspotType.UNKNOWN ||
+                        playerPos.distanceTo(hotspot.center) >= HotSpotConstants.SHARE_DISTANCE
+                    ) return@forEach
+
+                    val buff = findBuffNearby(hotspot.center, world)
+                    if (HotspotType.fromBuff(buff) == HotspotType.UNKNOWN) return@forEach
+
+                    hotspot.buff = buff
+                    HotspotCache.updateBuff(hotspot.blockPos, hotspot.liquid, buff, hotspot.island)
+                    HotSpotChangedEventManager.runTasks(hotspots.values.toList())
                 }
             }
 
@@ -404,7 +419,7 @@ object HotSpotEvents : RegisteredEvent {
         
         for (entity in entities) {
             val name = entity.customName?.toUnformattedString() ?: continue
-            if (HotspotType.entries.any { it.buffMatch != null && name.contains(it.buffMatch) }) {
+            if (HotspotType.fromBuff(name) != HotspotType.UNKNOWN) {
                 return name
             }
         }

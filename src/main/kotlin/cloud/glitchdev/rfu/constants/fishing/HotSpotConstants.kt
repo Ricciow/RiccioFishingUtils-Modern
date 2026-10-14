@@ -20,6 +20,7 @@ object HotSpotConstants {
     
     const val BUFF_SEARCH_HORIZONTAL = 0.5
     const val BUFF_SEARCH_VERTICAL = 4.0
+    const val SHARE_DISTANCE = 10.0
     const val LIQUID_SEARCH_HORIZONTAL = 1
     const val LIQUID_SEARCH_VERTICAL_MIN = -4
     const val LIQUID_SEARCH_VERTICAL_MAX = 1
