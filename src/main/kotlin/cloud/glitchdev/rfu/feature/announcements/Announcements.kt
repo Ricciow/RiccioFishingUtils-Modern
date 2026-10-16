@@ -75,7 +75,15 @@ object Announcements : Feature {
     }
 
     fun fetchLatestAnnouncement(callback: (Announcement?) -> Unit = {}) {
+        if (WebSocketClient.isConnected) {
+            callback(announcement)
+            return
+        }
         Network.getRequest("${API_URL}/announcement/latest") { response ->
+            if (WebSocketClient.isConnected) {
+                callback(announcement)
+                return@getRequest
+            }
             if (response.isSuccessful() && response.body != null) {
                 try {
                     val latest = gson.fromJson(response.body, Announcement::class.java)

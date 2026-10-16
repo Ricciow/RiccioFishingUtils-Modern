@@ -19,3 +19,4 @@
 
 ### Backend
 - Added a developer setting to suppress the texture errors/warning caused by hypixel.
+- Made announcements use HTTP only while the WebSocket is disconnected.
