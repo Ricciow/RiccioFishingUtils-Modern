@@ -15,6 +15,7 @@
 - Improved cake timers a bit more with the tablist
 
 ### Fixes
+- Fixed Party Finder's overflow field showing full numbers after saving or loading a party.
 - Improved the hotspot sharing detection
 - Fixed emoji suggestion backgrounds becoming too narrow when SkyHanni's Modify Words is enabled.
 - Fixed other mute messages triggering the muted state in rfu, if you've been affected you can use /rfuunmuteme

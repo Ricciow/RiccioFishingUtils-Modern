@@ -16,6 +16,7 @@ import cloud.glitchdev.rfu.model.party.PartyTypeOption
 import cloud.glitchdev.rfu.party.PartyRequirementsManager
 import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.User
+import cloud.glitchdev.rfu.utils.dsl.compact
 import cloud.glitchdev.rfu.utils.network.PartyWebSocket
 import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
@@ -265,7 +266,7 @@ class UICreateParty : UIContainer() {
             primaryColor = UIScheme.pfInputBg.toConstraint()
             hoverColor = UIScheme.pfInputBgHovered.toConstraint()
         } childOf overflowGroup
-        overflowField.setText(party.requiredOverflow().toString())
+        overflowField.setText(party.requiredOverflow().compact(precision = 0))
         overflowField.isEnabled = party.level >= 50
 
         val playersGroup = UIContainer().constrain {
@@ -569,7 +570,7 @@ class UICreateParty : UIContainer() {
         updatePartyTypeVisibility(party.island)
 
         levelField.setText(party.level.coerceIn(0, 50).toString())
-        overflowField.setText(party.requiredOverflow().toString())
+        overflowField.setText(party.requiredOverflow().compact(precision = 0))
         overflowField.isEnabled = party.level >= 50
         maxPlayersField.setText(party.players.max.toString())
 

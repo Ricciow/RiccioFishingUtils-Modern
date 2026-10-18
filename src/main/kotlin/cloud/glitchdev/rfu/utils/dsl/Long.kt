@@ -5,7 +5,8 @@ import java.math.BigDecimal
 import java.math.MathContext
 import java.math.RoundingMode
 
-fun Long.compact(): String {
+/** Set [precision] to 0 to preserve every digit in editable values. */
+fun Long.compact(precision: Int = 3): String {
     val suffixes = arrayOf("", "k", "M", "B")
     val thousand = BigDecimal.valueOf(1_000)
     var value = BigDecimal.valueOf(this)
@@ -15,7 +16,7 @@ fun Long.compact(): String {
         suffixIndex++
     }
 
-    value = value.round(MathContext(3, RoundingMode.HALF_UP))
+    value = value.round(MathContext(precision, RoundingMode.HALF_UP))
     if (value.abs() >= thousand && suffixIndex < suffixes.lastIndex) {
         value = value.movePointLeft(3)
         suffixIndex++
