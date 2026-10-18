@@ -4,9 +4,13 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "ParsedConfigMixin",
+    "ServicesKeyInfoMixin",
+    "SkinManagerMixin",
     "AtmosphericFogEnvironmentMixin",
     "ConfigScreenMixin",
     "OptionsMixin",
+    "SoundEngineMixin",
+    "ChannelAccessor",
     "KeyMappingAccessor",
     "KeyboardHandlerMixin",
     "MouseHandlerMixin",

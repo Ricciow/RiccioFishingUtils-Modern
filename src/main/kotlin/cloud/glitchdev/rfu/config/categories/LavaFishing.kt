@@ -35,11 +35,10 @@ object LavaFishing : Category("Lava Fishing") {
         condition = { diedJawbusAlert }
     }
 
-    var diedJawbusVolume by float(1f) {
+    var diedJawbusVolume by int(100) {
         name = Literal("Sound Volume")
-        description = Literal("The volume for the jawbus death sound")
-        range = 0f..1f
-        slider = true
+        description = Literal("The volume for the jawbus death sound in %.")
+        range = 0..500
         condition = { diedJawbusAlert && diedJawbusSound }
     }
 

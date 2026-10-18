@@ -72,11 +72,10 @@ object InkFishing : Category("Ink Fishing") {
         condition = { rainAlert }
     }
 
-    var rainAlertVolume by float(1f) {
+    var rainAlertVolume by int(100) {
         name = Literal("Sound Volume")
-        description = Literal("The volume for the rain alert sound")
-        range = 0f..1f
-        slider = true
+        description = Literal("The volume for the rain alert sound in %.")
+        range = 0..500
         condition = { rainAlert && rainAlertSound }
     }
 }

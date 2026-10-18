@@ -12,6 +12,7 @@ import cloud.glitchdev.rfu.feature.fishing.BobbinTime
 
 @HudElement
 object BobbinTimeDisplay : AbstractFishingHudElement("bobbinTime") {
+    override val relatedSetting = "Bobbin' Time"
     override val requirement: Boolean
         get() = GeneralFishing.bobbinTimeDisplay
     override val isElementActive: Boolean

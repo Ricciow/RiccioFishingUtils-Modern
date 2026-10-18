@@ -2,14 +2,22 @@ package cloud.glitchdev.rfu.utils.network
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.WS_URL
 import cloud.glitchdev.rfu.RiccioFishingUtils.RFU_VERSION
+import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.events.managers.ErrorEvents
+import cloud.glitchdev.rfu.events.managers.AfkEvents
 import cloud.glitchdev.rfu.events.managers.WebSocketEvents
 import cloud.glitchdev.rfu.utils.Coroutines
 import com.google.gson.Gson
 import java.net.URI
+import java.net.ConnectException
+import java.net.UnknownHostException
 import java.net.http.HttpClient
+import java.net.http.HttpTimeoutException
 import java.net.http.WebSocket
+import java.net.http.WebSocketHandshakeException
+import java.nio.channels.UnresolvedAddressException
+import javax.net.ssl.SSLException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -25,10 +33,37 @@ object WebSocketClient {
     private val gson = Gson()
     private var lastAuthToken: String? = null
     private var reconnectAttempts = 0
+    @Volatile
     private var isReconnecting = false
+    @Volatile
     private var isConnecting = false
     private var heartbeatJob: Job? = null
+    private var reconnectJob: Job? = null
+    @Volatile
+    private var nextReconnectAt = 0L
+    @Volatile
+    private var disconnectReason: String? = null
+    @Volatile
+    var lastConnectionIssue: String? = null
+        private set
+
+    val connectionStatus: String
+        get() {
+            val authenticationStatus = Network.authenticationStatus
+            return when {
+                isConnected -> "${TextColor.LIGHT_GREEN}Connected."
+                authenticationStatus != null -> authenticationStatus
+                isConnecting -> "${TextColor.YELLOW}Connecting to the RFU back-end..."
+                isReconnecting -> {
+                    val seconds = ((nextReconnectAt - System.currentTimeMillis() + 999) / 1000).coerceAtLeast(0)
+                    "${TextColor.LIGHT_RED}Retrying in ${seconds}s (attempt $reconnectAttempts)."
+                }
+                disconnectReason == "AFK" && AfkEvents.isAfk -> "${TextColor.LIGHT_RED}Connection paused while AFK. Move to auto-reconnect."
+                else -> "${TextColor.LIGHT_RED}No active connection."
+            }
+        }
     
+    @Volatile
     var isConnected = false
         private set(value) {
             if (field != value) {
@@ -42,6 +77,7 @@ object WebSocketClient {
         if (isConnected || isReconnecting || isConnecting) return
         
         isConnecting = true
+        disconnectReason = null
         val wsUrl = WS_URL
         RFULogger.dev("Connecting to WebSocket: $wsUrl")
         
@@ -50,7 +86,6 @@ object WebSocketClient {
             .buildAsync(URI.create(wsUrl), object : WebSocket.Listener {
                 override fun onOpen(webSocket: WebSocket) {
                     RFULogger.dev("WebSocket Opened (URL: $wsUrl), sending CONNECT frame...")
-                    reconnectAttempts = 0
                     isReconnecting = false
                     val tokenWithBearer = if (authToken.startsWith("Bearer ")) authToken else "Bearer $authToken"
                     sendFrame(webSocket, "CONNECT", mapOf(
@@ -72,6 +107,9 @@ object WebSocketClient {
 
                 override fun onClose(webSocket: WebSocket, statusCode: Int, reason: String): CompletionStage<*>? {
                     RFULogger.info("WebSocket Closed: $statusCode $reason")
+                    if (lastAuthToken != null && lastConnectionIssue == null) {
+                        lastConnectionIssue = "The server closed the connection (code $statusCode)."
+                    }
                     isConnected = false
                     isConnecting = false
                     if (statusCode != WebSocket.NORMAL_CLOSURE) {
@@ -82,6 +120,7 @@ object WebSocketClient {
 
                 override fun onError(webSocket: WebSocket, error: Throwable) {
                     RFULogger.error("WebSocket Error (on Listener): ", error)
+                    lastConnectionIssue = describeConnectionError(error)
                     isConnected = false
                     isConnecting = false
                     attemptReconnect()
@@ -91,11 +130,25 @@ object WebSocketClient {
                 webSocket = ws
             }.exceptionally { error ->
                 RFULogger.error("WebSocket buildAsync failed: ", error)
+                lastConnectionIssue = describeConnectionError(error)
                 isReconnecting = false
                 isConnecting = false
                 attemptReconnect()
                 null
             }
+    }
+
+    private fun describeConnectionError(error: Throwable): String {
+        val causes = generateSequence(error) { it.cause }.toList()
+        val handshake = causes.filterIsInstance<WebSocketHandshakeException>().firstOrNull()
+        return when {
+            causes.any { it is UnknownHostException || it is UnresolvedAddressException } -> "Could not resolve the RFU server address (DNS)."
+            causes.any { it is HttpTimeoutException } -> "The connection to RFU timed out."
+            causes.any { it is ConnectException } -> "Could not reach the RFU server."
+            causes.any { it is SSLException } -> "Could not establish a secure connection to RFU (TLS)."
+            handshake != null -> "The server rejected the connection (HTTP ${handshake.response.statusCode()})."
+            else -> "Connection failed (${causes.last().javaClass.simpleName}). Check latest.log for details."
+        }
     }
 
     private fun attemptReconnect() {
@@ -106,11 +159,13 @@ object WebSocketClient {
         val baseDelay = minOf(2.0.pow(reconnectAttempts), 60.0).toLong()
         val jitter = (Math.random() * 5).toLong()
         val delaySeconds = baseDelay + jitter
+        nextReconnectAt = System.currentTimeMillis() + delaySeconds * 1000
         RFULogger.info("Attempting to reconnect WebSocket in $delaySeconds seconds (attempt $reconnectAttempts)...")
         
-        Coroutines.launch {
+        reconnectJob = Coroutines.launch {
             delay(delaySeconds * 1000)
             isReconnecting = false
+            nextReconnectAt = 0L
             
             if (Network.isTokenExpired()) {
                 RFULogger.dev("Token expired during reconnect, re-authenticating...")
@@ -152,8 +207,10 @@ object WebSocketClient {
                 "---------------------------")
 
         if (command == "CONNECTED") {
-            isConnected = true
+            lastConnectionIssue = null
+            reconnectAttempts = 0
             isConnecting = false
+            isConnected = true
             RFULogger.info("STOMP Connected")
 
             heartbeatJob?.cancel()
@@ -193,6 +250,8 @@ object WebSocketClient {
                 }
             }
         } else if (command == "ERROR") {
+            lastConnectionIssue = "The RFU back-end rejected the session. Try /rfubackend reconnect."
+            isConnecting = false
             RFULogger.error("Received STOMP ERROR frame:\nHeaders: $headers\nBody: $body")
         } else {
             RFULogger.dev("Unhandled STOMP command: $command")
@@ -249,6 +308,12 @@ object WebSocketClient {
 
     fun disconnect(reason: String = "Disconnecting") {
         if(webSocket != null) RFULogger.info("WebSocket Disconnecting: $reason")
+        disconnectReason = reason
+        lastConnectionIssue = null
+        reconnectJob?.cancel()
+        reconnectJob = null
+        nextReconnectAt = 0L
+        lastAuthToken = null
         heartbeatJob?.cancel()
         heartbeatJob = null
         webSocket?.sendClose(WebSocket.NORMAL_CLOSURE, reason)
@@ -256,6 +321,5 @@ object WebSocketClient {
         isConnected = false
         isReconnecting = false
         isConnecting = false
-        lastAuthToken = null
     }
 }

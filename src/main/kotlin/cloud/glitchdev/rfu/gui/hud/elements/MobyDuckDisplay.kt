@@ -11,6 +11,7 @@ import cloud.glitchdev.rfu.utils.dsl.toReadableString
 
 @HudElement
 object MobyDuckDisplay : AbstractTextHudElement("mobyDuckDisplay") {
+    override val relatedSetting = "Moby-Duck"
     override val requirement: Boolean
         get() = GeneralFishing.mobyDuckDisplay
 

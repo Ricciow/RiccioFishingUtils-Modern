@@ -13,6 +13,7 @@ import cloud.glitchdev.rfu.utils.command.SimpleCommand
 import cloud.glitchdev.rfu.utils.network.WebSocketClient
 import com.mojang.brigadier.context.CommandContext
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
+import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
 
@@ -46,16 +47,23 @@ object PartyFinder : SimpleCommand("rfupf") {
             return 1
         }
 
-        if(!WebSocketClient.isConnected) {
+        if (!WebSocketClient.isConnected) {
+            val description = buildString {
+                append("${TextColor.GRAY}Status: ${WebSocketClient.connectionStatus}\n")
+                WebSocketClient.lastConnectionIssue?.let { append("${TextColor.GRAY}Last issue: ${TextColor.LIGHT_RED}$it\n") }
+                append("\n")
+                append("${TextColor.YELLOW}Click or use /rfubackend reconnect to retry the connection.\n")
+                append("If this keeps happening, check latest.log for details.\n\n")
+                append("For DNS issues, try Cloudflare DNS (1.1.1.1 / 1.0.0.1), then restart Minecraft.")
+            }
             context.source.sendFeedback(
                 TextUtils.rfuLiteral(
-                    "RFU websocket isn't connected! (Sorry :/)",
-                    TextStyle(TextColor.LIGHT_RED, TextEffects.UNDERLINE)
+                    "RFU Websocket isn't connected! (Hover for help)",
+                    TextStyle(TextColor.LIGHT_RED)
                 ).withStyle { style ->
                     style.withHoverEvent(HoverEvent.ShowText(Component.literal(
-                        "${TextColor.YELLOW}If this keeps happening, it may be a DNS issue.\n" +
-                            "Try using Cloudflare DNS (primary: 1.1.1.1, secondary: 1.0.0.1), then restart Minecraft."
-                    )))
+                        description
+                    ))).withClickEvent(ClickEvent.RunCommand("/rfubackend reconnect"))
                 }
             )
             return 1

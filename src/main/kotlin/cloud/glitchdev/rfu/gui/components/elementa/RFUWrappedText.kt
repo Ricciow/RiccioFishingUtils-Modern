@@ -31,22 +31,42 @@ class RFUWrappedText(
     shadow: Boolean = true,
     shadowColor: Color? = null,
     private val centered: Boolean = false,
+    private val maxLines: Int = Int.MAX_VALUE,
 ) : UIWrappedText(text, shadow, shadowColor, centered) {
     init {
-        setHeight(basicHeightConstraint {
-            val lines = getWrappedLines()
-            if (lines.isEmpty()) return@basicHeightConstraint 0f
-            val font = getFontProvider()
-            val lastLineHeight = font.getBaseLineHeight() + font.getBelowLineHeight() +
-                (if (getShadow()) font.getShadowHeight() else 0f)
-            val topPadding = if (constraints.y is CenterConstraint) font.getBelowLineHeight() else 0f
-            ((lines.size - 1) * 9f + lastLineHeight + topPadding) * getTextScale()
-        })
+        require(maxLines > 0)
+        setHeight(basicHeightConstraint { getHeightForLines(getWrappedLines().size) })
     }
 
-    fun getWrappedLines(): List<String> = wrapText(
+    fun getHeightForLines(lineCount: Int): Float {
+        if (lineCount <= 0) return 0f
+        val font = getFontProvider()
+        val lastLineHeight = font.getBaseLineHeight() + font.getBelowLineHeight() +
+            (if (getShadow()) font.getShadowHeight() else 0f)
+        val topPadding = if (constraints.y is CenterConstraint) font.getBelowLineHeight() else 0f
+        return ((lineCount - 1) * 9f + lastLineHeight + topPadding) * getTextScale()
+    }
+
+    fun getFullWrappedLines(): List<String> = wrapText(
         getText(), getWidth(), getTextScale(), getFontProvider(), ensureSpaceAtEndOfLines = false
     ).map { it.trimEnd() }
+
+    fun getWrappedLines(): List<String> {
+        val lines = getFullWrappedLines()
+        if (lines.size <= maxLines) return lines
+
+        val scale = getTextScale()
+        val font = getFontProvider()
+        val width = getWidth().coerceAtLeast(0f)
+        val suffix = (3 downTo 0).map { ".".repeat(it) }.first { it.width(scale, font) <= width }
+        val remainingWidth = width - suffix.width(scale, font)
+        val lastLine = if (remainingWidth > 0f) {
+            wrapText(lines[maxLines - 1], remainingWidth, scale, font, ensureSpaceAtEndOfLines = false)
+                .firstOrNull().orEmpty().trimEnd()
+                .takeIf { it.width(scale, font) <= remainingWidth }.orEmpty()
+        } else ""
+        return lines.take(maxLines - 1) + (lastLine + ChatFormatting.RESET + suffix)
+    }
 
     override fun extractComponent(extractor: ElementaExtractor) {
         val scale = getTextScale()

@@ -18,6 +18,7 @@ import gg.essential.elementa.dsl.width
 @HudElement
 object RodTimerDisplay : AbstractTextHudElement("rodTimer") {
     var rodTime : Float = -1f
+    override val relatedSetting = "Rod Timer"
     override val requirement: Boolean
         get() = GeneralFishing.rodTimerDisplay
     override val isElementActive: Boolean

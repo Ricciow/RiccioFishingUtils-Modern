@@ -4,6 +4,8 @@ import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
 import cloud.glitchdev.rfu.constants.chat.PartyTypes
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
+import cloud.glitchdev.rfu.events.managers.PartyFinderEvents
+import cloud.glitchdev.rfu.feature.other.ignore.IgnoreUtils
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.UIPopup
@@ -38,6 +40,7 @@ import gg.essential.elementa.constraints.SiblingConstraint
 import gg.essential.elementa.constraints.TextAspectConstraint
 import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.animate
+import gg.essential.elementa.dsl.basicHeightConstraint
 import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.dsl.div
@@ -48,6 +51,7 @@ import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.plus
 import gg.essential.elementa.dsl.times
 import gg.essential.elementa.dsl.toConstraint
+import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component
 import java.util.Locale
 
@@ -55,7 +59,8 @@ class UIPartyCard(
     val party: FishingParty,
     val radiusProps: Float,
     var postConfirmationText: String? = null,
-    val wasHovered: Boolean = false
+    val wasHovered: Boolean = false,
+    val showNoRequirements: Boolean = false,
 ) : UIRoundedRectangle(radiusProps) {
     val borderWidth = UIScheme.pfCardBorderWidth
     val innerPadding = UIScheme.pfCardInnerPadding
@@ -66,7 +71,9 @@ class UIPartyCard(
     lateinit var memberBadge : UIPartyBadge
     lateinit var descriptionSeparator : UIBlock
     lateinit var actionButton : UIButton
+    private var blockButton: UIButton? = null
     private val tagsContainer = UIContainer()
+    private val maxDescriptionLines = 2
 
     init {
         create()
@@ -89,6 +96,7 @@ class UIPartyCard(
                 setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, UIScheme.pfCardSeparatorHover.toConstraint())
             }
             actionButton.unhide()
+            blockButton?.unhide()
         }.onMouseLeave {
             animate {
                 setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, UIScheme.pfCardBorder.toConstraint())
@@ -102,6 +110,7 @@ class UIPartyCard(
                 setColorAnimation(Animations.IN_EXP, UIScheme.HOVER_EFFECT_DURATION, UIScheme.pfCardSeparator.toConstraint())
             }
             actionButton.hide(true)
+            blockButton?.hide(true)
         }.onMouseClick {
             if (!WebSocketClient.isConnected) {
                 joinErrorPopup.showWarning("Not connected to RFU Backend!")
@@ -145,6 +154,7 @@ class UIPartyCard(
 
         if (wasHovered) {
             actionButton.unhide()
+            blockButton?.unhide()
             titleText.constrain { color = UIScheme.pfCardTitleHoverColor.toConstraint() }
             levelBadge.constrain { color = UIScheme.pfCardLevelBorderHoveredColor.toConstraint() }
             levelBadge.valueText.constrain { color = UIScheme.pfCardTitleHoverColor.toConstraint() }
@@ -203,7 +213,8 @@ class UIPartyCard(
         memberBadge = UIPartyBadge(
             if (isFull) "${TextColor.LIGHT_RED}FULL" else "PARTY",
             (if (isFull) TextColor.LIGHT_RED.toString() else "") + party.players.getString(),
-            titleText
+            titleText,
+            valueScale = if (party.players.current >= 10 && party.players.max >= 10) 0.55f else 0.65f,
         ).constrain {
             y = 0.pixels
             x = 0.pixels(true)
@@ -213,9 +224,10 @@ class UIPartyCard(
 
         val overflow = party.requiredOverflow()
         levelBadge = UIPartyBadge(
-            if (overflow > 0) "OVERFL" else "LEVEL",
+            if (overflow > 0) "OVERFLOW" else "LEVEL",
             if (overflow > 0) overflow.compact() else "${party.level.coerceAtMost(50)}",
-            titleText
+            titleText,
+            labelScale = if (overflow > 0) 0.35f else 0.45f,
         ).constrain {
             y = 0.pixels
             x = SiblingConstraint(UIScheme.pfCardSmallPadding, alignOpposite = true)
@@ -236,7 +248,7 @@ class UIPartyCard(
     }
 
     fun createDescription() {
-        val descriptionContainer = UIContainer().constrain {
+        val descriptionContainer = UIVanillaTooltip(emptyList<Component>()).constrain {
             x = CenterConstraint()
             y = SiblingConstraint(UIScheme.pfCardInnerPadding)
             width = 100.percent
@@ -248,7 +260,7 @@ class UIPartyCard(
             .takeIf { it.isNotEmpty() }
             ?: "${party.island.island} fishing."
 
-        val description = RFUWrappedText(descriptionText).constrain {
+        val description = RFUWrappedText(descriptionText, maxLines = maxDescriptionLines).constrain {
             x = SiblingConstraint(UIScheme.pfCardSmallPadding)
             y = CenterConstraint()
             width = FillConstraint()
@@ -256,10 +268,19 @@ class UIPartyCard(
             color = UIScheme.pfCardDescriptionColor.toConstraint()
         } childOf descriptionContainer
 
+        descriptionContainer.tooltip = {
+            val lines = description.getFullWrappedLines()
+            if (lines.size > maxDescriptionLines) {
+                listOf(Component.literal("Description:").withStyle(ChatFormatting.DARK_GRAY)) +
+                    lines.map { Component.literal(it).withStyle(ChatFormatting.GRAY) }
+            } else emptyList()
+        }
+
         descriptionContainer.constrain {
-            val textHeight = CopyComponentSizeConstraint(description) + (UIScheme.pfCardSmallPadding * 2).pixels
+            val previewHeight = basicHeightConstraint { description.getHeightForLines(maxDescriptionLines) } +
+                (UIScheme.pfCardSmallPadding * 2).pixels
             val tagsHeight = ChildBasedSizeConstraint().apply { constrainTo = tagsContainer }
-            height = GroupMaxSizeConstraint("PartyCardDescription", textHeight) +
+            height = GroupMaxSizeConstraint("PartyCardDescription", previewHeight) +
                 GroupMaxSizeConstraint("PartyCardTags", tagsHeight) - tagsHeight
         }
 
@@ -305,56 +326,122 @@ class UIPartyCard(
             y = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
         } childOf locationContainer
 
-        val activeRequisites = party.requisites.filter { it.value }
-        if (activeRequisites.isNotEmpty()) {
-            val requirementsContainer = UIContainer().constrain {
-                x = 0.pixels
-                y = SiblingConstraint(UIScheme.pfCardInnerPadding)
-                width = 100.percent
-                height = BoundingBoxConstraint()
-            } childOf tagsContainer
+        party.requisites.firstOrNull { it.id == "has_killer" && it.value }?.let { requisite ->
+            UIConditionCard(requisite.toDataOption()).constrain {
+                x = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
+                y = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
+            } childOf locationContainer
+        }
 
-            activeRequisites.forEach { requisite ->
-                UIConditionCard(requisite.toDataOption()).constrain {
-                    x = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
-                    y = CramSiblingConstraint(UIScheme.pfCardSmallPadding)
-                } childOf requirementsContainer
+        val activeRequisites = party.requisites
+            .filter { it.value && it.id != "has_killer" }
+            .sortedBy {
+                when (it.id) {
+                    "looting_5" -> 0
+                    "bloodshot" -> 1
+                    "enderman_9" -> 2
+                    "brain_food" -> 3
+                    "wither_impact" -> 4
+                    else -> 5
+                }
             }
+        if (activeRequisites.isEmpty() && !showNoRequirements) return
+
+        val requirementsContainer = UIContainer().constrain {
+            x = 0.pixels
+            y = SiblingConstraint(UIScheme.pfCardInnerPadding)
+            width = 100.percent
+            height = (4.5f + (UIScheme.pfConditionCardPadding + UIScheme.pfConditionCardWidth) * 2).pixels
+        } childOf tagsContainer
+
+        if (activeRequisites.isNotEmpty()) {
+            UICompactRequirements(activeRequisites.map { it.toDataOption() }).constrain {
+                x = 0.pixels
+                y = 0.pixels
+                width = 100.percent
+                height = 100.percent
+            } childOf requirementsContainer
+        } else if (showNoRequirements) {
+            UIText("No requirements").constrain {
+                x = 0.pixels
+                y = CenterConstraint()
+                width = MinConstraint(ScaledTextConstraint(0.5f), 100.percent)
+                height = TextAspectConstraint()
+                color = UIScheme.pfCardUserColor.toConstraint()
+            } childOf requirementsContainer
         }
     }
 
     private fun createListingAction(parent: UIContainer, userText: UIText) {
         val isUser = party.user.isUser()
+        if (!isUser) {
+            blockButton = createListingButton(parent, userText, "block", "Block player") {
+                showBlockConfirmation()
+            }
+        }
         val icon = if(isUser) "delete" else "report"
-        val actionSlot = UIVanillaTooltip(Component.literal(if (isUser) "Delete listing" else "Report listing")).constrain {
-            x = SiblingConstraint(UIScheme.pfCardTinyPadding)
-            y = CenterConstraint()
-            width = AspectConstraint(1f)
-            height = CopyComponentSizeConstraint(userText) * 1.5
-        } childOf parent
-        val image = UIImage.ofResourceCached("/assets/rfu/ui/$icon.png")
-        actionButton = UIButton.withImage(image, 2f) {
+        actionButton = createListingButton(parent, userText, icon, if (isUser) "Delete listing" else "Report listing") {
             val action = if (isUser) "delete your party?" else "report ${party.user}'s party?\nThis is only for the party finder listing, not what happens inside the party, use hypixel's reporting for that."
             val pcText = postConfirmationText ?: if (isUser) null else "Party reported"
             PartyFinderWindow.popup.showWarning("Are you sure you want to $action", pcText) {
                 if (isUser) {
                     PartyWebSocket.deleteParty(party.user)
                 } else {
+                    if (!WebSocketClient.isConnected) {
+                        PartyFinderWindow.popup.showWarning("Not connected to RFU Backend!")
+                        return@showWarning
+                    }
                     PartyWebSocket.reportParty(party.user)
+                    showBlockConfirmation("${postConfirmationText ?: "Report sent."}\nWould you also like to block ${party.user}?")
                 }
             }
-        }.constrain {
+        }
+    }
+
+    private fun showBlockConfirmation(prompt: String = "Are you sure you want to block ${party.user}?") {
+        PartyFinderWindow.popup.showWarning(
+            "$prompt\nThis adds them to your RFU ignore list.",
+            "Blocked ${party.user}.\nUnblock with /rfuignore remove ${party.user}."
+        ) {
+            val entry = IgnoreUtils.getIgnoredEntry()
+            if (entry.add(party.user)) IgnoreUtils.saveIgnoredEntry(entry)
+            PartyFinderEvents.refreshParties()
+        }
+    }
+
+    private fun createListingButton(
+        parent: UIContainer,
+        userText: UIText,
+        icon: String,
+        tooltip: String,
+        onClick: () -> Unit,
+    ): UIButton {
+        val actionSlot = UIVanillaTooltip(Component.literal(tooltip)).constrain {
+            x = SiblingConstraint(UIScheme.pfCardTinyPadding)
+            y = CenterConstraint()
+            width = AspectConstraint(1f)
+            height = CopyComponentSizeConstraint(userText) * 1.5
+        } childOf parent
+        val imagePath = "/assets/rfu/ui/$icon.png"
+        val image = javaClass.getResource(imagePath)?.let { UIImage.ofResourceCached(imagePath) }
+        val button = if (image != null) {
+            UIButton.withImage(image, 2f, onClick = onClick)
+        } else {
+            UIButton("×", 2f, baseTextScale = 0.75f, onClick = onClick)
+        }
+        button.constrain {
             x = 0.pixels
             y = 0.pixels
             width = 100.percent
             height = 100.percent
         } childOf actionSlot
-        actionButton.colors {
+        button.colors {
             primaryColor = UIScheme.transparent.toConstraint()
             hoverColor = UIScheme.transparent.toConstraint()
             textColor = UIScheme.pfCardUserColor.toConstraint()
             hoverTextColor = UIScheme.pfCardOverlayHoverColor.toConstraint()
         }
-        actionButton.hide(true)
+        button.hide(true)
+        return button
     }
 }

@@ -35,11 +35,10 @@ object DailyStreakSettings : Category("Daily Streaks") {
         condition = { dailyStreakEnabled }
     }
 
-    var completionVolume by float(1f) {
+    var completionVolume by int(100) {
         name = Literal("Completion Sound Volume")
-        description = Literal("The volume for daily challenge completion sound.")
-        range = 0f..1f
-        slider = true
+        description = Literal("The volume for daily challenge completion sound in %.")
+        range = 0..500
         condition = { dailyStreakEnabled && completionSound }
     }
 }

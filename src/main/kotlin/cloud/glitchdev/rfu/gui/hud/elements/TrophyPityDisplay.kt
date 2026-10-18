@@ -23,6 +23,7 @@ import cloud.glitchdev.rfu.utils.World
 object TrophyPityDisplay : AbstractTextHudElement("trophyPity") {
     private const val RECENT_THRESHOLD = 5 * 60 * 1000L // 5 minutes
 
+    override val relatedSetting = "Pity"
     override val requirement: Boolean
         get() = TrophyFishing.trophyPityDisplay
 

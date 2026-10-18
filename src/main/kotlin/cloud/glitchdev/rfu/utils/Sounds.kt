@@ -7,7 +7,6 @@ import cloud.glitchdev.rfu.events.InstantRegisteredEvent
 import cloud.glitchdev.rfu.utils.dsl.getResource
 import cloud.glitchdev.rfu.utils.dsl.parseResource
 import com.google.gson.JsonParser
-import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.core.Registry
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.sounds.SoundEvent
@@ -39,7 +38,7 @@ object Sounds : InstantRegisteredEvent {
         }
     }
 
-    fun playSound(id: String, pitch: Float = 1f, volume: Float = 1f) {
+    fun playSound(id: String, pitch: Float = 1f, volume: Int = 100) {
         val resourceLocation = parseResource(id)
         if (resourceLocation == null) {
             RFULogger.warn("Invalid sound ID format: '$id'")
@@ -54,8 +53,7 @@ object Sounds : InstantRegisteredEvent {
 
         val sound = optionalSound.get()
 
-        val soundInstance = SimpleSoundInstance.forUI(sound, pitch, volume)
-        mc.soundManager.play(soundInstance)
+        mc.soundManager.play(BoostedSoundInstance(sound, pitch, volume.coerceIn(0, 500) / 100f))
     }
 
     private fun registerSound(id: String) {

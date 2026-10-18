@@ -9,6 +9,7 @@ import cloud.glitchdev.rfu.gui.hud.HudElement
 
 @HudElement
 object PetDisplay : AbstractTextHudElement("petDisplay") {
+    override val relatedSetting = "Pet Display"
     override val requirement: Boolean
         get() = OtherSettings.petDisplay
     override val isElementActive: Boolean

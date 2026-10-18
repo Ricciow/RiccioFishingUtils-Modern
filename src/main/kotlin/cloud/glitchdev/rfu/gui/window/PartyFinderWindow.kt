@@ -407,15 +407,18 @@ object PartyFinderWindow : BaseWindow(false), Feature {
         if (!::scrollArea.isInitialized) return
 
         val currentFilteredParties = filterContainer.applyFilter(parties)
+        val showNoRequirements = currentFilteredParties.any { party ->
+            party.requisites.any { it.value && it.id != "has_killer" }
+        }
         val existingCardsMap = partyCards.associateBy { it.party.user }
 
         val newCards = currentFilteredParties.map { party ->
             val existingCard = existingCardsMap[party.user]
-            if (existingCard?.party == party) {
+            if (existingCard?.party == party && existingCard.showNoRequirements == showNoRequirements) {
                 existingCard
             } else {
                 val wasHovered = existingCard?.isHovered() ?: false
-                UIPartyCard(party, 5f, wasHovered = wasHovered).constrain {
+                UIPartyCard(party, 5f, wasHovered = wasHovered, showNoRequirements = showNoRequirements).constrain {
                     x = JustifiedCramSiblingConstraint(2f)
                     y = JustifiedCramSiblingConstraint(2f)
                     width = 33.percent

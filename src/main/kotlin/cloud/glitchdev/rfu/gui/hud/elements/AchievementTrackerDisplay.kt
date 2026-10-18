@@ -27,6 +27,7 @@ import gg.essential.elementa.dsl.toConstraint
 
 @HudElement
 object AchievementTrackerDisplay : AbstractHudElement("achievementTrackerDisplay") {
+    override val relatedSetting = "Achievement Tracker Display"
     override val requirement: Boolean
         get() = OtherSettings.achievementTrackerDisplay
     override val isElementActive: Boolean

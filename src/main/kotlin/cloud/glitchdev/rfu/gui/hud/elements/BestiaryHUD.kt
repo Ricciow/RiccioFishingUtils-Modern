@@ -13,6 +13,7 @@ import cloud.glitchdev.rfu.gui.hud.HudElement
 
 @HudElement
 object BestiaryHUD : AbstractTextHudElement("bestiaryHUD") {
+    override val relatedSetting = "Bestiary Display"
     override val requirement: Boolean
         get() = OtherSettings.bestiaryDisplay
     override val isElementActive: Boolean

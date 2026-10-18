@@ -6,7 +6,6 @@ import gg.essential.elementa.UIComponent
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
-import gg.essential.elementa.constraints.AspectConstraint
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedMaxSizeConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
@@ -15,7 +14,13 @@ import gg.essential.elementa.constraints.TextAspectConstraint
 import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.*
 
-class UIPartyBadge(val label: String, val value: String, val titleText: UIComponent) : UIRoundedRectangle(5f) {
+class UIPartyBadge(
+    val label: String,
+    val value: String,
+    val titleText: UIComponent,
+    labelScale: Float = 0.45f,
+    valueScale: Float = 0.65f,
+) : UIRoundedRectangle(5f) {
     val valueText: UIText
 
     init {
@@ -42,7 +47,7 @@ class UIPartyBadge(val label: String, val value: String, val titleText: UICompon
             x = CenterConstraint()
             y = SiblingConstraint()
             width = TextAspectConstraint()
-            height = CopyComponentSizeConstraint(titleText) * 0.45
+            height = CopyComponentSizeConstraint(titleText) * labelScale
             color = UIScheme.pfCardLevelLabelColor.toConstraint()
         } childOf container
 
@@ -50,7 +55,7 @@ class UIPartyBadge(val label: String, val value: String, val titleText: UICompon
             x = CenterConstraint()
             y = SiblingConstraint(1f)
             width = TextAspectConstraint()
-            height = CopyComponentSizeConstraint(titleText) * 0.65
+            height = CopyComponentSizeConstraint(titleText) * valueScale
         } childOf container
     }
 

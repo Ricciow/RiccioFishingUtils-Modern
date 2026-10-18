@@ -3,6 +3,8 @@ package cloud.glitchdev.rfu.feature.other
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
@@ -21,11 +23,18 @@ import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
 import net.minecraft.network.chat.Style
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.TimeMark
+import kotlin.time.TimeSource
 
 @RFUFeature
 object CakeExpiredAlert : Feature {
     val CAKE_EATEN_REGEX = """(?:Big )?Yum! You (?:gain|refresh) \+\d+. (.+) for 48 hours!""".toRegex()
-    val CENTURY_CAKES_REGEX = """Century Cakes:\s*\d+[hms]\s*\((\d+)/(\d+)\)""".toRegex()
+    val CENTURY_CAKES_REGEX = """Century Cakes:\s*(\d+[hms])\s*\((\d+)/(\d+)\)""".toRegex()
+    private val CENTURY_CAKES_INACTIVE_REGEX = """Century Cakes:\s*INACTIVE\b""".toRegex()
+    private val INACTIVE_GRACE_PERIOD = 5.seconds
+    private var inactiveSince: TimeMark? = null
     private val lastOutdated : HashSet<CakesEntry.Cake> = hashSetOf()
 
     override fun onInitialize() {
@@ -33,11 +42,16 @@ object CakeExpiredAlert : Feature {
             CakesEntry()
         } as? CakesEntry ?: CakesEntry()
 
-        registerTickEvent(interval = 20) {
-            if(!OtherSettings.outdatedCake) return@registerTickEvent
-            if(!World.isInSkyblock) return@registerTickEvent
+        registerJoinEvent { inactiveSince = null }
+        registerDisconnectEvent { inactiveSince = null }
 
-            checkTablistAndClearIfNeeded(cakes)
+        registerTickEvent(interval = 20) {
+            if (!OtherSettings.outdatedCake || !World.isInSkyblock) {
+                inactiveSince = null
+                return@registerTickEvent
+            }
+
+            checkTablist(cakes)
         }
 
         registerTickEvent(interval = 300) {
@@ -80,23 +94,40 @@ object CakeExpiredAlert : Feature {
 
         registerGameEvent(CAKE_EATEN_REGEX) { _, _, match ->
             val effect = match?.groupValues?.getOrNull(1) ?: return@registerGameEvent
+            inactiveSince = null
             cakes.eatCake(effect)
             OtherManager.file.save()
         }
     }
 
-    private fun checkTablistAndClearIfNeeded(cakes: CakesEntry) {
-        if (cakes.getOutdatedCakes().isEmpty()) return
+    private fun checkTablist(cakes: CakesEntry) {
+        var inactive = false
         for (line in Tablist.getTablistAsStrings()) {
-            val match = CENTURY_CAKES_REGEX.find(line.removeFormatting()) ?: continue
-            val current = match.groupValues[1].toIntOrNull()
-            val total = match.groupValues[2].toIntOrNull()
-            if (current != null && total != null && current == total) {
-                cakes.clearCakeList()
+            val text = line.removeFormatting()
+            if (CENTURY_CAKES_INACTIVE_REGEX.containsMatchIn(text)) {
+                inactive = true
+                break
+            }
+
+            val match = CENTURY_CAKES_REGEX.find(text) ?: continue
+            val remaining = Duration.parseOrNull(match.groupValues[1]) ?: continue
+            val current = match.groupValues[2].toIntOrNull()
+            val total = match.groupValues[3].toIntOrNull()
+            if (current != null && total != null && total > 0 && current == total && cakes.refreshOutdatedCakes(remaining)) {
                 OtherManager.file.save()
                 lastOutdated.clear()
                 break
             }
+        }
+
+        if (!inactive) {
+            inactiveSince = null
+            return
+        }
+
+        val since = inactiveSince ?: TimeSource.Monotonic.markNow().also { inactiveSince = it }
+        if (since.elapsedNow() >= INACTIVE_GRACE_PERIOD && cakes.expireAllCakes()) {
+            OtherManager.file.save()
         }
     }
 

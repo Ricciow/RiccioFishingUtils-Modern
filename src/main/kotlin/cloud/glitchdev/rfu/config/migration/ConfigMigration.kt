@@ -11,9 +11,10 @@ import java.nio.file.Path
 import kotlin.io.path.exists
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
+import kotlin.math.roundToInt
 
 object ConfigMigration {
-    const val CURRENT_VERSION = 9
+    const val CURRENT_VERSION = 10
     const val VERSION_KEY = "rfuConfigVersion"
 
     private val logger = LoggerFactory.getLogger(ConfigMigration::class.java)
@@ -59,6 +60,7 @@ object ConfigMigration {
                 6 -> migrateV6toV7(json)
                 7 -> migrateV7toV8(json)
                 8 -> migrateV8toV9(json)
+                9 -> migrateV9toV10(json)
             }
         }
     }
@@ -213,6 +215,25 @@ object ConfigMigration {
         val cat = getOrCreateCategory(json, "Backend Settings")
         cat.addProperty("backendAccepted", false)
         cat.addProperty("decisionMade", false)
+    }
+
+    private fun migrateV9toV10(json: JsonObject) {
+        val volumeSettings = mapOf(
+            "Daily Streaks" to listOf("completionVolume"),
+            "General Fishing" to listOf("deployableExpiredVolume", "failCastVolume"),
+            "Hot Spots" to listOf("hotspotExpiredVolume"),
+            "Ink Fishing" to listOf("rainAlertVolume"),
+            "Lava Fishing" to listOf("diedJawbusVolume"),
+            "Other" to listOf("achievementVolume", "littlefootVolume", "fullInventoryVolume"),
+            "Sea Creatures" to listOf("rareScSoundVolume", "goldenDragonVolume")
+        )
+        for ((category, keys) in volumeSettings) {
+            val cat = getCategory(json, category) ?: continue
+            for (key in keys) {
+                val value = cat[key] ?: continue
+                cat.addProperty(key, (value.asDouble.coerceIn(0.0, 5.0) * 100).roundToInt())
+            }
+        }
     }
 
     private fun deleteKey(json: JsonObject, category: String, key: String): JsonElement? {

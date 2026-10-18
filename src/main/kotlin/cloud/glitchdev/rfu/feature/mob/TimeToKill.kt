@@ -8,6 +8,7 @@ import cloud.glitchdev.rfu.data.catches.CatchTracker
 import cloud.glitchdev.rfu.data.mob.SkyblockEntity
 import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDeathEvent
 import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDisposeEvent
+import cloud.glitchdev.rfu.events.managers.SeaCreaturePersonalBestEvents
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat
@@ -41,6 +42,7 @@ object TimeToKill : Feature {
 
             if (isPersonalBest) {
                 CatchTracker.catchesFile.save()
+                SeaCreaturePersonalBestEvents.runTasks(sc, duration.inWholeMilliseconds)
             }
             val showPersonalBest = sc.special && isPersonalBest && SeaCreatureConfig.killTimePersonalBest
 

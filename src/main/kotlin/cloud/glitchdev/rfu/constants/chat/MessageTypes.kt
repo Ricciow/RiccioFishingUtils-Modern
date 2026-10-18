@@ -17,7 +17,8 @@ enum class MessageTypes(val displayName: String, val regex: Regex) {
     HURRICANE_BOTTLE("Hurricane in a Bottle", """(?:> )?Your (?:Empty )?Hurricane (?:in a )?Bottle has absorbed .+""".toExactRegex()),
     VANQUISHER("Vanquisher", """A Vanquisher is spawning nearby!""".toExactRegex()),
     TREASURES("Treasures", """(?:\uE025\s*)?(?:GOOD|GREAT|OUTSTANDING) CATCH! You caught .+!""".toExactRegex()),
-    BLAZETEKK_RADIO("Blazetekk Radio", """(?:Your radio is weak\. Find another enjoyer to boost it\.|Your radio signal is strong!)\s*""".toExactRegex());
+    BLAZETEKK_RADIO("Blazetekk Radio", """(?:Your radio is weak\. Find another enjoyer to boost it\.|Your radio signal is strong!)\s*""".toExactRegex()),
+    STEALTH("Stealth Enchantment", """The .+ didn't notice your presence thanks to your Stealth enchantment!""".toExactRegex());
 
     fun matches(message: String): Boolean {
         if (this == CATCH && SeaCreatures.entries.any { it.catchMessage == message }) return true

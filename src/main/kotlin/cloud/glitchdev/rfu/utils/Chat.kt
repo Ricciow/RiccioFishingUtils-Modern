@@ -9,20 +9,23 @@ import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerAnyChatEvent
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerSendCommandEvent
+import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import kotlinx.coroutines.delay
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
 @AutoRegister
 object Chat : RegisteredEvent {
     const val MUTE_SAVE_FIELD = "mute_expiration"
-    val MUTE_REGEX = """Your mute will expire in\s+(?:(\d+)\s*d)?\s*(?:(\d+)\s*h)?\s*(?:(\d+)\s*m)?\s*(?:(\d+)\s*s)?""".toRegex()
+    val MUTE_REGEX = """Your mute will expire in\s+(?:(\d+)\s*d)?\s*(?:(\d+)\s*h)?\s*(?:(\d+)\s*m)?\s*(?:(\d+)\s*s)?""".toExactRegex()
     private val CHAT_COMMAND_PREFIXES = listOf("pc ", "gc ", "ac ", "oc ", "cc ", "msg ", "w ", "tell ", "r ")
 
     private val commandQueue: ArrayDeque<String> = ArrayDeque()
     private var isRunning = false
     private var lastMessage = Instant.DISTANT_PAST
+    private var lastMuteReminder = Instant.DISTANT_PAST
     var isSendingModMessage = false
     var isSendingModCommand = false
     private val commandCooldown = 1000
@@ -36,6 +39,7 @@ object Chat : RegisteredEvent {
             return if (Clock.System.now() < expireTime) expireTime else null
         }
         set(value) {
+            if (value == null) lastMuteReminder = Instant.DISTANT_PAST
             OtherManager.setField(MUTE_SAVE_FIELD, InstantEntry(value))
             OtherManager.file.save()
         }
@@ -70,6 +74,22 @@ object Chat : RegisteredEvent {
         return CHAT_COMMAND_PREFIXES.any { trimmed.startsWith(it, ignoreCase = true) }
     }
 
+    private fun isBlockedByMute(command: String): Boolean {
+        if (!isMuted || !isChatMessage(command)) return false
+        mc.execute {
+            if (!isMuted) return@execute
+            val now = Clock.System.now()
+            if (now - lastMuteReminder < 60.minutes) return@execute
+            lastMuteReminder = now
+            sendMessage(TextUtils.rfuLiteral(
+                "Automatic chat messages and party replies are paused because RFU has a saved mute timer. " +
+                    "If you are not muted, use /rfuunmuteme to clear it.",
+                TextColor.YELLOW
+            ))
+        }
+        return true
+    }
+
     private fun processQueue() {
         synchronized(this) {
             if (isRunning) return
@@ -83,7 +103,7 @@ object Chat : RegisteredEvent {
                         commandQueue.removeFirstOrNull()
                     } ?: break
 
-                    if (isMuted && isChatMessage(command)) {
+                    if (isBlockedByMute(command)) {
                         continue
                     }
 
@@ -117,7 +137,7 @@ object Chat : RegisteredEvent {
     }
 
     fun sendCommand(command : String) {
-        if (isMuted && isChatMessage(command)) return
+        if (isBlockedByMute(command)) return
         synchronized(commandQueue) {
             commandQueue.add(command)
         }
@@ -125,7 +145,6 @@ object Chat : RegisteredEvent {
     }
 
     fun sendPartyMessage(message : String) {
-        if (isMuted) return
         if (message.length > 240) {
             val chunks = message.chunked(230)
             chunks.forEachIndexed { index, chunk ->

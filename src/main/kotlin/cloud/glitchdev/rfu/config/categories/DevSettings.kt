@@ -21,6 +21,12 @@ object DevSettings : Category("Developer") {
         description = Literal("Enable developer mode.")
     }
 
+    var suppressTextureSignatureLogs by boolean(false) {
+        name = Literal("Suppress Texture Signature Logs")
+        description = Literal("Hide malformed texture signature errors, texture signature verification errors, and invalid texture signature warnings in the log.")
+        condition = { devMode }
+    }
+
     var copyItemDataKeybind by key(InputConstants.KEY_RCONTROL) {
         name = Literal("Copy Item Data Keybind")
         description = Literal("Keybind to copy relevant data of the hovered/held item to clipboard.")
