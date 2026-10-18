@@ -57,6 +57,12 @@ object Network : RegisteredEvent {
     private val client = HttpClient.newHttpClient()
     private val USER_AGENT = "Java-http-client/${System.getProperty("java.version")} rfu:${RFU_VERSION.friendlyString}"
     private var disconnectJob: Job? = null
+    private var reconnectFeedbackJob: Job? = null
+    @Volatile
+    private var isAuthenticating = false
+    @Volatile
+    var authenticationStatus: String? = null
+        private set
 
     override fun register() {
         registerJoinEvent { _ ->
@@ -277,6 +283,8 @@ object Network : RegisteredEvent {
 
         if (!World.isOnHypixel) return
 
+        authenticationStatus = "${YELLOW}Authenticating with the RFU back-end..."
+        isAuthenticating = true
         if(isTokenExpired()) {
             val session = mc.user
             val serverId = UUID.randomUUID().toString().replace("-", "")
@@ -291,6 +299,8 @@ object Network : RegisteredEvent {
 
                 postRequest("${API_URL}/auth/login?user=${User.getUsername()}&server=$serverId") { response ->
                     if(response.isSuccessful()) {
+                        authenticationStatus = null
+                        isAuthenticating = false
                         token = response.body
                         if (World.isOnHypixel) {
                             WebSocketClient.connect(token!!)
@@ -298,14 +308,24 @@ object Network : RegisteredEvent {
                         }
                     }
                     else {
+                        authenticationStatus = if (response.statusCode == null) {
+                            "${LIGHT_RED}Could not reach the RFU auth server. Try /rfubackend reconnect."
+                        } else {
+                            "${LIGHT_RED}RFU auth failed (HTTP ${response.statusCode}). Try /rfubackend reconnect."
+                        }
+                        isAuthenticating = false
                         RFULogger.warn("Failed to log into RFU Back-end\n${response.body}")
                     }
                 }
 
             } catch (e: Exception) {
+                authenticationStatus = "${LIGHT_RED}Failed to login onto RFU Back-end. Try restarting Minecraft."
+                isAuthenticating = false
                 RFULogger.error("Verification failed: ${e.message}")
             }
         } else {
+            authenticationStatus = null
+            isAuthenticating = false
             if (World.isOnHypixel) {
                 RFULogger.dev("Renewing Token")
                 WebSocketClient.connect(token!!)
@@ -320,6 +340,35 @@ object Network : RegisteredEvent {
         token = null
         expiresAt = null
         authenticateUser()
+    }
+
+    private fun reconnectWithFeedback() {
+        Chat.sendMessage(TextUtils.rfuLiteral("Retrying the RFU back-end connection...", TextStyle(YELLOW)))
+        reauthenticate()
+        reconnectFeedbackJob = Coroutines.launch {
+            repeat(120) {
+                val authenticating = isAuthenticating
+                val authStatus = authenticationStatus
+                val connectionIssue = WebSocketClient.lastConnectionIssue
+                val result = when {
+                    !BackendSettings.backendAccepted -> "Reconnect cancelled: the back-end connection was disabled." to YELLOW
+                    !World.isOnHypixel -> "Reconnect cancelled: you left Hypixel." to YELLOW
+                    WebSocketClient.isConnected -> "RFU back-end connection restored!" to LIGHT_GREEN
+                    !authenticating && authStatus != null -> "Reconnect failed: $authStatus" to LIGHT_RED
+                    connectionIssue != null -> "Reconnect failed: $connectionIssue\n${WebSocketClient.connectionStatus}" to LIGHT_RED
+                    else -> null
+                }
+                if (result != null) {
+                    Chat.sendMessage(TextUtils.rfuLiteral(result.first, TextStyle(result.second)))
+                    return@launch
+                }
+                delay(250)
+            }
+            Chat.sendMessage(TextUtils.rfuLiteral(
+                "RFU is still disconnected after 30 seconds. ${WebSocketClient.connectionStatus}\nCheck latest.log for details.",
+                TextStyle(YELLOW)
+            ))
+        }
     }
 
     private fun sendAcknowledgementMessage() {
@@ -350,10 +399,22 @@ object Network : RegisteredEvent {
 
     @Command
     object BackEndCommand : AbstractCommand("rfubackend") {
-        override val description: String = "Used for accepting/denying back-end features upon first install."
+        override val description: String = "Accept, deny, or reconnect RFU back-end features."
 
         override fun build(builder: LiteralArgumentBuilder<FabricClientCommandSource>) {
             builder
+                .then(lit("reconnect").executes {
+                    if (!BackendSettings.backendAccepted) {
+                        it.source.sendFeedback(TextUtils.backendAcceptMessage())
+                    } else if (!World.isOnHypixel) {
+                        it.source.sendFeedback(TextUtils.rfuLiteral("Join Hypixel before reconnecting to the RFU back-end.", TextStyle(LIGHT_RED)))
+                    } else if (reconnectFeedbackJob?.isActive == true) {
+                        it.source.sendFeedback(TextUtils.rfuLiteral("A reconnect is already in progress. ${WebSocketClient.connectionStatus}", TextStyle(YELLOW)))
+                    } else {
+                        reconnectWithFeedback()
+                    }
+                    1
+                })
                 .then(lit("accept").executes {
                     BackendSettings.backendAccepted = true
                     BackendSettings.decisionMade = true

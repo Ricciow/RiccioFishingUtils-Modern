@@ -9,6 +9,7 @@
 - Added a message hiding option for the Stealth enchantment.
 
 ### Changes
+- Improved feedback on the websocket isn't connected message.
 - Changed RFU sound volumes to allow up to 500% and made it use integers instead of decimal numbers in numeric fields labeled in %.
 - Made Party Finder cards more compact.
 - Compact numbers now use up to three digits of precision.
