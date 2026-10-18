@@ -133,11 +133,10 @@ object SeaCreatureConfig : Category("Sea Creatures") {
         condition = { detectionAlert }
     }
 
-    var rareScSoundVolume by float(1f) {
+    var rareScSoundVolume by int(100) {
         name = Literal("Sound Volume")
-        description = Literal("The volume for the rare SC sound")
-        range = 0f..1f
-        slider = true
+        description = Literal("The volume for the rare SC sound in %.")
+        range = 0..500
         condition = { detectionAlert && rareScSound }
     }
 
@@ -192,11 +191,10 @@ object SeaCreatureConfig : Category("Sea Creatures") {
         condition = { goldenDragonAlert }
     }
 
-    var goldenDragonVolume by float(1f) {
+    var goldenDragonVolume by int(100) {
         name = Literal("Sound Volume")
-        description = Literal("The volume for the GDrag alert sound")
-        range = 0f..1f
-        slider = true
+        description = Literal("The volume for the GDrag alert sound in %.")
+        range = 0..500
         condition = { goldenDragonAlert && goldenDragonSound }
     }
 

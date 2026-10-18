@@ -130,11 +130,10 @@ object GeneralFishing : Category("General Fishing") {
         condition = { deployableExpiredAlert }
     }
 
-    var deployableExpiredVolume by float(1f) {
+    var deployableExpiredVolume by int(100) {
         name = Literal("Sound Volume")
-        description = Literal("The volume for the expired sound")
-        range = 0f..1f
-        slider = true
+        description = Literal("The volume for the expired sound in %.")
+        range = 0..500
         condition = { deployableExpiredAlert && deployableExpiredSound }
     }
 
@@ -206,11 +205,10 @@ object GeneralFishing : Category("General Fishing") {
         condition = { failCastAlert }
     }
 
-    var failCastVolume by float(1f) {
+    var failCastVolume by int(100) {
         name = Literal("Sound Volume")
-        description = Literal("The volume for the failed cast sound")
-        range = 0f..1f
-        slider = true
+        description = Literal("The volume for the failed cast sound in %.")
+        range = 0..500
         condition = { failCastAlert && failCastSound }
     }
 

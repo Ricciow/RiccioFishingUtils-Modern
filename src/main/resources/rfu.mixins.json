@@ -9,6 +9,8 @@
     "AtmosphericFogEnvironmentMixin",
     "ConfigScreenMixin",
     "OptionsMixin",
+    "SoundEngineMixin",
+    "ChannelAccessor",
     "KeyMappingAccessor",
     "KeyboardHandlerMixin",
     "MouseHandlerMixin",

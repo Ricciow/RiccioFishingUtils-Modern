@@ -84,11 +84,10 @@ object HotSpotSettings : Category("Hot Spots") {
         condition = { hotspotExpiredAlert }
     }
 
-    var hotspotExpiredVolume by float(1f) {
+    var hotspotExpiredVolume by int(100) {
         name = Literal("Sound Volume")
-        description = Literal("The volume for the hotspot expired sound")
-        range = 0f..1f
-        slider = true
+        description = Literal("The volume for the hotspot expired sound in %.")
+        range = 0..500
         condition = { hotspotExpiredAlert && hotspotExpiredSound }
     }
 

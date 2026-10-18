@@ -29,7 +29,7 @@ object RodTimerSound : Feature {
                     
                     val pitch = 0.5f + progress * 1.5f
                     
-                    Sounds.playSound("rfu:rod_timer", pitch, 1f)
+                    Sounds.playSound("rfu:rod_timer", pitch)
                 }
             }
 

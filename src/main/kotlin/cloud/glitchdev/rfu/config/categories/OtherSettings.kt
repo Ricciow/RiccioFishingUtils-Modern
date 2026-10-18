@@ -34,11 +34,10 @@ object OtherSettings : Category("Other") {
         description = Literal("Plays a sound when you unlock an achievement.")
     }
 
-    var achievementVolume by float(1f) {
+    var achievementVolume by int(100) {
         name = Literal("Achievement Volume")
-        description = Literal("The volume for the achievement unlock sound")
-        range = 0f..1f
-        slider = true
+        description = Literal("The volume for the achievement unlock sound in %.")
+        range = 0..500
         condition = { achievementSound }
     }
 
@@ -62,11 +61,10 @@ object OtherSettings : Category("Other") {
         condition = { littlefootAlert }
     }
 
-    var littlefootVolume by float(1f) {
+    var littlefootVolume by int(100) {
         name = Literal("Sound Volume")
-        description = Literal("The volume for the Littlefoot alert sound")
-        range = 0f..1f
-        slider = true
+        description = Literal("The volume for the Littlefoot alert sound in %.")
+        range = 0..500
         condition = { littlefootAlert && littlefootSound }
     }
 
@@ -225,11 +223,10 @@ object OtherSettings : Category("Other") {
         condition = { fullInventoryAlert }
     }
 
-    var fullInventoryVolume by float(1f) {
+    var fullInventoryVolume by int(100) {
         name = Literal("Sound Volume")
-        description = Literal("The volume for the full inventory alert sound.")
-        range = 0f..1f
-        slider = true
+        description = Literal("The volume for the full inventory alert sound in %.")
+        range = 0..500
         condition = { fullInventoryAlert && fullInventorySound }
     }
 
