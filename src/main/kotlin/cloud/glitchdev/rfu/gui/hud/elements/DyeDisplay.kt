@@ -25,6 +25,7 @@ import java.awt.Color
 
 @HudElement
 object DyeDisplay : AbstractHudElement("dyeDisplay") {
+    override val relatedSetting = "Dye Display"
     override val requirement: Boolean
         get() = BackendSettings.backendAccepted && OtherSettings.dyeDisplay
     override val isElementActive: Boolean

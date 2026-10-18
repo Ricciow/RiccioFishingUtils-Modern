@@ -313,6 +313,7 @@ object HudWindow : BaseWindow(false) {
 
     override fun onWindowClose() {
         isEditingOpen = false
+        showSnapLines(null, null)
         revertResetButton()
         updateState()
 
@@ -413,12 +414,13 @@ object HudWindow : BaseWindow(false) {
 
         infoText = UIWrappedText(
             text = """Hold Ctrl/Shift to disable snapping
-                     |Scroll up/down to resize, hold Ctrl/Shift for more precision""".trimMargin(),
+                     |Scroll up/down to resize, hold Ctrl/Shift for more precision
+                     |Middle-click a HUD element to open its settings""".trimMargin(),
             shadow = true,
             centered = true
         ).constrain {
             x = CenterConstraint()
-            y = 100.percent - 48.pixels
+            y = 100.percent - 60.pixels
         } childOf background
 
         exportBanner = UIWrappedText(

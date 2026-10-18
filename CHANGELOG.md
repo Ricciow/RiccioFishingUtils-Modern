@@ -1,6 +1,7 @@
 # v1.19.4 - Minor
 
 ### Features
+- Added middle-click bind to open each HUD element's settings and return to the HUD editor when closing them.
 - Added a reminder when the mod considers the user is muted.
 - Added a Party Finder block button.
 - Added personal best kill time achievements for Jawbus and Thunder.

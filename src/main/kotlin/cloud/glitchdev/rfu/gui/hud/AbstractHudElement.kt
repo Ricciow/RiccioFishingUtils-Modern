@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.gui.hud
 
 import cloud.glitchdev.rfu.events.managers.CloseConfigEvents.registerCloseConfigEvent
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
+import cloud.glitchdev.rfu.feature.settings.Settings
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.hud.UIFakeInventory
 import cloud.glitchdev.rfu.gui.window.HudWindow
@@ -52,6 +53,8 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
     var currentX = defaultX
     var currentY = defaultY
     open val requirement: Boolean = true
+    /** Search term used to open this element's settings from the HUD editor. */
+    open val relatedSetting: String? = null
     open val isElementActive: Boolean = true
     open val inventoryScreenFilter: (AbstractContainerScreen<*>) -> Boolean = { it is InventoryScreen }
     open val isOnInventory: Boolean
@@ -100,6 +103,15 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
 
         this.onMouseClick { event ->
             if (HudWindow.isEditingOpen && isEditing) {
+                if (event.mouseButton == 2 && !HudWindow.isExportMode) {
+                    relatedSetting?.takeIf { it.isNotBlank() }?.let {
+                        val editTarget = HudWindow.currentEditTarget
+                        Settings.open(it) { HudWindow.openEditingGui(editTarget) }
+                    }
+                    event.stopPropagation()
+                    return@onMouseClick
+                }
+                if (event.mouseButton != 0) return@onMouseClick
                 grabWindowFocus()
                 isDragging = true
                 dragOffsetX = event.absoluteX - this.getLeft()

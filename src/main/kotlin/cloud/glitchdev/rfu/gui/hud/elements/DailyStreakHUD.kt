@@ -41,6 +41,7 @@ import kotlin.time.toKotlinDuration
 
 @HudElement
 object DailyStreakHUD : AbstractTextHudElement("dailyStreakDisplay") {
+    override val relatedSetting = "Daily Streaks"
     override val requirement: Boolean
         get() = DailyStreakSettings.dailyStreakEnabled
 

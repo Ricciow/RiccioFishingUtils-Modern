@@ -20,6 +20,7 @@ object DeployablesDisplay : AbstractTextHudElement("deployablesDisplay") {
     private var activeDeployables: Map<DeployableType, DeployableManager.Deployable> = emptyMap()
     private var wasActive: Boolean = false
 
+    override val relatedSetting = "Deployables"
     override val requirement: Boolean
         get() = GeneralFishing.deployableDisplay
     override val isElementActive: Boolean

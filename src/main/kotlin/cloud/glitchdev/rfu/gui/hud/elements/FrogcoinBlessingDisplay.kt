@@ -14,6 +14,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 @HudElement
 object FrogcoinBlessingDisplay : AbstractTextHudElement("frogcoinBlessing") {
+    override val relatedSetting = "Frogcoin Blessing Display"
     override val requirement: Boolean
         get() = LotusAtollSettings.frogcoinBlessingDisplay
     override val isElementActive: Boolean

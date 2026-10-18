@@ -28,6 +28,7 @@ object FishTrackingDisplay : AbstractFishingHudElement("fishTrackingDisplay") {
     override val displaysWhilePaused: Boolean = true
     override val requiresFishing: Boolean
         get() = GeneralFishing.fishTrackingOnlyWhenFishing
+    override val relatedSetting = "Fishing Display"
     override val requirement: Boolean
         get() = GeneralFishing.fishTrackingDisplay
     override val isElementActive: Boolean

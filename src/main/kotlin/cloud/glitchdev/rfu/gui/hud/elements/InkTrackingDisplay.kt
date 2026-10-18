@@ -29,6 +29,7 @@ object InkTrackingDisplay : AbstractFishingHudElement("inktrackingdisplay") {
     override val displaysWhilePaused: Boolean = true
     override val requiresFishing: Boolean
         get() = InkFishing.fishTrackingOnlyWhenFishing
+    override val relatedSetting = "Ink Fishing"
     override val requirement: Boolean
         get() = InkFishing.inkTrackingDisplay && (World.island == FishingIslands.PARK)
     override val isElementActive: Boolean

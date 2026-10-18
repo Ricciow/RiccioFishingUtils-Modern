@@ -37,6 +37,7 @@ object RareDropsDisplay : AbstractFishingHudElement("rareDropsDisplay") {
     override val requiresFishing: Boolean
         get() = DropsSettings.rareDropsOnlyWhenFishing
 
+    override val relatedSetting = "Rare Drops Display"
     override val requirement: Boolean
         get() = DropsSettings.rareDropsDisplay
 

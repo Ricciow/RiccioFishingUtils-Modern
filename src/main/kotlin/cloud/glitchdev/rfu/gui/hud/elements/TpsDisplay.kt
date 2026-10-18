@@ -10,6 +10,7 @@ import java.util.Locale
 
 @HudElement
 object TpsDisplay : AbstractTextHudElement("tpsDisplay") {
+    override val relatedSetting = "TPS Display"
     override val requirement: Boolean
         get() = OtherSettings.tpsDisplay
 

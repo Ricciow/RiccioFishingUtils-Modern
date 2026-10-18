@@ -29,6 +29,7 @@ object RareSCDisplay : AbstractFishingHudElement("rareSCDisplay") {
     override val requiresFishing: Boolean
         get() = SeaCreatureConfig.rareScOnlyWhenFishing
 
+    override val relatedSetting = "Rare SC Display"
     override val requirement: Boolean
         get() = SeaCreatureConfig.rareScDisplay
 

@@ -11,6 +11,7 @@ import gg.essential.universal.utils.toUnformattedString
 
 @HudElement
 object ScCapDisplay : AbstractFishingHudElement("scCapDisplay") {
+    override val relatedSetting = "Sea Creature Cap Display"
     override val requirement: Boolean
         get() = SeaCreatureConfig.scCapDisplay
 

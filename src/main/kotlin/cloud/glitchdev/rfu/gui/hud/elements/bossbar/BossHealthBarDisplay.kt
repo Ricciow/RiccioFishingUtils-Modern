@@ -21,6 +21,7 @@ object BossHealthBarDisplay : AbstractHudElement("bossHealthBar") {
     val entities: MutableSet<SkyblockEntity> = mutableSetOf()
     val bars : MutableList<BossHealthBar> = mutableListOf()
 
+    override val relatedSetting = "Health Bars"
     override val requirement: Boolean
         get() = SeaCreatureConfig.bossHealthBars
 

@@ -46,6 +46,7 @@ object TrophySackDisplay : AbstractTextHudElement("trophySackDisplay") {
     override val renderOnInventory: Boolean = true
     override val inventoryScreenFilter: (AbstractContainerScreen<*>) -> Boolean = { isTrophySack(it) }
     override val isClickableOnInventory: Boolean = true
+    override val relatedSetting = "Trophy Sacks"
     override val requirement: Boolean
         get() = TrophyFishing.trophySackDisplay
 
