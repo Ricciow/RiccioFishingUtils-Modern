@@ -48,7 +48,9 @@ object Settings : SimpleCommand("rfu") {
                     mc.schedule { onClose() }
                 }
             }
+            //~ if >=26.2 'setScreen' -> 'gui.setScreen' {
             mc.gui.setScreen(screen)
+            //~}
         }
         //~}
     }
