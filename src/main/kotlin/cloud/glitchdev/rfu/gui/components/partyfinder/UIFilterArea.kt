@@ -98,42 +98,42 @@ class UIFilterArea(private val filterHeight : YConstraint, var onFilterChange: (
             onFilterChange()
         }.constrain {
             x = CramSiblingConstraint(4f)
-            y = CramSiblingConstraint()
+            y = CramSiblingConstraint(2f)
         } childOf bottomArea
 
         endermanToggle = UIToggleCard(DataOption("enderman_9", "Enderman 9")) {
             onFilterChange()
         }.constrain {
             x = CramSiblingConstraint(4f)
-            y = CramSiblingConstraint()
+            y = CramSiblingConstraint(2f)
         } childOf bottomArea
 
         lootingToggle = UIToggleCard(DataOption("looting_5", "Looting 5")) {
             onFilterChange()
         }.constrain {
             x = CramSiblingConstraint(4f)
-            y = CramSiblingConstraint()
+            y = CramSiblingConstraint(2f)
         } childOf bottomArea
 
         brainFoodToggle = UIToggleCard(DataOption("brain_food", "Brain Food")) {
             onFilterChange()
         }.constrain {
             x = CramSiblingConstraint(4f)
-            y = CramSiblingConstraint()
+            y = CramSiblingConstraint(2f)
         } childOf bottomArea
 
         bloodshotToggle = UIToggleCard(DataOption("bloodshot", "Bloodshot")) {
             onFilterChange()
         }.constrain {
             x = CramSiblingConstraint(4f)
-            y = CramSiblingConstraint()
+            y = CramSiblingConstraint(2f)
         } childOf bottomArea
 
         witherImpactToggle = UIToggleCard(DataOption("wither_impact", "Wither Impact")) {
             onFilterChange()
         }.constrain {
             x = CramSiblingConstraint(4f)
-            y = CramSiblingConstraint()
+            y = CramSiblingConstraint(2f)
         } childOf bottomArea
     }
 
