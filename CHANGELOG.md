@@ -12,3 +12,4 @@
 
 ### Backend
 - Updated Elementa and UniversalCraft, and removed the text bleed patch workaround.
+- Added support for cubes in the 3D rendering utilities.

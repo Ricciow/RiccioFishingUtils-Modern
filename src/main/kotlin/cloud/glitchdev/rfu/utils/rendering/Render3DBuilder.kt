@@ -10,6 +10,7 @@ class Render3DBuilder(val shape: Shape, val context: LevelRenderContext) {
     var position: Vec3 = Vec3.ZERO
     var startPosition: Vec3 = Vec3.ZERO
     var radius: Float = 1.0f
+    var size: Float = 1.0f
     var color: Color = Color.WHITE
     var borderColor: Color? = null
     var height: Float = 0.0f
@@ -65,6 +66,9 @@ class Render3DBuilder(val shape: Shape, val context: LevelRenderContext) {
             Shape.CYLINDER -> Render3D.renderCylinder(
                 position, radius, height, color, context, slices, borderColor, lineWidth, scaleWithDistance, topBorder, bottomBorder
             )
+            Shape.CUBE -> Render3D.renderCube(
+                position, size, color, context, filled, borderColor, lineWidth, scaleWithDistance
+            )
             Shape.LINE -> Render3D.renderLine(
                 startPosition, position, color, context, lineWidth, scaleWithDistance
             )
@@ -81,6 +85,10 @@ class Render3DBuilder(val shape: Shape, val context: LevelRenderContext) {
 
         inline fun LevelRenderContext.cylinder(block: Render3DBuilder.() -> Unit) {
             Render3DBuilder(Shape.CYLINDER, this).apply(block).render()
+        }
+
+        inline fun LevelRenderContext.cube(block: Render3DBuilder.() -> Unit) {
+            Render3DBuilder(Shape.CUBE, this).apply(block).render()
         }
 
         inline fun LevelRenderContext.line(block: Render3DBuilder.() -> Unit) {

@@ -1,5 +1,5 @@
 package cloud.glitchdev.rfu.utils.rendering
 
 enum class Shape {
-    SPHERE, CYLINDER, LINE, TEXT
+    SPHERE, CYLINDER, LINE, TEXT, CUBE
 }

@@ -268,6 +268,111 @@ object Render3D {
         }
     }
 
+    internal fun renderCube(
+        location: Vec3,
+        size: Float,
+        color: Color,
+        context: LevelRenderContext,
+        filled: Boolean = false,
+        borderColor: Color? = null,
+        lineWidth: Float = 2.0f,
+        scaleWithDistance: Boolean = false
+    ) {
+        if (!size.isFinite() || size <= 0f) return
+        val halfSize = size / 2f
+        if (!isVisible(AABB(location, location).inflate(halfSize.toDouble()))) return
+
+        //? if >=26.2 {
+        val matrixStack = context.poseStack()
+        //?} else {
+        /*val consumers = context.bufferSource()
+        val matrixStack = context.poseStack()
+        *///?}
+
+        val vecToCube = location.subtract(camera.position())
+        matrixStack.pushPose()
+        try {
+            matrixStack.translate(vecToCube.x, vecToCube.y, vecToCube.z)
+            val matrix = Matrix4f(matrixStack.last().pose())
+            val min = -halfSize
+            val max = halfSize
+
+            if (filled) {
+                //? if >=26.2 {
+                context.submitNodeCollector().submitCustomGeometry(matrixStack, RFURenderTypes.TRANSLUCENT_SHAPE) { _, buffer ->
+                //?} else {
+                /*val buffer = consumers.getBuffer(RFURenderTypes.TRANSLUCENT_SHAPE)
+                *///?}
+
+                // Bottom and top.
+                drawVertexSolid(buffer, matrix, min, min, min, color, 0f, -1f, 0f)
+                drawVertexSolid(buffer, matrix, max, min, min, color, 0f, -1f, 0f)
+                drawVertexSolid(buffer, matrix, max, min, max, color, 0f, -1f, 0f)
+                drawVertexSolid(buffer, matrix, min, min, max, color, 0f, -1f, 0f)
+                drawVertexSolid(buffer, matrix, min, max, min, color)
+                drawVertexSolid(buffer, matrix, min, max, max, color)
+                drawVertexSolid(buffer, matrix, max, max, max, color)
+                drawVertexSolid(buffer, matrix, max, max, min, color)
+
+                // North and south.
+                drawVertexSolid(buffer, matrix, min, min, min, color, 0f, 0f, -1f)
+                drawVertexSolid(buffer, matrix, min, max, min, color, 0f, 0f, -1f)
+                drawVertexSolid(buffer, matrix, max, max, min, color, 0f, 0f, -1f)
+                drawVertexSolid(buffer, matrix, max, min, min, color, 0f, 0f, -1f)
+                drawVertexSolid(buffer, matrix, min, min, max, color, 0f, 0f, 1f)
+                drawVertexSolid(buffer, matrix, max, min, max, color, 0f, 0f, 1f)
+                drawVertexSolid(buffer, matrix, max, max, max, color, 0f, 0f, 1f)
+                drawVertexSolid(buffer, matrix, min, max, max, color, 0f, 0f, 1f)
+
+                // West and east.
+                drawVertexSolid(buffer, matrix, min, min, min, color, -1f, 0f, 0f)
+                drawVertexSolid(buffer, matrix, min, min, max, color, -1f, 0f, 0f)
+                drawVertexSolid(buffer, matrix, min, max, max, color, -1f, 0f, 0f)
+                drawVertexSolid(buffer, matrix, min, max, min, color, -1f, 0f, 0f)
+                drawVertexSolid(buffer, matrix, max, min, min, color, 1f, 0f, 0f)
+                drawVertexSolid(buffer, matrix, max, max, min, color, 1f, 0f, 0f)
+                drawVertexSolid(buffer, matrix, max, max, max, color, 1f, 0f, 0f)
+                drawVertexSolid(buffer, matrix, max, min, max, color, 1f, 0f, 0f)
+                //? if >=26.2 {
+                }
+                //?}
+            }
+
+            val outlineColor = borderColor ?: if (!filled) color else null
+            if (outlineColor != null) {
+                val distance = vecToCube.length().toFloat()
+                val finalLineWidth = if (scaleWithDistance) {
+                    lineWidth * maxOf(1f, 10f / maxOf(1f, distance))
+                } else {
+                    lineWidth
+                }
+
+                //? if >=26.2 {
+                context.submitNodeCollector().submitCustomGeometry(matrixStack, RenderTypes.LINES) { _, buffer ->
+                //?} else {
+                /*val buffer = consumers.getBuffer(RenderTypes.LINES)
+                *///?}
+
+                for (y in floatArrayOf(min, max)) {
+                    drawLine(buffer, matrix, min, y, min, max, y, min, outlineColor, finalLineWidth)
+                    drawLine(buffer, matrix, max, y, min, max, y, max, outlineColor, finalLineWidth)
+                    drawLine(buffer, matrix, max, y, max, min, y, max, outlineColor, finalLineWidth)
+                    drawLine(buffer, matrix, min, y, max, min, y, min, outlineColor, finalLineWidth)
+                }
+                for (x in floatArrayOf(min, max)) {
+                    for (z in floatArrayOf(min, max)) {
+                        drawLine(buffer, matrix, x, min, z, x, max, z, outlineColor, finalLineWidth)
+                    }
+                }
+                //? if >=26.2 {
+                }
+                //?}
+            }
+        } finally {
+            matrixStack.popPose()
+        }
+    }
+
     internal fun renderLine(
         start: Vec3,
         end: Vec3,
