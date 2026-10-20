@@ -91,4 +91,16 @@ object LavaFishing : Category("Lava Fishing") {
             "Shows a preview of the vanquisher party message when fishing in chat."
         ) { vanquisherPartyMessages }
     }
+
+    init {
+        dualSeparator {
+            title = "Other"
+            description = "Other stuff!"
+        }
+    }
+
+    var highlightItemsToSell by boolean(false) {
+        name = Literal("Highlight Items to Sell")
+        description = Literal("Highlights the random lava stuff while trades is open.")
+    }
 }
