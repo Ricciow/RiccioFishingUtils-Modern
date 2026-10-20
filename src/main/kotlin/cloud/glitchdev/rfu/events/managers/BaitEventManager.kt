@@ -5,7 +5,7 @@ import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.SetSlotEvents.registerSetSlotEvent
-import cloud.glitchdev.rfu.utils.fishing.BaitUtils
+import cloud.glitchdev.rfu.utils.ItemCountUtils
 
 @AutoRegister
 object BaitEventManager : AbstractEventManager<(Bait?, Int) -> Unit, BaitEventManager.BaitChangedEvent>(), RegisteredEvent {
@@ -31,7 +31,7 @@ object BaitEventManager : AbstractEventManager<(Bait?, Int) -> Unit, BaitEventMa
 
             lastBait = bait
 
-            val count = BaitUtils.getBaitRemainingCount(item) ?: 0
+            val count = ItemCountUtils.getRemainingCount(item, "Bait") ?: 0
 
             if (lastCount == 0 || lastCount <= count) {
                 lastCount = count

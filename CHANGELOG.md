@@ -1,6 +1,7 @@
 # v1.20.0 - Major
 
 ### Features
+- Added Show Actual Arrow Count, same as Show Actual Bait Count but for arrows.
 
 ### Changes
 

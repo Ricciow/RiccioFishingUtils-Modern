@@ -24,6 +24,11 @@ object OtherSettings : Category("Other") {
         description = Literal("Shows seasonal decorations and themes.")
     }
 
+    var showActualArrowCount by boolean(true) {
+        name = Literal("Show Actual Arrow Count")
+        description = Literal("Replaces the selected arrow's stack size with the actual remaining arrow count.")
+    }
+
     var achievementTrackerDisplay by boolean(true) {
         name = Literal("Achievement Tracker Display")
         description = Literal("Shows the currently tracked achievements.")
