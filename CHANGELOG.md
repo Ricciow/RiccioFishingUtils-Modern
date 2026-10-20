@@ -8,3 +8,4 @@
 - Improved TPS tracking.
 
 ### Backend
+- Updated Elementa and UniversalCraft, and removed the text bleed patch workaround.
