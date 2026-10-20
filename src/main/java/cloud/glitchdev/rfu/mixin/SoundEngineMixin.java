@@ -1,5 +1,7 @@
 package cloud.glitchdev.rfu.mixin;
 
+import cloud.glitchdev.rfu.events.managers.SoundPlayEvents;
+import cloud.glitchdev.rfu.events.wrappers.Cancelable;
 import cloud.glitchdev.rfu.utils.BoostedSoundInstance;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -14,11 +16,19 @@ import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.SOFTGainClampEx;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.function.Consumer;
 
 @Mixin(SoundEngine.class)
 public class SoundEngineMixin {
+    @Inject(method = "play", at = @At("HEAD"), cancellable = true)
+    private void rfu$onPlay(SoundInstance instance, CallbackInfoReturnable<SoundEngine.PlayResult> cir) {
+        Cancelable<SoundEngine.PlayResult> cancelable = new Cancelable<>(cir, SoundEngine.PlayResult.NOT_STARTED);
+        SoundPlayEvents.INSTANCE.getRunTasks().invoke(instance, cancelable);
+    }
+
     @WrapOperation(
         method = {"play", "calculateVolume(Lnet/minecraft/client/resources/sounds/SoundInstance;)F"},
         at = @At(value = "INVOKE", target = "Lnet/minecraft/client/sounds/SoundEngine;calculateVolume(FLnet/minecraft/sounds/SoundSource;)F")

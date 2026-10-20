@@ -274,6 +274,11 @@ object GeneralFishing : Category("General Fishing") {
         description = Literal("Plays a sound when the fishing stream approaches, increasing in pitch.")
     }
 
+    var muteAnnoyingSounds by boolean(false) {
+        name = Literal("Mute Annoying Sounds")
+        description = Literal("Mutes Ghast Crying in Backwater Bayou and Elder Guardian moans in the Crimson Isle.")
+    }
+
     var bobbinTimeDisplay by reloadableBoolean(true) {
         name = Literal("Bobbin' Time Display")
         description = Literal("Display nearby bobbers and Bobbin' Time bonus on screen")
