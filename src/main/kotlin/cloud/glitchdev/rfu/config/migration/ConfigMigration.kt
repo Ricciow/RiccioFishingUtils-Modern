@@ -14,7 +14,7 @@ import kotlin.io.path.writeText
 import kotlin.math.roundToInt
 
 object ConfigMigration {
-    const val CURRENT_VERSION = 10
+    const val CURRENT_VERSION = 11
     const val VERSION_KEY = "rfuConfigVersion"
 
     private val logger = LoggerFactory.getLogger(ConfigMigration::class.java)
@@ -61,6 +61,7 @@ object ConfigMigration {
                 7 -> migrateV7toV8(json)
                 8 -> migrateV8toV9(json)
                 9 -> migrateV9toV10(json)
+                10 -> migrateV10toV11(json)
             }
         }
     }
@@ -234,6 +235,70 @@ object ConfigMigration {
                 cat.addProperty(key, (value.asDouble.coerceIn(0.0, 5.0) * 100).roundToInt())
             }
         }
+    }
+
+    private fun migrateV10toV11(json: JsonObject) {
+        fun migrate(categoryName: String, editor: String, durationKey: String, baseTicks: Int, vararg fields: Pair<String, String>) {
+            val category = getCategory(json, categoryName) ?: return
+            val destination = getOrCreateCategory(category, editor)
+            for ((oldKey, newKey) in fields) {
+                val value = category.remove(oldKey) ?: continue
+                if (!destination.has(newKey)) destination.add(newKey, value)
+            }
+            val extraTicks = category.remove(durationKey)?.asInt ?: 0
+            if (!destination.has("durationSeconds")) {
+                destination.addProperty("durationSeconds", (baseTicks + extraTicks).coerceIn(0, 600) / 20.0)
+            }
+        }
+
+        migrate("General Fishing", "failCast", "failCastTitleExtraTicks", 5,
+            "failCastAlert" to "enabled", "failCastSound" to "sound", "failCastVolume" to "volume"
+        )
+        migrate("General Fishing", "noBait", "noBaitTitleExtraTicks", 10,
+            "noBaitAlert" to "enabled"
+        )
+        migrate("General Fishing", "missingRodPiece", "missingRodPieceTitleExtraTicks", 10,
+            "missingRodPieceAlert" to "enabled"
+        )
+        migrate("General Fishing", "noFishingArmor", "noFishingArmorTitleExtraTicks", 10,
+            "noFishingArmorAlert" to "enabled"
+        )
+        migrate("General Fishing", "deployable", "deployableTitleExtraTicks", 10,
+            "deployableExpiredAlert" to "enabled", "deployableExpiredSound" to "sound", "deployableExpiredVolume" to "volume", "deployableAlertTypes" to "types"
+        )
+        migrate("Hot Spots", "noTikiMask", "noTikiMaskTitleExtraTicks", 10,
+            "noTikiMaskAlert" to "enabled"
+        )
+        migrate("Hot Spots", "hotspotExpired", "hotspotExpiredTitleExtraTicks", 10,
+            "hotspotExpiredAlert" to "enabled", "hotspotExpiredSound" to "sound", "hotspotExpiredVolume" to "volume"
+        )
+        migrate("Ink Fishing", "rain", "rainTitleExtraTicks", 20,
+            "rainAlert" to "enabled", "rainAlertSound" to "sound", "rainAlertVolume" to "volume"
+        )
+        migrate("Jerry Fishing", "reindrake", "reindrakeTitleExtraTicks", 20,
+            "reindrakeAlert" to "enabled"
+        )
+        migrate("Sea Creatures", "rareSc", "rareScTitleExtraTicks", 10,
+            "detectionAlert" to "enabled", "rareScSound" to "sound", "rareScSoundVolume" to "volume", "rareScAlertPreset" to "titleTemplate"
+        )
+        migrate("Sea Creatures", "goldenDragon", "goldenDragonTitleExtraTicks", 40,
+            "goldenDragonAlert" to "enabled", "goldenDragonSound" to "sound", "goldenDragonVolume" to "volume", "gdragAlertThreshold" to "threshold"
+        )
+        migrate("Lava Fishing", "jawbusDeath", "jawbusDeathTitleExtraTicks", 10,
+            "diedJawbusAlert" to "enabled", "diedJawbusSound" to "sound", "diedJawbusVolume" to "volume"
+        )
+        migrate("Other", "littlefoot", "littlefootTitleExtraTicks", 10,
+            "littlefootAlert" to "enabled", "littlefootSound" to "sound", "littlefootVolume" to "volume"
+        )
+        migrate("Drops", "rareDrop", "rareDropTitleExtraTicks", 40,
+            "rareDropTitleAlert" to "enabled", "rareDropTitleFormat" to "titleTemplate", "rareDropSubtitleFormat" to "subtitleTemplate"
+        )
+        migrate("Other", "petLevelUp", "petLevelUpTitleExtraTicks", 40,
+            "petLevelUpAlert" to "enabled", "petLevelUpMinLevel" to "minimumLevel"
+        )
+        migrate("Other", "fullInventory", "fullInventoryTitleExtraTicks", 20,
+            "fullInventoryAlert" to "enabled", "fullInventorySound" to "sound", "fullInventoryVolume" to "volume"
+        )
     }
 
     private fun deleteKey(json: JsonObject, category: String, key: String): JsonElement? {

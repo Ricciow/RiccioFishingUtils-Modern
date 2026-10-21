@@ -287,7 +287,7 @@ class UISeaCreatureEditor : UIContainer() {
 
         val normalTemplate = SeaCreatureConfig.catchMessageTemplate
         val doubleHookTemplate = SeaCreatureConfig.doubleHookCatchMessageTemplate
-        val alertTemplate = SeaCreatureConfig.rareScAlertPreset
+        val alertTemplate = SeaCreatureConfig.rareSc.titleTemplate
 
         fun style(template: String): String {
             return template

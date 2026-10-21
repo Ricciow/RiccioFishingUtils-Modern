@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
+import cloud.glitchdev.rfu.config.SoundTitleSettings
 import cloud.glitchdev.rfu.constants.fishing.InkTrackingType
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 
@@ -32,7 +33,6 @@ object InkFishing : Category("Ink Fishing") {
         condition = { inkTrackingDisplay }
     }
 
-
     var goalInk by int(50000) {
         name = Literal("Goal Ink Collection")
         description = Literal("Set an ink collection goal here!")
@@ -53,29 +53,17 @@ object InkFishing : Category("Ink Fishing") {
         }
     }
 
-    var rainAlert by reloadableBoolean(true) {
-        name = Literal("Rain Alert")
-        description = Literal("Show an alert when rain expires in the park")
+    val rain by obj(SoundTitleSettings(
+        title = "&b&lRain Expired!",
+        subtitle = "&7Go to Vanessa!",
+        duration = 20,
+        fadeIn = 10,
+        fadeOut = 10,
+        soundId = "rfu:rain_expired"
+    )) {
+        name = Literal("Rain Expiry Alert")
+        description = Literal("Toggle and edit the title, subtitle, duration, and preview.")
+        searchTerms = listOf("rain expiry", "rain", "title", "subtitle", "duration", "sound", "volume", "park", "vanessa", "ink fishing")
     }
 
-    var rainTitleExtraTicks by int(0) {
-        name = Literal("Rain Title Duration")
-        description = Literal("Extra time for the rain expired title, in ticks.")
-        range = 0..200
-        slider = true
-        condition = { rainAlert }
-    }
-
-    var rainAlertSound by reloadableBoolean(true) {
-        name = Literal("Rain Alert Sound")
-        description = Literal("Plays a sound when rain expires in the park")
-        condition = { rainAlert }
-    }
-
-    var rainAlertVolume by int(100) {
-        name = Literal("Sound Volume")
-        description = Literal("The volume for the rain alert sound in %.")
-        range = 0..500
-        condition = { rainAlert && rainAlertSound }
-    }
 }

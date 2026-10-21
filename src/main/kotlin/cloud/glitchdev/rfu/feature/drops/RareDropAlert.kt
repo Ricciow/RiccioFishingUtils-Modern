@@ -68,10 +68,8 @@ object RareDropAlert : Feature {
         )
 
         // Title Alert
-        if (DropsSettings.rareDropTitleAlert) {
-            val title = DropsSettings.rareDropTitleFormat.formatTemplate(*placeholders)
-            val subtitle = DropsSettings.rareDropSubtitleFormat.formatTemplate(*placeholders)
-            Title.showTitle(title, subtitle, fadeIn = 5, duration = 40, fadeOut = 5, extraTicks = DropsSettings.rareDropTitleExtraTicks)
+        if (DropsSettings.rareDrop.enabled) {
+            DropsSettings.rareDrop.show(*placeholders)
         }
 
         // Chat Message
@@ -90,15 +88,7 @@ object RareDropAlert : Feature {
         }
     }
 
-    fun previewTitle() {
-        preview(isTitle = true)
-    }
-
     fun previewMessage() {
-        preview(isTitle = false)
-    }
-
-    private fun preview(isTitle: Boolean) {
         val placeholders = arrayOf(
             "drop" to "Radioactive Vial",
             "dropcolor" to "&d",
@@ -109,13 +99,7 @@ object RareDropAlert : Feature {
             "total" to "500"
         )
 
-        if (isTitle) {
-            val title = DropsSettings.rareDropTitleFormat.formatTemplate(*placeholders)
-            val subtitle = DropsSettings.rareDropSubtitleFormat.formatTemplate(*placeholders)
-            Title.showTitle(title, subtitle, fadeIn = 5, duration = 40, fadeOut = 5, extraTicks = DropsSettings.rareDropTitleExtraTicks)
-        } else {
-            val preview = DropsSettings.rareDropMessageFormat.formatTemplate(*placeholders)
-            sendMessage(Component.literal(preview))
-        }
+        val preview = DropsSettings.rareDropMessageFormat.formatTemplate(*placeholders)
+        sendMessage(Component.literal(preview))
     }
 }

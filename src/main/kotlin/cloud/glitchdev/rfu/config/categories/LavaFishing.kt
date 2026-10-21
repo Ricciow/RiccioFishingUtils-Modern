@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
+import cloud.glitchdev.rfu.config.SoundTitleSettings
 import cloud.glitchdev.rfu.feature.fishing.VanquisherPartyMessage
 
 object LavaFishing : Category("Lava Fishing") {
@@ -16,30 +17,18 @@ object LavaFishing : Category("Lava Fishing") {
         description = Literal("Pro hint: Don't die")
     }
 
-    var diedJawbusAlert by boolean(true) {
+    val jawbusDeath by obj(SoundTitleSettings(
+        title = "&8☠ &7{player} &8☠",
+        subtitle = "&cwas killed by Lord Jawbus",
+        placeholders = "{player}",
+        previews = mapOf(
+            "Preview" to listOf("player" to "Ricciow")
+        ),
+        soundId = "rfu:jawbus_death"
+    )) {
         name = Literal("Jawbus Death Alert")
-        description = Literal("Sends an alert whenever someone dies to jawbus")
-    }
-
-    var jawbusDeathTitleExtraTicks by int(0) {
-        name = Literal("Jawbus Death Title Duration")
-        description = Literal("Extra time for the Jawbus death title, in ticks.")
-        range = 0..200
-        slider = true
-        condition = { diedJawbusAlert }
-    }
-
-    var diedJawbusSound by reloadableBoolean(true) {
-        name = Literal("Jawbus Death Sound")
-        description = Literal("Plays a sound whenever someone dies to jawbus")
-        condition = { diedJawbusAlert }
-    }
-
-    var diedJawbusVolume by int(100) {
-        name = Literal("Sound Volume")
-        description = Literal("The volume for the jawbus death sound in %.")
-        range = 0..500
-        condition = { diedJawbusAlert && diedJawbusSound }
+        description = Literal("Toggle and edit the title, subtitle, duration, and preview.")
+        searchTerms = listOf("jawbus death", "jawbusdeath", "title", "subtitle", "duration", "sound", "volume")
     }
 
     init {

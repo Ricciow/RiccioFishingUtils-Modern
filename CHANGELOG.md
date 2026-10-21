@@ -1,6 +1,7 @@
 # v1.20.0 - Major
 
 ### Features
+- Added customizable title alerts and added sound previews.
 - Added a highlight setting for lava fishing itens to sell.
 - Added an achievement for using Moby-Ducks.
 - Added Show Actual Arrow Count, same as Show Actual Bait Count but for arrows.
@@ -9,6 +10,7 @@
 ### Changes
 
 ### Fixes
+- Fixed the Jawbus death sound ignoring its toggle.
 - Improved TPS tracking.
 
 ### Backend

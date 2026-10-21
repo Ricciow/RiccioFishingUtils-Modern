@@ -10,7 +10,6 @@ import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobUpdateEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Sounds
-import cloud.glitchdev.rfu.utils.Title
 import cloud.glitchdev.rfu.utils.dsl.parseHealthValue
 
 @RFUFeature
@@ -32,7 +31,7 @@ object GdragAlert : Feature {
     }
 
     private fun checkEntity(entity: SkyblockEntity) {
-        if (!SeaCreatureConfig.goldenDragonAlert) return
+        if (!SeaCreatureConfig.goldenDragon.enabled) return
 
         val petName = PetUpdateEventManager.currentPetName
         val hasGdrag = petName?.contains("Golden Dragon") ?: false
@@ -47,12 +46,12 @@ object GdragAlert : Feature {
 
         val healthPercentage = (health.toDouble() / maxHealth.toDouble()) * 100
 
-        if (healthPercentage <= SeaCreatureConfig.gdragAlertThreshold) {
+        if (healthPercentage <= SeaCreatureConfig.goldenDragon.threshold) {
             if (!hasGdrag) {
                 alertedEntities.add(entity)
-                Title.showTitle("§c§lNO G-DRAGON!", "§eEquip your Golden Dragon!", fadeIn = 5, duration = 40, fadeOut = 5, extraTicks = SeaCreatureConfig.goldenDragonTitleExtraTicks)
-                if (SeaCreatureConfig.goldenDragonSound) {
-                    Sounds.playSound("rfu:gdrag_alert", 1f, SeaCreatureConfig.goldenDragonVolume)
+                SeaCreatureConfig.goldenDragon.show()
+                if (SeaCreatureConfig.goldenDragon.sound) {
+                    Sounds.playSound("rfu:gdrag_alert", 1f, SeaCreatureConfig.goldenDragon.volume)
                 }
             }
         }
