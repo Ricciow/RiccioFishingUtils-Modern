@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.config.categories
 import cloud.glitchdev.rfu.config.Category
 import cloud.glitchdev.rfu.constants.fishing.TrophyFish
 import cloud.glitchdev.rfu.constants.fishing.TrophyFrog
+import cloud.glitchdev.rfu.feature.fishing.SulphurSkitterRange.SulphurSkitterMode
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 
 object TrophyFishing : Category("Trophy Fishing") {
@@ -66,6 +67,17 @@ object TrophyFishing : Category("Trophy Fishing") {
     var slugfishTimer by boolean(false) {
         name = Literal("Slugfish Timer")
         description = Literal("Displays the 20s timer required to catch slugfish above the bobber, shorter if using slug pet.")
+    }
+
+    var sulphurSkitterRange by reloadableBoolean(true) {
+        name = Literal("Sulphur Skitter Range")
+        description = Literal("Shows the four block range around sulphur blocks while trophy fishing.")
+    }
+
+    var sulphurSkitterMode by enum(SulphurSkitterMode.MANUAL) {
+        name = Literal("Sulphur Skitter Range Mode")
+        description = Literal("Auto highlights sulphur blocks within 30 blocks. Manual lets you right-click a sponge to toggle its range.")
+        condition = { sulphurSkitterRange }
     }
 
     init {
