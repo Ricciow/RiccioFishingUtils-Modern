@@ -140,7 +140,9 @@ object  World : RegisteredEvent {
                     isOnAlpha = false
                 }
 
-                isOnHypixel = ip?.endsWith("hypixel.net") ?: false
+                isOnHypixel = ip != null && listOf("hypixel.net", "hypixel.fast").any {
+                    ip == it || ip.endsWith(".$it")
+                }
             }
         }
 

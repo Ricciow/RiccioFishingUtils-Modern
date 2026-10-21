@@ -11,6 +11,7 @@
 ### Changes
 
 ### Fixes
+- Fixed Hypixel detection when connecting through hypixel.fast (wathever this is)
 - Improved the exp/h when under level 50 to not double count gains.
 - Fixed the Jawbus death sound ignoring its toggle.
 - Improved TPS tracking.
