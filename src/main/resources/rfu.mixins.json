@@ -7,7 +7,7 @@
     "ServicesKeyInfoMixin",
     "SkinManagerMixin",
     "AtmosphericFogEnvironmentMixin",
-    "FluidRendererMixin",
+    "FluidStateModelSetMixin",
     "FogRendererMixin",
     "GameRendererMixin",
     "LocalPlayerMixin",
