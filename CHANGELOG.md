@@ -1,6 +1,7 @@
 # v1.20.0 - Major
 
 ### Features
+- Added Custom Lava feature.
 - Added Sulphur Skitter range display.
 - Added customizable title alerts and added sound previews.
 - Added a highlight setting for lava fishing itens to sell.
