@@ -20,8 +20,8 @@ import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 import cloud.glitchdev.rfu.utils.dsl.compact
 import cloud.glitchdev.rfu.utils.dsl.toReadableString
+import cloud.glitchdev.rfu.utils.gui.UIImages
 import gg.essential.elementa.components.UIContainer
-import gg.essential.elementa.components.UIImage
 import gg.essential.elementa.components.UIText
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedMaxSizeConstraint
@@ -157,7 +157,7 @@ object DailyStreakHUD : AbstractTextHudElement("dailyStreakDisplay") {
             height = iconSize.pixels()
         } childOf parent
 
-        val refreshImage = UIImage.ofResourceCached("/assets/rfu/ui/refresh.png").constrain {
+        val refreshImage = UIImages.ofResource("/assets/rfu/ui/refresh.png").constrain {
             x = CenterConstraint()
             y = CenterConstraint()
             width = 100.percent()

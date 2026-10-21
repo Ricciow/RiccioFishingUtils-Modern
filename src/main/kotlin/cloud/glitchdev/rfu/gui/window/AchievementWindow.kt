@@ -14,13 +14,13 @@ import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.achievement.Achievement
+import cloud.glitchdev.rfu.utils.gui.UIImages
 import gg.essential.elementa.components.ScrollComponent
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIBlock
 import gg.essential.elementa.components.UIText
 import gg.essential.elementa.effects.ScissorEffect
-import gg.essential.elementa.components.UIImage
 import gg.essential.elementa.constraints.AspectConstraint
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
@@ -123,7 +123,7 @@ object AchievementWindow : BaseWindow() {
                 AchievementCategory.TROPHY_FISHING -> "/assets/rfu/ui/trophy.png"
                 AchievementCategory.SPECIAL -> "/assets/rfu/ui/looting_5.png"
             }
-            val image = UIImage.ofResourceCached(iconPath)
+            val image = UIImages.ofResource(iconPath)
             val btn = UIButton.withImage(image, 5f) {
                 selectedCategory = category
                 refreshAchievements()

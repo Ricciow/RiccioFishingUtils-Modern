@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.gui.components.partyfinder
 
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.model.data.DataOption
+import cloud.glitchdev.rfu.utils.gui.UIImages
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIImage
 import gg.essential.elementa.components.UIRoundedRectangle
@@ -144,7 +145,7 @@ class UIToggleCard(
             height = ChildBasedMaxSizeConstraint()
         } childOf background
 
-        iconUI = UIImage.ofResourceCached(icon).constrain {
+        iconUI = UIImages.ofResource(icon).constrain {
             x = SiblingConstraint()
             y = CenterConstraint()
             width = AspectConstraint()

@@ -9,12 +9,12 @@ import cloud.glitchdev.rfu.gui.components.elementa.group.GroupManager
 import cloud.glitchdev.rfu.gui.components.pets.UIPetCard
 import cloud.glitchdev.rfu.gui.components.pets.UIPetFilterArea
 import cloud.glitchdev.rfu.model.pets.PetAuctionResponse
+import cloud.glitchdev.rfu.utils.gui.UIImages
 import cloud.glitchdev.rfu.utils.network.api.PetsApi
 import gg.essential.elementa.UIComponent
 import gg.essential.elementa.components.ScrollComponent
 import gg.essential.elementa.components.UIBlock
 import gg.essential.elementa.components.UIContainer
-import gg.essential.elementa.components.UIImage
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
 import gg.essential.elementa.constraints.*
@@ -119,7 +119,7 @@ object BestPetsWindow : BaseWindow(false) {
             height = 100.percent - 5.pixels
         } childOf header
 
-        val filterImage = UIImage.ofResourceCached("/assets/rfu/ui/filter.png")
+        val filterImage = UIImages.ofResource("/assets/rfu/ui/filter.png")
         filterButton = UIButton.withImage(filterImage, 5f) {
             filtersOpen = !filtersOpen
             onUpdate()
@@ -133,7 +133,7 @@ object BestPetsWindow : BaseWindow(false) {
             hoverColor = UIScheme.pfInputBgHovered.toConstraint()
         } childOf rightArea
 
-        val refreshImage = UIImage.ofResourceCached("/assets/rfu/ui/refresh.png")
+        val refreshImage = UIImages.ofResource("/assets/rfu/ui/refresh.png")
         refreshButton = UIButton.withImage(refreshImage, 5f) {
             fetchData()
         }.constrain {

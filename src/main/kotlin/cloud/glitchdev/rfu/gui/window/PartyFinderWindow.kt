@@ -30,6 +30,7 @@ import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.utils.Coroutines
 import cloud.glitchdev.rfu.utils.World
 import cloud.glitchdev.rfu.utils.User
+import cloud.glitchdev.rfu.utils.gui.UIImages
 import cloud.glitchdev.rfu.utils.gui.setHidden
 import cloud.glitchdev.rfu.utils.gui.isHidden
 import cloud.glitchdev.rfu.utils.network.PartyWebSocket
@@ -37,7 +38,6 @@ import gg.essential.elementa.UIComponent
 import gg.essential.elementa.components.ScrollComponent
 import gg.essential.elementa.components.UIBlock
 import gg.essential.elementa.components.UIContainer
-import gg.essential.elementa.components.UIImage
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
 import gg.essential.elementa.constraints.AspectConstraint
@@ -286,7 +286,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             height = 100.percent - 5.pixels
         } childOf header
 
-        val createImage = UIImage.ofResourceCached("/assets/rfu/ui/edit.png")
+        val createImage = UIImages.ofResource("/assets/rfu/ui/edit.png")
         UIButton.withImage(createImage, 5f) {
             if (creationOpen && ::creationArea.isInitialized) {
                 creationArea.saveSessionState()
@@ -303,7 +303,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             hoverColor = UIScheme.pfInputBgHovered.toConstraint()
         } childOf rightArea
 
-        val filterImage = UIImage.ofResourceCached("/assets/rfu/ui/filter.png")
+        val filterImage = UIImages.ofResource("/assets/rfu/ui/filter.png")
         filterButton = UIButton.withImage(filterImage, 5f) {
             filtersOpen = !filtersOpen
             onUpdate()
@@ -317,7 +317,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             hoverColor = UIScheme.pfInputBgHovered.toConstraint()
         } childOf rightArea
 
-        val refreshImage = UIImage.ofResourceCached("/assets/rfu/ui/refresh.png")
+        val refreshImage = UIImages.ofResource("/assets/rfu/ui/refresh.png")
         refreshButton = UIButton.withImage(refreshImage, 5f) {
             PartyWebSocket.syncParties()
             refreshButton.disabled = true
