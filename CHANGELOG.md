@@ -13,12 +13,14 @@
 ### Changes
 
 ### Fixes
+- Fixed mobs without health, such as Puddle Jumpers, not being detected as SkyBlock entities.
 - Fixed Hypixel detection when connecting through hypixel.fast (wathever this is)
 - Improved the exp/h when under level 50 to not double count gains.
 - Fixed the Jawbus death sound ignoring its toggle.
 - Improved TPS tracking.
 
 ### Backend
+- Added migrations for sea-creature settings.
 - Added a slot rendering event manager.
 - Added a world border rendering event manager.
 - Updated Elementa and UniversalCraft, and removed the text bleed patch workaround.

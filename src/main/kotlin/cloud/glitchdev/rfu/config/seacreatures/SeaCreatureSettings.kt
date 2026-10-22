@@ -1,7 +1,10 @@
 package cloud.glitchdev.rfu.config.seacreatures
 
+import cloud.glitchdev.rfu.config.migration.SeaCreatureSettingsMigration
+
 data class SeaCreatureSettings(
-    val creatures: Map<String, SeaCreatureSetting>
+    val creatures: Map<String, SeaCreatureSetting>,
+    val version: Int = SeaCreatureSettingsMigration.CURRENT_VERSION
 ) {
     companion object {
         fun empty(): SeaCreatureSettings = SeaCreatureSettings(mapOf())

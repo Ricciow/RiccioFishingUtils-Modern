@@ -26,7 +26,7 @@ object BossHealthBarDisplay : AbstractHudElement("bossHealthBar") {
         get() = SeaCreatureConfig.bossHealthBars
 
     override val isElementActive: Boolean
-        get() = entities.isNotEmpty()
+        get() = entities.any { it.hasHealth }
 
     val barsContainer = UIContainer().constrain {
         width = (400 * scale).pixels()
@@ -64,16 +64,13 @@ object BossHealthBarDisplay : AbstractHudElement("bossHealthBar") {
             bars.forEach { it.forceRendering = false }
         }
 
-        // Group / Merge entities
         val mergedInfos = mutableListOf<BossBarEntityInfo>()
-        
-        // We group entities that should be merged
-        val (toMerge, toNotMerge) = entities.partition { entity ->
+
+        val (toMerge, toNotMerge) = entities.filter { it.hasHealth }.partition { entity ->
             val sc = SeaCreatures.get(entity.sbName)
             sc != null && sc.mergeBossbarHp
         }
 
-        // Group toMerge by sbName
         val grouped = toMerge.groupBy { it.sbName }
         grouped.forEach { (sbName, groupEntities) ->
             val count = groupEntities.size
@@ -98,7 +95,6 @@ object BossHealthBarDisplay : AbstractHudElement("bossHealthBar") {
             )
         }
 
-        // Add non-merged entities
         toNotMerge.forEach { entity ->
             val displayName = SeaCreatures.get(entity.sbName)?.scDisplayName ?: entity.sbName
             mergedInfos.add(

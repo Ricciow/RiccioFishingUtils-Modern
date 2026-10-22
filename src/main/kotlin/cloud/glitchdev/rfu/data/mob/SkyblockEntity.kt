@@ -43,6 +43,8 @@ class SkyblockEntity(
     val createdAt : Instant = Clock.System.now() - (modelEntity.tickCount * 50L).milliseconds
     var health: String = "0"
     var maxHealth: String = "0"
+    var hasHealth: Boolean = false
+        private set
     var isShurikened: Boolean = false
     var originBobber: BobberInfo? = null
     var isDying: Boolean = false
@@ -219,6 +221,7 @@ class SkyblockEntity(
             this.sbName = newData.sbName
             this.health = newData.health
             this.maxHealth = newData.maxHealth
+            this.hasHealth = newData.hasHealth
             this.isShurikened = newData.isShurikened
         } else {
             RFULogger.warn("Attempted to update Skyblock Entity Data without a Skyblock Entity")
@@ -318,24 +321,22 @@ class SkyblockEntity(
         val health: String,
         val maxHealth: String,
         val isShurikened: Boolean,
+        val hasHealth: Boolean,
     )
 
     companion object {
-        private val entityRegex = """(?:﴾ )?\[Lv\d+] \S+ (.+) (\d+[\.,]?\d*[kMB]?)/(\d+[\.,]?\d*[kMB]?)❤(?: ﴿)?( ✯)?""".toRegex(RegexOption.IGNORE_CASE)
+        private val entityRegex = """(?:﴾ )?\[Lv\d+] \S+ (.+?)(?: (\d+[\.,]?\d*[kMB]?)/(\d+[\.,]?\d*[kMB]?)❤)?(?: ﴿)?( ✯)?""".toRegex(RegexOption.IGNORE_CASE)
         private val corruptedRegex = """^aCorrupted (.+?)a$""".toRegex()
 
         fun isNameTagEntity(entity: ArmorStand): Boolean {
-            if (!entity.hasCustomName()) return false
-            val name = entity.name.toUnformattedString()
-
-            return name.matches(entityRegex)
+            return parseNameTag(entity) != null
         }
 
         fun parseNameTag(entity: ArmorStand): NameTagData? {
             if (!entity.hasCustomName()) return null
             val name = entity.name.toUnformattedString()
 
-            val match = entityRegex.find(name) ?: return null
+            val match = entityRegex.matchEntire(name) ?: return null
 
             var sbName = match.groupValues[1].takeIf { it.isNotEmpty() } ?: return null
             sbName = corruptedRegex.find(sbName)?.groupValues?.getOrNull(1) ?: sbName
@@ -344,7 +345,7 @@ class SkyblockEntity(
             val maxHealth = match.groupValues[3].ifEmpty { "0" }
             val isShurikened = match.groups[4] != null
 
-            return NameTagData(sbName, health, maxHealth, isShurikened)
+            return NameTagData(sbName, health, maxHealth, isShurikened, hasHealth = match.groups[2] != null)
         }
     }
 }

@@ -270,7 +270,7 @@ object MobManager : RegisteredEvent {
         if (!entity.isInvisible) return false
 
         val parsed = SkyblockEntity.parseNameTag(entity) ?: return false
-        if (parsed.health == "0") return false
+        if (parsed.hasHealth && parsed.health == "0") return false
 
         val foundModels = findSequentialModels(entity, parsed.sbName, world)
         if (foundModels.isEmpty()) {

@@ -16,6 +16,7 @@ import cloud.glitchdev.rfu.RiccioFishingUtils
 import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.utils.network.Network
 import cloud.glitchdev.rfu.config.categories.BackendSettings
+import cloud.glitchdev.rfu.config.migration.SeaCreatureSettingsMigration
 import com.google.gson.Gson
 import java.lang.reflect.Field
 
@@ -28,6 +29,13 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
         type = SeaCreatureSettings::class.java,
         defaultFactory = { loadDefaults() }
     )
+
+    init {
+        // JsonFile recovers backups before migration so recovered settings are upgraded too.
+        if (SeaCreatureSettingsMigration.runMigrations(RiccioFishingUtils.CONFIG_DIR.resolve("rfu/repo/sc-config.json"))) {
+            seaCreatureConfigFile.load(triggerOnReload = false)
+        }
+    }
 
     private var defaultConfig: SeaCreatureSettings = loadDefaults()
     private val scConfig get() = seaCreatureConfigFile.data
@@ -249,7 +257,7 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
 
                 if (addedCount == 0 && updatedCount == 0 && deletedCount == 0) return@getRequest
 
-                val newSettings = SeaCreatureSettings(mergedCreatures)
+                val newSettings = currentConfig.copy(creatures = mergedCreatures)
 
                 try {
                     val field: Field = JsonFile::class.java.getDeclaredField("data")
