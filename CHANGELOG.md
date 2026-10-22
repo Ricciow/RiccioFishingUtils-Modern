@@ -1,7 +1,8 @@
 # v1.20.0 - Major
 
 ### Features
-- Added Custom Lava feature.
+- Added Coords waypoints (off by default).
+- Added Custom Lava feature (off by default).
 - Added Sulphur Skitter range display.
 - Added a world border on the Crimson Isle in the Spider's Den direction.
 - Added customizable title alerts and added sound previews.
@@ -24,4 +25,4 @@
 - Added a slot rendering event manager.
 - Added a world border rendering event manager.
 - Updated Elementa and UniversalCraft, and removed the text bleed patch workaround.
-- Added support for cubes in the 3D rendering utilities.
+- Added support for cubes, beacon beams, and player heads in the 3D rendering utilities.

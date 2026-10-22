@@ -21,6 +21,12 @@ object OtherSettings : Category("Other") {
         description = Literal("Sends a message whenever you're in a lobby you've been in before.")
     }
 
+    var renderChatCoords by boolean(false) {
+        name = Literal("Render Chat Coords")
+        description = Literal("Renders the coordinates sent in chat for 30 seconds.")
+        searchTerms = listOf("coords", "coordinates", "waypoint", "beacon")
+    }
+
     var seasonalEffects by boolean(true) {
         name = Literal("Seasonal Effects")
         description = Literal("Shows seasonal decorations and themes.")

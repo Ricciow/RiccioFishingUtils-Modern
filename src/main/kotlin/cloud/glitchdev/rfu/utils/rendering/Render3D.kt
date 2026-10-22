@@ -13,7 +13,9 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext
 import net.minecraft.client.gui.Font
+import net.minecraft.client.renderer.blockentity.BeaconRenderer
 import net.minecraft.network.chat.Component
+import net.minecraft.resources.Identifier
 //?if < 26.2 {
 /*import net.minecraft.client.renderer.culling.Frustum
 *///?}
@@ -31,6 +33,31 @@ object Render3D {
 
     inline fun draw(context: LevelRenderContext, block: LevelRenderContext.() -> Unit) {
         context.apply(block)
+    }
+
+    fun renderBeacon(
+        location: Vec3,
+        color: Color,
+        context: LevelRenderContext,
+        height: Int = BeaconRenderer.MAX_RENDER_Y
+    ) {
+        val world = mc.level ?: return
+        if (height <= 0) return
+
+        val poses = context.poseStack()
+        val relative = location.subtract(camera.position())
+        val partialTick = mc.deltaTracker.getGameTimeDeltaPartialTick(false)
+        val animationTime = Math.floorMod(world.gameTime, 40L).toFloat() + partialTick
+        poses.pushPose()
+        try {
+            poses.translate(relative.x - 0.5, relative.y, relative.z - 0.5)
+            BeaconRenderer.submitBeaconBeam(
+                poses, context.submitNodeCollector(), BeaconRenderer.BEAM_LOCATION, 1f, animationTime,
+                0, height, color.rgb, BeaconRenderer.SOLID_BEAM_RADIUS, BeaconRenderer.BEAM_GLOW_RADIUS
+            )
+        } finally {
+            poses.popPose()
+        }
     }
 
     internal fun renderSphere(
@@ -550,16 +577,17 @@ object Render3D {
 
         val font = mc.font
         val lines = text.lines()
-        val startY = -((lines.size - 1) * font.lineHeight) / 2f
-
         val backgroundAlpha = (backgroundOpacity * 255).toInt().coerceIn(0, 255)
         val backgroundColorInt = (backgroundAlpha shl 24) or 0x000000
+        // Vanilla backgrounds span y - 1 through y + 9, one pixel more than the font's line height.
+        val lineSpacing = font.lineHeight + if (backgroundAlpha > 0) 1 else 0
+        val startY = -((lines.size - 1) * lineSpacing) / 2f
 
         for ((index, line) in lines.withIndex()) {
             val lineComp = Component.literal(line)
             val charSequence = lineComp.getVisualOrderText()
             val x = -font.width(lineComp) / 2f
-            val y = startY + index * font.lineHeight
+            val y = startY + index * lineSpacing
 
             //? if >=26.2 {
             val displayMode = if (seeThrough) Font.DisplayMode.SEE_THROUGH else Font.DisplayMode.NORMAL
@@ -594,5 +622,52 @@ object Render3D {
         }
 
         matrixStack.popPose()
+    }
+
+    fun renderPlayerHead(
+        location: Vec3,
+        skin: Identifier,
+        context: LevelRenderContext,
+        size: Float = 8f,
+        scale: Float = 0.025f,
+        showHat: Boolean = true,
+        seeThrough: Boolean = false,
+        scaleWithDistance: Boolean = false
+    ) {
+        if (!size.isFinite() || size <= 0f || !scale.isFinite() || scale <= 0f) return
+        val poses = context.poseStack()
+        val collector = context.submitNodeCollector()
+        val relative = location.subtract(camera.position())
+        val finalScale = if (scaleWithDistance) {
+            scale * maxOf(1f, relative.length().toFloat() / 10f)
+        } else {
+            scale
+        }
+        poses.pushPose()
+        try {
+            poses.translate(relative.x, relative.y, relative.z)
+            //~ if >=26.3 'mulPose' -> 'rotate' {
+            poses.rotate(camera.rotation())
+            //~}
+            poses.scale(finalScale, -finalScale, finalScale)
+            val halfSize = size / 2f
+            val renderType = if (seeThrough) RenderTypes.textSeeThrough(skin) else RenderTypes.text(skin)
+            collector.submitCustomGeometry(poses, renderType) { pose, buffer ->
+                fun face(u: Float, v: Float, z: Float) {
+                    val u0 = u / 64f
+                    val v0 = v / 64f
+                    val u1 = (u + 8f) / 64f
+                    val v1 = (v + 8f) / 64f
+                    buffer.addVertex(pose.pose(), -halfSize, halfSize, z).setColor(-1).setUv(u0, v1).setLight(0xF000F0)
+                    buffer.addVertex(pose.pose(), halfSize, halfSize, z).setColor(-1).setUv(u1, v1).setLight(0xF000F0)
+                    buffer.addVertex(pose.pose(), halfSize, -halfSize, z).setColor(-1).setUv(u1, v0).setLight(0xF000F0)
+                    buffer.addVertex(pose.pose(), -halfSize, -halfSize, z).setColor(-1).setUv(u0, v0).setLight(0xF000F0)
+                }
+                face(8f, 8f, 0f)
+                if (showHat) face(40f, 8f, 0.01f)
+            }
+        } finally {
+            poses.popPose()
+        }
     }
 }
