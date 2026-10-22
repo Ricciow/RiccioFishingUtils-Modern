@@ -10,6 +10,7 @@
     "FluidStateModelSetMixin",
     "FogRendererMixin",
     "GameRendererMixin",
+    "WorldBorderExtractionMixin",
     "LocalPlayerMixin",
     "ScreenEffectMixin",
     "WaterOverlayTextureMixin",

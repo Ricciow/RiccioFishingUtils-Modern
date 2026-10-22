@@ -3,6 +3,7 @@
 ### Features
 - Added Custom Lava feature.
 - Added Sulphur Skitter range display.
+- Added a world border on the Crimson Isle in the Spider's Den direction.
 - Added customizable title alerts and added sound previews.
 - Added a highlight setting for lava fishing itens to sell.
 - Added an achievement for using Moby-Ducks.
@@ -19,5 +20,6 @@
 
 ### Backend
 - Added a slot rendering event manager.
+- Added a world border rendering event manager.
 - Updated Elementa and UniversalCraft, and removed the text bleed patch workaround.
 - Added support for cubes in the 3D rendering utilities.

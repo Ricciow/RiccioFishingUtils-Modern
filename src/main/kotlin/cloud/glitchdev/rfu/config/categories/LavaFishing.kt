@@ -95,6 +95,11 @@ object LavaFishing : Category("Lava Fishing") {
         description = Literal("Highlights the random lava stuff while trades is open.")
     }
 
+    var showCrimsonIsleWorldBorder by boolean(true) {
+        name = Literal("Show Crimson Isle World Border")
+        description = Literal("Shows a world border on the Crimson Isle, only on the spider's den side.")
+    }
+
     init {
         dualSeparator {
             title = "Custom Lava"
