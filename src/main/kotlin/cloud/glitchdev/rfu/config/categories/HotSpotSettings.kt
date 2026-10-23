@@ -71,6 +71,15 @@ object HotSpotSettings : Category("Hot Spots") {
         searchTerms = listOf("hotspot expiry", "hotspotexpired", "title", "subtitle", "duration", "sound", "volume")
     }
 
+    val outsideHotspot by obj(TitleSettings(
+        title = "&c&lOUTSIDE HOTSPOT!",
+        enabledByDefault = false
+    )) {
+        name = Literal("Outside Hotspot Alert")
+        description = Literal("Alerts when your bobber lands or moves outside a hotspot. Toggle and edit the title, subtitle, duration, and preview.")
+        searchTerms = listOf("outside hotspot", "no hotspot", "title", "subtitle", "duration")
+    }
+
     init {
         dualSeparator {
             title = "Sharing"

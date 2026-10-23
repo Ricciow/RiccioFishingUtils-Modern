@@ -6,6 +6,7 @@
 - Added Sulphur Skitter range display.
 - Added a world border on the Crimson Isle in the Spider's Den direction.
 - Added customizable title alerts and added sound previews.
+- Added alerts for fishing without Moby-Duck, without rain, without a Chum Bucket, or fishing outside a hotspot. (all off by default)
 - Added a highlight setting for lava fishing itens to sell.
 - Added an achievement for using Moby-Ducks.
 - Added Show Actual Arrow Count, same as Show Actual Bait Count but for arrows.

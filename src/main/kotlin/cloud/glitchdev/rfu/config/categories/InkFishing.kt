@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
 import cloud.glitchdev.rfu.config.SoundTitleSettings
+import cloud.glitchdev.rfu.config.TitleSettings
 import cloud.glitchdev.rfu.constants.fishing.InkTrackingType
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 
@@ -51,6 +52,25 @@ object InkFishing : Category("Ink Fishing") {
             title = "Alerts"
             description = "Be notified about ink fishing events"
         }
+    }
+
+    val noRain by obj(TitleSettings(
+        title = "&c&lNO RAIN!",
+        subtitle = "&7Go to Vanessa!",
+        enabledByDefault = false
+    )) {
+        name = Literal("No Rain Alert")
+        description = Literal("Alerts when fishing without rain in the Park. Toggle and edit the title, subtitle, duration, and preview.")
+        searchTerms = listOf("no rain", "park", "vanessa", "title", "subtitle", "duration")
+    }
+
+    val noChumBucket by obj(TitleSettings(
+        title = "&c&lNO CHUM BUCKET!",
+        enabledByDefault = false
+    )) {
+        name = Literal("No Chum Bucket Alert")
+        description = Literal("Alerts when fishing in the Park without your Chum or Chumcap Bucket. Toggle and edit the title, subtitle, duration, and preview.")
+        searchTerms = listOf("chum", "chumcap", "bucket", "park", "title", "subtitle", "duration")
     }
 
     val rain by obj(SoundTitleSettings(

@@ -202,6 +202,15 @@ object GeneralFishing : Category("General Fishing") {
         searchTerms = listOf("no fishing armor", "nofishingarmor", "title", "subtitle", "duration")
     }
 
+    val noMobyDuck by obj(TitleSettings(
+        title = "&c&lNO MOBY-DUCK!",
+        enabledByDefault = false
+    )) {
+        name = Literal("No Moby-Duck Alert")
+        description = Literal("Alerts when fishing without an active Moby-Duck buff. Toggle and edit the title, subtitle, duration, and preview.")
+        searchTerms = listOf("moby duck", "moby-duck", "wisdom", "buff", "title", "subtitle", "duration")
+    }
+
     init {
         dualSeparator {
             title = "Fishing"
