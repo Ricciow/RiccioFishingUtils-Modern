@@ -12,10 +12,11 @@
 - Added a mute annoying sounds feature under General Fishing to mute Banshees and Thunder Sparks.
 
 ### Changes
+- Moved the Party Finder scrollbar slightly to the right.
 
 ### Fixes
 - Fixed mobs without health, such as Puddle Jumpers, not being detected as SkyBlock entities.
-- Fixed Hypixel detection when connecting through hypixel.fast (wathever this is)
+- Fixed Hypixel detection when connecting through hypixel.fast (whatever this is)
 - Improved the exp/h when under level 50 to not double count gains.
 - Fixed the Jawbus death sound ignoring its toggle.
 - Improved TPS tracking.

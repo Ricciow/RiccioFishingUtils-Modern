@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.gui.components.elementa
 
 import gg.essential.elementa.components.UIContainer
+import gg.essential.elementa.components.Window
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
 import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.renderer.ElementaExtractor
@@ -27,6 +28,11 @@ class UIVanillaTooltip(
 
     override fun extractComponent(extractor: ElementaExtractor) {
         if (tooltipEnabled && isHovered()) {
+            val hoveredFloatingComponent = Window.ofOrNull(this)?.hoveredFloatingComponent
+            if (hoveredFloatingComponent != null && hoveredFloatingComponent !== this && !isChildOf(hoveredFloatingComponent)) {
+                super.extractComponent(extractor)
+                return
+            }
             val (mouseX, mouseY) = getMousePosition()
             val pixelX = floor(mouseX * extractor.guiScale).toInt()
             val pixelY = floor(mouseY * extractor.guiScale).toInt()

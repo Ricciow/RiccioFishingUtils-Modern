@@ -180,6 +180,11 @@ object PartyFinderWindow : BaseWindow(false), Feature {
                 presetsModal.setHidden(true)
                 popup.setHidden(true)
                 rulesPopup.setHidden(true)
+                if (isPeeking) {
+                    window.hoveredFloatingComponent = peekHoverBlocker
+                    window.mouseMove(window)
+                    clearPeekHover(window)
+                }
             }
             onRelease = {
                 if (isPeeking) {
@@ -194,6 +199,11 @@ object PartyFinderWindow : BaseWindow(false), Feature {
                 extractRenderState(context, 0, 0, ticks)
             }
         }
+    }
+
+    private fun clearPeekHover(component: UIComponent) {
+        component.children.toList().forEach { clearPeekHover(it) }
+        component.mouseLeaveListeners.forEach { it(component) }
     }
 
     fun create() {
@@ -221,9 +231,9 @@ object PartyFinderWindow : BaseWindow(false), Feature {
         createFilterArea(useableArea)
 
         contentWrapper = UIContainer().constrain {
-            x = CenterConstraint()
+            x = spacing.pixels
             y = SiblingConstraint()
-            width = 100.percent - (2 * spacing).pixels
+            width = 100.percent - (2 * spacing - smallSpacing).pixels
             height = FillConstraint()
         } childOf useableArea effect ScissorEffect()
 
@@ -376,9 +386,9 @@ object PartyFinderWindow : BaseWindow(false), Feature {
         } childOf background
 
         scrollArea = ScrollComponent().constrain {
-            x = CenterConstraint()
+            x = 0.pixels
             y = smallSpacing.pixels
-            width = 100.percent
+            width = 100.percent - smallSpacing.pixels
             height = 100.percent - smallSpacing.pixels
         } childOf partiesContainer
 
@@ -395,9 +405,9 @@ object PartyFinderWindow : BaseWindow(false), Feature {
 
     fun createPartyCreationArea(background: UIComponent) {
         creationArea = UICreateParty().constrain {
-            x = CenterConstraint()
+            x = 0.pixels
             y = SiblingConstraint()
-            width = 100.percent
+            width = 100.percent - smallSpacing.pixels
             height = 0.pixels
         } childOf background
         creationArea.hide(instantly = true)
@@ -417,7 +427,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             if (existingCard?.party == party && existingCard.showNoRequirements == showNoRequirements) {
                 existingCard
             } else {
-                val wasHovered = existingCard?.isHovered() ?: false
+                val wasHovered = !isPeeking && (existingCard?.isHovered() ?: false)
                 UIPartyCard(party, 5f, wasHovered = wasHovered, showNoRequirements = showNoRequirements).constrain {
                     x = JustifiedCramSiblingConstraint(2f)
                     y = JustifiedCramSiblingConstraint(2f)
