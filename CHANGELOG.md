@@ -23,6 +23,7 @@
 - Improved TPS tracking.
 
 ### Backend
+- Reworked rare drop and dyes save to use independent counters.
 - Added migrations for sea-creature settings.
 - Added a slot rendering event manager.
 - Added a world border rendering event manager.

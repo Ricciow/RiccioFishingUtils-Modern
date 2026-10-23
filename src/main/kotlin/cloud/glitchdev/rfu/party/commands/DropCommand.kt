@@ -4,7 +4,6 @@ import cloud.glitchdev.rfu.config.categories.PartySettings
 import cloud.glitchdev.rfu.constants.fishing.IRareDrop
 import cloud.glitchdev.rfu.constants.fishing.RareDrops
 import cloud.glitchdev.rfu.constants.skyblock.Dyes
-import cloud.glitchdev.rfu.data.catches.CatchTracker
 import cloud.glitchdev.rfu.data.drops.DropHistory
 import cloud.glitchdev.rfu.data.drops.DropManager
 import cloud.glitchdev.rfu.party.AbstractPartyCommand
@@ -93,11 +92,10 @@ object DropCommand : AbstractPartyCommand(
 
         if (lastDrop == null) {
             if (hasRelatedScs) {
-                val currentTotal = target.relatedScs.sumOf { sc -> CatchTracker.catchHistory.getOrAdd(sc).total }
                 val response = formatResponse(
                     responseTemplates[6].first,
                     "name" to target.displayName,
-                    "streak" to currentTotal
+                    "streak" to entry.currentCount
                 )
                 sendPartyMessage(response)
             } else {
@@ -129,8 +127,7 @@ object DropCommand : AbstractPartyCommand(
         }
 
         if (hasRelatedScs) {
-            val currentTotal = target.relatedScs.sumOf { sc -> CatchTracker.catchHistory.getOrAdd(sc).total }
-            val scSince = (currentTotal - lastDrop.totalCount).coerceAtLeast(0)
+            val scSince = entry.currentCount
             val sinceCounts = entry.history.mapNotNull { it.sinceCount }
             val avgVal = if (sinceCounts.isNotEmpty()) sinceCounts.average() else null
             val avg = avgVal?.let { String.format(Locale.US, "%.1f", it) }
