@@ -9,6 +9,7 @@
 - Added alerts for fishing without Moby-Duck, without rain, without a Chum Bucket, or fishing outside a hotspot. (all off by default)
 - Added a highlight setting for lava fishing itens to sell.
 - Added an achievement for using Moby-Ducks.
+- Added LF Vial, Texts, Mask, Shed, and Jewel achievements.
 - Added Show Actual Arrow Count, same as Show Actual Bait Count but for arrows.
 - Added a mute annoying sounds feature under General Fishing to mute Banshees and Thunder Sparks.
 
