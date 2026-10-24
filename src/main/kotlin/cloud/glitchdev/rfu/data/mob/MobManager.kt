@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.data.mob
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
+import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
@@ -141,8 +142,9 @@ object MobManager : RegisteredEvent {
 
         if (candidate is Player) {
             val candidateName = candidate.name.toUnformattedString().trim()
+            val matchesAlias = SeaCreatures.get(sbName)?.modelAliases?.any { it == candidateName } == true
             val matchesSbName = candidateName.equals(sbName.trim(), ignoreCase = true) ||
-                sbName.contains(candidateName, ignoreCase = true)
+                sbName.contains(candidateName, ignoreCase = true) || matchesAlias
             if (!matchesSbName) return false
         } else if (candidate is ArmorStand) {
             if (candidate.hasCustomName() || candidate.isCustomNameVisible) return false

@@ -18,6 +18,7 @@
 - Moved the Party Finder scrollbar slightly to the right.
 
 ### Fixes
+- Fixed Great White Sharks not being detected or highlighted.
 - Fixed mobs without health, such as Puddle Jumpers, not being detected as SkyBlock entities.
 - Fixed Hypixel detection when connecting through hypixel.fast (whatever this is)
 - Improved the exp/h when under level 50 to not double count gains.
@@ -25,6 +26,7 @@
 - Improved TPS tracking.
 
 ### Backend
+- Added configurable model name aliases for sea creatures that update from the back-end.
 - Reworked rare drop and dyes save to use independent counters.
 - Added migrations for sea-creature settings.
 - Added a slot rendering event manager.

@@ -27,7 +27,8 @@ class SeaCreatures(
     val mergeBossbarHp: Boolean = false,
     val scDisplayColor: String = "§f",
     val rarePartyMessage: String = "",
-    val invulnerabilityTimer: Boolean = true
+    val invulnerabilityTimer: Boolean = true,
+    val modelAliases: List<String> = emptyList()
 ) {
     fun getSingularNameWithArticle(): String = "$article $scDisplayName"
 

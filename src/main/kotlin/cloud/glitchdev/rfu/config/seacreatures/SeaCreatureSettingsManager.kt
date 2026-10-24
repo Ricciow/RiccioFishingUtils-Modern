@@ -177,7 +177,8 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
                 mergeBossbarHp = isMergeBossbarHpEnabled(scName),
                 scDisplayColor = resolve(scName) { it.scDisplayColor } ?: "§f",
                 rarePartyMessage = resolve(scName) { it.rarePartyMessage } ?: "",
-                invulnerabilityTimer = isInvulnerabilityTimerEnabled(scName)
+                invulnerabilityTimer = isInvulnerabilityTimerEnabled(scName),
+                modelAliases = resolve(scName) { it.modelAliases } ?: emptyList()
             )
             SeaCreatures.register(sc)
             RFULogger.dev("Registered Sea Creature: $scName")
@@ -232,7 +233,8 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
                                 category = backendSc.category,
                                 conditions = backendSc.conditions,
                                 mergeBossbarHp = currentSc.mergeBossbarHp ?: backendSc.mergeBossbarHp,
-                                invulnerabilityTimer = currentSc.invulnerabilityTimer ?: backendSc.invulnerabilityTimer
+                                invulnerabilityTimer = currentSc.invulnerabilityTimer ?: backendSc.invulnerabilityTimer,
+                                modelAliases = backendSc.modelAliases ?: currentSc.modelAliases
                             )
                             if (updatedSc != currentSc) {
                                 mergedCreatures[scName] = updatedSc

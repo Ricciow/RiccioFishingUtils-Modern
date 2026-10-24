@@ -78,6 +78,7 @@
     },
     "Great White Shark": {
       "name": "Great White Shark",
+      "modelAliases": ["GWS"],
       "plural": "Great White Sharks",
       "article": "a",
       "special": true,

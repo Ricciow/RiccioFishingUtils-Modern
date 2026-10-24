@@ -28,7 +28,8 @@ data class SeaCreatureSetting(
     val scDisplayColor: String?,
     val rarePartyMessage: String?,
     val mergeBossbarHp: Boolean?,
-    val invulnerabilityTimer: Boolean? = null
+    val invulnerabilityTimer: Boolean? = null,
+    val modelAliases: List<String>? = null
 ) {
     companion object {
         fun empty(): SeaCreatureSetting = SeaCreatureSetting(
