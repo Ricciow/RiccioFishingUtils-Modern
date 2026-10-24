@@ -171,6 +171,25 @@ object SeaCreatureConfig : Category("Sea Creatures") {
         ) { rarePartyMessages }
     }
 
+    var rareMessagesOutsideParty by reloadableBoolean(false) {
+        name = Literal("SC Messages Outside Parties")
+        description = Literal("Shows a local chat message whenever you catch a rare sea creature while outside a party.")
+    }
+
+    var rareMessageOutsideParty by string("&b&lWOAH! &eA &9{name} &ejust surfaced! &7{dh}&eCatch #{count} after {time}!") {
+        name = Literal("Rare SC Message Outside Parties")
+        description = Literal("Supports color codes such as &4 and &b. Variables: {name}, {total}, {count}, {time}, {dh}, {coords}")
+        condition = { rareMessagesOutsideParty }
+    }
+
+    init {
+        previewButton(
+            RareScPartyMessage::previewOutsideParty,
+            "Preview Outside Party Message",
+            "Shows a preview of the local rare SC message in chat."
+        ) { rareMessagesOutsideParty }
+    }
+
     var rareCocoonPartyMessages by reloadableBoolean(true) {
         name = Literal("Party Cocoon messages")
         description = Literal("Sends a party message whenever you cocoon a rare sea creature.")
@@ -193,7 +212,7 @@ object SeaCreatureConfig : Category("Sea Creatures") {
     var dhText by string("(Double Hook) ") {
         name = Literal("Double Hook Text")
         description = Literal("The text used in {dh}")
-        condition = { rarePartyMessages }
+        condition = { rarePartyMessages || rareMessagesOutsideParty }
     }
 
     init {

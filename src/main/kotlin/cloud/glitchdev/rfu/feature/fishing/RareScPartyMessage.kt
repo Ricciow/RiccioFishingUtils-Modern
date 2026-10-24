@@ -9,15 +9,22 @@ import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.data.catches.CatchTracker
 import cloud.glitchdev.rfu.utils.Chat
+import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.dsl.formatTemplate
 import cloud.glitchdev.rfu.utils.dsl.toReadableString
+import net.minecraft.network.chat.Component
 import kotlin.time.Clock
 
 @RFUFeature
 object RareScPartyMessage : Feature {
     override fun onInitialize() {
         registerSeaCreatureCatchEvent(-10) { seaCreature, isDoubleHook, _, _, _ ->
-            if(!SeaCreatureConfig.rarePartyMessages) return@registerSeaCreatureCatchEvent
+            val inParty = Party.inParty
+            if (inParty) {
+                if (!SeaCreatureConfig.rarePartyMessages) return@registerSeaCreatureCatchEvent
+            } else {
+                if (!SeaCreatureConfig.rareMessagesOutsideParty) return@registerSeaCreatureCatchEvent
+            }
 
             if(RARE_SC_REGEX.matches(seaCreature.scName)) {
                 val history = CatchTracker.catchHistory.getOrAdd(seaCreature)
@@ -33,8 +40,10 @@ object RareScPartyMessage : Feature {
                 val startsWithThe = scName.startsWith("The ", ignoreCase = true)
                 val pos = mc.player?.blockPosition()
 
-                val template = seaCreature.rarePartyMessage.ifEmpty {
-                    SeaCreatureConfig.rarePartyMessage
+                val template = if (inParty) {
+                    seaCreature.rarePartyMessage.ifEmpty { SeaCreatureConfig.rarePartyMessage }
+                } else {
+                    SeaCreatureConfig.rareMessageOutsideParty
                 }
 
                 val messageString = template
@@ -51,7 +60,11 @@ object RareScPartyMessage : Feature {
                         "dh" to if (isDoubleHook) SeaCreatureConfig.dhText else "",
                         "coords" to if (pos != null) "X: ${pos.x}, Y: ${pos.y}, Z: ${pos.z}" else ""
                     )
-                Chat.sendPartyMessage(messageString)
+                if (inParty) {
+                    Chat.sendPartyMessage(messageString)
+                } else {
+                    Chat.sendMessage(Component.literal(messageString))
+                }
             }
         }
 
@@ -100,5 +113,18 @@ object RareScPartyMessage : Feature {
         )
 
         Chat.sendPreviewPartyMessage(preview)
+    }
+
+    fun previewOutsideParty() {
+        val preview = SeaCreatureConfig.rareMessageOutsideParty.formatTemplate(
+            "name" to "Great White Shark",
+            "total" to "100",
+            "count" to "1",
+            "time" to "2m 30s",
+            "dh" to SeaCreatureConfig.dhText,
+            "coords" to "X: 100, Y: 64, Z: 200"
+        )
+
+        Chat.sendMessage(Component.literal(preview))
     }
 }
