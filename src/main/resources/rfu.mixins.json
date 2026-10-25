@@ -15,6 +15,7 @@
     "ScreenEffectMixin",
     "WaterOverlayTextureMixin",
     "ConfigScreenMixin",
+    "ModSpritesMixin",
     "ConfigObjectScreenMixin",
     "OptionsMixin",
     "SoundEngineMixin",

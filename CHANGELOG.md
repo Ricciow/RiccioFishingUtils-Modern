@@ -15,6 +15,7 @@
 - Added a mute annoying sounds feature under General Fishing to mute Banshees and Thunder Sparks.
 - Added Jawbus invulnerability timer.
 - Added :iceberg: emoji, whoops forgot that one
+- Added Discord, GitHub, and Patreon links on the top-right of settings.
 
 ### Changes
 - Moved the Party Finder scrollbar slightly to the right.

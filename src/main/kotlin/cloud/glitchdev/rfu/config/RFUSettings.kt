@@ -20,6 +20,7 @@ import cloud.glitchdev.rfu.config.migration.ConfigMigration
 import cloud.glitchdev.rfu.constants.text.Emoji
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.network.VersionHttp.isOutdated
+import com.teamresourceful.resourcefulconfig.api.types.info.ResourcefulConfigLink
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 import com.teamresourceful.resourcefulconfigkt.api.ConfigKt
 import cloud.glitchdev.rfu.utils.PlatformUtils
@@ -30,6 +31,17 @@ object RFUSettings : ConfigKt("rfu/settings") {
         get() = Literal("RiccioFishingUtils - v$RFU_VERSION")
     override val description: TranslatableValue
         get() = Literal("Settings for the greatest hit mod RFU")
+    override val links = arrayOf(
+        ResourcefulConfigLink.create(
+            "https://discord.gg/JfrXm6TqXz", "rfu:emoji/discord", Literal("RFU Discord")
+        ),
+        ResourcefulConfigLink.create(
+            "https://github.com/ricciow/ricciofishingutils-modern", "rfu:emoji/github", Literal("GitHub")
+        ),
+        ResourcefulConfigLink.create(
+            "https://www.patreon.com/cw/Ricciow", "rfu:emoji/patreon", Literal("Patreon")
+        ),
+    )
 
     init {
         separator {
