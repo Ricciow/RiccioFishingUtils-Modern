@@ -13,6 +13,7 @@
 - Added LF Vial, Texts, Mask, Shed, and Jewel achievements.
 - Added Show Actual Arrow Count, same as Show Actual Bait Count but for arrows.
 - Added a mute annoying sounds feature under General Fishing to mute Banshees and Thunder Sparks.
+- Added Jawbus invulnerability timer.
 
 ### Changes
 - Moved the Party Finder scrollbar slightly to the right.

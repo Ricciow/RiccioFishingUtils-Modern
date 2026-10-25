@@ -57,6 +57,7 @@ class SkyblockEntity(
     var renderEvent: RenderEvents.RenderEvent? = null
     private var hasLsRange = false
     private var hasTimer = false
+    private var timerCondition: () -> Boolean = { true }
     var countdownEvent: ServerCountdownEvent? = null
 
     init {
@@ -273,32 +274,41 @@ class SkyblockEntity(
         totalTicks: Long,
         color: TextColor = TextColor.LIGHT_RED,
         scale: Float = 0.05f,
+        label: String? = null,
         condition: () -> Boolean = { true }
     ) {
         countdownEvent?.unregister()
         countdownEvent = registerServerCountdownEvent(totalTicks)
+        timerCondition = condition
 
         if (hasTimer) return
         hasTimer = true
 
+        registerTextDisplay(color, scale) {
+            if (!timerCondition()) return@registerTextDisplay null
+            val remainingTicks = countdownEvent?.remainingTicks?.takeIf { it > 0L }
+                ?: return@registerTextDisplay null
+            val timerText = String.format(Locale.US, "%.1fs", remainingTicks / 20.0)
+            if (label == null) timerText else "$label\n$timerText"
+        }
+    }
+
+    fun registerTextDisplay(
+        color: TextColor = TextColor.LIGHT_RED,
+        scale: Float = 0.05f,
+        content: () -> String?
+    ) {
         registerRenderer { context, entity ->
-            if (!condition()) return@registerRenderer
-
-            val remainingTicks = countdownEvent?.remainingTicks ?: return@registerRenderer
-            if (remainingTicks > 0L) {
-                val remainingSeconds = remainingTicks / 20.0
-                val timerText = "${color.code}${String.format(Locale.US, "%.1fs", remainingSeconds)}"
-
-                Render3D.draw(context) {
-                    text {
-                        pos(entity, centered = true)
-                        text = timerText
-                        this.color = Color.WHITE
-                        this.scale = scale
-                        seeThrough = true
-                        dropShadow = true
-                        backgroundOpacity = 0.25f
-                    }
+            val displayText = content() ?: return@registerRenderer
+            Render3D.draw(context) {
+                text {
+                    pos(entity, centered = true)
+                    text = displayText.lines().joinToString("\n") { "${color.code}$it" }
+                    this.color = Color.WHITE
+                    this.scale = scale
+                    seeThrough = true
+                    dropShadow = true
+                    backgroundOpacity = 0.25f
                 }
             }
         }
@@ -314,6 +324,7 @@ class SkyblockEntity(
         countdownEvent?.unregister()
         countdownEvent = null
         hasTimer = false
+        timerCondition = { true }
     }
 
     data class NameTagData(

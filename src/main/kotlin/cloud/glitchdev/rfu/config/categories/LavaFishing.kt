@@ -19,6 +19,11 @@ object LavaFishing : Category("Lava Fishing") {
         description = Literal("Pro hint: Don't die")
     }
 
+    var jawbusInvulnerabilityTimer by boolean(true) {
+        name = Literal("Jawbus Invulnerability Timer")
+        description = Literal("Tracks Jawbus' invulnerability in its phases.")
+    }
+
     val jawbusDeath by obj(SoundTitleSettings(
         title = "&8☠ &7{player} &8☠",
         subtitle = "&cwas killed by Lord Jawbus",

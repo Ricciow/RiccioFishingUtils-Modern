@@ -145,7 +145,8 @@ object MobManager : RegisteredEvent {
             val matchesAlias = SeaCreatures.get(sbName)?.modelAliases?.any { it == candidateName } == true
             val matchesSbName = candidateName.equals(sbName.trim(), ignoreCase = true) ||
                 sbName.contains(candidateName, ignoreCase = true) || matchesAlias
-            if (!matchesSbName) return false
+            val matchesTaurusFollower = sbName == "Jawbus Follower" && candidateName.equals("Taurus", ignoreCase = true)
+            if (!matchesSbName && !matchesTaurusFollower) return false
         } else if (candidate is ArmorStand) {
             if (candidate.hasCustomName() || candidate.isCustomNameVisible) return false
             if (candidate.getItemBySlot(EquipmentSlot.HEAD).isEmpty) return false
@@ -165,7 +166,8 @@ object MobManager : RegisteredEvent {
     }
 
     fun isSerpentineMob(sbName: String): Boolean {
-        return sbName.contains("Fire Eel", ignoreCase = true) ||
+        return sbName == "Jawbus Follower" ||
+            sbName.contains("Fire Eel", ignoreCase = true) ||
             sbName.contains("Titanoboa", ignoreCase = true) ||
             sbName.contains("Wiki Tiki", ignoreCase = true) ||
             sbName.contains("Fiery Scuttler", ignoreCase = true)
