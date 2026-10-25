@@ -52,6 +52,7 @@
     "SuggestionsListMixin",
     "EditBoxMixin",
     "elementa.UIComponentMixin",
+    "elementa.ElementaRendererImplMixin",
     "universalcraft.UGraphicsMixin",
     "elementa.MappedStateMixin",
     "elementa.AnimatingConstraintsMixin",

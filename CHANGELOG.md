@@ -32,5 +32,5 @@
 - Added migrations for sea-creature settings.
 - Added a slot rendering event manager.
 - Added a world border rendering event manager.
-- Updated Elementa and UniversalCraft, and removed the text bleed patch workaround.
+- Updated Elementa and UniversalCraft.
 - Added support for cubes, beacon beams, and player heads in the 3D rendering utilities.
