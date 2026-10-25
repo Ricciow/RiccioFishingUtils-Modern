@@ -25,6 +25,7 @@
 - Improved the exp/h when under level 50 to not double count gains.
 - Fixed the Jawbus death sound ignoring its toggle.
 - Improved TPS tracking.
+- Fixed Party Finder rejecting join attempts before player requirements finish loading.
 
 ### Backend
 - Added configurable model name aliases for sea creatures that update from the back-end.

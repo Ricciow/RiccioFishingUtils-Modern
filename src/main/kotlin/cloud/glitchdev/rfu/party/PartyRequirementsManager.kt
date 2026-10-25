@@ -60,11 +60,11 @@ object PartyRequirementsManager : RegisteredEvent {
     }
 
     fun hasEnderman9(): Boolean {
-        return playerRequisites?.requisites?.get("enderman_9") ?: false
+        return playerRequisites?.requisites?.get("enderman_9") ?: true
     }
 
     fun hasLooting5(): Boolean {
-        return playerRequisites?.requisites?.get("looting_5") ?: false
+        return playerRequisites?.requisites?.get("looting_5") ?: true
     }
 
     var hasBrainFood: Boolean
@@ -99,11 +99,11 @@ object PartyRequirementsManager : RegisteredEvent {
     }
 
     fun hasBloodshotBelt(): Boolean {
-        return playerRequisites?.requisites?.get("bloodshot") ?: false
+        return playerRequisites?.requisites?.get("bloodshot") ?: true
     }
 
     fun hasWitherImpact(): Boolean {
-        return playerRequisites?.requisites?.get("wither_impact") ?: false
+        return playerRequisites?.requisites?.get("wither_impact") ?: true
     }
 
     fun validatePartyRequirements(party: FishingParty): PartyValidationResult {
@@ -140,6 +140,7 @@ object PartyRequirementsManager : RegisteredEvent {
     fun canCreateParty(party: FishingParty): PartyValidationResult = validatePartyRequirements(party)
 
     private fun meetsFishingRequirements(party: FishingParty): Boolean {
+        if (playerRequisites == null) return true
         val cachedLevelXp = Skills.getTotalXpAtLevel((playerRequisites?.level ?: 0).coerceIn(0, Skills.MAX_LEVEL))
         val fishingXp = maxOf(SkillTracker.getSkillXp(SkillType.FISHING), cachedLevelXp)
         if (fishingXp < Skills.getTotalXpAtLevel(party.level.coerceIn(0, 50))) return false
