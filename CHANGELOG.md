@@ -14,6 +14,7 @@
 - Added Show Actual Arrow Count, same as Show Actual Bait Count but for arrows.
 - Added a mute annoying sounds feature under General Fishing to mute Banshees and Thunder Sparks.
 - Added Jawbus invulnerability timer.
+- Added :iceberg: emoji, whoops forgot that one
 
 ### Changes
 - Moved the Party Finder scrollbar slightly to the right.
