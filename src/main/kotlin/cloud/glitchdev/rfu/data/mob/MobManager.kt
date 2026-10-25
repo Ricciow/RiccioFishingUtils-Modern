@@ -274,7 +274,7 @@ object MobManager : RegisteredEvent {
         if (!entity.isInvisible) return false
 
         val parsed = SkyblockEntity.parseNameTag(entity) ?: return false
-        if (parsed.hasHealth && parsed.health == "0") return false
+        if (parsed.hasHealth && parsed.healthStr == "0") return false
 
         val foundModels = findSequentialModels(entity, parsed.sbName, world)
         if (foundModels.isEmpty()) {
@@ -381,9 +381,9 @@ object MobManager : RegisteredEvent {
         }
 
         if (!sbEntity.outdatedNametag()) {
-            val oldHealth = sbEntity.health
+            val oldHealth = sbEntity.healthStr
             sbEntity.updateEntityData()
-            if (sbEntity.health != oldHealth) {
+            if (sbEntity.healthStr != oldHealth) {
                 MobEvents.MobUpdateEventManager.runTasks(sbEntity)
             }
         }

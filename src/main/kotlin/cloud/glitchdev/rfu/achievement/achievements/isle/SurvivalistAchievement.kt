@@ -13,7 +13,6 @@ import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDetectEvent
 import cloud.glitchdev.rfu.events.managers.PlayerEvents.registerPlayerDetectEvent
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
-import cloud.glitchdev.rfu.utils.dsl.parseHealthValue
 import net.minecraft.world.level.levelgen.Heightmap
 
 @Achievement
@@ -66,7 +65,7 @@ object SurvivalistAchievement : StageAchievement() {
         activeListeners.add(registerTickEvent(interval = 5) {
             val jawbus = trackingJawbus
             if (jawbus != null) {
-                val currentHealth = jawbus.health.parseHealthValue()
+                val currentHealth = jawbus.health
                 if (currentHealth > 0L) {
                     if (maxJawbusHealth == -1L || currentHealth > maxJawbusHealth) {
                         maxJawbusHealth = currentHealth

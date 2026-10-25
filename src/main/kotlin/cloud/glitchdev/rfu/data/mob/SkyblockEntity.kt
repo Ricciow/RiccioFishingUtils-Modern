@@ -29,6 +29,7 @@ import cloud.glitchdev.rfu.events.managers.BobberManager
 import cloud.glitchdev.rfu.events.managers.ServerCountdownEvents.ServerCountdownEvent
 import cloud.glitchdev.rfu.events.managers.ServerCountdownEvents.registerServerCountdownEvent
 import cloud.glitchdev.rfu.utils.User
+import cloud.glitchdev.rfu.utils.dsl.parseHealthValue
 
 class SkyblockEntity(
     var nameTagEntity: ArmorStand,
@@ -41,8 +42,26 @@ class SkyblockEntity(
 
     lateinit var sbName: String
     val createdAt : Instant = Clock.System.now() - (modelEntity.tickCount * 50L).milliseconds
-    var health: String = "0"
-    var maxHealth: String = "0"
+    private var cachedHealth: Long? = null
+    private var cachedMaxHealth: Long? = null
+
+    var healthStr: String = "0"
+        set(value) {
+            if (field == value) return
+            field = value
+            cachedHealth = null
+        }
+    var maxHealthStr: String = "0"
+        set(value) {
+            if (field == value) return
+            field = value
+            cachedMaxHealth = null
+        }
+
+    val health: Long
+        get() = cachedHealth ?: healthStr.parseHealthValue().also { cachedHealth = it }
+    val maxHealth: Long
+        get() = cachedMaxHealth ?: maxHealthStr.parseHealthValue().also { cachedMaxHealth = it }
     var hasHealth: Boolean = false
         private set
     var isShurikened: Boolean = false
@@ -160,7 +179,7 @@ class SkyblockEntity(
 
     override fun toString(): String {
         val bobberInfo = originBobber?.let { " (bobberOwner: ${it.ownerName})" } ?: ""
-        return "$sbName ($health/$maxHealth) (models: ${modelEntities.size}, parts: ${parts.size}) (renderers: ${renderers.size})$bobberInfo - ${nameTagEntity.x}, ${nameTagEntity.y}, ${nameTagEntity.z}"
+        return "$sbName ($healthStr/$maxHealthStr) (models: ${modelEntities.size}, parts: ${parts.size}) (renderers: ${renderers.size})$bobberInfo - ${nameTagEntity.x}, ${nameTagEntity.y}, ${nameTagEntity.z}"
     }
 
     fun isRemoved(): Boolean {
@@ -220,8 +239,8 @@ class SkyblockEntity(
         val newData = parseNameTag(nameTagEntity)
         if (newData != null) {
             this.sbName = newData.sbName
-            this.health = newData.health
-            this.maxHealth = newData.maxHealth
+            this.healthStr = newData.healthStr
+            this.maxHealthStr = newData.maxHealthStr
             this.hasHealth = newData.hasHealth
             this.isShurikened = newData.isShurikened
         } else {
@@ -329,8 +348,8 @@ class SkyblockEntity(
 
     data class NameTagData(
         val sbName: String,
-        val health: String,
-        val maxHealth: String,
+        val healthStr: String,
+        val maxHealthStr: String,
         val isShurikened: Boolean,
         val hasHealth: Boolean,
     )
@@ -352,11 +371,11 @@ class SkyblockEntity(
             var sbName = match.groupValues[1].takeIf { it.isNotEmpty() } ?: return null
             sbName = corruptedRegex.find(sbName)?.groupValues?.getOrNull(1) ?: sbName
 
-            val health = match.groupValues[2].ifEmpty { "0" }
-            val maxHealth = match.groupValues[3].ifEmpty { "0" }
+            val healthStr = match.groupValues[2].ifEmpty { "0" }
+            val maxHealthStr = match.groupValues[3].ifEmpty { "0" }
             val isShurikened = match.groups[4] != null
 
-            return NameTagData(sbName, health, maxHealth, isShurikened, hasHealth = match.groups[2] != null)
+            return NameTagData(sbName, healthStr, maxHealthStr, isShurikened, hasHealth = match.groups[2] != null)
         }
     }
 }

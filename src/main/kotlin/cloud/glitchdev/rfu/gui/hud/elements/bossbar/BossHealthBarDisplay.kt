@@ -5,7 +5,6 @@ import cloud.glitchdev.rfu.gui.hud.AbstractHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 import cloud.glitchdev.rfu.data.mob.SkyblockEntity
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
-import cloud.glitchdev.rfu.utils.dsl.parseHealthValue
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.SiblingConstraint
@@ -74,8 +73,8 @@ object BossHealthBarDisplay : AbstractHudElement("bossHealthBar") {
         val grouped = toMerge.groupBy { it.sbName }
         grouped.forEach { (sbName, groupEntities) ->
             val count = groupEntities.size
-            val totalHealthVal = groupEntities.sumOf { it.health.parseHealthValue() }
-            val totalMaxHealthVal = groupEntities.sumOf { it.maxHealth.parseHealthValue() }
+            val totalHealthVal = groupEntities.sumOf { it.health }
+            val totalMaxHealthVal = groupEntities.sumOf { it.maxHealth }
             val totalHealth = formatHealthValue(totalHealthVal)
             val totalMaxHealth = formatHealthValue(totalMaxHealthVal)
             val shurikenCount = groupEntities.count { it.isShurikened }
@@ -85,8 +84,10 @@ object BossHealthBarDisplay : AbstractHudElement("bossHealthBar") {
             mergedInfos.add(
                 BossBarEntityInfo(
                     sbName = displayName,
-                    health = totalHealth,
-                    maxHealth = totalMaxHealth,
+                    healthStr = totalHealth,
+                    maxHealthStr = totalMaxHealth,
+                    health = totalHealthVal,
+                    maxHealth = totalMaxHealthVal,
                     shurikenCount = shurikenCount,
                     outdatedNametag = outdated,
                     count = count,
@@ -100,6 +101,8 @@ object BossHealthBarDisplay : AbstractHudElement("bossHealthBar") {
             mergedInfos.add(
                 BossBarEntityInfo(
                     sbName = displayName,
+                    healthStr = entity.healthStr,
+                    maxHealthStr = entity.maxHealthStr,
                     health = entity.health,
                     maxHealth = entity.maxHealth,
                     shurikenCount = if (entity.isShurikened) 1 else 0,

@@ -17,7 +17,7 @@ object RareAlert : Feature {
     override fun onInitialize() {
         registerMobDetectEvent { entities ->
             if(!SeaCreatureConfig.rareSc.enabled) return@registerMobDetectEvent
-            val entities = entities.filter { !it.isRemoved() && (!it.hasHealth || it.health != "0") && SeaCreatures.get(it.sbName)?.rareSCAlert == true }.toSet()
+            val entities = entities.filter { !it.isRemoved() && (!it.hasHealth || it.healthStr != "0") && SeaCreatures.get(it.sbName)?.rareSCAlert == true }.toSet()
             val newEntities = entities.minus(lastEntities)
             lastEntities = entities
 

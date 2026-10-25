@@ -10,7 +10,6 @@ import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobUpdateEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Sounds
-import cloud.glitchdev.rfu.utils.dsl.parseHealthValue
 
 @RFUFeature
 object GdragAlert : Feature {
@@ -40,8 +39,8 @@ object GdragAlert : Feature {
         if (!sc.gdragAlert) return
         if (alertedEntities.contains(entity)) return
 
-        val health = entity.health.parseHealthValue()
-        val maxHealth = entity.maxHealth.parseHealthValue()
+        val health = entity.health
+        val maxHealth = entity.maxHealth
         if (maxHealth == 0L) return
 
         val healthPercentage = (health.toDouble() / maxHealth.toDouble()) * 100
