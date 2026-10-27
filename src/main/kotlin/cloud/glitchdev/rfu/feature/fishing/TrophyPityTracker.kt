@@ -1,12 +1,11 @@
 package cloud.glitchdev.rfu.feature.fishing
 
-import cloud.glitchdev.rfu.config.categories.TrophyFishing
 import cloud.glitchdev.rfu.constants.fishing.TrophyFish
 import cloud.glitchdev.rfu.constants.fishing.TrophyFrog
 import cloud.glitchdev.rfu.constants.fishing.TrophyTier
+import cloud.glitchdev.rfu.constants.fishing.TrophyType
 import cloud.glitchdev.rfu.constants.fishing.Trophy
 import cloud.glitchdev.rfu.constants.text.TextColor
-import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.data.fishing.TrophyDataManager
 import cloud.glitchdev.rfu.data.fishing.TrophyPityEntry
 import cloud.glitchdev.rfu.events.AutoRegister
@@ -16,16 +15,8 @@ import cloud.glitchdev.rfu.events.managers.TrophyCatchEvents.registerTrophyFishC
 import cloud.glitchdev.rfu.events.managers.TrophyCatchEvents.registerTrophyFrogCatchEvent
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.TextUtils
-import cloud.glitchdev.rfu.utils.command.Command
-import cloud.glitchdev.rfu.utils.command.SimpleCommand
-import com.mojang.brigadier.context.CommandContext
 import gg.essential.universal.utils.toUnformattedString
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.minecraft.core.component.DataComponents
-import net.minecraft.network.chat.ClickEvent
-import net.minecraft.network.chat.HoverEvent
-import net.minecraft.network.chat.Style
-import net.minecraft.network.chat.Component
 
 @AutoRegister
 object TrophyPityTracker : RegisteredEvent {
@@ -33,20 +24,20 @@ object TrophyPityTracker : RegisteredEvent {
     private val diamondRegex = """Progress to DIAMOND:\s*(\d+)/""".toRegex(RegexOption.IGNORE_CASE)
 
     val lastCaughtTimes = mutableMapOf<String, Long>()
-    var sessionTrophyCatches = 0
+    private val sessionTrophyCatches = mutableMapOf<TrophyType, Int>()
 
     override fun register() {
         registerTrophyFrogCatchEvent { frog, tier, amount ->
-            handleCatch(TrophyDataManager.data.pity.frogPity, frog.name, frog, tier, amount)
+            handleCatch(TrophyDataManager.data.pity.frogPity, frog.name, frog, TrophyType.FROG, tier, amount)
         }
 
         registerTrophyFishCatchEvent { fish, tier, amount ->
-            handleCatch(TrophyDataManager.data.pity.fishPity, fish.name, fish, tier, amount)
+            handleCatch(TrophyDataManager.data.pity.fishPity, fish.name, fish, TrophyType.FISH, tier, amount)
         }
 
         registerContainerOpenEvent { _, _, items ->
             var updated = false
-            var syncedAny = false
+            val data = TrophyDataManager.data.pity
             for (item in items) {
                 if (item.isEmpty) continue
 
@@ -70,27 +61,29 @@ object TrophyPityTracker : RegisteredEvent {
                 }
 
                 if (found) {
-                    syncedAny = true
                     val itemName = item.hoverName.toUnformattedString()
                     val fish = TrophyFish.fromName(itemName)
                     if (fish != null) {
+                        if (!data.hasSyncedFish) {
+                            data.hasSyncedFish = true
+                            updated = true
+                        }
                         if (updatePity(TrophyDataManager.data.pity.fishPity, fish.name, fish.displayName, goldProgress, diamondProgress)) {
                             updated = true
                         }
                     } else {
                         val frog = TrophyFrog.fromName(itemName)
                         if (frog != null) {
+                            if (!data.hasSyncedFrogs) {
+                                data.hasSyncedFrogs = true
+                                updated = true
+                            }
                             if (updatePity(TrophyDataManager.data.pity.frogPity, frog.name, frog.displayName, goldProgress, diamondProgress)) {
                                 updated = true
                             }
                         }
                     }
                 }
-            }
-
-            if (syncedAny && !TrophyDataManager.data.hasSynced) {
-                TrophyDataManager.data.hasSynced = true
-                updated = true
             }
 
             if (updated) {
@@ -103,6 +96,7 @@ object TrophyPityTracker : RegisteredEvent {
         pityMap: MutableMap<String, TrophyPityEntry>,
         key: String,
         trophy: Trophy,
+        type: TrophyType,
         tier: TrophyTier,
         amount: Int = 1
     ) {
@@ -112,27 +106,25 @@ object TrophyPityTracker : RegisteredEvent {
         pityMap[key] = existing
         TrophyDataManager.save()
 
-        sessionTrophyCatches += amount
-        if (!TrophyDataManager.data.hasSynced && sessionTrophyCatches <= 10) {
-            sendSyncAlert()
+        val catches = sessionTrophyCatches.getOrDefault(type, 0) + amount
+        sessionTrophyCatches[type] = catches
+        val data = TrophyDataManager.data.pity
+        val hasSynced = when (type) {
+            TrophyType.FROG -> data.hasSyncedFrogs
+            TrophyType.FISH -> data.hasSyncedFish
+        }
+        if (!hasSynced && catches <= 10) {
+            sendSyncAlert(type)
         }
     }
 
-    private fun sendSyncAlert() {
-        val message = TextUtils.rfuLiteral("Trophy caught! Run /pity to sync your pity data. ", TextColor.GOLD)
-        val runButton = Component.literal("${TextColor.LIGHT_GREEN}${TextEffects.BOLD}[Open Pity]")
-            .setStyle(
-                Style.EMPTY
-                    .withClickEvent(ClickEvent.RunCommand("/pity"))
-                    .withHoverEvent(HoverEvent.ShowText(Component.literal("Click to run /pity")))
-            )
-        val ignoreButton = Component.literal(" ${TextColor.LIGHT_RED}${TextEffects.BOLD}[Ignore]")
-            .setStyle(
-                Style.EMPTY
-                    .withClickEvent(ClickEvent.RunCommand("/rfuignorepityalert"))
-                    .withHoverEvent(HoverEvent.ShowText(Component.literal("Click to hide this warning forever")))
-            )
-        message.append(runButton).append(ignoreButton)
+    private fun sendSyncAlert(type: TrophyType) {
+        val tab = if (type == TrophyType.FROG) "Lotus Atoll" else "Crimson Isle"
+        val message = TextUtils.rfuLiteral(
+            "Run /pity and open the $tab tab to sync your pity data.",
+            TextColor.YELLOW
+        )
+        message.append(IgnoreTrophySyncAlertCommand.button("pity", type))
         Chat.sendMessage(message)
     }
 
@@ -175,17 +167,4 @@ object TrophyPityTracker : RegisteredEvent {
         return false
     }
 
-    @Command
-    object IgnorePityAlertCommand : SimpleCommand("rfuignorepityalert") {
-        override val description: String = "Disables the trophy pity sync alert."
-
-        override fun execute(context: CommandContext<FabricClientCommandSource>): Int {
-            TrophyDataManager.data.hasSynced = true
-            TrophyDataManager.save()
-            context.source.sendFeedback(
-                TextUtils.rfuLiteral("Trophy pity sync alert has been disabled!", TextColor.LIGHT_GREEN)
-            )
-            return 1
-        }
-    }
 }

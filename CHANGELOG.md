@@ -30,6 +30,7 @@
 - Fixed Party Finder rejecting join attempts before player requirements finish loading.
 
 ### Backend
+- Added total trophy frog and fish tracking.
 - Centralized mob health parsing.
 - Added configurable model name aliases for sea creatures that update from the back-end.
 - Reworked rare drop and dyes save to use independent counters.
