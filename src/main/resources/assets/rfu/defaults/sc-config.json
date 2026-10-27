@@ -1293,6 +1293,7 @@
       "bossbar": false,
       "gdragAlert": false,
       "rareSCAlert": true,
+      "invulnerabilityTimer": false,
       "scDisplayColor": "§a"
     },
     "gorF": {

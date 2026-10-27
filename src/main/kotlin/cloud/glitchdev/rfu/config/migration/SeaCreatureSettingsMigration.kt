@@ -43,5 +43,6 @@ object SeaCreatureSettingsMigration {
         val puddleJumper = root.getAsJsonObject("creatures")?.getAsJsonObject("Puddle Jumper") ?: return
         puddleJumper.addProperty("lsRangeEnabled", false)
         puddleJumper.addProperty("gdragAlert", false)
+        puddleJumper.addProperty("invulnerabilityTimer", false)
     }
 }
