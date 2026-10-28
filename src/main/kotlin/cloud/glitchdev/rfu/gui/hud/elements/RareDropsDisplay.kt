@@ -82,13 +82,8 @@ object RareDropsDisplay : AbstractFishingHudElement("rareDropsDisplay") {
             else -> null
         }
 
-        val currentTotal = drop.relatedScs.sumOf { sc -> CatchTracker.catchHistory.getOrAdd(sc).total }
         val lastDrop = entry?.history?.lastOrNull()
-        val streak = if (lastDrop == null) {
-            currentTotal
-        } else {
-            (currentTotal - lastDrop.totalCount).coerceAtLeast(0)
-        }
+        val streak = entry?.currentCount ?: 0
         val sinceCounts = entry?.history?.mapNotNull { it.sinceCount } ?: emptyList()
         val total = entry?.history?.size ?: 0
 

@@ -2,8 +2,8 @@ package cloud.glitchdev.rfu.gui.components.partyfinder
 
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.model.data.DataOption
+import cloud.glitchdev.rfu.utils.gui.UIImages
 import gg.essential.elementa.components.UIContainer
-import gg.essential.elementa.components.UIImage
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
 import gg.essential.elementa.constraints.AspectConstraint
@@ -115,7 +115,7 @@ class UIConditionCard(
             height = ChildBasedMaxSizeConstraint() + borderWidth * 2
         }
 
-        val image = UIImage.ofResourceCached(icon) childOf innerContainer
+        val image = UIImages.ofResource(icon) childOf innerContainer
 
         textUI = UIText(option.label).constrain {
             x = SiblingConstraint(UIScheme.pfConditionCardPadding)

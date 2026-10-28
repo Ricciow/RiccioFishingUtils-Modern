@@ -2,11 +2,12 @@ package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.Category
+import cloud.glitchdev.rfu.config.SoundTitleSettings
+import cloud.glitchdev.rfu.config.TitleSettings
 import cloud.glitchdev.rfu.constants.fishing.RareScDisplayDataType
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.feature.fishing.CatchMessageReplacer
 import cloud.glitchdev.rfu.feature.fishing.RareScPartyMessage
-import cloud.glitchdev.rfu.feature.mob.RareAlert
 import cloud.glitchdev.rfu.gui.window.SeaCreatureEditWindow
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
@@ -100,44 +101,18 @@ object SeaCreatureConfig : Category("Sea Creatures") {
         }
     }
 
-    var detectionAlert by reloadableBoolean(true) {
-        name = Literal("Rare Sc Alert")
-        description = Literal("Sends an alert whenever a rare SC is found.")
-    }
-
-    var rareScTitleExtraTicks by int(0) {
-        name = Literal("Rare SC Title Duration")
-        description = Literal("Extra time for rare sea creature titles, in ticks.")
-        range = 0..200
-        slider = true
-        condition = { detectionAlert }
-    }
-
-    var rareScAlertPreset by string("&6&l[&fα&6&l] {color}&l{name} &6&l[&fα&6&l]") {
-        name = Literal("Rare Sc Alert Preset")
-        description = Literal("The template for the rare SC alert. Available: {article}, {article_upper}, {name}, {style}, {color}, {plural}, {mob}, {mobs}")
-        condition = { detectionAlert }
-    }
-
-    init {
-        previewButton(
-            RareAlert::preview,
-            "Preview Alert",
-            "Shows a preview of the rare SC alert."
-        ) { detectionAlert }
-    }
-
-    var rareScSound by reloadableBoolean(true) {
-        name = Literal("Rare Sc Sound")
-        description = Literal("Plays a sound whenever a rare SC is found.")
-        condition = { detectionAlert }
-    }
-
-    var rareScSoundVolume by int(100) {
-        name = Literal("Sound Volume")
-        description = Literal("The volume for the rare SC sound in %.")
-        range = 0..500
-        condition = { detectionAlert && rareScSound }
+    val rareSc by obj(SoundTitleSettings(
+        title = "&6&l[&fα&6&l] {color}&l{name} &6&l[&fα&6&l]",
+        subtitle = "",
+        placeholders = "{article}, {article_upper}, {name}, {style}, {color}, {plural}, {mob}, {mobs}",
+        previews = mapOf(
+            "Preview" to listOf("article" to "a", "article_upper" to "A", "name" to "Lord Jawbus", "style" to "&c", "color" to "&c", "plural" to "Lord Jawbuses", "mob" to "a Lord Jawbus", "mobs" to "Lord Jawbuses")
+        ),
+        soundId = "rfu:rare_sc"
+    )) {
+        name = Literal("Rare Sea Creature Alert")
+        description = Literal("Toggle and edit the title, subtitle, duration, and preview.")
+        searchTerms = listOf("rare sea creature", "raresc", "title", "subtitle", "duration", "sound", "volume")
     }
 
     init {
@@ -164,38 +139,10 @@ object SeaCreatureConfig : Category("Sea Creatures") {
         }
     }
 
-    var goldenDragonAlert by reloadableBoolean(true) {
+    val goldenDragon by obj(GoldenDragonTitleSettings()) {
         name = Literal("Golden Dragon Alert")
-        description = Literal("Sends an alert when a rare SC is low health and you don't have Golden Dragon equipped.")
-    }
-
-    var goldenDragonTitleExtraTicks by int(0) {
-        name = Literal("Golden Dragon Title Duration")
-        description = Literal("Extra time for the Golden Dragon alert title, in ticks.")
-        range = 0..200
-        slider = true
-        condition = { goldenDragonAlert }
-    }
-
-    var gdragAlertThreshold by int(20) {
-        name = Literal("GDrag Alert Threshold (%)")
-        description = Literal("The health percentage at which the alert will trigger.")
-        range = 1..100
-        slider = true
-        condition = { goldenDragonAlert }
-    }
-
-    var goldenDragonSound by reloadableBoolean(true) {
-        name = Literal("GDrag Alert Sound")
-        description = Literal("Plays a sound when the alert triggers.")
-        condition = { goldenDragonAlert }
-    }
-
-    var goldenDragonVolume by int(100) {
-        name = Literal("Sound Volume")
-        description = Literal("The volume for the GDrag alert sound in %.")
-        range = 0..500
-        condition = { goldenDragonAlert && goldenDragonSound }
+        description = Literal("Toggle and edit the title, subtitle, duration, and preview.")
+        searchTerms = listOf("golden dragon", "goldendragon", "title", "subtitle", "duration", "sound", "volume", "gdrag", "pet warning", "health threshold", "gdrag alert threshold", "low health")
     }
 
     init {
@@ -224,6 +171,25 @@ object SeaCreatureConfig : Category("Sea Creatures") {
         ) { rarePartyMessages }
     }
 
+    var rareMessagesOutsideParty by reloadableBoolean(false) {
+        name = Literal("SC Messages Outside Parties")
+        description = Literal("Shows a local chat message whenever you catch a rare sea creature while outside a party.")
+    }
+
+    var rareMessageOutsideParty by string("&b&lWOAH! &eA &9{name} &ejust surfaced! &7{dh}&eCatch #{count} after {time}!") {
+        name = Literal("Rare SC Message Outside Parties")
+        description = Literal("Supports color codes such as &4 and &b. Variables: {name}, {total}, {count}, {time}, {dh}, {coords}")
+        condition = { rareMessagesOutsideParty }
+    }
+
+    init {
+        previewButton(
+            RareScPartyMessage::previewOutsideParty,
+            "Preview Outside Party Message",
+            "Shows a preview of the local rare SC message in chat."
+        ) { rareMessagesOutsideParty }
+    }
+
     var rareCocoonPartyMessages by reloadableBoolean(true) {
         name = Literal("Party Cocoon messages")
         description = Literal("Sends a party message whenever you cocoon a rare sea creature.")
@@ -246,7 +212,7 @@ object SeaCreatureConfig : Category("Sea Creatures") {
     var dhText by string("(Double Hook) ") {
         name = Literal("Double Hook Text")
         description = Literal("The text used in {dh}")
-        condition = { rarePartyMessages }
+        condition = { rarePartyMessages || rareMessagesOutsideParty }
     }
 
     init {
@@ -263,7 +229,6 @@ object SeaCreatureConfig : Category("Sea Creatures") {
 
     val HEALTH_BAR_REGEX
         get() = SeaCreatures.entries.filter { it.special && it.bossbar }.joinToString("|") { it.scName }.toExactRegex()
-
 
     var coloredShurikenBar by boolean(true) {
         name = Literal("Blue bar on shuriken")
@@ -305,5 +270,27 @@ object SeaCreatureConfig : Category("Sea Creatures") {
     var scCapDisplay by reloadableBoolean(false) {
         name = Literal("Sea Creature Cap Display")
         description = Literal("Displays the number of active sea creatures owned by you.")
+    }
+
+    class GoldenDragonTitleSettings : SoundTitleSettings(
+        title = "&c&lNO G-DRAGON!",
+        subtitle = "&eEquip your Golden Dragon!",
+        duration = 40,
+        soundId = "rfu:gdrag_alert"
+    ) {
+        init {
+            separator {
+                title = "Trigger Options"
+                condition = { enabled }
+            }
+        }
+
+        var threshold by int(20) {
+            name = Literal("GDrag Alert Threshold (%)")
+            description = Literal("The health percentage at which the alert will trigger.")
+            range = 1..100
+            slider = true
+            condition = { enabled }
+        }
     }
 }

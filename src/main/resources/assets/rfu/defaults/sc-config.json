@@ -1,4 +1,5 @@
 {
+  "version": 1,
   "creatures": {
     "Sea Walker": {
       "name": "Sea Walker",
@@ -77,6 +78,7 @@
     },
     "Great White Shark": {
       "name": "Great White Shark",
+      "modelAliases": ["GWS"],
       "plural": "Great White Sharks",
       "article": "a",
       "special": true,
@@ -1287,10 +1289,11 @@
       "catchMessage": "A Puddle Jumper is preparing for liftoff—cast your rod into it and hold on tight!",
       "liquidType": "WATER",
       "category": "ATOLL",
-      "lsRangeEnabled": true,
+      "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": true,
+      "gdragAlert": false,
       "rareSCAlert": true,
+      "invulnerabilityTimer": false,
       "scDisplayColor": "§a"
     },
     "gorF": {

@@ -32,7 +32,7 @@ object MobyDuckFeature : Feature {
     val isActive: Boolean
         get() = (serverCountdownTask?.remainingTicks ?: entry.remainingTicks) > 0L && World.isInSkyblock
 
-    private val mobyDuckRegex = """You consumed a Moby-Duck(?::\s*(Collector's Edition))?\s*and gained \+([\d.]+)[\s☯]*Fishing Wisdom for 60m!""".toExactRegex()
+    internal val mobyDuckRegex = """You consumed a Moby-Duck(?::\s*(Collector's Edition))?\s*and gained \+([\d.]+)[\s☯]*Fishing Wisdom for 60m!""".toExactRegex()
     private val expirationWarningRegex = """Moby-Duck expires in (\d+)s!?""".toExactRegex()
     private val expiredRegex = """Moby-Duck has expired!?""".toExactRegex()
 

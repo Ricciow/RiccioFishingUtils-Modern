@@ -7,7 +7,6 @@ import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextColor.*
 import cloud.glitchdev.rfu.constants.text.TextEffects.*
 import cloud.glitchdev.rfu.constants.text.TextStyle
-import cloud.glitchdev.rfu.data.catches.CatchTracker
 import cloud.glitchdev.rfu.data.drops.DropHistory
 import cloud.glitchdev.rfu.data.drops.DropManager
 import cloud.glitchdev.rfu.data.drops.DropRecord
@@ -191,13 +190,12 @@ object DropsHistory {
             }
         }
 
-        val count = if (drop.relatedScs.isEmpty()) null else drop.relatedScs.sumOf { sc ->
-            CatchTracker.catchHistory.getOrAdd(sc).total
-        }
+        val isLatest = entry.history.lastOrNull()?.let { parsedDate >= it.date } ?: true
+        val count = customCount ?: if (drop.relatedScs.isNotEmpty() && isLatest) entry.currentCount else null
 
         val resolvedMob = mobName ?: if (drop.relatedScs.size == 1) drop.relatedScs.first().scName else null
 
-        entry.addDrop(count, magicFind = magicFind, date = parsedDate, mobName = resolvedMob, sinceCount = customCount)
+        entry.addDrop(count, magicFind = magicFind, date = parsedDate, mobName = resolvedMob, resetCounter = isLatest)
         DropManager.dropsFile.save()
 
         val extraInfo = buildString {

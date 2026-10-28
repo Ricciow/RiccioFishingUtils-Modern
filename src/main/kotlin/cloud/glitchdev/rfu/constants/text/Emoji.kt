@@ -147,6 +147,7 @@ object Emoji {
         EmojiData("carmine_dye", listOf("carmine", "carmine_dye")),
         EmojiData("midnight_dye", listOf("midnight", "midnight_dye")),
         EmojiData("treasure_dye", listOf("treasure", "treasure_dye")),
+        EmojiData("iceberg_dye", listOf("iceberg", "iceberg_dye")),
 
         // Other
         EmojiData(null, listOf("boop"), listOf("Boop!"), "§d§lBoop!§r"),

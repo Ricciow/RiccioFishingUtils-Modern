@@ -29,6 +29,7 @@ import cloud.glitchdev.rfu.events.managers.BobberManager
 import cloud.glitchdev.rfu.events.managers.ServerCountdownEvents.ServerCountdownEvent
 import cloud.glitchdev.rfu.events.managers.ServerCountdownEvents.registerServerCountdownEvent
 import cloud.glitchdev.rfu.utils.User
+import cloud.glitchdev.rfu.utils.dsl.parseHealthValue
 
 class SkyblockEntity(
     var nameTagEntity: ArmorStand,
@@ -41,8 +42,28 @@ class SkyblockEntity(
 
     lateinit var sbName: String
     val createdAt : Instant = Clock.System.now() - (modelEntity.tickCount * 50L).milliseconds
-    var health: String = "0"
-    var maxHealth: String = "0"
+    private var cachedHealth: Long? = null
+    private var cachedMaxHealth: Long? = null
+
+    var healthStr: String = "0"
+        set(value) {
+            if (field == value) return
+            field = value
+            cachedHealth = null
+        }
+    var maxHealthStr: String = "0"
+        set(value) {
+            if (field == value) return
+            field = value
+            cachedMaxHealth = null
+        }
+
+    val health: Long
+        get() = cachedHealth ?: healthStr.parseHealthValue().also { cachedHealth = it }
+    val maxHealth: Long
+        get() = cachedMaxHealth ?: maxHealthStr.parseHealthValue().also { cachedMaxHealth = it }
+    var hasHealth: Boolean = false
+        private set
     var isShurikened: Boolean = false
     var originBobber: BobberInfo? = null
     var isDying: Boolean = false
@@ -55,6 +76,7 @@ class SkyblockEntity(
     var renderEvent: RenderEvents.RenderEvent? = null
     private var hasLsRange = false
     private var hasTimer = false
+    private var timerCondition: () -> Boolean = { true }
     var countdownEvent: ServerCountdownEvent? = null
 
     init {
@@ -157,7 +179,7 @@ class SkyblockEntity(
 
     override fun toString(): String {
         val bobberInfo = originBobber?.let { " (bobberOwner: ${it.ownerName})" } ?: ""
-        return "$sbName ($health/$maxHealth) (models: ${modelEntities.size}, parts: ${parts.size}) (renderers: ${renderers.size})$bobberInfo - ${nameTagEntity.x}, ${nameTagEntity.y}, ${nameTagEntity.z}"
+        return "$sbName ($healthStr/$maxHealthStr) (models: ${modelEntities.size}, parts: ${parts.size}) (renderers: ${renderers.size})$bobberInfo - ${nameTagEntity.x}, ${nameTagEntity.y}, ${nameTagEntity.z}"
     }
 
     fun isRemoved(): Boolean {
@@ -217,8 +239,9 @@ class SkyblockEntity(
         val newData = parseNameTag(nameTagEntity)
         if (newData != null) {
             this.sbName = newData.sbName
-            this.health = newData.health
-            this.maxHealth = newData.maxHealth
+            this.healthStr = newData.healthStr
+            this.maxHealthStr = newData.maxHealthStr
+            this.hasHealth = newData.hasHealth
             this.isShurikened = newData.isShurikened
         } else {
             RFULogger.warn("Attempted to update Skyblock Entity Data without a Skyblock Entity")
@@ -270,32 +293,41 @@ class SkyblockEntity(
         totalTicks: Long,
         color: TextColor = TextColor.LIGHT_RED,
         scale: Float = 0.05f,
+        label: String? = null,
         condition: () -> Boolean = { true }
     ) {
         countdownEvent?.unregister()
         countdownEvent = registerServerCountdownEvent(totalTicks)
+        timerCondition = condition
 
         if (hasTimer) return
         hasTimer = true
 
+        registerTextDisplay(color, scale) {
+            if (!timerCondition()) return@registerTextDisplay null
+            val remainingTicks = countdownEvent?.remainingTicks?.takeIf { it > 0L }
+                ?: return@registerTextDisplay null
+            val timerText = String.format(Locale.US, "%.1fs", remainingTicks / 20.0)
+            if (label == null) timerText else "$label\n$timerText"
+        }
+    }
+
+    fun registerTextDisplay(
+        color: TextColor = TextColor.LIGHT_RED,
+        scale: Float = 0.05f,
+        content: () -> String?
+    ) {
         registerRenderer { context, entity ->
-            if (!condition()) return@registerRenderer
-
-            val remainingTicks = countdownEvent?.remainingTicks ?: return@registerRenderer
-            if (remainingTicks > 0L) {
-                val remainingSeconds = remainingTicks / 20.0
-                val timerText = "${color.code}${String.format(Locale.US, "%.1fs", remainingSeconds)}"
-
-                Render3D.draw(context) {
-                    text {
-                        pos(entity, centered = true)
-                        text = timerText
-                        this.color = Color.WHITE
-                        this.scale = scale
-                        seeThrough = true
-                        dropShadow = true
-                        backgroundOpacity = 0.25f
-                    }
+            val displayText = content() ?: return@registerRenderer
+            Render3D.draw(context) {
+                text {
+                    pos(entity, centered = true)
+                    text = displayText.lines().joinToString("\n") { "${color.code}$it" }
+                    this.color = Color.WHITE
+                    this.scale = scale
+                    seeThrough = true
+                    dropShadow = true
+                    backgroundOpacity = 0.25f
                 }
             }
         }
@@ -311,40 +343,39 @@ class SkyblockEntity(
         countdownEvent?.unregister()
         countdownEvent = null
         hasTimer = false
+        timerCondition = { true }
     }
 
     data class NameTagData(
         val sbName: String,
-        val health: String,
-        val maxHealth: String,
+        val healthStr: String,
+        val maxHealthStr: String,
         val isShurikened: Boolean,
+        val hasHealth: Boolean,
     )
 
     companion object {
-        private val entityRegex = """(?:﴾ )?\[Lv\d+] \S+ (.+) (\d+[\.,]?\d*[kMB]?)/(\d+[\.,]?\d*[kMB]?)❤(?: ﴿)?( ✯)?""".toRegex(RegexOption.IGNORE_CASE)
+        private val entityRegex = """(?:﴾ )?\[Lv\d+] \S+ (.+?)(?: (\d+[\.,]?\d*[kMB]?)/(\d+[\.,]?\d*[kMB]?)❤)?(?: ﴿)?( ✯)?""".toRegex(RegexOption.IGNORE_CASE)
         private val corruptedRegex = """^aCorrupted (.+?)a$""".toRegex()
 
         fun isNameTagEntity(entity: ArmorStand): Boolean {
-            if (!entity.hasCustomName()) return false
-            val name = entity.name.toUnformattedString()
-
-            return name.matches(entityRegex)
+            return parseNameTag(entity) != null
         }
 
         fun parseNameTag(entity: ArmorStand): NameTagData? {
             if (!entity.hasCustomName()) return null
             val name = entity.name.toUnformattedString()
 
-            val match = entityRegex.find(name) ?: return null
+            val match = entityRegex.matchEntire(name) ?: return null
 
             var sbName = match.groupValues[1].takeIf { it.isNotEmpty() } ?: return null
             sbName = corruptedRegex.find(sbName)?.groupValues?.getOrNull(1) ?: sbName
 
-            val health = match.groupValues[2].ifEmpty { "0" }
-            val maxHealth = match.groupValues[3].ifEmpty { "0" }
+            val healthStr = match.groupValues[2].ifEmpty { "0" }
+            val maxHealthStr = match.groupValues[3].ifEmpty { "0" }
             val isShurikened = match.groups[4] != null
 
-            return NameTagData(sbName, health, maxHealth, isShurikened)
+            return NameTagData(sbName, healthStr, maxHealthStr, isShurikened, hasHealth = match.groups[2] != null)
         }
     }
 }

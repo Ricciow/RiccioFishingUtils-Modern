@@ -1,6 +1,8 @@
 package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
+import cloud.glitchdev.rfu.config.SoundTitleSettings
+import cloud.glitchdev.rfu.config.TitleSettings
 import cloud.glitchdev.rfu.constants.fishing.HotspotType
 
 object HotSpotSettings : Category("Hot Spots") {
@@ -52,43 +54,30 @@ object HotSpotSettings : Category("Hot Spots") {
         }
     }
 
-    var noTikiMaskAlert by boolean(true) {
+    val noTikiMask by obj(TitleSettings(
+        title = "&c&lNO TIKI MASK!"
+    )) {
         name = Literal("No Tiki Mask Alert")
-        description = Literal("Sends an alert when you are fishing in a hotspot without a Tiki Mask!")
+        description = Literal("Toggle and edit the title, subtitle, duration, and preview.")
+        searchTerms = listOf("no tiki mask", "notikimask", "title", "subtitle", "duration")
     }
 
-    var noTikiMaskTitleExtraTicks by int(0) {
-        name = Literal("No Tiki Mask Title Duration")
-        description = Literal("Extra time for the no Tiki Mask title, in ticks.")
-        range = 0..200
-        slider = true
-        condition = { noTikiMaskAlert }
+    val hotspotExpired by obj(SoundTitleSettings(
+        title = "&6&lHotspot Expired!",
+        soundId = "rfu:hotspot_expired"
+    )) {
+        name = Literal("Hotspot Expiry Alert")
+        description = Literal("Toggle and edit the title, subtitle, duration, and preview.")
+        searchTerms = listOf("hotspot expiry", "hotspotexpired", "title", "subtitle", "duration", "sound", "volume")
     }
 
-    var hotspotExpiredAlert by boolean(true) {
-        name = Literal("Hotspot Expired Alert")
-        description = Literal("Sends an alert when the hotspot you're fishing in expires!")
-    }
-
-    var hotspotExpiredTitleExtraTicks by int(0) {
-        name = Literal("Hotspot Expired Title Duration")
-        description = Literal("Extra time for the hotspot expired title, in ticks.")
-        range = 0..200
-        slider = true
-        condition = { hotspotExpiredAlert }
-    }
-
-    var hotspotExpiredSound by reloadableBoolean(true) {
-        name = Literal("Hotspot Expired Sound")
-        description = Literal("Plays a sound when the hotspot you're fishing in expires!")
-        condition = { hotspotExpiredAlert }
-    }
-
-    var hotspotExpiredVolume by int(100) {
-        name = Literal("Sound Volume")
-        description = Literal("The volume for the hotspot expired sound in %.")
-        range = 0..500
-        condition = { hotspotExpiredAlert && hotspotExpiredSound }
+    val outsideHotspot by obj(TitleSettings(
+        title = "&c&lOUTSIDE HOTSPOT!",
+        enabledByDefault = false
+    )) {
+        name = Literal("Outside Hotspot Alert")
+        description = Literal("Alerts when your bobber lands or moves outside a hotspot. Toggle and edit the title, subtitle, duration, and preview.")
+        searchTerms = listOf("outside hotspot", "no hotspot", "title", "subtitle", "duration")
     }
 
     init {

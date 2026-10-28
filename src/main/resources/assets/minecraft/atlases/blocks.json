@@ -1,0 +1,14 @@
+{
+  "sources": [
+    {
+      "type": "minecraft:single",
+      "resource": "rfu:block/lava_still_grayscale",
+      "sprite": "rfu:block/lava_still_grayscale"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "rfu:block/lava_flow_grayscale",
+      "sprite": "rfu:block/lava_flow_grayscale"
+    }
+  ]
+}

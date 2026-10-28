@@ -4,7 +4,6 @@ import kotlin.time.Clock
 import kotlin.time.Instant
 
 class DropRecord(
-    var totalCount : Int,
     var sinceCount : Int?,
     var magicFind : Int? = null,
     var mobName : String? = null

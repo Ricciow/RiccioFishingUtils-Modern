@@ -16,6 +16,7 @@ import cloud.glitchdev.rfu.RiccioFishingUtils
 import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.utils.network.Network
 import cloud.glitchdev.rfu.config.categories.BackendSettings
+import cloud.glitchdev.rfu.config.migration.SeaCreatureSettingsMigration
 import com.google.gson.Gson
 import java.lang.reflect.Field
 
@@ -28,6 +29,13 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
         type = SeaCreatureSettings::class.java,
         defaultFactory = { loadDefaults() }
     )
+
+    init {
+        // JsonFile recovers backups before migration so recovered settings are upgraded too.
+        if (SeaCreatureSettingsMigration.runMigrations(RiccioFishingUtils.CONFIG_DIR.resolve("rfu/repo/sc-config.json"))) {
+            seaCreatureConfigFile.load(triggerOnReload = false)
+        }
+    }
 
     private var defaultConfig: SeaCreatureSettings = loadDefaults()
     private val scConfig get() = seaCreatureConfigFile.data
@@ -169,7 +177,8 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
                 mergeBossbarHp = isMergeBossbarHpEnabled(scName),
                 scDisplayColor = resolve(scName) { it.scDisplayColor } ?: "§f",
                 rarePartyMessage = resolve(scName) { it.rarePartyMessage } ?: "",
-                invulnerabilityTimer = isInvulnerabilityTimerEnabled(scName)
+                invulnerabilityTimer = isInvulnerabilityTimerEnabled(scName),
+                modelAliases = resolve(scName) { it.modelAliases } ?: emptyList()
             )
             SeaCreatures.register(sc)
             RFULogger.dev("Registered Sea Creature: $scName")
@@ -224,7 +233,8 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
                                 category = backendSc.category,
                                 conditions = backendSc.conditions,
                                 mergeBossbarHp = currentSc.mergeBossbarHp ?: backendSc.mergeBossbarHp,
-                                invulnerabilityTimer = currentSc.invulnerabilityTimer ?: backendSc.invulnerabilityTimer
+                                invulnerabilityTimer = currentSc.invulnerabilityTimer ?: backendSc.invulnerabilityTimer,
+                                modelAliases = backendSc.modelAliases ?: currentSc.modelAliases
                             )
                             if (updatedSc != currentSc) {
                                 mergedCreatures[scName] = updatedSc
@@ -249,7 +259,7 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
 
                 if (addedCount == 0 && updatedCount == 0 && deletedCount == 0) return@getRequest
 
-                val newSettings = SeaCreatureSettings(mergedCreatures)
+                val newSettings = currentConfig.copy(creatures = mergedCreatures)
 
                 try {
                     val field: Field = JsonFile::class.java.getDeclaredField("data")

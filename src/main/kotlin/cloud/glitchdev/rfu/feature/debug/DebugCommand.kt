@@ -26,6 +26,7 @@ object DebugCommand : AbstractCommand("rfudebug") {
         append(DebugHotspots.Hotspots)
         append(Reauth)
         append(SkillsDebug)
+        append(CollectionsDebug)
         append(DebugText)
         append(ReloadSeaCreatures)
         append(DailyStreakDebug)

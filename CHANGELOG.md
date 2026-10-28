@@ -1,26 +1,42 @@
-# v1.19.4 - Minor
+# v1.20.0 - Major
 
 ### Features
-- Added middle-click bind to open each HUD element's settings and return to the HUD editor when closing them.
-- Added a reminder when the mod considers the user is muted.
-- Added a Party Finder block button.
-- Added personal best kill time achievements for Jawbus and Thunder.
-- Added the !pb party command.
-- Added a message hiding option for the Stealth enchantment.
+- Added customizable trophy messages.
+- Added a customizable rare sea creature message when outside a party. (off by default)
+- Added Coords waypoints (off by default).
+- Added Custom Lava feature (off by default).
+- Added Sulphur Skitter range display.
+- Added a world border on the Crimson Isle in the Spider's Den direction.
+- Added customizable title alerts and added sound previews.
+- Added alerts for fishing without Moby-Duck, without rain, without a Chum Bucket, or fishing outside a hotspot. (all off by default)
+- Added a highlight setting for lava fishing itens to sell.
+- Added an achievement for using Moby-Ducks.
+- Added LF Vial, Texts, Mask, Shed, and Jewel achievements.
+- Added Show Actual Arrow Count, same as Show Actual Bait Count but for arrows.
+- Added a mute annoying sounds feature under General Fishing to mute Banshees and Thunder Sparks.
+- Added Jawbus invulnerability timer.
+- Added :iceberg: emoji, whoops forgot that one
+- Added Discord, GitHub, and Patreon links on the top-right of settings.
 
 ### Changes
-- Improved feedback on the websocket isn't connected message.
-- Changed RFU sound volumes to allow up to 500% and made it use integers instead of decimal numbers in numeric fields labeled in %.
-- Made Party Finder cards more compact.
-- Compact numbers now use up to three digits of precision.
-- Improved cake timers a bit more with the tablist
+- Moved the Party Finder scrollbar slightly to the right.
 
 ### Fixes
-- Fixed Party Finder's overflow field showing full numbers after saving or loading a party.
-- Improved the hotspot sharing detection
-- Fixed emoji suggestion backgrounds becoming too narrow when SkyHanni's Modify Words is enabled.
-- Fixed other mute messages triggering the muted state in rfu, if you've been affected you can use /rfuunmuteme
+- Fixed Great White Sharks not being detected or highlighted.
+- Fixed mobs without health, such as Puddle Jumpers, not being detected as SkyBlock entities.
+- Fixed Hypixel detection when connecting through hypixel.fast (whatever this is)
+- Improved the exp/h when under level 50 to not double count gains.
+- Fixed the Jawbus death sound ignoring its toggle.
+- Improved TPS tracking.
+- Fixed Party Finder rejecting join attempts before player requirements finish loading.
 
 ### Backend
-- Added a developer setting to suppress the texture errors/warning caused by hypixel.
-- Made announcements use HTTP only while the WebSocket is disconnected.
+- Added total trophy frog and fish tracking.
+- Centralized mob health parsing.
+- Added configurable model name aliases for sea creatures that update from the back-end.
+- Reworked rare drop and dyes save to use independent counters.
+- Added migrations for sea-creature settings.
+- Added a slot rendering event manager.
+- Added a world border rendering event manager.
+- Updated Elementa and UniversalCraft.
+- Added support for cubes, beacon beams, and player heads in the 3D rendering utilities.

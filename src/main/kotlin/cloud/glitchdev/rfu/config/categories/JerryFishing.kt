@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
+import cloud.glitchdev.rfu.config.TitleSettings
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 
 object JerryFishing : Category("Jerry Fishing") {
@@ -14,16 +15,20 @@ object JerryFishing : Category("Jerry Fishing") {
         }
     }
 
-    var reindrakeAlert by boolean(true) {
+    val reindrake by obj(TitleSettings(
+        title = "&c&l{reindrakes}!",
+        duration = 20,
+        fadeIn = 10,
+        fadeOut = 10,
+        placeholders = "{reindrakes}",
+        previews = mapOf(
+            "Preview Single" to listOf("reindrakes" to "REINDRAKE"),
+            "Preview Double" to listOf("reindrakes" to "TWO REINDRAKES")
+        )
+    )) {
         name = Literal("Reindrake Alert")
-        description = Literal("Sends an alert when someone summons a Reindrake!")
+        description = Literal("Toggle and edit the title, subtitle, duration, and preview.")
+        searchTerms = listOf("reindrake", "title", "subtitle", "duration", "jerry fishing", "double reindrake")
     }
 
-    var reindrakeTitleExtraTicks by int(0) {
-        name = Literal("Reindrake Title Duration")
-        description = Literal("Extra time for the Reindrake title, in ticks.")
-        range = 0..200
-        slider = true
-        condition = { reindrakeAlert }
-    }
 }

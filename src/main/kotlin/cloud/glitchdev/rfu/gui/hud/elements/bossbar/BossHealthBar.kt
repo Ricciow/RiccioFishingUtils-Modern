@@ -3,8 +3,6 @@ package cloud.glitchdev.rfu.gui.hud.elements.bossbar
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.constants.text.TextColor
-import cloud.glitchdev.rfu.utils.dsl.parseHealthValue
-import cloud.glitchdev.rfu.utils.dsl.toMcCodes
 import cloud.glitchdev.rfu.utils.gui.setHidden
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
@@ -41,10 +39,10 @@ class BossHealthBar(
 
     fun updateState() {
         this.setHidden(info == null && !forceRendering)
-        val health = info?.health ?: "0"
-        val maxHealth = info?.maxHealth ?: "1"
+        val health = info?.healthStr ?: "0"
+        val maxHealth = info?.maxHealthStr ?: "1"
         val isShurikened = (info?.shurikenCount ?: 0) > 0
-        val healthPercentage = health.parseHealthValue().toFloat() / maxHealth.parseHealthValue().toFloat() * 100
+        val healthPercentage = (info?.health ?: 0L).toFloat() / (info?.maxHealth ?: 1L).toFloat() * 100
         val themeColor = when {
             isShurikened && SeaCreatureConfig.coloredShurikenBar -> UIScheme.barShuriken
             healthPercentage > 50 -> UIScheme.barHighHP

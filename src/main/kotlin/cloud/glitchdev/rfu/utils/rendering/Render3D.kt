@@ -13,7 +13,9 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext
 import net.minecraft.client.gui.Font
+import net.minecraft.client.renderer.blockentity.BeaconRenderer
 import net.minecraft.network.chat.Component
+import net.minecraft.resources.Identifier
 //?if < 26.2 {
 /*import net.minecraft.client.renderer.culling.Frustum
 *///?}
@@ -31,6 +33,31 @@ object Render3D {
 
     inline fun draw(context: LevelRenderContext, block: LevelRenderContext.() -> Unit) {
         context.apply(block)
+    }
+
+    fun renderBeacon(
+        location: Vec3,
+        color: Color,
+        context: LevelRenderContext,
+        height: Int = BeaconRenderer.MAX_RENDER_Y
+    ) {
+        val world = mc.level ?: return
+        if (height <= 0) return
+
+        val poses = context.poseStack()
+        val relative = location.subtract(camera.position())
+        val partialTick = mc.deltaTracker.getGameTimeDeltaPartialTick(false)
+        val animationTime = Math.floorMod(world.gameTime, 40L).toFloat() + partialTick
+        poses.pushPose()
+        try {
+            poses.translate(relative.x - 0.5, relative.y, relative.z - 0.5)
+            BeaconRenderer.submitBeaconBeam(
+                poses, context.submitNodeCollector(), BeaconRenderer.BEAM_LOCATION, 1f, animationTime,
+                0, height, color.rgb, BeaconRenderer.SOLID_BEAM_RADIUS, BeaconRenderer.BEAM_GLOW_RADIUS
+            )
+        } finally {
+            poses.popPose()
+        }
     }
 
     internal fun renderSphere(
@@ -268,6 +295,111 @@ object Render3D {
         }
     }
 
+    internal fun renderCube(
+        location: Vec3,
+        size: Float,
+        color: Color,
+        context: LevelRenderContext,
+        filled: Boolean = false,
+        borderColor: Color? = null,
+        lineWidth: Float = 2.0f,
+        scaleWithDistance: Boolean = false
+    ) {
+        if (!size.isFinite() || size <= 0f) return
+        val halfSize = size / 2f
+        if (!isVisible(AABB(location, location).inflate(halfSize.toDouble()))) return
+
+        //? if >=26.2 {
+        val matrixStack = context.poseStack()
+        //?} else {
+        /*val consumers = context.bufferSource()
+        val matrixStack = context.poseStack()
+        *///?}
+
+        val vecToCube = location.subtract(camera.position())
+        matrixStack.pushPose()
+        try {
+            matrixStack.translate(vecToCube.x, vecToCube.y, vecToCube.z)
+            val matrix = Matrix4f(matrixStack.last().pose())
+            val min = -halfSize
+            val max = halfSize
+
+            if (filled) {
+                //? if >=26.2 {
+                context.submitNodeCollector().submitCustomGeometry(matrixStack, RFURenderTypes.TRANSLUCENT_SHAPE) { _, buffer ->
+                //?} else {
+                /*val buffer = consumers.getBuffer(RFURenderTypes.TRANSLUCENT_SHAPE)
+                *///?}
+
+                // Bottom and top.
+                drawVertexSolid(buffer, matrix, min, min, min, color, 0f, -1f, 0f)
+                drawVertexSolid(buffer, matrix, max, min, min, color, 0f, -1f, 0f)
+                drawVertexSolid(buffer, matrix, max, min, max, color, 0f, -1f, 0f)
+                drawVertexSolid(buffer, matrix, min, min, max, color, 0f, -1f, 0f)
+                drawVertexSolid(buffer, matrix, min, max, min, color)
+                drawVertexSolid(buffer, matrix, min, max, max, color)
+                drawVertexSolid(buffer, matrix, max, max, max, color)
+                drawVertexSolid(buffer, matrix, max, max, min, color)
+
+                // North and south.
+                drawVertexSolid(buffer, matrix, min, min, min, color, 0f, 0f, -1f)
+                drawVertexSolid(buffer, matrix, min, max, min, color, 0f, 0f, -1f)
+                drawVertexSolid(buffer, matrix, max, max, min, color, 0f, 0f, -1f)
+                drawVertexSolid(buffer, matrix, max, min, min, color, 0f, 0f, -1f)
+                drawVertexSolid(buffer, matrix, min, min, max, color, 0f, 0f, 1f)
+                drawVertexSolid(buffer, matrix, max, min, max, color, 0f, 0f, 1f)
+                drawVertexSolid(buffer, matrix, max, max, max, color, 0f, 0f, 1f)
+                drawVertexSolid(buffer, matrix, min, max, max, color, 0f, 0f, 1f)
+
+                // West and east.
+                drawVertexSolid(buffer, matrix, min, min, min, color, -1f, 0f, 0f)
+                drawVertexSolid(buffer, matrix, min, min, max, color, -1f, 0f, 0f)
+                drawVertexSolid(buffer, matrix, min, max, max, color, -1f, 0f, 0f)
+                drawVertexSolid(buffer, matrix, min, max, min, color, -1f, 0f, 0f)
+                drawVertexSolid(buffer, matrix, max, min, min, color, 1f, 0f, 0f)
+                drawVertexSolid(buffer, matrix, max, max, min, color, 1f, 0f, 0f)
+                drawVertexSolid(buffer, matrix, max, max, max, color, 1f, 0f, 0f)
+                drawVertexSolid(buffer, matrix, max, min, max, color, 1f, 0f, 0f)
+                //? if >=26.2 {
+                }
+                //?}
+            }
+
+            val outlineColor = borderColor ?: if (!filled) color else null
+            if (outlineColor != null) {
+                val distance = vecToCube.length().toFloat()
+                val finalLineWidth = if (scaleWithDistance) {
+                    lineWidth * maxOf(1f, 10f / maxOf(1f, distance))
+                } else {
+                    lineWidth
+                }
+
+                //? if >=26.2 {
+                context.submitNodeCollector().submitCustomGeometry(matrixStack, RenderTypes.LINES) { _, buffer ->
+                //?} else {
+                /*val buffer = consumers.getBuffer(RenderTypes.LINES)
+                *///?}
+
+                for (y in floatArrayOf(min, max)) {
+                    drawLine(buffer, matrix, min, y, min, max, y, min, outlineColor, finalLineWidth)
+                    drawLine(buffer, matrix, max, y, min, max, y, max, outlineColor, finalLineWidth)
+                    drawLine(buffer, matrix, max, y, max, min, y, max, outlineColor, finalLineWidth)
+                    drawLine(buffer, matrix, min, y, max, min, y, min, outlineColor, finalLineWidth)
+                }
+                for (x in floatArrayOf(min, max)) {
+                    for (z in floatArrayOf(min, max)) {
+                        drawLine(buffer, matrix, x, min, z, x, max, z, outlineColor, finalLineWidth)
+                    }
+                }
+                //? if >=26.2 {
+                }
+                //?}
+            }
+        } finally {
+            matrixStack.popPose()
+        }
+    }
+
     internal fun renderLine(
         start: Vec3,
         end: Vec3,
@@ -445,16 +577,17 @@ object Render3D {
 
         val font = mc.font
         val lines = text.lines()
-        val startY = -((lines.size - 1) * font.lineHeight) / 2f
-
         val backgroundAlpha = (backgroundOpacity * 255).toInt().coerceIn(0, 255)
         val backgroundColorInt = (backgroundAlpha shl 24) or 0x000000
+        // Vanilla backgrounds span y - 1 through y + 9, one pixel more than the font's line height.
+        val lineSpacing = font.lineHeight + if (backgroundAlpha > 0) 1 else 0
+        val startY = -((lines.size - 1) * lineSpacing) / 2f
 
         for ((index, line) in lines.withIndex()) {
             val lineComp = Component.literal(line)
             val charSequence = lineComp.getVisualOrderText()
             val x = -font.width(lineComp) / 2f
-            val y = startY + index * font.lineHeight
+            val y = startY + index * lineSpacing
 
             //? if >=26.2 {
             val displayMode = if (seeThrough) Font.DisplayMode.SEE_THROUGH else Font.DisplayMode.NORMAL
@@ -489,5 +622,52 @@ object Render3D {
         }
 
         matrixStack.popPose()
+    }
+
+    fun renderPlayerHead(
+        location: Vec3,
+        skin: Identifier,
+        context: LevelRenderContext,
+        size: Float = 8f,
+        scale: Float = 0.025f,
+        showHat: Boolean = true,
+        seeThrough: Boolean = false,
+        scaleWithDistance: Boolean = false
+    ) {
+        if (!size.isFinite() || size <= 0f || !scale.isFinite() || scale <= 0f) return
+        val poses = context.poseStack()
+        val collector = context.submitNodeCollector()
+        val relative = location.subtract(camera.position())
+        val finalScale = if (scaleWithDistance) {
+            scale * maxOf(1f, relative.length().toFloat() / 10f)
+        } else {
+            scale
+        }
+        poses.pushPose()
+        try {
+            poses.translate(relative.x, relative.y, relative.z)
+            //~ if >=26.3 'mulPose' -> 'rotate' {
+            poses.rotate(camera.rotation())
+            //~}
+            poses.scale(finalScale, -finalScale, finalScale)
+            val halfSize = size / 2f
+            val renderType = if (seeThrough) RenderTypes.textSeeThrough(skin) else RenderTypes.text(skin)
+            collector.submitCustomGeometry(poses, renderType) { pose, buffer ->
+                fun face(u: Float, v: Float, z: Float) {
+                    val u0 = u / 64f
+                    val v0 = v / 64f
+                    val u1 = (u + 8f) / 64f
+                    val v1 = (v + 8f) / 64f
+                    buffer.addVertex(pose.pose(), -halfSize, halfSize, z).setColor(-1).setUv(u0, v1).setLight(0xF000F0)
+                    buffer.addVertex(pose.pose(), halfSize, halfSize, z).setColor(-1).setUv(u1, v1).setLight(0xF000F0)
+                    buffer.addVertex(pose.pose(), halfSize, -halfSize, z).setColor(-1).setUv(u1, v0).setLight(0xF000F0)
+                    buffer.addVertex(pose.pose(), -halfSize, -halfSize, z).setColor(-1).setUv(u0, v0).setLight(0xF000F0)
+                }
+                face(8f, 8f, 0f)
+                if (showHat) face(40f, 8f, 0.01f)
+            }
+        } finally {
+            poses.popPose()
+        }
     }
 }

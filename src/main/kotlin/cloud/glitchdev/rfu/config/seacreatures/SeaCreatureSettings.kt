@@ -1,7 +1,10 @@
 package cloud.glitchdev.rfu.config.seacreatures
 
+import cloud.glitchdev.rfu.config.migration.SeaCreatureSettingsMigration
+
 data class SeaCreatureSettings(
-    val creatures: Map<String, SeaCreatureSetting>
+    val creatures: Map<String, SeaCreatureSetting>,
+    val version: Int = SeaCreatureSettingsMigration.CURRENT_VERSION
 ) {
     companion object {
         fun empty(): SeaCreatureSettings = SeaCreatureSettings(mapOf())
@@ -25,7 +28,8 @@ data class SeaCreatureSetting(
     val scDisplayColor: String?,
     val rarePartyMessage: String?,
     val mergeBossbarHp: Boolean?,
-    val invulnerabilityTimer: Boolean? = null
+    val invulnerabilityTimer: Boolean? = null,
+    val modelAliases: List<String>? = null
 ) {
     companion object {
         fun empty(): SeaCreatureSetting = SeaCreatureSetting(

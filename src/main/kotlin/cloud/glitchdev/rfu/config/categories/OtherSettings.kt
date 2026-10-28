@@ -1,6 +1,8 @@
 package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
+import cloud.glitchdev.rfu.config.SoundTitleSettings
+import cloud.glitchdev.rfu.config.TitleSettings
 import cloud.glitchdev.rfu.constants.chat.MessageTypes
 import cloud.glitchdev.rfu.constants.ui.TooltipGuiScale
 import cloud.glitchdev.rfu.constants.ui.VisiblePlayerEquipment
@@ -19,9 +21,20 @@ object OtherSettings : Category("Other") {
         description = Literal("Sends a message whenever you're in a lobby you've been in before.")
     }
 
+    var renderChatCoords by boolean(false) {
+        name = Literal("Render Chat Coords")
+        description = Literal("Renders the coordinates sent in chat for 30 seconds.")
+        searchTerms = listOf("coords", "coordinates", "waypoint", "beacon")
+    }
+
     var seasonalEffects by boolean(true) {
         name = Literal("Seasonal Effects")
         description = Literal("Shows seasonal decorations and themes.")
+    }
+
+    var showActualArrowCount by boolean(true) {
+        name = Literal("Show Actual Arrow Count")
+        description = Literal("Replaces the selected arrow's stack size with the actual remaining arrow count.")
     }
 
     var achievementTrackerDisplay by boolean(true) {
@@ -41,31 +54,19 @@ object OtherSettings : Category("Other") {
         condition = { achievementSound }
     }
 
-
-    var littlefootAlert by reloadableBoolean(false) {
+    val littlefoot by obj(SoundTitleSettings(
+        title = "&6&l[&f\uE021&6&l] &3&l{name} &6&l[&f\uE021&6&l]",
+        subtitle = "",
+        enabledByDefault = false,
+        placeholders = "{name}",
+        previews = mapOf(
+            "Preview" to listOf("name" to "Littlefoot")
+        ),
+        soundId = "rfu:littlefoot"
+    )) {
         name = Literal("Littlefoot Alert")
-        description = Literal("Sends an alert whenever a Littlefoot is found.")
-    }
-
-    var littlefootTitleExtraTicks by int(0) {
-        name = Literal("Littlefoot Title Duration")
-        description = Literal("Extra time for the Littlefoot title, in ticks.")
-        range = 0..200
-        slider = true
-        condition = { littlefootAlert }
-    }
-
-    var littlefootSound by reloadableBoolean(true) {
-        name = Literal("Littlefoot Alert Sound")
-        description = Literal("Plays a sound whenever a Littlefoot is found.")
-        condition = { littlefootAlert }
-    }
-
-    var littlefootVolume by int(100) {
-        name = Literal("Sound Volume")
-        description = Literal("The volume for the Littlefoot alert sound in %.")
-        range = 0..500
-        condition = { littlefootAlert && littlefootSound }
+        description = Literal("Toggle and edit the title, subtitle, duration, and preview.")
+        searchTerms = listOf("littlefoot", "title", "subtitle", "duration", "sound", "volume")
     }
 
     var zoomEtherwarp by boolean(false) {
@@ -140,7 +141,6 @@ object OtherSettings : Category("Other") {
         condition = { hidePlayersGlobally }
     }
 
-
     init {
         dualSeparator {
             title = "Emojis"
@@ -177,25 +177,10 @@ object OtherSettings : Category("Other") {
         description = Literal("Shows the currently equipped pet.")
     }
 
-    var petLevelUpAlert by reloadableBoolean(true) {
+    val petLevelUp by obj(PetLevelTitleSettings()) {
         name = Literal("Pet Level Up Alert")
-        description = Literal("Shows an alert on screen when your pet levels up.")
-    }
-
-    var petLevelUpTitleExtraTicks by int(0) {
-        name = Literal("Pet Level Up Title Duration")
-        description = Literal("Extra time for the pet level up title, in ticks.")
-        range = 0..200
-        slider = true
-        condition = { petLevelUpAlert }
-    }
-
-    var petLevelUpMinLevel by int(100) {
-        name = Literal("Min Level for Alert")
-        description = Literal("The minimum level for the alert to trigger.")
-        condition = { petLevelUpAlert }
-        range = 1..200
-        slider = true
+        description = Literal("Toggle and edit the title, subtitle, duration, and preview.")
+        searchTerms = listOf("pet level up", "petlevelup", "minimum level", "min level", "title", "subtitle", "duration")
     }
 
     init {
@@ -204,32 +189,16 @@ object OtherSettings : Category("Other") {
         }
     }
 
-    var fullInventoryAlert by reloadableBoolean(false) {
+    val fullInventory by obj(SoundTitleSettings(
+        title = "&c&lINVENTORY FULL!",
+        duration = 20,
+        enabledByDefault = false,
+        soundId = "rfu:inventory_full"
+    )) {
         name = Literal("Full Inventory Alert")
-        description = Literal("Shows an alert when your inventory becomes full.")
+        description = Literal("Toggle and edit the title, subtitle, duration, and preview.")
+        searchTerms = listOf("full inventory", "fullinventory", "title", "subtitle", "duration", "sound", "volume")
     }
-
-    var fullInventoryTitleExtraTicks by int(0) {
-        name = Literal("Full Inventory Title Duration")
-        description = Literal("Extra time for the full inventory title, in ticks.")
-        range = 0..200
-        slider = true
-        condition = { fullInventoryAlert }
-    }
-
-    var fullInventorySound by reloadableBoolean(true) {
-        name = Literal("Full Inventory Sound")
-        description = Literal("Plays a sound when your inventory becomes full.")
-        condition = { fullInventoryAlert }
-    }
-
-    var fullInventoryVolume by int(100) {
-        name = Literal("Sound Volume")
-        description = Literal("The volume for the full inventory alert sound in %.")
-        range = 0..500
-        condition = { fullInventoryAlert && fullInventorySound }
-    }
-
 
     init {
         separator {
@@ -238,7 +207,6 @@ object OtherSettings : Category("Other") {
             condition = { !BackendSettings.backendAccepted }
         }
     }
-
 
     var partyFinderAlert by boolean(false) {
         name = Literal("Party Finder Alert")
@@ -373,5 +341,32 @@ object OtherSettings : Category("Other") {
     var fixFailedCasts by boolean(false) {
         name = Literal("Fix failed casts")
         description = Literal("Fixes failed casts caused by duplicate interaction packets when holding a fishing rod.\n${LIGHT_RED}Use at your own risk!")
+    }
+
+    class PetLevelTitleSettings : TitleSettings(
+        title = "&a&lPET LEVEL UP!",
+        subtitle = "&eYour &6{pet} &eleveled up to level &6{level}&e!",
+        duration = 40,
+        fadeIn = 10,
+        fadeOut = 10,
+        placeholders = "{pet}, {level}",
+        previews = mapOf(
+            "Preview" to listOf("pet" to "Golden Dragon", "level" to "100")
+        )
+    ) {
+        init {
+            separator {
+                title = "Trigger Options"
+                condition = { enabled }
+            }
+        }
+
+        var minimumLevel by int(100) {
+            name = Literal("Min Level for Alert")
+            description = Literal("The minimum level for the alert to trigger.")
+            range = 1..200
+            slider = true
+            condition = { enabled }
+        }
     }
 }

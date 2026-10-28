@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.data.mob
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
+import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
@@ -141,9 +142,11 @@ object MobManager : RegisteredEvent {
 
         if (candidate is Player) {
             val candidateName = candidate.name.toUnformattedString().trim()
+            val matchesAlias = SeaCreatures.get(sbName)?.modelAliases?.any { it == candidateName } == true
             val matchesSbName = candidateName.equals(sbName.trim(), ignoreCase = true) ||
-                sbName.contains(candidateName, ignoreCase = true)
-            if (!matchesSbName) return false
+                sbName.contains(candidateName, ignoreCase = true) || matchesAlias
+            val matchesTaurusFollower = sbName == "Jawbus Follower" && candidateName.equals("Taurus", ignoreCase = true)
+            if (!matchesSbName && !matchesTaurusFollower) return false
         } else if (candidate is ArmorStand) {
             if (candidate.hasCustomName() || candidate.isCustomNameVisible) return false
             if (candidate.getItemBySlot(EquipmentSlot.HEAD).isEmpty) return false
@@ -163,7 +166,8 @@ object MobManager : RegisteredEvent {
     }
 
     fun isSerpentineMob(sbName: String): Boolean {
-        return sbName.contains("Fire Eel", ignoreCase = true) ||
+        return sbName == "Jawbus Follower" ||
+            sbName.contains("Fire Eel", ignoreCase = true) ||
             sbName.contains("Titanoboa", ignoreCase = true) ||
             sbName.contains("Wiki Tiki", ignoreCase = true) ||
             sbName.contains("Fiery Scuttler", ignoreCase = true)
@@ -270,7 +274,7 @@ object MobManager : RegisteredEvent {
         if (!entity.isInvisible) return false
 
         val parsed = SkyblockEntity.parseNameTag(entity) ?: return false
-        if (parsed.health == "0") return false
+        if (parsed.hasHealth && parsed.healthStr == "0") return false
 
         val foundModels = findSequentialModels(entity, parsed.sbName, world)
         if (foundModels.isEmpty()) {
@@ -377,9 +381,9 @@ object MobManager : RegisteredEvent {
         }
 
         if (!sbEntity.outdatedNametag()) {
-            val oldHealth = sbEntity.health
+            val oldHealth = sbEntity.healthStr
             sbEntity.updateEntityData()
-            if (sbEntity.health != oldHealth) {
+            if (sbEntity.healthStr != oldHealth) {
                 MobEvents.MobUpdateEventManager.runTasks(sbEntity)
             }
         }

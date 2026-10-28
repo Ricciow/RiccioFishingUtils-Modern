@@ -27,7 +27,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 import net.minecraft.world.item.ItemStack;
-import cloud.glitchdev.rfu.utils.fishing.BaitUtils;
+import cloud.glitchdev.rfu.utils.ItemCountUtils;
 import cloud.glitchdev.rfu.utils.ResourcePackUtils;
 
 @Mixin(GuiGraphicsExtractor.class)
@@ -51,7 +51,7 @@ public abstract class GuiGraphicsExtractorMixin {
         argsOnly = true
     )
     private String rfu$modifyItemCountText(String countText, Font font, ItemStack itemStack) {
-        String customCount = BaitUtils.getCustomBaitCountText(itemStack);
+        String customCount = ItemCountUtils.getCustomCountText(itemStack);
         if (customCount != null) {
             return customCount;
         }

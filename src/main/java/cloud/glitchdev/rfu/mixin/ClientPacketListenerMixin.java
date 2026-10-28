@@ -65,7 +65,8 @@ public class ClientPacketListenerMixin {
         }
     }
 
-    @Inject(method = "handleSetTime", at = @At("HEAD"))
+    // Run after vanilla's thread check so each packet fires once on the client thread.
+    @Inject(method = "handleSetTime", at = @At("TAIL"))
     private void onSetTime(ClientboundSetTimePacket packet, CallbackInfo ci) {
         SetTimeEvents.INSTANCE.getRunTasks().invoke(packet.gameTime());
     }

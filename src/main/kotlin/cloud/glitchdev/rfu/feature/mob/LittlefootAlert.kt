@@ -8,7 +8,6 @@ import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.data.mob.SkyblockEntity
 import cloud.glitchdev.rfu.utils.Sounds
-import cloud.glitchdev.rfu.utils.Title
 
 @RFUFeature
 object LittlefootAlert : Feature {
@@ -16,19 +15,19 @@ object LittlefootAlert : Feature {
 
     override fun onInitialize() {
         registerMobDetectEvent { entities ->
-            if(!OtherSettings.littlefootAlert) return@registerMobDetectEvent
+            if(!OtherSettings.littlefoot.enabled) return@registerMobDetectEvent
             
             val littlefoots = entities.filter { !it.isRemoved() && it.sbName.contains("Littlefoot", ignoreCase = true) }.toSet()
             val newLittlefoots = littlefoots.minus(lastEntities)
             lastEntities = littlefoots
 
             newLittlefoots.forEach { entity ->
-                Title.showTitle("§6§l[§f\uE021§6§l] §3§l${entity.sbName} §6§l[§f\uE021§6§l]", extraTicks = OtherSettings.littlefootTitleExtraTicks) { !entity.isRemoved() }
+                OtherSettings.littlefoot.show("name" to entity.sbName) { !entity.isRemoved() }
             }
 
             if(newLittlefoots.isNotEmpty()) {
-                if (OtherSettings.littlefootSound) {
-                    Sounds.playSound("rfu:littlefoot", 1f, OtherSettings.littlefootVolume)
+                if (OtherSettings.littlefoot.sound) {
+                    Sounds.playSound("rfu:littlefoot", 1f, OtherSettings.littlefoot.volume)
                 }
             }
         }

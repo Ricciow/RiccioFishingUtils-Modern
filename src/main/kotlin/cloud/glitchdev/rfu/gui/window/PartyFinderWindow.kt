@@ -30,6 +30,7 @@ import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.utils.Coroutines
 import cloud.glitchdev.rfu.utils.World
 import cloud.glitchdev.rfu.utils.User
+import cloud.glitchdev.rfu.utils.gui.UIImages
 import cloud.glitchdev.rfu.utils.gui.setHidden
 import cloud.glitchdev.rfu.utils.gui.isHidden
 import cloud.glitchdev.rfu.utils.network.PartyWebSocket
@@ -37,7 +38,6 @@ import gg.essential.elementa.UIComponent
 import gg.essential.elementa.components.ScrollComponent
 import gg.essential.elementa.components.UIBlock
 import gg.essential.elementa.components.UIContainer
-import gg.essential.elementa.components.UIImage
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
 import gg.essential.elementa.constraints.AspectConstraint
@@ -180,6 +180,11 @@ object PartyFinderWindow : BaseWindow(false), Feature {
                 presetsModal.setHidden(true)
                 popup.setHidden(true)
                 rulesPopup.setHidden(true)
+                if (isPeeking) {
+                    window.hoveredFloatingComponent = peekHoverBlocker
+                    window.mouseMove(window)
+                    clearPeekHover(window)
+                }
             }
             onRelease = {
                 if (isPeeking) {
@@ -194,6 +199,11 @@ object PartyFinderWindow : BaseWindow(false), Feature {
                 extractRenderState(context, 0, 0, ticks)
             }
         }
+    }
+
+    private fun clearPeekHover(component: UIComponent) {
+        component.children.toList().forEach { clearPeekHover(it) }
+        component.mouseLeaveListeners.forEach { it(component) }
     }
 
     fun create() {
@@ -221,9 +231,9 @@ object PartyFinderWindow : BaseWindow(false), Feature {
         createFilterArea(useableArea)
 
         contentWrapper = UIContainer().constrain {
-            x = CenterConstraint()
+            x = spacing.pixels
             y = SiblingConstraint()
-            width = 100.percent - (2 * spacing).pixels
+            width = 100.percent - (2 * spacing - smallSpacing).pixels
             height = FillConstraint()
         } childOf useableArea effect ScissorEffect()
 
@@ -286,7 +296,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             height = 100.percent - 5.pixels
         } childOf header
 
-        val createImage = UIImage.ofResourceCached("/assets/rfu/ui/edit.png")
+        val createImage = UIImages.ofResource("/assets/rfu/ui/edit.png")
         UIButton.withImage(createImage, 5f) {
             if (creationOpen && ::creationArea.isInitialized) {
                 creationArea.saveSessionState()
@@ -303,7 +313,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             hoverColor = UIScheme.pfInputBgHovered.toConstraint()
         } childOf rightArea
 
-        val filterImage = UIImage.ofResourceCached("/assets/rfu/ui/filter.png")
+        val filterImage = UIImages.ofResource("/assets/rfu/ui/filter.png")
         filterButton = UIButton.withImage(filterImage, 5f) {
             filtersOpen = !filtersOpen
             onUpdate()
@@ -317,7 +327,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             hoverColor = UIScheme.pfInputBgHovered.toConstraint()
         } childOf rightArea
 
-        val refreshImage = UIImage.ofResourceCached("/assets/rfu/ui/refresh.png")
+        val refreshImage = UIImages.ofResource("/assets/rfu/ui/refresh.png")
         refreshButton = UIButton.withImage(refreshImage, 5f) {
             PartyWebSocket.syncParties()
             refreshButton.disabled = true
@@ -376,9 +386,9 @@ object PartyFinderWindow : BaseWindow(false), Feature {
         } childOf background
 
         scrollArea = ScrollComponent().constrain {
-            x = CenterConstraint()
+            x = 0.pixels
             y = smallSpacing.pixels
-            width = 100.percent
+            width = 100.percent - smallSpacing.pixels
             height = 100.percent - smallSpacing.pixels
         } childOf partiesContainer
 
@@ -395,9 +405,9 @@ object PartyFinderWindow : BaseWindow(false), Feature {
 
     fun createPartyCreationArea(background: UIComponent) {
         creationArea = UICreateParty().constrain {
-            x = CenterConstraint()
+            x = 0.pixels
             y = SiblingConstraint()
-            width = 100.percent
+            width = 100.percent - smallSpacing.pixels
             height = 0.pixels
         } childOf background
         creationArea.hide(instantly = true)
@@ -417,7 +427,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             if (existingCard?.party == party && existingCard.showNoRequirements == showNoRequirements) {
                 existingCard
             } else {
-                val wasHovered = existingCard?.isHovered() ?: false
+                val wasHovered = !isPeeking && (existingCard?.isHovered() ?: false)
                 UIPartyCard(party, 5f, wasHovered = wasHovered, showNoRequirements = showNoRequirements).constrain {
                     x = JustifiedCramSiblingConstraint(2f)
                     y = JustifiedCramSiblingConstraint(2f)

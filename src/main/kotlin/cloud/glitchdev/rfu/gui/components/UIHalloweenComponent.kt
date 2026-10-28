@@ -1,9 +1,9 @@
 package cloud.glitchdev.rfu.gui.components
 
 import cloud.glitchdev.rfu.utils.SeasonalEffects
+import cloud.glitchdev.rfu.utils.gui.UIImages
 import cloud.glitchdev.rfu.utils.gui.setHidden
 import gg.essential.elementa.components.UIContainer
-import gg.essential.elementa.components.UIImage
 import gg.essential.elementa.constraints.AspectConstraint
 import gg.essential.elementa.constraints.PositionConstraint
 import gg.essential.elementa.constraints.RelativeConstraint
@@ -20,12 +20,12 @@ import kotlin.random.Random
 class UIHalloweenComponent : UIContainer() {
     private data class Point(val x: Float, val y: Float)
 
-    private val leftBats = UIImage.ofResourceCached("/assets/rfu/ui/halloween/bat_flock_left.png").constrain {
+    private val leftBats = UIImages.ofResource("/assets/rfu/ui/halloween/bat_flock_left.png").constrain {
         width = RelativeConstraint(0.1f)
         height = AspectConstraint(0.66f)
     } childOf this
 
-    private val rightBats = UIImage.ofResourceCached("/assets/rfu/ui/halloween/bat_flock_right.png").constrain {
+    private val rightBats = UIImages.ofResource("/assets/rfu/ui/halloween/bat_flock_right.png").constrain {
         width = RelativeConstraint(0.1f)
         height = AspectConstraint(0.66f)
     } childOf this
@@ -40,13 +40,13 @@ class UIHalloweenComponent : UIContainer() {
         leftBats.hide(true)
         rightBats.hide(true)
 
-        UIImage.ofResourceCached("/assets/rfu/ui/halloween/pumpkins.png").constrain {
+        UIImages.ofResource("/assets/rfu/ui/halloween/pumpkins.png").constrain {
             width = 10.percent
             height = AspectConstraint(0.75f)
             x = 1.percent
             y = 5.pixels(true)
         } childOf this
-        UIImage.ofResourceCached("/assets/rfu/ui/halloween/bones.png").constrain {
+        UIImages.ofResource("/assets/rfu/ui/halloween/bones.png").constrain {
             width = 10.percent
             height = AspectConstraint(0.75f)
             x = 89.percent

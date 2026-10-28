@@ -1,7 +1,10 @@
 package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
+import cloud.glitchdev.rfu.config.SoundTitleSettings
+import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
 import cloud.glitchdev.rfu.feature.fishing.VanquisherPartyMessage
+import java.awt.Color
 
 object LavaFishing : Category("Lava Fishing") {
     init {
@@ -16,30 +19,23 @@ object LavaFishing : Category("Lava Fishing") {
         description = Literal("Pro hint: Don't die")
     }
 
-    var diedJawbusAlert by boolean(true) {
+    var jawbusInvulnerabilityTimer by boolean(true) {
+        name = Literal("Jawbus Invulnerability Timer")
+        description = Literal("Tracks Jawbus' invulnerability in its phases.")
+    }
+
+    val jawbusDeath by obj(SoundTitleSettings(
+        title = "&8☠ &7{player} &8☠",
+        subtitle = "&cwas killed by Lord Jawbus",
+        placeholders = "{player}",
+        previews = mapOf(
+            "Preview" to listOf("player" to "Ricciow")
+        ),
+        soundId = "rfu:jawbus_death"
+    )) {
         name = Literal("Jawbus Death Alert")
-        description = Literal("Sends an alert whenever someone dies to jawbus")
-    }
-
-    var jawbusDeathTitleExtraTicks by int(0) {
-        name = Literal("Jawbus Death Title Duration")
-        description = Literal("Extra time for the Jawbus death title, in ticks.")
-        range = 0..200
-        slider = true
-        condition = { diedJawbusAlert }
-    }
-
-    var diedJawbusSound by reloadableBoolean(true) {
-        name = Literal("Jawbus Death Sound")
-        description = Literal("Plays a sound whenever someone dies to jawbus")
-        condition = { diedJawbusAlert }
-    }
-
-    var diedJawbusVolume by int(100) {
-        name = Literal("Sound Volume")
-        description = Literal("The volume for the jawbus death sound in %.")
-        range = 0..500
-        condition = { diedJawbusAlert && diedJawbusSound }
+        description = Literal("Toggle and edit the title, subtitle, duration, and preview.")
+        searchTerms = listOf("jawbus death", "jawbusdeath", "title", "subtitle", "duration", "sound", "volume")
     }
 
     init {
@@ -91,4 +87,59 @@ object LavaFishing : Category("Lava Fishing") {
             "Shows a preview of the vanquisher party message when fishing in chat."
         ) { vanquisherPartyMessages }
     }
+
+    init {
+        dualSeparator {
+            title = "Other"
+            description = "Other stuff!"
+        }
+    }
+
+    var highlightItemsToSell by boolean(false) {
+        name = Literal("Highlight Items to Sell")
+        description = Literal("Highlights the random lava stuff while trades is open.")
+    }
+
+    var showCrimsonIsleWorldBorder by boolean(true) {
+        name = Literal("Show Crimson Isle World Border")
+        description = Literal("Shows a world border on the Crimson Isle, only on the spider's den side.")
+    }
+
+    init {
+        dualSeparator {
+            title = "Custom Lava"
+            description = "Customize the appearance of lava."
+        }
+    }
+
+    var customLava by reloadableBoolean(false) {
+        name = Literal("Custom Lava")
+        description = Literal("Changes lava's appearance, color, and fog. Just don't forget it's still lava!")
+    }
+
+    var customLavaLiquid by enum(LiquidTypes.WATER) {
+        name = Literal("Liquid Style")
+        description = Literal("Pick the liquid style for the custom lava.")
+        condition = { customLava }
+    }
+
+    var customLavaColor by color(Color(63, 118, 228).rgb) {
+        name = Literal("Liquid Color")
+        description = Literal("Changes the color of the liquid.")
+        allowAlpha = false
+        condition = { customLava }
+    }
+
+    var customLavaDisableFog by boolean(false) {
+        name = Literal("Disable Fog")
+        description = Literal("Removes the fog while inside the lava/water.")
+        condition = { customLava }
+    }
+
+    var customLavaHideFire by boolean(false) {
+        name = Literal("Hide Fire Effect")
+        description = Literal("Hides the first-person fire overlay while Custom Lava is enabled.")
+        condition = { customLava }
+    }
+
 }

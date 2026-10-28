@@ -9,8 +9,6 @@ import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.data.mob.SkyblockEntity
 import cloud.glitchdev.rfu.utils.Sounds
-import cloud.glitchdev.rfu.utils.Title
-import cloud.glitchdev.rfu.utils.dsl.toMcCodes
 
 @RFUFeature
 object RareAlert : Feature {
@@ -18,8 +16,8 @@ object RareAlert : Feature {
 
     override fun onInitialize() {
         registerMobDetectEvent { entities ->
-            if(!SeaCreatureConfig.detectionAlert) return@registerMobDetectEvent
-            val entities = entities.filter { !it.isRemoved() && it.health != "0" && SeaCreatures.get(it.sbName)?.rareSCAlert == true }.toSet()
+            if(!SeaCreatureConfig.rareSc.enabled) return@registerMobDetectEvent
+            val entities = entities.filter { !it.isRemoved() && (!it.hasHealth || it.healthStr != "0") && SeaCreatures.get(it.sbName)?.rareSCAlert == true }.toSet()
             val newEntities = entities.minus(lastEntities)
             lastEntities = entities
 
@@ -31,12 +29,11 @@ object RareAlert : Feature {
                 result
             }.forEach { entity ->
                 val sc = SeaCreatures.get(entity.sbName)
-                val title = formatAlert(sc, entity.sbName)
-                Title.showTitle(title, extraTicks = SeaCreatureConfig.rareScTitleExtraTicks) { !entity.isRemoved() }
+                SeaCreatureConfig.rareSc.show(*placeholders(sc, entity.sbName)) { !entity.isRemoved() }
             }
 
-            if(newEntities.isNotEmpty() && SeaCreatureConfig.rareScSound) {
-                Sounds.playSound("rfu:rare_sc", 1f, SeaCreatureConfig.rareScSoundVolume)
+            if(newEntities.isNotEmpty() && SeaCreatureConfig.rareSc.sound) {
+                Sounds.playSound("rfu:rare_sc", 1f, SeaCreatureConfig.rareSc.volume)
             }
         }
 
@@ -49,7 +46,7 @@ object RareAlert : Feature {
         }
     }
 
-    fun formatAlert(sc: SeaCreatures?, fallbackName: String = ""): String {
+    private fun placeholders(sc: SeaCreatures?, fallbackName: String = ""): Array<Pair<String, Any>> {
         val name = sc?.scDisplayName ?: fallbackName
         val color = sc?.scDisplayColor?.ifEmpty { "§f" } ?: "§f"
         val style = sc?.style ?: ""
@@ -58,23 +55,10 @@ object RareAlert : Feature {
         val plural = sc?.plural ?: name
         val mob = sc?.getSingularNameWithArticle() ?: name
 
-        return SeaCreatureConfig.rareScAlertPreset
-            .replace("{article}", article)
-            .replace("{article_upper}", articleUpper)
-            .replace("{name}", name)
-            .replace("{style}", style)
-            .replace("{color}", color)
-            .replace("{plural}", plural)
-            .replace("{mob}", mob)
-            .replace("{mobs}", plural)
-            .toMcCodes()
-    }
-
-    fun preview() {
-        val sc = SeaCreatures.entries.filter { it.special }.randomOrNull() ?: SeaCreatures.entries.randomOrNull()
-        if (sc != null) {
-            val title = formatAlert(sc)
-            Title.showTitle(title, extraTicks = SeaCreatureConfig.rareScTitleExtraTicks)
-        }
+        return arrayOf(
+            "article" to article, "article_upper" to articleUpper,
+            "name" to name, "style" to style, "color" to color,
+            "plural" to plural, "mob" to mob, "mobs" to plural
+        )
     }
 }

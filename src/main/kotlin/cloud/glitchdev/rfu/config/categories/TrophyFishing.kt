@@ -3,6 +3,8 @@ package cloud.glitchdev.rfu.config.categories
 import cloud.glitchdev.rfu.config.Category
 import cloud.glitchdev.rfu.constants.fishing.TrophyFish
 import cloud.glitchdev.rfu.constants.fishing.TrophyFrog
+import cloud.glitchdev.rfu.feature.fishing.SulphurSkitterRange.SulphurSkitterMode
+import cloud.glitchdev.rfu.feature.fishing.TrophyCatchMessageReplacer
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 
 object TrophyFishing : Category("Trophy Fishing") {
@@ -51,9 +53,35 @@ object TrophyFishing : Category("Trophy Fishing") {
         condition = { trophyPityDisplay }
     }
 
-    var appendPityToTrophyMessage by boolean(true) {
-        name = Literal("Append Pity to Trophy Message")
-        description = Literal("Appends the count before pity to the trophy catch message in chat (e.g. '(100)').")
+    init {
+        dualSeparator {
+            title = "Trophy Messages"
+        }
+    }
+
+    var customTrophyMessageEnabled by reloadableBoolean(true) {
+        name = Literal("Custom Trophy Message")
+        description = Literal("Replaces trophy frog and fish catch messages with a custom message.")
+    }
+
+    var customTrophyMessage by string("&2&l\uE02A TROPHY {type}! &fYou caught your &7{count}{ordinal} {color}{name} {tier_color}&l{tier}{multi}&f! {pity}") {
+        name = Literal("Custom Trophy Message Format")
+        description = Literal("Variables: {type}, {name}, {color}, {tier}, {count}, {ordinal}, {amount}, {multi}, {pity}.")
+        condition = { customTrophyMessageEnabled }
+    }
+
+    var customTrophyPityCount by string("&7({pity}&7)") {
+        name = Literal("Custom Trophy Pity Count")
+        description = Literal("Gold and Diamond pity suffix. Variables: {pity}")
+        condition = { customTrophyMessageEnabled }
+    }
+
+    init {
+        previewButton(
+            TrophyCatchMessageReplacer::preview,
+            "Preview Trophy Message",
+            "Shows a preview of the custom trophy catch message in chat."
+        ) { customTrophyMessageEnabled }
     }
 
     init {
@@ -66,6 +94,17 @@ object TrophyFishing : Category("Trophy Fishing") {
     var slugfishTimer by boolean(false) {
         name = Literal("Slugfish Timer")
         description = Literal("Displays the 20s timer required to catch slugfish above the bobber, shorter if using slug pet.")
+    }
+
+    var sulphurSkitterRange by reloadableBoolean(true) {
+        name = Literal("Sulphur Skitter Range")
+        description = Literal("Shows the four block range around sulphur blocks while trophy fishing.")
+    }
+
+    var sulphurSkitterMode by enum(SulphurSkitterMode.MANUAL) {
+        name = Literal("Sulphur Skitter Range Mode")
+        description = Literal("Auto highlights sulphur blocks within 30 blocks. Manual lets you right-click a sponge to toggle its range.")
+        condition = { sulphurSkitterRange }
     }
 
     init {

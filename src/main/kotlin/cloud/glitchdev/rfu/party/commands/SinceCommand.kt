@@ -138,22 +138,17 @@ object SinceCommand : AbstractPartyCommand(
                 }
                 
                 if (entry != null) {
-                    val currentTotal = if (target.relatedScs.isEmpty()) {
-                        0
-                    } else {
-                        target.relatedScs.sumOf { sc -> CatchTracker.catchHistory.getOrAdd(sc).total }
-                    }
+                    val scSince = entry.currentCount
 
                     val lastDrop = entry.history.lastOrNull()
                     if (lastDrop == null) {
                         val response = formatResponse(
                             responseTemplates[5].first,
                             "name" to target.displayName,
-                            "count" to currentTotal
+                            "count" to scSince
                         )
                         sendPartyMessage(response)
                     } else {
-                        val scSince = (currentTotal - lastDrop.totalCount).coerceAtLeast(0)
                         val duration = Clock.System.now() - lastDrop.date
                         val response = formatResponse(
                             responseTemplates[3].first,

@@ -10,7 +10,6 @@ import cloud.glitchdev.rfu.data.mob.DeployableType
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.Sounds
-import cloud.glitchdev.rfu.utils.Title
 
 @RFUFeature
 object DeployableTimers : Feature {
@@ -31,8 +30,8 @@ object DeployableTimers : Feature {
                 val currentDeployable = active[type]
                 val isActive = currentDeployable != null
 
-                if (wasActive && !isActive && GeneralFishing.deployableAlertTypes.contains(type) &&
-                    (GeneralFishing.deployableExpiredAlert || GeneralFishing.deployableExpiredPartyMessage)) {
+                if (wasActive && !isActive && GeneralFishing.deployable.types.contains(type) &&
+                    (GeneralFishing.deployable.enabled || GeneralFishing.deployableExpiredPartyMessage)) {
                     val wasInRadius = if (player != null) {
                         prevDeployable.isInRange(player.position())
                     } else true
@@ -42,11 +41,11 @@ object DeployableTimers : Feature {
                     val shouldAlert = wasInRadius && isExpired
 
                     if (shouldAlert) {
-                        if (GeneralFishing.deployableExpiredAlert) {
-                            Title.showTitle(type.expiredTitle, extraTicks = GeneralFishing.deployableTitleExtraTicks)
+                        if (GeneralFishing.deployable.enabled) {
+                            GeneralFishing.deployable.show("name" to type.displayName, "color" to type.labelColor.code)
 
-                            if (GeneralFishing.deployableExpiredSound) {
-                                Sounds.playSound("rfu:deployable_expired", 1f, GeneralFishing.deployableExpiredVolume)
+                            if (GeneralFishing.deployable.sound) {
+                                Sounds.playSound("rfu:deployable_expired", 1f, GeneralFishing.deployable.volume)
                             }
                         }
 

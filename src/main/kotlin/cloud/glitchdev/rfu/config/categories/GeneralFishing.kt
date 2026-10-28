@@ -1,6 +1,8 @@
 package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
+import cloud.glitchdev.rfu.config.SoundTitleSettings
+import cloud.glitchdev.rfu.config.TitleSettings
 import cloud.glitchdev.rfu.constants.fishing.FishTrackingType
 import cloud.glitchdev.rfu.data.mob.DeployableType
 import cloud.glitchdev.rfu.feature.fishing.DoubleHookMessages
@@ -100,41 +102,15 @@ object GeneralFishing : Category("General Fishing") {
         condition = { deployableDisplay }
     }
 
-    var deployableExpiredAlert by reloadableBoolean(true) {
-        name = Literal("Deployable Expired Alert")
-        description = Literal("Toggles the alert for expired deployables")
+    val deployable by obj(DeployableTitleSettings()) {
+        name = Literal("Deployable Expiry Alert")
+        description = Literal("Toggle and edit the title, subtitle, duration, and preview.")
+        searchTerms = listOf("deployable expiry", "deployable", "flare", "flux", "umberella", "title", "subtitle", "duration", "sound", "volume")
     }
 
     var deployableExpiredPartyMessage by boolean(false) {
         name = Literal("Deployable Expired Party Message")
         description = Literal("Sends a party message when a nearby deployable expires.")
-    }
-
-    var deployableTitleExtraTicks by int(0) {
-        name = Literal("Deployable Title Duration")
-        description = Literal("Extra time for expired deployable titles, in ticks.")
-        range = 0..200
-        slider = true
-        condition = { deployableExpiredAlert }
-    }
-
-    var deployableAlertTypes by enums(*DeployableType.entries.toTypedArray()) {
-        name = Literal("Deployable Alerts")
-        description = Literal("Select which deployables trigger alerts and party messages.")
-        condition = { deployableExpiredAlert || deployableExpiredPartyMessage }
-    }
-
-    var deployableExpiredSound by reloadableBoolean(true) {
-        name = Literal("Expired Sound")
-        description = Literal("Plays a sound whenever a deployable expires.")
-        condition = { deployableExpiredAlert }
-    }
-
-    var deployableExpiredVolume by int(100) {
-        name = Literal("Sound Volume")
-        description = Literal("The volume for the expired sound in %.")
-        range = 0..500
-        condition = { deployableExpiredAlert && deployableExpiredSound }
     }
 
     init {
@@ -186,69 +162,53 @@ object GeneralFishing : Category("General Fishing") {
         }
     }
 
-    var failCastAlert by boolean(true) {
-        name = Literal("Failed cast alert")
-        description = Literal("Sends an alert whenever a rod cast fails.")
+    val failCast by obj(SoundTitleSettings(
+        title = "&c&lFailed Cast!",
+        duration = 5,
+        fadeIn = 0,
+        soundId = "rfu:failed_cast"
+    )) {
+        name = Literal("Failed Cast Alert")
+        description = Literal("Toggle and edit the title, subtitle, duration, and preview.")
+        searchTerms = listOf("failed cast", "failcast", "title", "subtitle", "duration", "sound", "volume")
     }
 
-    var failCastTitleExtraTicks by int(0) {
-        name = Literal("Failed Cast Title Duration")
-        description = Literal("Extra time for the failed cast title, in ticks.")
-        range = 0..200
-        slider = true
-        condition = { failCastAlert }
-    }
-
-    var failCastSound by reloadableBoolean(true) {
-        name = Literal("Failed Cast Sound")
-        description = Literal("Plays a sound whenever a cast fails.")
-        condition = { failCastAlert }
-    }
-
-    var failCastVolume by int(100) {
-        name = Literal("Sound Volume")
-        description = Literal("The volume for the failed cast sound in %.")
-        range = 0..500
-        condition = { failCastAlert && failCastSound }
-    }
-
-    var noBaitAlert by boolean(true) {
+    val noBait by obj(TitleSettings(
+        title = "&c&lNO BAIT!"
+    )) {
         name = Literal("No Bait Alert")
-        description = Literal("Sends an alert when you're fishing without bait.")
+        description = Literal("Toggle and edit the title, subtitle, duration, and preview.")
+        searchTerms = listOf("no bait", "nobait", "title", "subtitle", "duration")
     }
 
-    var noBaitTitleExtraTicks by int(0) {
-        name = Literal("No Bait Title Duration")
-        description = Literal("Extra time for the no bait title, in ticks.")
-        range = 0..200
-        slider = true
-        condition = { noBaitAlert }
-    }
-
-    var missingRodPieceAlert by boolean(true) {
+    val missingRodPiece by obj(TitleSettings(
+        title = "&c&lMISSING ROD PIECE!",
+        subtitle = "&7{pieces}",
+        placeholders = "{pieces}",
+        previews = mapOf(
+            "Preview" to listOf("pieces" to "Hook, Line")
+        )
+    )) {
         name = Literal("Missing Rod Piece Alert")
-        description = Literal("Sends an alert when you're fishing with a rod that is missing a piece (Hook, Line, or Sinker).")
+        description = Literal("Toggle and edit the title, subtitle, duration, and preview.")
+        searchTerms = listOf("missing rod piece", "missingrodpiece", "hook", "line", "sinker", "title", "subtitle", "duration")
     }
 
-    var missingRodPieceTitleExtraTicks by int(0) {
-        name = Literal("Missing Rod Piece Title Duration")
-        description = Literal("Extra time for the missing rod piece title, in ticks.")
-        range = 0..200
-        slider = true
-        condition = { missingRodPieceAlert }
-    }
-
-    var noFishingArmorAlert by boolean(true) {
+    val noFishingArmor by obj(TitleSettings(
+        title = "&c&lNO FISHING ARMOR!"
+    )) {
         name = Literal("No Fishing Armor Alert")
-        description = Literal("Sends an alert when you're fishing without a fishing armor.")
+        description = Literal("Toggle and edit the title, subtitle, duration, and preview.")
+        searchTerms = listOf("no fishing armor", "nofishingarmor", "title", "subtitle", "duration")
     }
 
-    var noFishingArmorTitleExtraTicks by int(0) {
-        name = Literal("No Fishing Armor Title Duration")
-        description = Literal("Extra time for the no fishing armor title, in ticks.")
-        range = 0..200
-        slider = true
-        condition = { noFishingArmorAlert }
+    val noMobyDuck by obj(TitleSettings(
+        title = "&c&lNO MOBY-DUCK!",
+        enabledByDefault = false
+    )) {
+        name = Literal("No Moby-Duck Alert")
+        description = Literal("Alerts when fishing without an active Moby-Duck buff. Toggle and edit the title, subtitle, duration, and preview.")
+        searchTerms = listOf("moby duck", "moby-duck", "wisdom", "buff", "title", "subtitle", "duration")
     }
 
     init {
@@ -274,6 +234,11 @@ object GeneralFishing : Category("General Fishing") {
         description = Literal("Plays a sound when the fishing stream approaches, increasing in pitch.")
     }
 
+    var muteAnnoyingSounds by boolean(false) {
+        name = Literal("Mute Annoying Sounds")
+        description = Literal("Mutes Ghast Crying in Backwater Bayou and Elder Guardian moans in the Crimson Isle.")
+    }
+
     var bobbinTimeDisplay by reloadableBoolean(true) {
         name = Literal("Bobbin' Time Display")
         description = Literal("Display nearby bobbers and Bobbin' Time bonus on screen")
@@ -287,5 +252,30 @@ object GeneralFishing : Category("General Fishing") {
     var showActualBaitCount by boolean(true) {
         name = Literal("Show Actual Bait Count")
         description = Literal("Replaces the stack size in the 9th hotbar slot with the actual remaining bait count.")
+    }
+
+    class DeployableTitleSettings : SoundTitleSettings(
+        title = "{color}&l{name} Expired!",
+        subtitle = "",
+        placeholders = "{name}, {color}",
+        previews = mapOf(
+            "Preview Flare" to listOf("name" to "Flare", "color" to "&6"),
+            "Preview Umberella" to listOf("name" to "Umberella", "color" to "&9"),
+            "Preview Flux" to listOf("name" to "Flux", "color" to "&d")
+        ),
+        soundId = "rfu:deployable_expired"
+    ) {
+        init {
+            separator {
+                title = "Trigger Options"
+                condition = { enabled }
+            }
+        }
+
+        var types by enums(*DeployableType.entries.toTypedArray()) {
+            name = Literal("Deployable Alerts")
+            description = Literal("Select which deployables trigger alerts and party messages.")
+            condition = { enabled }
+        }
     }
 }

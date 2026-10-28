@@ -1,24 +1,21 @@
 package cloud.glitchdev.rfu.feature.fishing
 
-import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
+import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.events.managers.EntityRemovedEvents.registerEntityRemovedEvent
 import cloud.glitchdev.rfu.events.managers.ItemUsedEvents.registerItemUsedEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Sounds
-import cloud.glitchdev.rfu.utils.Title
-import cloud.glitchdev.rfu.utils.dsl.toMcCodes
 
 @RFUFeature
 object FailCastAlert : Feature {
     private var isFishing = false
-    private var FAILED_CAST_MESSAGE = "&c&lFailed Cast!".toMcCodes()
     private var sentAlert = false
 
     override fun onInitialize() {
         registerItemUsedEvent { item ->
-            if(!GeneralFishing.failCastAlert) return@registerItemUsedEvent
+            if(!GeneralFishing.failCast.enabled) return@registerItemUsedEvent
             if (item.item.descriptionId == "item.minecraft.fishing_rod") {
                 sentAlert = false
                 if (mc.player?.fishing == null) {
@@ -30,7 +27,7 @@ object FailCastAlert : Feature {
         }
 
         registerEntityRemovedEvent { entityId ->
-            if(!GeneralFishing.failCastAlert) return@registerEntityRemovedEvent
+            if(!GeneralFishing.failCast.enabled) return@registerEntityRemovedEvent
             if(entityId != mc.player?.fishing?.id) return@registerEntityRemovedEvent
             if(!isFishing) return@registerEntityRemovedEvent
             if(mc.player?.mainHandItem?.item?.descriptionId != "item.minecraft.fishing_rod") return@registerEntityRemovedEvent
@@ -38,9 +35,9 @@ object FailCastAlert : Feature {
             if(!sentAlert) {
                 sentAlert = true
                 if(FishingSession.isFishing) {
-                    Title.showTitle(FAILED_CAST_MESSAGE, "", 0, 5, 5, extraTicks = GeneralFishing.failCastTitleExtraTicks) { !isFishing }
-                    if(GeneralFishing.failCastSound) {
-                        Sounds.playSound("rfu:failed_cast", 1f, GeneralFishing.failCastVolume)
+                    GeneralFishing.failCast.show { !isFishing }
+                    if(GeneralFishing.failCast.sound) {
+                        Sounds.playSound("rfu:failed_cast", 1f, GeneralFishing.failCast.volume)
                     }
                 }
             }

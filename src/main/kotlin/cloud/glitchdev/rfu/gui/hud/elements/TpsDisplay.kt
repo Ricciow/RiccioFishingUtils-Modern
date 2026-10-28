@@ -13,6 +13,8 @@ object TpsDisplay : AbstractTextHudElement("tpsDisplay") {
     override val relatedSetting = "TPS Display"
     override val requirement: Boolean
         get() = OtherSettings.tpsDisplay
+    override val isElementActive: Boolean
+        get() = TpsTracker.getTps() != null
 
     override fun onInitialize() {
         super.onInitialize()
@@ -26,12 +28,11 @@ object TpsDisplay : AbstractTextHudElement("tpsDisplay") {
     override fun onUpdateState() {
         super.onUpdateState()
 
-        if (isEditing && !requirement) {
-            text.setText("${TextColor.WHITE}TPS: ${TextColor.LIGHT_GREEN}20.0")
+        val tps = TpsTracker.getTps() ?: if (isEditing) 20.0 else {
+            text.clearLines()
             return
         }
 
-        val tps = TpsTracker.getTps()
         val color = when {
             tps >= 19.5 -> TextColor.LIGHT_GREEN
             tps >= 17.0 -> TextColor.YELLOW

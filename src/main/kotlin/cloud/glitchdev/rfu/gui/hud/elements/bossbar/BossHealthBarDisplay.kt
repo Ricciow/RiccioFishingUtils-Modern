@@ -5,7 +5,6 @@ import cloud.glitchdev.rfu.gui.hud.AbstractHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 import cloud.glitchdev.rfu.data.mob.SkyblockEntity
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
-import cloud.glitchdev.rfu.utils.dsl.parseHealthValue
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.SiblingConstraint
@@ -26,7 +25,7 @@ object BossHealthBarDisplay : AbstractHudElement("bossHealthBar") {
         get() = SeaCreatureConfig.bossHealthBars
 
     override val isElementActive: Boolean
-        get() = entities.isNotEmpty()
+        get() = entities.any { it.hasHealth }
 
     val barsContainer = UIContainer().constrain {
         width = (400 * scale).pixels()
@@ -64,21 +63,18 @@ object BossHealthBarDisplay : AbstractHudElement("bossHealthBar") {
             bars.forEach { it.forceRendering = false }
         }
 
-        // Group / Merge entities
         val mergedInfos = mutableListOf<BossBarEntityInfo>()
-        
-        // We group entities that should be merged
-        val (toMerge, toNotMerge) = entities.partition { entity ->
+
+        val (toMerge, toNotMerge) = entities.filter { it.hasHealth }.partition { entity ->
             val sc = SeaCreatures.get(entity.sbName)
             sc != null && sc.mergeBossbarHp
         }
 
-        // Group toMerge by sbName
         val grouped = toMerge.groupBy { it.sbName }
         grouped.forEach { (sbName, groupEntities) ->
             val count = groupEntities.size
-            val totalHealthVal = groupEntities.sumOf { it.health.parseHealthValue() }
-            val totalMaxHealthVal = groupEntities.sumOf { it.maxHealth.parseHealthValue() }
+            val totalHealthVal = groupEntities.sumOf { it.health }
+            val totalMaxHealthVal = groupEntities.sumOf { it.maxHealth }
             val totalHealth = formatHealthValue(totalHealthVal)
             val totalMaxHealth = formatHealthValue(totalMaxHealthVal)
             val shurikenCount = groupEntities.count { it.isShurikened }
@@ -88,8 +84,10 @@ object BossHealthBarDisplay : AbstractHudElement("bossHealthBar") {
             mergedInfos.add(
                 BossBarEntityInfo(
                     sbName = displayName,
-                    health = totalHealth,
-                    maxHealth = totalMaxHealth,
+                    healthStr = totalHealth,
+                    maxHealthStr = totalMaxHealth,
+                    health = totalHealthVal,
+                    maxHealth = totalMaxHealthVal,
                     shurikenCount = shurikenCount,
                     outdatedNametag = outdated,
                     count = count,
@@ -98,12 +96,13 @@ object BossHealthBarDisplay : AbstractHudElement("bossHealthBar") {
             )
         }
 
-        // Add non-merged entities
         toNotMerge.forEach { entity ->
             val displayName = SeaCreatures.get(entity.sbName)?.scDisplayName ?: entity.sbName
             mergedInfos.add(
                 BossBarEntityInfo(
                     sbName = displayName,
+                    healthStr = entity.healthStr,
+                    maxHealthStr = entity.maxHealthStr,
                     health = entity.health,
                     maxHealth = entity.maxHealth,
                     shurikenCount = if (entity.isShurikened) 1 else 0,

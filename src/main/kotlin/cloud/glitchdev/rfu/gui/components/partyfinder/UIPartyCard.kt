@@ -22,11 +22,11 @@ import cloud.glitchdev.rfu.party.PartyRequirementsManager
 import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.dsl.isUser
 import cloud.glitchdev.rfu.utils.dsl.compact
+import cloud.glitchdev.rfu.utils.gui.UIImages
 import cloud.glitchdev.rfu.utils.network.PartyWebSocket
 import cloud.glitchdev.rfu.utils.network.WebSocketClient
 import gg.essential.elementa.components.UIBlock
 import gg.essential.elementa.components.UIContainer
-import gg.essential.elementa.components.UIImage
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
 import gg.essential.elementa.constraints.AspectConstraint
@@ -423,7 +423,7 @@ class UIPartyCard(
             height = CopyComponentSizeConstraint(userText) * 1.5
         } childOf parent
         val imagePath = "/assets/rfu/ui/$icon.png"
-        val image = javaClass.getResource(imagePath)?.let { UIImage.ofResourceCached(imagePath) }
+        val image = javaClass.getResource(imagePath)?.let { UIImages.ofResource(imagePath) }
         val button = if (image != null) {
             UIButton.withImage(image, 2f, onClick = onClick)
         } else {

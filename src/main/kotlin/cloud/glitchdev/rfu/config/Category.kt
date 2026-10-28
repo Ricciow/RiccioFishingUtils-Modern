@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.config
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.access.ConfigScreenInvoker
+import com.teamresourceful.resourcefulconfig.api.types.info.ResourcefulConfigLink
 import com.teamresourceful.resourcefulconfigkt.api.CategoryKt
 import com.teamresourceful.resourcefulconfigkt.api.ObservableEntry
 import com.teamresourceful.resourcefulconfigkt.api.builders.SeparatorBuilder
@@ -11,6 +12,18 @@ import com.teamresourceful.resourcefulconfigkt.api.builders.TypeBuilder
  * Extends CategoryKt to add dualSeparator and reloadScreen functionality
  */
 open class Category(id: String) : CategoryKt(id) {
+    override val links = arrayOf(
+        ResourcefulConfigLink.create(
+            "https://discord.gg/JfrXm6TqXz", "rfu:emoji/discord", Literal("RFU Discord")
+        ),
+        ResourcefulConfigLink.create(
+            "https://github.com/ricciow/ricciofishingutils-modern", "rfu:emoji/github", Literal("GitHub")
+        ),
+        ResourcefulConfigLink.create(
+            "https://www.patreon.com/cw/Ricciow", "rfu:emoji/patreon", Literal("Patreon")
+        ),
+    )
+
     fun reloadableBoolean(
         value: Boolean,
         builder: TypeBuilder.() -> Unit = {}
@@ -80,4 +93,4 @@ open class Category(id: String) : CategoryKt(id) {
             this.condition = condition
         }
     }
-    }
+}

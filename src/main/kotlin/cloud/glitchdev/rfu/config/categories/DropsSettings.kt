@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
+import cloud.glitchdev.rfu.config.TitleSettings
 import cloud.glitchdev.rfu.constants.fishing.RareDropDisplayDataType
 import cloud.glitchdev.rfu.constants.skyblock.Dyes
 import cloud.glitchdev.rfu.constants.fishing.RareDrops
@@ -72,37 +73,18 @@ object DropsSettings : Category("Drops") {
         }
     }
 
-    var rareDropTitleAlert by reloadableBoolean(true) {
-        name = Literal("Rare Drop Title Alert")
-        description = Literal("Shows a title on screen when you get a rare drop")
-    }
-
-    var rareDropTitleExtraTicks by int(0) {
-        name = Literal("Rare Drop Title Duration")
-        description = Literal("Extra time for rare drop titles, in ticks.")
-        range = 0..200
-        slider = true
-        condition = { rareDropTitleAlert }
-    }
-
-    var rareDropTitleFormat by string("{dropcolor}&l{drop}") {
-        name = Literal("Rare Drop Title Format")
-        description = Literal("The title to show on screen. Variables: {drop}, {dropcolor}, {mob}, {magic_find}, {count}, {time}, {total}")
-        condition = { rareDropTitleAlert }
-    }
-
-    var rareDropSubtitleFormat by string("&b(+{magic_find} \uE01A Magic Find)") {
-        name = Literal("Rare Drop Subtitle Format")
-        description = Literal("The subtitle to show on screen. Variables: {drop}, {dropcolor}, {mob}, {magic_find}, {count}, {time}, {total}")
-        condition = { rareDropTitleAlert }
-    }
-
-    init {
-        previewButton(
-            RareDropAlert::previewTitle,
-            "Preview Title",
-            "Shows a preview of the rare drop title on screen."
-        ) { rareDropTitleAlert }
+    val rareDrop by obj(TitleSettings(
+        title = "{dropcolor}&l{drop}",
+        subtitle = "&b(+{magic_find} \uE01A Magic Find)",
+        duration = 40,
+        placeholders = "{drop}, {dropcolor}, {mob}, {magic_find}, {count}, {time}, {total}",
+        previews = mapOf(
+            "Preview" to listOf("drop" to "Radioactive Vial", "dropcolor" to "&d", "mob" to "Lord Jawbus", "magic_find" to "350", "count" to "100", "time" to "5m 20s", "total" to "500")
+        )
+    )) {
+        name = Literal("Rare Drop Alert")
+        description = Literal("Toggle and edit the title, subtitle, duration, and preview.")
+        searchTerms = listOf("rare drop", "raredrop", "title", "subtitle", "duration")
     }
 
     init {

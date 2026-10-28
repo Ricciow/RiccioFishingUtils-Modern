@@ -61,7 +61,8 @@ object Sb : SimpleCommand("sb"), Feature {
                     lines.add("${TextColor.LIGHT_GREEN}${TextEffects.BOLD}$scName")
 
                     val shurikenStr = if (sbEntity.isShurikened) " ${TextColor.AQUAMARINE}[Shurikened]" else ""
-                    lines.add("${TextColor.LIGHT_RED}HP: ${TextColor.WHITE}${sbEntity.health}/${sbEntity.maxHealth}$shurikenStr")
+                    val healthText = if (sbEntity.hasHealth) "${sbEntity.healthStr}/${sbEntity.maxHealthStr}" else "Unknown"
+                    lines.add("${TextColor.LIGHT_RED}HP: ${TextColor.WHITE}$healthText$shurikenStr")
 
                     lines.add("${TextColor.YELLOW}Type: ${TextColor.WHITE}${sbEntity.modelEntity.type.toShortString()}")
                     val modelInfo = if (sbEntity.modelEntities.size > 1) {
@@ -201,7 +202,8 @@ object Sb : SimpleCommand("sb"), Feature {
         val shurikenStr = if (sbEntity.isShurikened) " ${TextColor.AQUAMARINE}[Shurikened]" else ""
 
         val lines = mutableListOf<String>()
-        lines.add("${TextColor.YELLOW}[RFU MobDebug] ${TextColor.LIGHT_GREEN}${TextEffects.BOLD}$scName ${TextColor.GRAY}(HP: ${TextColor.LIGHT_RED}${sbEntity.health}/${sbEntity.maxHealth}$shurikenStr${TextColor.GRAY})")
+        val healthText = if (sbEntity.hasHealth) "${sbEntity.healthStr}/${sbEntity.maxHealthStr}" else "Unknown"
+        lines.add("${TextColor.YELLOW}[RFU MobDebug] ${TextColor.LIGHT_GREEN}${TextEffects.BOLD}$scName ${TextColor.GRAY}(HP: ${TextColor.LIGHT_RED}$healthText$shurikenStr${TextColor.GRAY})")
 
         if (clickedEntity != null && clickedEntity.id != modelId && clickedEntity.id != tagId) {
             val clickedDelta = clickedEntity.id - tagId

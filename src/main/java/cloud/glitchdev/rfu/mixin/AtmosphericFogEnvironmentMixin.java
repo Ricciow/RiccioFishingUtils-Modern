@@ -15,6 +15,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class AtmosphericFogEnvironmentMixin {
     @Inject(method = "setupFog", at = @At("TAIL"))
     private void rfu$onSetupFog(FogData fog, Camera camera, ClientLevel level, float renderDistance, DeltaTracker deltaTracker, CallbackInfo ci) {
-        FogEvents.INSTANCE.getRunTasks().invoke(fog, camera, level, renderDistance, deltaTracker);
+        FogEvents.FogEventManager.INSTANCE.getRunTasks().invoke(fog, camera, level, renderDistance, deltaTracker);
     }
 }
