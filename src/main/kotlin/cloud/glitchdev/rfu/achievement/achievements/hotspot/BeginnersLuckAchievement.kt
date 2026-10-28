@@ -6,6 +6,9 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.BaseAchievement
+import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
+import cloud.glitchdev.rfu.events.managers.ItemUsedEvents.registerItemUsedEvent
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.utils.dsl.isFishingRod
 import gg.essential.universal.utils.toUnformattedString
@@ -20,13 +23,17 @@ object BeginnersLuckAchievement : BaseAchievement() {
     override val type: AchievementType = AchievementType.NORMAL
     override val difficulty: AchievementDifficulty = AchievementDifficulty.HARD
     override val category: AchievementCategory = AchievementCategory.HOT_SPOT
+    private var lastCastRod: ItemStack? = null
 
     override fun setupListeners() {
+        activeListeners.add(registerItemUsedEvent { item ->
+            if (!item.isFishingRod() || mc.player?.fishing != null) return@registerItemUsedEvent
+            lastCastRod = item.copy()
+        })
+
         activeListeners.add(registerSeaCreatureCatchEvent { sc, _, _, _, bait ->
             if (sc.scName == "Wiki Tiki" && bait == null) {
-                val player = mc.player ?: return@registerSeaCreatureCatchEvent
-                val mainHand = player.mainHandItem
-                val item = if (mainHand.isFishingRod()) mainHand else player.offhandItem.takeIf { it.isFishingRod() } ?: return@registerSeaCreatureCatchEvent
+                val item = lastCastRod ?: return@registerSeaCreatureCatchEvent
 
                 if (isUnenchanted(item) && isUnreforged(item) && hasNoRodParts(item)) {
                     complete()
