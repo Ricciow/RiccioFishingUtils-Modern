@@ -52,7 +52,6 @@ object CustomLava : Feature {
 
         registerCameraFluidEvent { context ->
             if (usesWaterStyle() && context.state.`is`(FluidTags.LAVA)) {
-                // Let Camera's water branch test the surface height; skip lava's near-plane detection.
                 if (context.tag == FluidTags.WATER) context.matches = true
                 else if (context.tag == FluidTags.LAVA) context.matches = false
             }
