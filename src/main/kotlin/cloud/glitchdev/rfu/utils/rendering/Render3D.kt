@@ -546,13 +546,8 @@ object Render3D {
     ) {
         if (text.isEmpty()) return
 
-        //? if >=26.2 {
         val matrixStack = context.poseStack()
         val collector = context.submitNodeCollector()
-        //?} else {
-        /*val consumers = context.bufferSource()
-        val matrixStack = context.poseStack()
-        *///?}
 
         val camPos = camera.position()
         val vecToText = location.subtract(camPos)
@@ -589,7 +584,6 @@ object Render3D {
             val x = -font.width(lineComp) / 2f
             val y = startY + index * lineSpacing
 
-            //? if >=26.2 {
             val displayMode = if (seeThrough) Font.DisplayMode.SEE_THROUGH else Font.DisplayMode.NORMAL
             collector.submitText(
                 matrixStack,
@@ -603,22 +597,6 @@ object Render3D {
                 backgroundColorInt,
                 0
             )
-            //?} else {
-            /*val displayMode = if (seeThrough) Font.DisplayMode.SEE_THROUGH else Font.DisplayMode.NORMAL
-            val matrix = matrixStack.last().pose()
-            font.drawInBatch(
-                charSequence,
-                x,
-                y,
-                color.rgb,
-                dropShadow,
-                matrix,
-                consumers,
-                displayMode,
-                backgroundColorInt,
-                0xF000F0
-            )
-            *///?}
         }
 
         matrixStack.popPose()
