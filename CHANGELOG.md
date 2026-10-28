@@ -1,6 +1,7 @@
 # v1.20.1 - Minor
 
 ### Features
+- Added blacklist/whitelist for party commands.
 
 ### Changes
 
