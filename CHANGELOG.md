@@ -10,6 +10,7 @@
 - Unusually Timed Fishing/Spooky Festivals are now detected from catch messages.
 - Changed Begginer's Luck achievement to check the last used rod instead of the currently held item at the time of the catch.
 - Fixed LF item achievements not having their number on the title
+- Fixed hotspot sea creatures not being counted on Atoll.
 
 ### Backend
 - Added a Kotlin wrapper for list config entries.
