@@ -1,6 +1,7 @@
 # v1.20.0 - Major
 
 ### Features
+- Added customizable trophy messages.
 - Added a customizable rare sea creature message when outside a party. (off by default)
 - Added Coords waypoints (off by default).
 - Added Custom Lava feature (off by default).
