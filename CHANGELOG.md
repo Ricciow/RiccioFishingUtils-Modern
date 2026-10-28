@@ -10,3 +10,4 @@
 - Changed Begginer's Luck achievement to check the last used rod instead of the currently held item at the time of the catch.
 
 ### Backend
+- Added a Kotlin wrapper for list config entries.

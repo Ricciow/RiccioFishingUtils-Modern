@@ -2,6 +2,8 @@ package cloud.glitchdev.rfu.config
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.access.ConfigScreenInvoker
+import cloud.glitchdev.rfu.config.configList.ConfigListBuilder
+import cloud.glitchdev.rfu.config.configList.ConfigListProperty
 import com.teamresourceful.resourcefulconfig.api.types.info.ResourcefulConfigLink
 import com.teamresourceful.resourcefulconfigkt.api.CategoryKt
 import com.teamresourceful.resourcefulconfigkt.api.ObservableEntry
@@ -23,6 +25,12 @@ open class Category(id: String) : CategoryKt(id) {
             "https://www.patreon.com/cw/Ricciow", "rfu:emoji/patreon", Literal("Patreon")
         ),
     )
+
+    inline fun <reified T : Any> list(
+        values: List<T> = emptyList(),
+        id: String? = null,
+        noinline builder: ConfigListBuilder.() -> Unit = {}
+    ) = ConfigListProperty(T::class.javaObjectType, values, id, builder)
 
     fun reloadableBoolean(
         value: Boolean,
