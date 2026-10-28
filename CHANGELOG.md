@@ -5,5 +5,6 @@
 ### Changes
 
 ### Fixes
+- Unusually Timed Fishing/Spooky Festivals are now detected from catch messages.
 
 ### Backend
