@@ -1,42 +1,9 @@
-# v1.20.0 - Major
+# v1.20.1 - Minor
 
 ### Features
-- Added customizable trophy messages.
-- Added a customizable rare sea creature message when outside a party. (off by default)
-- Added Coords waypoints (off by default).
-- Added Custom Lava feature (off by default).
-- Added Sulphur Skitter range display.
-- Added a world border on the Crimson Isle in the Spider's Den direction.
-- Added customizable title alerts and added sound previews.
-- Added alerts for fishing without Moby-Duck, without rain, without a Chum Bucket, or fishing outside a hotspot. (all off by default)
-- Added a highlight setting for lava fishing itens to sell.
-- Added an achievement for using Moby-Ducks.
-- Added LF Vial, Texts, Mask, Shed, and Jewel achievements.
-- Added Show Actual Arrow Count, same as Show Actual Bait Count but for arrows.
-- Added a mute annoying sounds feature under General Fishing to mute Banshees and Thunder Sparks.
-- Added Jawbus invulnerability timer.
-- Added :iceberg: emoji, whoops forgot that one
-- Added Discord, GitHub, and Patreon links on the top-right of settings.
 
 ### Changes
-- Moved the Party Finder scrollbar slightly to the right.
 
 ### Fixes
-- Fixed Great White Sharks not being detected or highlighted.
-- Fixed mobs without health, such as Puddle Jumpers, not being detected as SkyBlock entities.
-- Fixed Hypixel detection when connecting through hypixel.fast (whatever this is)
-- Improved the exp/h when under level 50 to not double count gains.
-- Fixed the Jawbus death sound ignoring its toggle.
-- Improved TPS tracking.
-- Fixed Party Finder rejecting join attempts before player requirements finish loading.
 
 ### Backend
-- Added total trophy frog and fish tracking.
-- Centralized mob health parsing.
-- Added configurable model name aliases for sea creatures that update from the back-end.
-- Reworked rare drop and dyes save to use independent counters.
-- Added migrations for sea-creature settings.
-- Added a slot rendering event manager.
-- Added a world border rendering event manager.
-- Updated Elementa and UniversalCraft.
-- Added support for cubes, beacon beams, and player heads in the 3D rendering utilities.
