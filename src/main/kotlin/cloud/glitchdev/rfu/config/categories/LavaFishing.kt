@@ -4,6 +4,7 @@ import cloud.glitchdev.rfu.config.Category
 import cloud.glitchdev.rfu.config.SoundTitleSettings
 import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
 import cloud.glitchdev.rfu.feature.fishing.VanquisherPartyMessage
+import com.teamresourceful.resourcefulconfigkt.api.ObservableEntry
 import java.awt.Color
 
 object LavaFishing : Category("Lava Fishing") {
@@ -117,9 +118,17 @@ object LavaFishing : Category("Lava Fishing") {
         description = Literal("Changes lava's appearance, color, and fog. Just don't forget it's still lava!")
     }
 
-    var customLavaLiquid by enum(LiquidTypes.WATER) {
+    var customLavaLiquid by ObservableEntry(enum(LiquidTypes.WATER) {
         name = Literal("Liquid Style")
         description = Literal("Pick the liquid style for the custom lava.")
+        condition = { customLava }
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var customLavaCustomColor by reloadableBoolean(true) {
+        name = Literal("Custom Colors")
+        description = Literal("Overrides the liquid's original colors.")
         condition = { customLava }
     }
 
@@ -127,7 +136,44 @@ object LavaFishing : Category("Lava Fishing") {
         name = Literal("Liquid Color")
         description = Literal("Changes the color of the liquid.")
         allowAlpha = false
-        condition = { customLava }
+        condition = { customLava && customLavaCustomColor && customLavaLiquid == LiquidTypes.WATER }
+    }
+
+    var waterTextureOpacity by float(180f / 255f * 100f) {
+        name = Literal("Opacity")
+        description = Literal("The opacity of the water.")
+        range = 0f..100f
+        slider = true
+        condition = { customLava && customLavaLiquid == LiquidTypes.WATER }
+    }
+
+    var customLavaDarkColor by color(Color(155, 23, 0).rgb) {
+        name = Literal("Dark Tones")
+        description = Literal("Changes the darkest shades of the lava.")
+        allowAlpha = false
+        condition = { customLava && customLavaCustomColor && customLavaLiquid == LiquidTypes.LAVA }
+    }
+
+    var customLavaMidtoneColor by color(Color(255, 100, 0).rgb) {
+        name = Literal("Midtones")
+        description = Literal("Changes the middle shades and fog of the lava.")
+        allowAlpha = false
+        condition = { customLava && customLavaCustomColor && customLavaLiquid == LiquidTypes.LAVA }
+    }
+
+    var customLavaHighlightColor by color(Color(255, 255, 85).rgb) {
+        name = Literal("Highlights")
+        description = Literal("Changes the brightest shades of the lava.")
+        allowAlpha = false
+        condition = { customLava && customLavaCustomColor && customLavaLiquid == LiquidTypes.LAVA }
+    }
+
+    var lavaTextureOpacity by float(100f) {
+        name = Literal("Opacity")
+        description = Literal("The opacity of the lava.")
+        range = 0f..100f
+        slider = true
+        condition = { customLava && customLavaLiquid == LiquidTypes.LAVA }
     }
 
     var customLavaDisableFog by boolean(false) {
@@ -138,7 +184,7 @@ object LavaFishing : Category("Lava Fishing") {
 
     var customLavaHideFire by boolean(false) {
         name = Literal("Hide Fire Effect")
-        description = Literal("Hides the first-person fire overlay while Custom Lava is enabled.")
+        description = Literal("Hides the first-person fire overlay and flames on players/bobbers.")
         condition = { customLava }
     }
 

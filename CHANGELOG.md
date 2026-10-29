@@ -2,8 +2,10 @@
 
 ### Features
 - Added blacklist/whitelist for party commands.
+- Added Custom Water under General Fishing settings.
 
 ### Changes
+- Custom Water and Custom Lava now have 3 tones, and opacity sliders.
 
 ### Fixes
 - Fixed invulnerability timers and other world text rendering behind entities on 26.1.

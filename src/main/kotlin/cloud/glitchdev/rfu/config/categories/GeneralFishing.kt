@@ -4,9 +4,12 @@ import cloud.glitchdev.rfu.config.Category
 import cloud.glitchdev.rfu.config.SoundTitleSettings
 import cloud.glitchdev.rfu.config.TitleSettings
 import cloud.glitchdev.rfu.constants.fishing.FishTrackingType
+import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
 import cloud.glitchdev.rfu.data.mob.DeployableType
 import cloud.glitchdev.rfu.feature.fishing.DoubleHookMessages
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
+import com.teamresourceful.resourcefulconfigkt.api.ObservableEntry
+import java.awt.Color
 
 object GeneralFishing : Category("General Fishing") {
     override val description: TranslatableValue
@@ -252,6 +255,82 @@ object GeneralFishing : Category("General Fishing") {
     var showActualBaitCount by boolean(true) {
         name = Literal("Show Actual Bait Count")
         description = Literal("Replaces the stack size in the 9th hotbar slot with the actual remaining bait count.")
+    }
+
+    init {
+        dualSeparator {
+            title = "Custom Water"
+            description = "Customize the appearance of water."
+        }
+    }
+
+    var customWater by reloadableBoolean(false) {
+        name = Literal("Custom Water")
+        description = Literal("Changes water's appearance, color, and fog.")
+    }
+
+    var customWaterLiquid by ObservableEntry(enum(LiquidTypes.LAVA) {
+        name = Literal("Liquid Style")
+        description = Literal("Pick the liquid style for the custom water.")
+        condition = { customWater }
+    }) { _, _ ->
+        reloadScreen()
+    }
+
+    var customWaterCustomColor by reloadableBoolean(false) {
+        name = Literal("Custom Colors")
+        description = Literal("Overrides the liquid's original colors.")
+        condition = { customWater }
+    }
+
+    var customWaterColor by color(Color(63, 118, 228).rgb) {
+        name = Literal("Liquid Color")
+        description = Literal("Changes the color of the liquid.")
+        allowAlpha = false
+        condition = { customWater && customWaterCustomColor && customWaterLiquid == LiquidTypes.WATER }
+    }
+
+    var waterTextureOpacity by float(180f / 255f * 100f) {
+        name = Literal("Opacity")
+        description = Literal("The opacity of the water.")
+        range = 0f..100f
+        slider = true
+        condition = { customWater && customWaterLiquid == LiquidTypes.WATER }
+    }
+
+    var customWaterDarkColor by color(Color(155, 23, 0).rgb) {
+        name = Literal("Dark Tones")
+        description = Literal("Changes the darkest shades of lava.")
+        allowAlpha = false
+        condition = { customWater && customWaterCustomColor && customWaterLiquid == LiquidTypes.LAVA }
+    }
+
+    var customWaterMidtoneColor by color(Color(255, 100, 0).rgb) {
+        name = Literal("Midtones")
+        description = Literal("Changes the middle shades and fog of lava.")
+        allowAlpha = false
+        condition = { customWater && customWaterCustomColor && customWaterLiquid == LiquidTypes.LAVA }
+    }
+
+    var customWaterHighlightColor by color(Color(255, 255, 85).rgb) {
+        name = Literal("Highlights")
+        description = Literal("Changes the brightest shades of lava.")
+        allowAlpha = false
+        condition = { customWater && customWaterCustomColor && customWaterLiquid == LiquidTypes.LAVA }
+    }
+
+    var lavaTextureOpacity by float(100f) {
+        name = Literal("Opacity")
+        description = Literal("The opacity of the lava.")
+        range = 0f..100f
+        slider = true
+        condition = { customWater && customWaterLiquid == LiquidTypes.LAVA }
+    }
+
+    var customWaterDisableFog by boolean(false) {
+        name = Literal("Disable Fog")
+        description = Literal("Removes the fog while inside the water.")
+        condition = { customWater }
     }
 
     class DeployableTitleSettings : SoundTitleSettings(
