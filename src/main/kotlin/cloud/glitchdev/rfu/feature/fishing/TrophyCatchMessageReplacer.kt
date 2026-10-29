@@ -28,10 +28,13 @@ object TrophyCatchMessageReplacer : Feature {
         }
     }
 
-    fun preview() {
-        val trophy: Trophy = if ((0..1).random() == 0) TrophyFrog.entries.random() else TrophyFish.entries.random()
+    fun previewFish() = preview(TrophyFish.entries.random())
+
+    fun previewFrog() = preview(TrophyFrog.entries.random())
+
+    private fun preview(trophy: Trophy) {
         val tier = listOf(TrophyTier.GOLD, TrophyTier.DIAMOND).random()
-        Chat.sendMessage(Component.literal(formatMessage(trophy, tier, count = 21, progress = 42, amount = 1)))
+        Chat.sendMessage(Component.literal(formatMessage(trophy, tier, count = 21, total = 123, progress = 42, amount = 1)))
     }
 
     private fun handleTrophyCatchMessage(
@@ -70,16 +73,17 @@ object TrophyCatchMessageReplacer : Feature {
             TrophyTier.GOLD -> counts?.gold
             TrophyTier.DIAMOND -> counts?.diamond
         } ?: 0) + amount
+        val total = (counts?.total ?: 0) + amount
         val progress = when (tier) {
             TrophyTier.GOLD -> existing?.goldProgress ?: 0
             TrophyTier.DIAMOND -> existing?.diamondProgress ?: 0
             else -> null
         }
-        Chat.sendMessage(Component.literal(formatMessage(trophy, tier, count, progress, amount)))
+        Chat.sendMessage(Component.literal(formatMessage(trophy, tier, count, total, progress, amount)))
         return false
     }
 
-    private fun formatMessage(trophy: Trophy, tier: TrophyTier, count: Int, progress: Int?, amount: Int): String {
+    private fun formatMessage(trophy: Trophy, tier: TrophyTier, count: Int, total: Int, progress: Int?, amount: Int): String {
         val tierColor = when (tier) {
             TrophyTier.BRONZE -> TextColor.DARK_GRAY
             TrophyTier.SILVER -> TextColor.GRAY
@@ -104,13 +108,14 @@ object TrophyCatchMessageReplacer : Feature {
             count % 10 == 3 -> "rd"
             else -> "th"
         }
-        return TrophyFishing.customTrophyMessage.formatTemplate(
-            "type" to if (trophy is TrophyFrog) "FROG" else "FISH",
+        val template = if (trophy is TrophyFrog) TrophyFishing.customTrophyFrogMessage else TrophyFishing.customTrophyFishMessage
+        return template.formatTemplate(
             "name" to trophy.displayName,
             "color" to trophy.rarity.color.code,
             "tier_color" to tierColor,
             "tier" to tier.name,
             "count" to count,
+            "total" to total,
             "ordinal" to suffix,
             "amount" to amount,
             "multi" to if (amount > 1) " x$amount" else "",

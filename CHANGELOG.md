@@ -3,9 +3,11 @@
 ### Features
 - Added blacklist/whitelist for party commands.
 - Added Custom Water under General Fishing settings.
+- Added separate custom trophy fish and frog messages settings and {total} variable.
 
 ### Changes
 - Custom Water and Custom Lava now have 3 tones, and opacity sliders.
+- Removed {type} from custom trophy messages.
 
 ### Fixes
 - Fixed invulnerability timers and other world text rendering behind entities on 26.1.
