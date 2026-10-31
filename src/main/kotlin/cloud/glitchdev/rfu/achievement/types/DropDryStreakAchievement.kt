@@ -10,7 +10,7 @@ import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCre
 
 abstract class DropDryStreakAchievement(private val drop: RareDrops) : NumericStageAchievement() {
     protected open val milestones: List<Long> = listOf(50L)
-    protected open val stageNumerals: List<String> = listOf("I")
+    protected open val stageNumerals: List<String> = listOf("I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X")
 
     abstract override val name: String
     override val description: String

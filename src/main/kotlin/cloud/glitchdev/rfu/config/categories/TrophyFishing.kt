@@ -64,9 +64,15 @@ object TrophyFishing : Category("Trophy Fishing") {
         description = Literal("Replaces trophy frog and fish catch messages with a custom message.")
     }
 
-    var customTrophyMessage by string("&2&l\uE02A TROPHY {type}! &fYou caught your &7{count}{ordinal} {color}{name} {tier_color}&l{tier}{multi}&f! {pity}") {
-        name = Literal("Custom Trophy Message Format")
-        description = Literal("Variables: {type}, {name}, {color}, {tier}, {count}, {ordinal}, {amount}, {multi}, {pity}.")
+    var customTrophyFishMessage by string("&6&l\uE02A TROPHY FISH! &fYou caught your &7{count}{ordinal} {color}{name} {tier_color}&l{tier}{multi}&f! {pity}") {
+        name = Literal("Custom Trophy Fish Message Format")
+        description = Literal("Variables: {name}, {color}, {tier}, {tier_color}, {count}, {total}, {ordinal}, {amount}, {multi}, {pity}, {count}, {total}.")
+        condition = { customTrophyMessageEnabled }
+    }
+
+    var customTrophyFrogMessage by string("&2&l\uE02A TROPHY FROG! &fYou caught your &7{count}{ordinal} {color}{name} {tier_color}&l{tier}{multi}&f! {pity}") {
+        name = Literal("Custom Trophy Frog Message Format")
+        description = Literal("Variables: {name}, {color}, {tier}, {tier_color}, {count}, {total}, {ordinal}, {amount}, {multi}, {pity}, {count}, {total}.")
         condition = { customTrophyMessageEnabled }
     }
 
@@ -78,9 +84,14 @@ object TrophyFishing : Category("Trophy Fishing") {
 
     init {
         previewButton(
-            TrophyCatchMessageReplacer::preview,
-            "Preview Trophy Message",
-            "Shows a preview of the custom trophy catch message in chat."
+            TrophyCatchMessageReplacer::previewFish,
+            "Preview Trophy Fish Message",
+            "Shows a preview of the custom trophy fish catch message in chat."
+        ) { customTrophyMessageEnabled }
+        previewButton(
+            TrophyCatchMessageReplacer::previewFrog,
+            "Preview Trophy Frog Message",
+            "Shows a preview of the custom trophy frog catch message in chat."
         ) { customTrophyMessageEnabled }
     }
 

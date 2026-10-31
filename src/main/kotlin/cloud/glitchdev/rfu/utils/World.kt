@@ -2,21 +2,22 @@ package cloud.glitchdev.rfu.utils
 
 import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.fishing.FishingIslands
-import cloud.glitchdev.rfu.constants.skyblock.Mayors
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatureCategory
+import cloud.glitchdev.rfu.constants.skyblock.Mayors
 import cloud.glitchdev.rfu.data.fishing.HotspotCache
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.HotSpotEvents
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
-import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
+import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import net.hypixel.data.type.GameType
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.dimension.BuiltinDimensionTypes
-import java.time.Clock
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.minutes
 import kotlin.jvm.optionals.getOrElse
 import kotlin.jvm.optionals.getOrNull
 
@@ -28,7 +29,6 @@ object  World : RegisteredEvent {
         }
     var lobby : String? = null
     var island : FishingIslands? = null
-    var jerryFishingFestival = false
     var isOnAlpha: Boolean = false
         private set
 
@@ -36,18 +36,17 @@ object  World : RegisteredEvent {
         private set
         get() = DevSettings.bypassHypixelCheck || field
 
+    private var spookyFestivalDay = -1L
+    private var fishingFestivalDay = -1L
     private const val SKYBLOCK_EPOCH = 1560275700000L
     private const val DAY_DURATION_MS = 20L * 60 * 1000L
     private const val HOUR_DURATION_MS = DAY_DURATION_MS / 24
     private const val MINUTE_DURATION_MS = HOUR_DURATION_MS / 60
     private const val MONTH_DURATION_MS = 31 * DAY_DURATION_MS
     private const val YEAR_DURATION_MS = 12 * MONTH_DURATION_MS
-    private val mayor
-        get() = MayorTracker.currentMayor
-    private val clock: Clock = Clock.systemUTC()
 
     fun getTimeSinceEpoch(): Long {
-        return clock.millis() - SKYBLOCK_EPOCH
+        return Clock.System.now().toEpochMilliseconds() - SKYBLOCK_EPOCH
     }
 
     val SBYear: Long
@@ -59,36 +58,26 @@ object  World : RegisteredEvent {
     val SBDay: Int
         get() = ((getTimeSinceEpoch() % MONTH_DURATION_MS) / DAY_DURATION_MS).toInt() + 1
 
+    private val SBDayIndex: Long
+        get() = getTimeSinceEpoch() / DAY_DURATION_MS
+
     val SBHour: Int
         get() = ((getTimeSinceEpoch() % DAY_DURATION_MS) / HOUR_DURATION_MS).toInt()
 
     val SBMinute: Int
         get() = ((getTimeSinceEpoch() % HOUR_DURATION_MS) / MINUTE_DURATION_MS).toInt()
 
-    /**
-     * Checks if the current SkyBlock time is during the Spooky Festival.
-     * The festival lasts from the 26th of the 8th month to the 3rd of the 9th month.
-     */
-    fun isSpookyFestival(): Boolean {
-        return when (SBMonth) {
-            8 -> SBDay >= 26
-            9 -> SBDay <= 3
-            else -> false
-        }
+    private fun isDetectedFestival(day: Long): Boolean {
+        if (day < 0) return false
+        val startsAt = day * DAY_DURATION_MS
+        return getTimeSinceEpoch() in startsAt until startsAt + DAY_DURATION_MS + 1.minutes.inWholeMilliseconds
     }
 
-    /**
-     * Checks if the current SkyBlock time is during the Fishing Festival.
-     * The festival lasts for the first 3 days of every month, but only if Marina is Mayor.
-     */
-    fun isFishingFestival(): Boolean {
-        if (SBDay <= 3 && jerryFishingFestival) {
-            return true
-        } else {
-            jerryFishingFestival = false
-        }
-        return SBDay <= 3 && (mayor == Mayors.MARINA)
-    }
+    fun isSpookyFestival(): Boolean = (SBMonth == 8 && SBDay >= 26) || (SBMonth == 9 && SBDay <= 3) ||
+            isDetectedFestival(spookyFestivalDay)
+
+    fun isFishingFestival(): Boolean = (SBDay <= 3 && MayorTracker.currentMayor == Mayors.MARINA) ||
+            isDetectedFestival(fishingFestivalDay)
 
     fun isNether(level: Level?): Boolean {
         if (level == null) return false
@@ -119,9 +108,12 @@ object  World : RegisteredEvent {
             island = newIsland
         }
 
-        registerSeaCreatureCatchEvent { sc, _, _, _, _ ->
-            if (sc.category == SeaCreatureCategory.SHARK && mayor == Mayors.JERRY) {
-                jerryFishingFestival = true
+        registerSeaCreatureCatchEvent(priority = -100) { sc, _, _, _, _ ->
+            if (!isInSkyblock || isOnAlpha) return@registerSeaCreatureCatchEvent
+            when (sc.category) {
+                SeaCreatureCategory.SPOOKY -> spookyFestivalDay = SBDayIndex
+                SeaCreatureCategory.SHARK -> fishingFestivalDay = SBDayIndex
+                else -> Unit
             }
         }
 
@@ -147,6 +139,8 @@ object  World : RegisteredEvent {
         }
 
         registerDisconnectEvent(priority = -100) {
+            spookyFestivalDay = -1L
+            fishingFestivalDay = -1L
             if (isOnAlpha) {
                 RFULogger.info("[RFU] Disconnected from Alpha server. Rolling back data...")
                 JsonFile.reloadAll()

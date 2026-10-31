@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.config.categories
 
 import cloud.glitchdev.rfu.config.Category
+import cloud.glitchdev.rfu.constants.chat.PartyCommandListMode
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
 
 object PartySettings : Category("Party") {
@@ -30,6 +31,26 @@ object PartySettings : Category("Party") {
         description = Literal("The cooldown period in seconds for party commands. Set to 0 to disable.")
         range = 0f..10f
         slider = true
+        condition = { togglePartyCommands }
+    }
+
+    init {
+        dualSeparator {
+            title = "Party Command Access"
+            description = "Choose who can trigger party commands"
+            condition = { togglePartyCommands }
+        }
+    }
+
+    var partyCommandListMode by enum(PartyCommandListMode.BLACKLIST) {
+        name = Literal("List Mode")
+        description = Literal("Blacklist blocks listed players. Whitelist only allows listed players.")
+        condition = { togglePartyCommands }
+    }
+
+    val partyCommandPlayers by list(listOf<String>()) {
+        name = Literal("Player Names")
+        description = Literal("Player usernames to blacklist or whitelist. Case insensitive.")
         condition = { togglePartyCommands }
     }
 

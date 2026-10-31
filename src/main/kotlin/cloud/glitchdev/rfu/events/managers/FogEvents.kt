@@ -88,7 +88,9 @@ object FogEvents {
         fun register(priority: Int = 20, callback: (CameraFluidContext) -> Unit): CameraFluidEvent =
             CameraFluidEvent(priority, callback).register()
 
-        class CameraFluidContext(val camera: Camera, val state: FluidState, val tag: TagKey<Fluid>, var matches: Boolean)
+        class CameraFluidContext(val camera: Camera, val state: FluidState, val tag: TagKey<Fluid>, var matches: Boolean) {
+            var disableFog: Boolean = false
+        }
 
         class CameraFluidEvent(priority: Int, callback: (CameraFluidContext) -> Unit) :
             ManagedTask<(CameraFluidContext) -> Unit, CameraFluidEvent>(priority, callback) {

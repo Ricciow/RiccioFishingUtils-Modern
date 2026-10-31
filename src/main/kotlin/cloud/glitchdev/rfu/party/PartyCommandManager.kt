@@ -1,12 +1,12 @@
 ﻿package cloud.glitchdev.rfu.party
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
+import cloud.glitchdev.rfu.constants.chat.PartyCommandListMode
 import cloud.glitchdev.rfu.constants.chat.RegexConstants.PLAYER_REGEX
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerAllowGameEvent
 import cloud.glitchdev.rfu.config.categories.PartySettings
-import cloud.glitchdev.rfu.party.commands.HelpCommand
 import cloud.glitchdev.rfu.utils.Coroutines
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.Party
@@ -86,6 +86,12 @@ object PartyCommandManager : RegisteredEvent {
 
     private fun shouldExecute(command: IPartyCommand, sender: String): Boolean {
         if (!command.isEnabled()) return false
+
+        val isListed = PartySettings.partyCommandPlayers.any { it.trim().equals(sender, ignoreCase = true) }
+        when (PartySettings.partyCommandListMode) {
+            PartyCommandListMode.BLACKLIST -> if (isListed) return false
+            PartyCommandListMode.WHITELIST -> if (!isListed) return false
+        }
         
         val myName = mc.player?.gameProfile?.name ?: return false
         val isMe = sender == myName

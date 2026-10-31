@@ -2,13 +2,38 @@
   "sources": [
     {
       "type": "minecraft:single",
-      "resource": "rfu:block/lava_still_grayscale",
-      "sprite": "rfu:block/lava_still_grayscale"
+      "resource": "minecraft:block/water_still",
+      "sprite": "rfu:block/custom_water_still"
     },
     {
       "type": "minecraft:single",
-      "resource": "rfu:block/lava_flow_grayscale",
-      "sprite": "rfu:block/lava_flow_grayscale"
+      "resource": "minecraft:block/water_flow",
+      "sprite": "rfu:block/custom_water_flow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "minecraft:block/lava_still",
+      "sprite": "rfu:block/custom_water_lava_still"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "minecraft:block/lava_flow",
+      "sprite": "rfu:block/custom_water_lava_flow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "minecraft:block/water_overlay",
+      "sprite": "rfu:block/custom_water_overlay"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "minecraft:block/lava_still",
+      "sprite": "rfu:block/custom_lava_lava_still"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "minecraft:block/lava_flow",
+      "sprite": "rfu:block/custom_lava_lava_flow"
     }
   ]
 }
