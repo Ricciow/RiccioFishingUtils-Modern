@@ -4,6 +4,7 @@
 - Added blacklist/whitelist for party commands.
 - Added Custom Water under General Fishing settings.
 - Added separate custom trophy fish and frog messages settings and {total} variable.
+- Added a configurable Frozen Blaze aura HUD timer with separate camera and player movement countdowns.
 
 ### Changes
 - Custom Water and Custom Lava now have 3 tones, and opacity sliders.
