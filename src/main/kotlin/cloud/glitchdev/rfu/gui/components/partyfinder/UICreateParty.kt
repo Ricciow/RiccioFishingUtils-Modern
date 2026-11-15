@@ -87,6 +87,7 @@ class UICreateParty : UIContainer() {
     private lateinit var brainFoodToggle: UIToggleCard
     private lateinit var bloodshotToggle: UIToggleCard
     private lateinit var witherImpactToggle: UIToggleCard
+    private lateinit var bobbinTimeSelector: UIDropdownCard
     private lateinit var submitButton: UIButton
     private var lastSubmitTime = 0L
 
@@ -394,7 +395,7 @@ class UICreateParty : UIContainer() {
             y = CramSiblingConstraint(3f)
         } childOf reqContainer
 
-        UIDropdownCard(
+        bobbinTimeSelector = UIDropdownCard(
             arrayListOf(
                 DataOption(0, "DISABLED"),
                 DataOption(3, "BOBBIN' TIME III"),
@@ -404,7 +405,19 @@ class UICreateParty : UIContainer() {
             inactiveLabel = "BOBBIN' TIME",
             iconResource = "/assets/rfu/ui/bobbin_time.png",
             activeBackgroundColor = UIScheme.pfConditionCardBobbinTime,
-            activeBorderColor = UIScheme.pfConditionCardBobbinTimeBorder
+            activeBorderColor = UIScheme.pfConditionCardBobbinTimeBorder,
+            initialIndex = bobbinTimeIndex(),
+            onSelect = { option ->
+                val minimum = option.value as Int
+                if (minimum > 0 && !PartyRequirementsManager.hasBobbinTime(minimum)) {
+                    bobbinTimeSelector.setSelected(bobbinTimeSelector.values[bobbinTimeIndex()])
+                    popup.showWarning(PartyRequirementsManager.PartyValidationResult.MissingRequisite(
+                        "bobbin_time", option.label + " on all four armor pieces"
+                    ).getErrorMessage())
+                } else {
+                    updatePartyModel()
+                }
+            }
         ).constrain {
             x = CramSiblingConstraint(5f)
             y = CramSiblingConstraint(3f)
@@ -577,6 +590,8 @@ class UICreateParty : UIContainer() {
         party.setRequisite("brain_food", "Brain Food", brainFoodToggle.selected)
         party.setRequisite("bloodshot", "Bloodshot", bloodshotToggle.selected)
         party.setRequisite("wither_impact", "Wither Impact", witherImpactToggle.selected)
+        val bobbinTime = bobbinTimeSelector.getSelectedItem().value as Int
+        party.setRequisite("bobbin_time", "Bobbin' Time", bobbinTime > 0, bobbinTime.takeIf { it > 0 })
     }
 
     private fun updateFields() {
@@ -597,8 +612,14 @@ class UICreateParty : UIContainer() {
         brainFoodToggle.selected = party.getRequisite("brain_food", "Brain Food").value
         bloodshotToggle.selected = party.getRequisite("bloodshot", "Bloodshot").value
         witherImpactToggle.selected = party.getRequisite("wither_impact", "Wither Impact").value
+        bobbinTimeSelector.setSelected(bobbinTimeSelector.values[bobbinTimeIndex()])
 
         updateButtonLabel()
+    }
+
+    private fun bobbinTimeIndex(): Int {
+        val requisite = party.getRequisite("bobbin_time", "Bobbin' Time")
+        return if (requisite.value && requisite.minimumLevel in 3..5) requisite.minimumLevel!! - 2 else 0
     }
 
     private fun updateButtonLabel() {

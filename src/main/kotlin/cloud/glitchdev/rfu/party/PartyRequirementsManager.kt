@@ -106,6 +106,9 @@ object PartyRequirementsManager : RegisteredEvent {
         return playerRequisites?.requisites?.get("wither_impact") ?: true
     }
 
+    fun hasBobbinTime(minimumLevel: Int): Boolean =
+        playerRequisites?.let { it.bobbinTimeLevel >= minimumLevel } ?: true
+
     fun validatePartyRequirements(party: FishingParty): PartyValidationResult {
         val failures = mutableListOf<PartyValidationResult>()
 
@@ -120,6 +123,12 @@ object PartyRequirementsManager : RegisteredEvent {
         for (requisite in party.requisites) {
             if (!requisite.value) continue
             when (requisite.id) {
+                "bobbin_time" -> {
+                    val minimum = requisite.minimumLevel
+                    if (minimum == null || minimum !in 3..5 || !hasBobbinTime(minimum)) {
+                        failures.add(PartyValidationResult.MissingRequisite("bobbin_time", requisite.toDataOption().label + " on all four armor pieces"))
+                    }
+                }
                 "brain_food" -> if (!hasBrainFood()) failures.add(PartyValidationResult.MissingBrainFood)
                 "bloodshot" -> if (!hasBloodshotBelt()) failures.add(PartyValidationResult.MissingRequisite("bloodshot", requisite.name))
                 "enderman_9" -> if (!hasEnderman9()) failures.add(PartyValidationResult.MissingRequisite("enderman_9", requisite.name))
