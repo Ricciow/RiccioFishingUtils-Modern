@@ -1,6 +1,7 @@
 # v1.20.2 - Minor
 
 ### Features
+- Added a Party Finder GUI Scale option in Other settings.
 
 ### Changes
 
