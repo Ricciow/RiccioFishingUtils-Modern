@@ -9,6 +9,7 @@ import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.UIPopup
 import cloud.glitchdev.rfu.gui.components.textinput.UIDecoratedTextInput
 import cloud.glitchdev.rfu.gui.components.dropdown.UIDropdown
+import cloud.glitchdev.rfu.gui.components.dropdown.UIDropdownCard
 import cloud.glitchdev.rfu.gui.components.textinput.UIWrappedDecoratedTextInput
 import cloud.glitchdev.rfu.model.data.DataOption
 import cloud.glitchdev.rfu.model.party.FishingParty
@@ -389,6 +390,22 @@ class UICreateParty : UIContainer() {
                 updatePartyModel()
             }
         }.constrain {
+            x = CramSiblingConstraint(5f)
+            y = CramSiblingConstraint(3f)
+        } childOf reqContainer
+
+        UIDropdownCard(
+            arrayListOf(
+                DataOption(0, "DISABLED"),
+                DataOption(3, "BOBBIN' TIME III"),
+                DataOption(4, "BOBBIN' TIME IV"),
+                DataOption(5, "BOBBIN' TIME V")
+            ),
+            inactiveLabel = "BOBBIN' TIME",
+            iconResource = "/assets/rfu/ui/bobbin_time.png",
+            activeBackgroundColor = UIScheme.pfConditionCardBobbinTime,
+            activeBorderColor = UIScheme.pfConditionCardBobbinTimeBorder
+        ).constrain {
             x = CramSiblingConstraint(5f)
             y = CramSiblingConstraint(3f)
         } childOf reqContainer

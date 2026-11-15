@@ -128,6 +128,8 @@ object UIScheme {
     val pfConditionCardBloodshotBorder = veryHardDifficultyColor
     val pfConditionCardWitherImpact = Color(55, 55, 55)
     val pfConditionCardWitherImpactBorder = Color(170, 170, 170)
+    val pfConditionCardBobbinTime = Color(42, 85, 128)
+    val pfConditionCardBobbinTimeBorder = Color(85, 170, 255)
     val pfConditionCardCanJoin = Color(11, 104, 25)
     val pfConditionCardCanJoinBorder = Color(23, 209, 51)
     val pfConditionCardIsland = Color(45, 45, 45)

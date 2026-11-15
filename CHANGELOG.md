@@ -1,6 +1,7 @@
 # v1.20.2 - Minor
 
 ### Features
+- Added a Bobbin' Time requirement to Party Finder creation.
 - Added a Party Finder GUI Scale option in Other settings.
 
 ### Changes
