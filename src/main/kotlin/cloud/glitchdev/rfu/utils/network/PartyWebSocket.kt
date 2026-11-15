@@ -172,8 +172,13 @@ object PartyWebSocket : RegisteredEvent {
             try {
                 val type = object : TypeToken<WebSocketEvent<PlayerRequisitesResult>>() {}.type
                 val event = gson.fromJson<WebSocketEvent<PlayerRequisitesResult>>(msg, type)
-                if (event.type == WebSocketEventType.SYNC && event.data != null) {
-                    PartyRequirementsManager.updatePlayerRequisites(event.data, User.profileId)
+                val result = event.data
+                if (event.type == WebSocketEventType.SYNC && result != null) {
+                    mc.execute {
+                        if (result.canApplyTo(User.profileId)) {
+                            PartyRequirementsManager.updatePlayerRequisites(result, result.profileId)
+                        }
+                    }
                 }
             } catch (e: Exception) {
                 RFULogger.error("Error parsing player requisites sync: ", e)
