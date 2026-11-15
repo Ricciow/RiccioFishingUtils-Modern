@@ -79,6 +79,14 @@ object UIScheme {
     val pfCardInnerPadding = 5f
     val pfCardTinyPadding = 1f
     val pfCardSmallPadding = 3f
+    val pfCardTitleScale = 1f
+    val pfCardUserScale = 0.75f
+    val pfCardDescriptionScale = 0.8f
+    val pfCardBadgeSize = 20f
+    val pfCardBadgeLabelScale = 0.5f
+    val pfCardBadgeValueScale = 0.7f
+    val pfCardOverflowLabelScale = 0.35f
+    val pfCardOverflowValueScale = 0.65f
     val pfCardBorder = Color(100, 100, 100, 100)
     val pfCardBorderHovered = pfInputBgHovered
     val pfCardUserColor = Color(100, 100, 100)
@@ -106,6 +114,8 @@ object UIScheme {
     //ConditionCard
     val pfConditionCardWidth = 1f
     val pfConditionCardPadding = 2f
+    val pfConditionCardTextScale = 0.6f
+    val pfConditionCardContentHeight = 9f * pfConditionCardTextScale
     val pfConditionCardWater = Color(42, 42, 128)
     val pfConditionCardWaterBorder = Color(85, 85, 255)
     val pfConditionCardLooting5 = Color(42, 128, 128)

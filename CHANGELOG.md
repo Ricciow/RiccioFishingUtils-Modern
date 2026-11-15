@@ -5,6 +5,7 @@
 - Added a Party Finder GUI Scale option in Other settings.
 
 ### Changes
+- Made text and badge sizes larger and more consistent across Party Finder cards.
 
 ### Fixes
 - Fixed Party Finder failing when the saved SkyBlock profile is outdated.

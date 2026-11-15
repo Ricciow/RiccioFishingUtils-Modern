@@ -16,6 +16,7 @@ import cloud.glitchdev.rfu.gui.components.elementa.BoundingBoxConstraint
 import cloud.glitchdev.rfu.gui.components.elementa.CopyComponentSizeConstraint
 import cloud.glitchdev.rfu.gui.components.elementa.group.GroupMaxSizeConstraint
 import cloud.glitchdev.rfu.gui.components.elementa.RFUWrappedText
+import cloud.glitchdev.rfu.gui.components.elementa.RFUFitText
 import cloud.glitchdev.rfu.gui.components.elementa.UIVanillaTooltip
 import cloud.glitchdev.rfu.model.data.DataOption
 import cloud.glitchdev.rfu.party.PartyRequirementsManager
@@ -43,7 +44,6 @@ import gg.essential.elementa.dsl.animate
 import gg.essential.elementa.dsl.basicHeightConstraint
 import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
-import gg.essential.elementa.dsl.div
 import gg.essential.elementa.dsl.max
 import gg.essential.elementa.dsl.minus
 import gg.essential.elementa.dsl.percent
@@ -65,7 +65,7 @@ class UIPartyCard(
     val borderWidth = UIScheme.pfCardBorderWidth
     val innerPadding = UIScheme.pfCardInnerPadding
     private val joinErrorPopup: UIPopup get() = PartyFinderWindow.popup
-    lateinit var titleText : UIText
+    lateinit var titleText : RFUFitText
     lateinit var innerContainer : UIContainer
     lateinit var levelBadge : UIPartyBadge
     lateinit var memberBadge : UIPartyBadge
@@ -175,30 +175,28 @@ class UIPartyCard(
         val textContainer = UIContainer().constrain {
             x = 0.pixels
             y = 0.pixels
-            width = BoundingBoxConstraint()
+            width = max(0.pixels, 100.percent - (UIScheme.pfCardBadgeSize * 2 + UIScheme.pfCardSmallPadding * 2).pixels)
             height = BoundingBoxConstraint()
         } childOf header
 
         val userRow = UIContainer().constrain {
             x = 0.pixels
             y = 0.pixels
-            width = BoundingBoxConstraint()
+            width = 100.percent
         } childOf textContainer
         val userText = UIText(party.user) childOf userRow
         val title = party.title
             .takeIf { it.isNotEmpty() }
-            ?.let { TextEffects.BOLD.toString() + it }
+            ?.let { TextEffects.BOLD.toString() + it.trimEnd() }
             ?: party.island.island
 
-        titleText = UIText(title).constrain {
+        titleText = RFUFitText(title, UIScheme.pfCardTitleScale).constrain {
             x = 0.pixels
             y = SiblingConstraint(UIScheme.pfCardSmallPadding)
-            width = MinConstraint(ScaledTextConstraint(1f), 70.percent)
-            height = TextAspectConstraint()
         } childOf textContainer
 
         userRow.constrain {
-            height = CopyComponentSizeConstraint(titleText) * 0.75
+            height = (9f * UIScheme.pfCardUserScale).pixels
         }
         userText.constrain {
             x = 0.pixels
@@ -213,26 +211,23 @@ class UIPartyCard(
         memberBadge = UIPartyBadge(
             if (isFull) "${TextColor.LIGHT_RED}FULL" else "PARTY",
             (if (isFull) TextColor.LIGHT_RED.toString() else "") + party.players.getString(),
-            titleText,
-            valueScale = if (party.players.current >= 10 && party.players.max >= 10) 0.55f else 0.65f,
         ).constrain {
             y = 0.pixels
             x = 0.pixels(true)
             width = AspectConstraint(1f)
-            height = CopyComponentSizeConstraint(textContainer)
+            height = UIScheme.pfCardBadgeSize.pixels
         } childOf header
 
         val overflow = party.requiredOverflow()
         levelBadge = UIPartyBadge(
             if (overflow > 0) "OVERFLOW" else "LEVEL",
             if (overflow > 0) overflow.compact() else "${party.level.coerceAtMost(50)}",
-            titleText,
-            labelScale = if (overflow > 0) 0.35f else 0.45f,
+            isOverflow = overflow > 0,
         ).constrain {
             y = 0.pixels
             x = SiblingConstraint(UIScheme.pfCardSmallPadding, alignOpposite = true)
             width = AspectConstraint(1f)
-            height = CopyComponentSizeConstraint(textContainer)
+            height = UIScheme.pfCardBadgeSize.pixels
         } childOf header
 
         if (overflow > 0) {
@@ -264,7 +259,7 @@ class UIPartyCard(
             x = SiblingConstraint(UIScheme.pfCardSmallPadding)
             y = CenterConstraint()
             width = FillConstraint()
-            textScale = CopyComponentSizeConstraint(titleText) * 0.8 / 9
+            textScale = UIScheme.pfCardDescriptionScale.pixels
             color = UIScheme.pfCardDescriptionColor.toConstraint()
         } childOf descriptionContainer
 
@@ -351,7 +346,7 @@ class UIPartyCard(
             x = 0.pixels
             y = SiblingConstraint(UIScheme.pfCardInnerPadding)
             width = 100.percent
-            height = (4.5f + (UIScheme.pfConditionCardPadding + UIScheme.pfConditionCardWidth) * 2).pixels
+            height = (UIScheme.pfConditionCardContentHeight + (UIScheme.pfConditionCardPadding + UIScheme.pfConditionCardWidth) * 2).pixels
         } childOf tagsContainer
 
         if (activeRequisites.isNotEmpty()) {
@@ -365,7 +360,7 @@ class UIPartyCard(
             UIText("No requirements").constrain {
                 x = 0.pixels
                 y = CenterConstraint()
-                width = MinConstraint(ScaledTextConstraint(0.5f), 100.percent)
+                width = MinConstraint(ScaledTextConstraint(UIScheme.pfConditionCardTextScale), 100.percent)
                 height = TextAspectConstraint()
                 color = UIScheme.pfCardUserColor.toConstraint()
             } childOf requirementsContainer
