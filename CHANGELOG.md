@@ -3,6 +3,7 @@
 ### Features
 - Added a Bobbin' Time requirement to Party Finder creation.
 - Added a Party Finder GUI Scale option in Other settings.
+- Added rod timer display styles. Thanks GreatCatch for the idea.
 
 ### Changes
 - Made text and badge sizes larger and more consistent across Party Finder cards.
