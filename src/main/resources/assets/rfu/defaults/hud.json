@@ -98,6 +98,14 @@
       "width": 102.0,
       "height": 9.0
     },
+    "frozenBlazeAura": {
+      "anchor": "TOP_LEFT",
+      "x": 97.3,
+      "y": 31.0,
+      "scale": 1.0,
+      "width": 100.0,
+      "height": 9.0
+    },
     "rareDropsDisplay": {
       "anchor": "TOP_RIGHT",
       "x": 8.0,

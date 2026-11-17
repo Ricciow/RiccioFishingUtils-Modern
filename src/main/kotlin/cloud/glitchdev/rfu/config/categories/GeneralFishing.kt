@@ -270,6 +270,11 @@ object GeneralFishing : Category("General Fishing") {
         description = Literal("Display nearby bobbers and Bobbin' Time bonus on screen")
     }
 
+    var frozenBlazeDisplay by reloadableBoolean(true) {
+        name = Literal("Frozen Blaze Timer")
+        description = Literal("Shows a timer for the Frozen Blazing Aura.")
+    }
+
     var mobyDuckDisplay by reloadableBoolean(true) {
         name = Literal("Moby-Duck Timer Display")
         description = Literal("Display the Moby-Duck Fishing Wisdom buff timer on screen.")

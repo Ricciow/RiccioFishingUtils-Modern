@@ -1,6 +1,7 @@
 # v1.20.2 - Minor
 
 ### Features
+- Added frozen blaze aura timer - HichamIDDIR
 - Added a Bobbin' Time requirement to Party Finder creation.
 - Added a Party Finder GUI Scale option in Other settings.
 - Added rod timer display styles. Thanks GreatCatch for the idea.
