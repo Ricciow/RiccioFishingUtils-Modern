@@ -332,7 +332,6 @@ class UIPartyCard(
             .filter { it.value && it.id != "has_killer" }
             .sortedBy {
                 when (it.id) {
-                    "looting_5" -> 0
                     "bloodshot" -> 1
                     "enderman_9" -> 2
                     "brain_food" -> 3

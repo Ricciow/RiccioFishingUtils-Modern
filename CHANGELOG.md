@@ -6,6 +6,7 @@
 - Added rod timer display styles. Thanks GreatCatch for the idea.
 
 ### Changes
+- Removed the Looting 5 requirement from Party Finder and saved presets.
 - Made text and badge sizes larger and more consistent across Party Finder cards.
 
 ### Fixes

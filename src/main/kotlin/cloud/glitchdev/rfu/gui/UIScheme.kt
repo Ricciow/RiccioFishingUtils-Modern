@@ -118,8 +118,6 @@ object UIScheme {
     val pfConditionCardContentHeight = 9f * pfConditionCardTextScale
     val pfConditionCardWater = Color(42, 42, 128)
     val pfConditionCardWaterBorder = Color(85, 85, 255)
-    val pfConditionCardLooting5 = Color(42, 128, 128)
-    val pfConditionCardLooting5Border = Color(85, 255, 255)
     val pfConditionCardLava = Color(128, 85, 0)
     val pfConditionCardLavaBorder = Color(255, 170, 0)
     val pfConditionCardHotspot = Color(128, 42, 85)

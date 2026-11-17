@@ -83,7 +83,6 @@ class UICreateParty : UIContainer() {
     private val partyTypeToggles = linkedMapOf<PartyTypeOption, UIToggleCard>()
     private lateinit var killerToggle: UIToggleCard
     private lateinit var endermanToggle: UIToggleCard
-    private lateinit var lootingToggle: UIToggleCard
     private lateinit var brainFoodToggle: UIToggleCard
     private lateinit var bloodshotToggle: UIToggleCard
     private lateinit var witherImpactToggle: UIToggleCard
@@ -342,20 +341,6 @@ class UICreateParty : UIContainer() {
             y = CramSiblingConstraint(3f)
         } childOf reqContainer
 
-        lootingToggle = UIToggleCard(party.getRequisite("looting_5", "Looting 5").toDataOption(), party.getRequisite("looting_5", "Looting 5").value) { selected ->
-            if (selected && !PartyRequirementsManager.hasLooting5()) {
-                lootingToggle.selected = false
-                val result = PartyRequirementsManager.PartyValidationResult.MissingRequisite("looting_5", "Looting 5")
-                popup.showWarning(result.getErrorMessage())
-            } else {
-                updatePartyModel()
-            }
-        }.constrain {
-            x = CramSiblingConstraint(5f)
-            y = CramSiblingConstraint(3f)
-        } childOf reqContainer
-
-
         brainFoodToggle = UIToggleCard(party.getRequisite("brain_food", "Brain Food").toDataOption(), party.getRequisite("brain_food", "Brain Food").value) { selected ->
             if (selected && !PartyRequirementsManager.hasBrainFood()) {
                 brainFoodToggle.selected = false
@@ -586,7 +571,6 @@ class UICreateParty : UIContainer() {
 
         party.setRequisite("has_killer", "Has Killer", killerToggle.selected)
         party.setRequisite("enderman_9", "Enderman 9", endermanToggle.selected)
-        party.setRequisite("looting_5", "Looting 5", lootingToggle.selected)
         party.setRequisite("brain_food", "Brain Food", brainFoodToggle.selected)
         party.setRequisite("bloodshot", "Bloodshot", bloodshotToggle.selected)
         party.setRequisite("wither_impact", "Wither Impact", witherImpactToggle.selected)
@@ -608,7 +592,6 @@ class UICreateParty : UIContainer() {
 
         killerToggle.selected = party.getRequisite("has_killer", "Has Killer").value
         endermanToggle.selected = party.getRequisite("enderman_9", "Enderman 9").value
-        lootingToggle.selected = party.getRequisite("looting_5", "Looting 5").value
         brainFoodToggle.selected = party.getRequisite("brain_food", "Brain Food").value
         bloodshotToggle.selected = party.getRequisite("bloodshot", "Bloodshot").value
         witherImpactToggle.selected = party.getRequisite("wither_impact", "Wither Impact").value

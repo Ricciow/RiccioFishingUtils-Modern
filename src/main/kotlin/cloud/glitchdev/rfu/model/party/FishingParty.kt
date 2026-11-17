@@ -30,6 +30,10 @@ data class FishingParty(
     var players: Players,
     var overflow: Long? = null
 ) {
+    fun removeLootingRequirement() {
+        requisites.removeAll { it.id == "looting_5" }
+    }
+
     fun requiredOverflow(): Long = overflow
         ?: (Skills.getTotalXpAtLevel(level) - Skills.getTotalXpAtLevel(50)).coerceAtLeast(0)
 
@@ -74,7 +78,6 @@ data class FishingParty(
                 mutableListOf(
                     Requisite("has_killer", "Has Killer", false),
                     Requisite("enderman_9", "Enderman 9", false),
-                    Requisite("looting_5", "Looting 5", false),
                     Requisite("brain_food", "Brain Food", false),
                     Requisite("bloodshot", "Bloodshot", false),
                     Requisite("wither_impact", "Wither Impact", false),

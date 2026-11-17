@@ -63,10 +63,6 @@ object PartyRequirementsManager : RegisteredEvent {
         return playerRequisites?.requisites?.get("enderman_9") ?: true
     }
 
-    fun hasLooting5(): Boolean {
-        return playerRequisites?.requisites?.get("looting_5") ?: true
-    }
-
     var hasBrainFood: Boolean
         get() = (OtherManager.getField("brain_food") as? BooleanEntry)?.value ?: false
         set(value) {
@@ -132,7 +128,6 @@ object PartyRequirementsManager : RegisteredEvent {
                 "brain_food" -> if (!hasBrainFood()) failures.add(PartyValidationResult.MissingBrainFood)
                 "bloodshot" -> if (!hasBloodshotBelt()) failures.add(PartyValidationResult.MissingRequisite("bloodshot", requisite.name))
                 "enderman_9" -> if (!hasEnderman9()) failures.add(PartyValidationResult.MissingRequisite("enderman_9", requisite.name))
-                "looting_5" -> if (!hasLooting5()) failures.add(PartyValidationResult.MissingRequisite("looting_5", requisite.name))
                 "wither_impact" -> if (!hasWitherImpact()) failures.add(PartyValidationResult.MissingRequisite("wither_impact", requisite.name))
             }
         }

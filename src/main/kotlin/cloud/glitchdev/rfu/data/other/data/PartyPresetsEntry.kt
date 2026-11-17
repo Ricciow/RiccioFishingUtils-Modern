@@ -23,7 +23,6 @@ data class PartyPresetData(
     var maxPlayers: Int = 6,
     var hasKiller: Boolean = false,
     var enderman9: Boolean = false,
-    var looting5: Boolean = false,
     var brainFood: Boolean = false,
     var bloodshot: Boolean = false,
     var overflow: Long? = null,
@@ -31,6 +30,7 @@ data class PartyPresetData(
     var bobbinTimeLevel: Int = 0
 ) {
     fun applyTo(party: FishingParty) {
+        party.removeLootingRequirement()
         party.title = title
         party.description = description
         party.island = island
@@ -41,7 +41,6 @@ data class PartyPresetData(
         party.players.max = if (maxPlayers > 0) maxPlayers else 6
         party.setRequisite("has_killer", "Has Killer", hasKiller)
         party.setRequisite("enderman_9", "Enderman 9", enderman9 && PartyRequirementsManager.hasEnderman9())
-        party.setRequisite("looting_5", "Looting 5", looting5 && PartyRequirementsManager.hasLooting5())
         party.setRequisite("brain_food", "Brain Food", brainFood && PartyRequirementsManager.hasBrainFood())
         party.setRequisite("bloodshot", "Bloodshot", bloodshot && PartyRequirementsManager.hasBloodshotBelt())
         party.setRequisite("wither_impact", "Wither Impact", witherImpact && PartyRequirementsManager.hasWitherImpact())
@@ -61,7 +60,6 @@ data class PartyPresetData(
         maxPlayers = party.players.max
         hasKiller = party.getRequisite("has_killer", "Has Killer").value
         enderman9 = party.getRequisite("enderman_9", "Enderman 9").value
-        looting5 = party.getRequisite("looting_5", "Looting 5").value
         brainFood = party.getRequisite("brain_food", "Brain Food").value
         bloodshot = party.getRequisite("bloodshot", "Bloodshot").value
         witherImpact = party.getRequisite("wither_impact", "Wither Impact").value
