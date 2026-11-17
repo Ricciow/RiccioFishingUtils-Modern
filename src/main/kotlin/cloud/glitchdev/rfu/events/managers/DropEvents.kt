@@ -18,7 +18,7 @@ object DropEvents : RegisteredEvent {
     val RARE_DROP_REGEX = buildString {
         append("RARE DROP! (")
         append(RareDrops.entries.joinToString("|") { it.overrideRegex ?: it.toString().escapeForRegex() })
-        append(""")(?: \(\+(\d+)  Magic Find\))?""")
+        append(""")(?: \(\+(\d+) ? Magic Find\))?""")
     }.toExactRegex()
 
     val DYE_REGEX = buildString {
