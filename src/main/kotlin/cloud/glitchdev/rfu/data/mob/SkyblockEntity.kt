@@ -355,7 +355,7 @@ class SkyblockEntity(
     )
 
     companion object {
-        private val entityRegex = """(?:﴾ )?\[Lv\d+] \S+ (.+?)(?: (\d+[\.,]?\d*[kMB]?)/(\d+[\.,]?\d*[kMB]?)❤)?(?: ﴿)?( ✯)?""".toRegex(RegexOption.IGNORE_CASE)
+        private val entityRegex = """(?:﴾ )?\[Lv\d+] \S+ (.+?)(?: (\d+[\.,]?\d*[kMB]?)/(\d+[\.,]?\d*[kMB]?)❤)?(?: ﴿)?( [✯\uE01A])?""".toRegex(RegexOption.IGNORE_CASE)
         private val corruptedRegex = """^aCorrupted (.+?)a$""".toRegex()
 
         fun isNameTagEntity(entity: ArmorStand): Boolean {
