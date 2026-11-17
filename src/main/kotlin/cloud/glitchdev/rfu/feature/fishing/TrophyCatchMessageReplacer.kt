@@ -103,6 +103,7 @@ object TrophyCatchMessageReplacer : Feature {
             }
         } else ""
         val suffix = when {
+            count % 100 in 11..13 -> "th"
             count % 10 == 1 -> "st"
             count % 10 == 2 -> "nd"
             count % 10 == 3 -> "rd"

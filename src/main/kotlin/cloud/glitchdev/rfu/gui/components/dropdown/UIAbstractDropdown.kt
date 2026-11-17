@@ -29,6 +29,7 @@ abstract class UIAbstractDropdown(
     var primaryColor = UIScheme.secondaryColorOpaque.toConstraint()
     var optionColor: ColorConstraint? = null
     var hoverColor = UIScheme.secondaryColor.toConstraint()
+    var headerHoverColor: ColorConstraint? = null
     var textColor = UIScheme.primaryTextColor.toConstraint()
     var selectedColor = UIScheme.primaryColor.toConstraint()
     var disabledColor = UIScheme.secondaryColorDisabled.toConstraint()
@@ -66,6 +67,7 @@ abstract class UIAbstractDropdown(
     private var lastHeight = -1f
 
     var maxFontSize: Float = 1.0f
+    var autoFontSize: Boolean = true
 
     init {
         create()
@@ -112,7 +114,7 @@ abstract class UIAbstractDropdown(
             isOpen = false
             updateDropdownState()
         }.onMouseEnter {
-            if (!isOpen) this.animate { setColorAnimation(Animations.IN_EXP, hoverDuration, hoverColor) }
+            if (!isOpen) this.animate { setColorAnimation(Animations.IN_EXP, hoverDuration, headerHoverColor ?: hoverColor) }
         }.onMouseLeave {
             if (!isOpen) this.animate { setColorAnimation(Animations.IN_EXP, hoverDuration, primaryColor) }
         }.onKeyType { _, code ->
@@ -249,11 +251,11 @@ abstract class UIAbstractDropdown(
             val finalHeight = min(contentHeight, availableHeight.coerceAtLeast(optionHeightPixels))
 
             if(values.isNotEmpty()) {
-                textContainer.constrain { y = SiblingConstraint() }
+                textContainer.constrain { y = 0.pixels() }
 
                 listContainer.constrain {
                     height = finalHeight.pixels()
-                    y = SiblingConstraint(padding) + (headerHeight - background.getHeight()).pixels()
+                    y = (headerHeight + padding).pixels()
                 }
 
                 background.constrain {
@@ -310,7 +312,7 @@ abstract class UIAbstractDropdown(
     }
 
     private fun updateFontSize() {
-        if (values.isEmpty()) return
+        if (!autoFontSize || values.isEmpty()) return
         var font = maxFontSize
         for (option in values) {
             while (font > 0.1f && (option.label.textHeight(font) > textContainer.getHeight() * 0.9 ||

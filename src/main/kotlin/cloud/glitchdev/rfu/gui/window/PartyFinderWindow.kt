@@ -95,6 +95,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
 
     override fun onOpenWindow() {
         super.onOpenWindow()
+        newGuiScale = OtherSettings.partyFinderGuiScale.scaleValue
         PartyWebSocket.requestPlayerRequisites()
         pendingInfoMessage?.let { (message, isWarning) ->
             showInfoMessage(message, isWarning)

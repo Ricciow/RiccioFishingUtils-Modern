@@ -71,6 +71,16 @@ data class ArmorSet(
                 feetName.contains("Blaze Boots")
     }
 
+    val isWearingFrozenBlazeSet: Boolean by lazy {
+        fun nameOf(stack: ItemStack): String =
+            if (stack.isEmpty) "" else (stack.customName ?: stack.hoverName).toUnformattedString()
+
+        nameOf(head).contains("Frozen Blaze Helmet") &&
+                nameOf(chest).contains("Frozen Blaze Chestplate") &&
+                nameOf(legs).contains("Frozen Blaze Leggings") &&
+                nameOf(feet).contains("Frozen Blaze Boots")
+    }
+
     val isWearingMagmaLord10StarredSet: Boolean by lazy {
         items.all { item ->
             val customName = item.customName ?: return@all false

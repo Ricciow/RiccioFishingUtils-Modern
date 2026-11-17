@@ -10,6 +10,7 @@ enum class SeaCreatureCategory(val islands: List<FishingIslands>, val partyTypes
             FishingIslands.DESERT,
             FishingIslands.SPIDER,
             FishingIslands.HOLLOWS,
+            FishingIslands.DWARVEN,
             FishingIslands.PARK
         ),
         listOf(PartyTypes.REGULAR, PartyTypes.HOTSPOT, PartyTypes.BARN)

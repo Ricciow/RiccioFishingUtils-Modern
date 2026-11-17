@@ -5,6 +5,7 @@ import cloud.glitchdev.rfu.config.SoundTitleSettings
 import cloud.glitchdev.rfu.config.TitleSettings
 import cloud.glitchdev.rfu.constants.fishing.FishTrackingType
 import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
+import cloud.glitchdev.rfu.constants.fishing.RodTimerStyle
 import cloud.glitchdev.rfu.data.mob.DeployableType
 import cloud.glitchdev.rfu.feature.fishing.DoubleHookMessages
 import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue
@@ -216,8 +217,8 @@ object GeneralFishing : Category("General Fishing") {
 
     init {
         dualSeparator {
-            title = "Fishing"
-            description = "Anything fishing related that didn't fit elsewhere"
+            title = "Rod Timer"
+            description = "See and hear your rod's countdown"
         }
     }
 
@@ -226,15 +227,37 @@ object GeneralFishing : Category("General Fishing") {
         description = Literal("Display the current rod timer on screen")
     }
 
+    var rodTimerStyle by ObservableEntry(enum(RodTimerStyle.DEFAULT) {
+        name = Literal("Rod Timer Style")
+        description = Literal("How the rod timer looks.")
+        condition = { rodTimerDisplay }
+    }) { _, _ ->
+        reloadScreen()
+    }
+
     var rodTimerReadyText by string("!!!") {
         name = Literal("Rod Timer Ready Text")
         description = Literal("Text shown when the rod timer ends. Supports & color and formatting codes.")
-        condition = { rodTimerDisplay }
+        condition = { rodTimerDisplay && rodTimerStyle == RodTimerStyle.DEFAULT }
+    }
+
+    val rodTimerCustom by obj(RodTimerCustom) {
+        name = Literal("Custom Rod Timer Style")
+        description = Literal("Edit the texts and bar of the custom rod timer style.")
+        searchTerms = listOf("rod timer", "custom", "bar", "countdown", "ready text")
+        condition = { rodTimerDisplay && rodTimerStyle == RodTimerStyle.CUSTOM }
     }
 
     var rodTimerSound by boolean(false) {
         name = Literal("Rod Timer Sound")
         description = Literal("Plays a sound when the fishing stream approaches, increasing in pitch.")
+    }
+
+    init {
+        dualSeparator {
+            title = "Fishing"
+            description = "Anything fishing related that didn't fit elsewhere"
+        }
     }
 
     var muteAnnoyingSounds by boolean(false) {
@@ -245,6 +268,11 @@ object GeneralFishing : Category("General Fishing") {
     var bobbinTimeDisplay by reloadableBoolean(true) {
         name = Literal("Bobbin' Time Display")
         description = Literal("Display nearby bobbers and Bobbin' Time bonus on screen")
+    }
+
+    var frozenBlazeDisplay by reloadableBoolean(true) {
+        name = Literal("Frozen Blaze Timer")
+        description = Literal("Shows a timer for the Frozen Blazing Aura.")
     }
 
     var mobyDuckDisplay by reloadableBoolean(true) {

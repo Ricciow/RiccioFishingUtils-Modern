@@ -1,8 +1,6 @@
 package cloud.glitchdev.rfu.gui.components.partyfinder
 
 import cloud.glitchdev.rfu.gui.UIScheme
-import cloud.glitchdev.rfu.gui.components.elementa.CopyComponentSizeConstraint
-import gg.essential.elementa.UIComponent
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
@@ -10,6 +8,7 @@ import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedMaxSizeConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
 import gg.essential.elementa.constraints.SiblingConstraint
+import gg.essential.elementa.constraints.ScaledTextConstraint
 import gg.essential.elementa.constraints.TextAspectConstraint
 import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.*
@@ -17,9 +16,7 @@ import gg.essential.elementa.dsl.*
 class UIPartyBadge(
     val label: String,
     val value: String,
-    val titleText: UIComponent,
-    labelScale: Float = 0.45f,
-    valueScale: Float = 0.65f,
+    private val isOverflow: Boolean = false,
 ) : UIRoundedRectangle(5f) {
     val valueText: UIText
 
@@ -47,7 +44,7 @@ class UIPartyBadge(
             x = CenterConstraint()
             y = SiblingConstraint()
             width = TextAspectConstraint()
-            height = CopyComponentSizeConstraint(titleText) * labelScale
+            height = ScaledTextConstraint(if (isOverflow) UIScheme.pfCardOverflowLabelScale else UIScheme.pfCardBadgeLabelScale)
             color = UIScheme.pfCardLevelLabelColor.toConstraint()
         } childOf container
 
@@ -55,7 +52,7 @@ class UIPartyBadge(
             x = CenterConstraint()
             y = SiblingConstraint(1f)
             width = TextAspectConstraint()
-            height = CopyComponentSizeConstraint(titleText) * valueScale
+            height = ScaledTextConstraint(if (isOverflow) UIScheme.pfCardOverflowValueScale else UIScheme.pfCardBadgeValueScale)
         } childOf container
     }
 
