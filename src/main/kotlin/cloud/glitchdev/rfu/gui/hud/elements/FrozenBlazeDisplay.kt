@@ -12,6 +12,7 @@ import cloud.glitchdev.rfu.feature.fishing.FrozenBlazeAura
 import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 import kotlin.math.ceil
+import kotlin.time.Duration.Companion.seconds
 
 @HudElement
 object FrozenBlazeDisplay : AbstractTextHudElement("frozenBlazeAura") {
@@ -40,15 +41,15 @@ object FrozenBlazeDisplay : AbstractTextHudElement("frozenBlazeAura") {
 
         val label = "$AQUAMARINE${BOLD}Frozen Blaze: "
 
-        // Preview while positioning the element without the armor on.
+        // Preview
         if (isEditing && !FrozenBlazeAura.hasFrozenBlazeArmor) {
             text.setText("$label${LIGHT_GREEN}30s")
             return
         }
 
-        val seconds = ceil(FrozenBlazeAura.remainingMs / 1000.0).toInt()
+        val seconds = ceil(FrozenBlazeAura.remainingDuration / 1.seconds).toInt()
         val value = when {
-            seconds <= 0 -> "${LIGHT_RED}${BOLD}INACTIVE ${GRAY}(move!)"
+            seconds <= 0 -> "${LIGHT_RED}${BOLD}INACTIVE ${GRAY}(Move!)"
             seconds <= 5 -> "${LIGHT_RED}${seconds}s"
             seconds <= 10 -> "${YELLOW}${seconds}s"
             else -> "${LIGHT_GREEN}${seconds}s"

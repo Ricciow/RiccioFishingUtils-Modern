@@ -249,7 +249,7 @@ object GeneralFishing : Category("General Fishing") {
 
     var frozenBlazeDisplay by reloadableBoolean(true) {
         name = Literal("Frozen Blaze Timer")
-        description = Literal("Shows a timer for the Frozen Blazing Aura while wearing the full Frozen Blaze set. The aura stops after 30 seconds without moving or turning.")
+        description = Literal("Shows a timer for the Frozen Blazing Aura.")
     }
 
     var mobyDuckDisplay by reloadableBoolean(true) {
