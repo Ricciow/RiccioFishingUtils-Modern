@@ -8,7 +8,7 @@ import cloud.glitchdev.rfu.feature.streak.challenge.RFUChallenge
 object AnyB2BSeaCreatureChallenge : BaseChallenge() {
     override val id: String = "b2b_sea_creatures"
     override val title: String = "Back for more"
-    override val description: String = "Catch the any sea creature back to back."
+    override val description: String = "Catch any sea creature back to back."
     override val weight: Int = 25
 
     override fun getTargetProgress(streakDays: Int): Int {
@@ -20,7 +20,7 @@ object AnyB2BSeaCreatureChallenge : BaseChallenge() {
 
     override fun getDescription(streakDays: Int): String {
         val target = getTargetProgress(streakDays)
-        return "Catch the any sea creature back to back $target times."
+        return "Catch any sea creature back to back $target times."
     }
 
     private var lastSc: String? = null
