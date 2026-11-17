@@ -3,15 +3,13 @@ package cloud.glitchdev.rfu.gui.components.partyfinder
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.elementa.UIVanillaTooltip
+import cloud.glitchdev.rfu.gui.components.elementa.RFUFitText
 import cloud.glitchdev.rfu.model.data.DataOption
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
-import gg.essential.elementa.components.UIText
 import gg.essential.elementa.constraints.CenterConstraint
-import gg.essential.elementa.constraints.MinConstraint
-import gg.essential.elementa.constraints.ScaledTextConstraint
-import gg.essential.elementa.constraints.TextAspectConstraint
 import gg.essential.elementa.dsl.basicWidthConstraint
+import gg.essential.elementa.dsl.basicRadiusConstraint
 import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.dsl.max
@@ -19,7 +17,6 @@ import gg.essential.elementa.dsl.minus
 import gg.essential.elementa.dsl.percent
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.toConstraint
-import gg.essential.elementa.dsl.width
 import gg.essential.elementa.renderer.ElementaExtractor
 import net.minecraft.network.chat.Component
 import kotlin.math.min
@@ -36,7 +33,7 @@ class UICompactRequirements(private val options: List<DataOption>) : UIContainer
             y = 0.pixels
         }.childOf(this).also { it.hide(true) }
     }
-    private val moreText = UIText("+${options.size} more")
+    private val moreText = RFUFitText("+${options.size} more", UIScheme.pfConditionCardTextScale)
     private val more = UIVanillaTooltip(tooltip = {
         listOf(Component.literal("${TextColor.DARK_GRAY}Other requirements:")) +
             cards.drop(visibleCount.coerceAtLeast(0)).map { card ->
@@ -50,7 +47,7 @@ class UICompactRequirements(private val options: List<DataOption>) : UIContainer
             val hiddenCount = options.size - visibleCount.coerceAtLeast(0)
             min(summaryWidth(hiddenCount), this@UICompactRequirements.getWidth().coerceAtLeast(0f))
         }
-        height = (4.5f + badgePadding).pixels
+        height = (UIScheme.pfConditionCardContentHeight + badgePadding).pixels
     } childOf this
 
     private val moreBorder: UIRoundedRectangle
@@ -58,11 +55,13 @@ class UICompactRequirements(private val options: List<DataOption>) : UIContainer
 
     init {
         moreBorder = UIRoundedRectangle(5f).constrain {
+            radius = basicRadiusConstraint { it.getHeight() / 2f }
             width = 100.percent
             height = 100.percent
             color = UIScheme.pfConditionCardUnknownBorder.toConstraint()
         } childOf more
         moreBackground = UIRoundedRectangle(4f).constrain {
+            radius = basicRadiusConstraint { it.getHeight() / 2f }
             x = CenterConstraint()
             y = CenterConstraint()
             width = max(0.pixels, 100.percent - (UIScheme.pfConditionCardWidth * 2).pixels)
@@ -72,10 +71,7 @@ class UICompactRequirements(private val options: List<DataOption>) : UIContainer
         moreText.constrain {
             x = CenterConstraint()
             y = CenterConstraint()
-            width = MinConstraint(
-                ScaledTextConstraint(0.5f), max(0.pixels, 100.percent - (UIScheme.pfConditionCardPadding * 2).pixels)
-            )
-            height = TextAspectConstraint()
+            width = max(0.pixels, 100.percent - (UIScheme.pfConditionCardPadding * 2).pixels)
             color = UIScheme.pfConditionCardUnknownBorder.toConstraint()
         } childOf moreBackground
         more.onMouseClick { it.stopPropagation() }
@@ -83,7 +79,7 @@ class UICompactRequirements(private val options: List<DataOption>) : UIContainer
     }
 
     private fun summaryWidth(hiddenCount: Int): Float =
-        "+$hiddenCount more".width(0.5f, moreText.getFontProvider()) + badgePadding
+        moreText.getTextWidth("+$hiddenCount more") * UIScheme.pfConditionCardTextScale + badgePadding
 
     private fun updateSummaryColors(hiddenCount: Int) {
         val singleRequirement = cards.lastOrNull().takeIf { hiddenCount == 1 }
@@ -116,7 +112,7 @@ class UICompactRequirements(private val options: List<DataOption>) : UIContainer
                     offset += widths[index] + layout.gap
                 } else card.hide(true)
             }
-            if (count < options.size) {
+            if (count < options.size && availableWidth > 0f) {
                 updateSummaryColors(options.size - count)
                 moreText.setText("+${options.size - count} more")
                 more.setX(offset.pixels)

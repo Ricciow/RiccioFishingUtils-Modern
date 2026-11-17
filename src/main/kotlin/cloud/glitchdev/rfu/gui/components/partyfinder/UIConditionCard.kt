@@ -1,23 +1,20 @@
 package cloud.glitchdev.rfu.gui.components.partyfinder
 
 import cloud.glitchdev.rfu.gui.UIScheme
+import cloud.glitchdev.rfu.gui.components.elementa.CopyComponentSizeConstraint
+import cloud.glitchdev.rfu.gui.components.elementa.RFUFitText
 import cloud.glitchdev.rfu.model.data.DataOption
 import cloud.glitchdev.rfu.utils.gui.UIImages
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
-import gg.essential.elementa.components.UIText
-import gg.essential.elementa.constraints.AspectConstraint
 import gg.essential.elementa.constraints.CenterConstraint
-import gg.essential.elementa.constraints.ChildBasedMaxSizeConstraint
-import gg.essential.elementa.constraints.ChildBasedSizeConstraint
 import gg.essential.elementa.constraints.ColorConstraint
-import gg.essential.elementa.constraints.HeightConstraint
 import gg.essential.elementa.constraints.PositionConstraint
-import gg.essential.elementa.constraints.ScaledTextConstraint
-import gg.essential.elementa.constraints.SiblingConstraint
-import gg.essential.elementa.constraints.TextAspectConstraint
 import gg.essential.elementa.dsl.childOf
+import gg.essential.elementa.dsl.basicRadiusConstraint
+import gg.essential.elementa.dsl.basicWidthConstraint
 import gg.essential.elementa.dsl.constrain
+import gg.essential.elementa.dsl.minus
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.plus
 import gg.essential.elementa.dsl.times
@@ -36,7 +33,7 @@ class UIConditionCard(
                 "trophy" -> UIScheme.pfConditionCardTrophy
                 "has_killer" -> UIScheme.pfConditionCardKiller
                 "wither_impact" -> UIScheme.pfConditionCardWitherImpact
-                "looting_5" -> UIScheme.pfConditionCardLooting5
+                "bobbin_time" -> UIScheme.pfConditionCardBobbinTime
                 "enderman_9" -> UIScheme.pfConditionCardEnderman9
                 "brain_food" -> UIScheme.pfConditionCardBrainFood
                 "bloodshot" -> UIScheme.pfConditionCardBloodshot
@@ -54,8 +51,8 @@ class UIConditionCard(
                 "treasure" -> UIScheme.pfConditionCardTreasureBorder
                 "trophy" -> UIScheme.pfConditionCardTrophyBorder
                 "has_killer" -> UIScheme.pfConditionCardKillerBorder
+                "bobbin_time" -> UIScheme.pfConditionCardBobbinTimeBorder
                 "wither_impact" -> UIScheme.pfConditionCardWitherImpactBorder
-                "looting_5" -> UIScheme.pfConditionCardLooting5Border
                 "enderman_9" -> UIScheme.pfConditionCardEnderman9Border
                 "brain_food" -> UIScheme.pfConditionCardBrainFoodBorder
                 "bloodshot" -> UIScheme.pfConditionCardBloodshotBorder
@@ -64,7 +61,6 @@ class UIConditionCard(
             }.toConstraint()
         }
 
-    val textHeight: HeightConstraint = ScaledTextConstraint(0.5f)
     val icon: String
         get() {
             return when(option.value as? String) {
@@ -74,8 +70,8 @@ class UIConditionCard(
                 "treasure" -> "/assets/rfu/ui/treasure.png"
                 "trophy" -> "/assets/rfu/ui/trophy.png"
                 "has_killer" -> "/assets/rfu/ui/has_killer.png"
+                "bobbin_time" -> "/assets/rfu/ui/bobbin_time.png"
                 "wither_impact" -> "/assets/rfu/ui/wither_impact.png"
-                "looting_5" -> "/assets/rfu/ui/looting_5.png"
                 "enderman_9" -> "/assets/rfu/ui/enderman_9.png"
                 "brain_food" -> "/assets/rfu/ui/brain_food.png"
                 "bloodshot" -> "/assets/rfu/ui/water.png"
@@ -88,21 +84,24 @@ class UIConditionCard(
     val innerPadding: PositionConstraint = UIScheme.pfConditionCardPadding.pixels
 
     val background = UIRoundedRectangle(5f).constrain {
+        radius = basicRadiusConstraint { it.getHeight() / 2f }
         x = CenterConstraint()
         y = CenterConstraint()
-        width = ChildBasedSizeConstraint() + innerPadding * 2
-        height = ChildBasedMaxSizeConstraint() + innerPadding * 2
+        width = CopyComponentSizeConstraint(this@UIConditionCard) - borderWidth * 2
+        height = CopyComponentSizeConstraint(this@UIConditionCard) - borderWidth * 2
         color = innerColor
     } childOf this
 
     val innerContainer = UIContainer().constrain {
         x = CenterConstraint()
         y = CenterConstraint()
-        width = ChildBasedSizeConstraint()
-        height = ChildBasedMaxSizeConstraint()
+        width = basicWidthConstraint {
+            UIScheme.pfConditionCardContentHeight + UIScheme.pfConditionCardPadding + textUI.getWidth()
+        }
+        height = UIScheme.pfConditionCardContentHeight.pixels
     } childOf background
 
-    lateinit var textUI: UIText
+    lateinit var textUI: RFUFitText
 
     init {
         create()
@@ -110,26 +109,28 @@ class UIConditionCard(
 
     fun create() {
         this.constrain {
+            radius = basicRadiusConstraint { it.getHeight() / 2f }
             color = borderColor
-            width = ChildBasedSizeConstraint() + borderWidth * 2
-            height = ChildBasedMaxSizeConstraint() + borderWidth * 2
+            width = CopyComponentSizeConstraint(innerContainer) + (innerPadding + borderWidth) * 2
+            height = UIScheme.pfConditionCardContentHeight.pixels + (innerPadding + borderWidth) * 2
         }
 
         val image = UIImages.ofResource(icon) childOf innerContainer
 
-        textUI = UIText(option.label).constrain {
-            x = SiblingConstraint(UIScheme.pfConditionCardPadding)
+        textUI = RFUFitText(option.label.trim(), UIScheme.pfConditionCardTextScale).constrain {
+            x = (UIScheme.pfConditionCardContentHeight + UIScheme.pfConditionCardPadding).pixels
             y = CenterConstraint()
-            width = TextAspectConstraint()
-            height = textHeight
+            width = basicWidthConstraint { component ->
+                (component as RFUFitText).getTextWidth() * UIScheme.pfConditionCardTextScale
+            }
             color = borderColor
         } childOf innerContainer
 
         image.constrain {
-            x = SiblingConstraint()
+            x = 0.pixels
             y = CenterConstraint()
-            width = AspectConstraint()
-            height = 4.5.pixels
+            width = UIScheme.pfConditionCardContentHeight.pixels
+            height = UIScheme.pfConditionCardContentHeight.pixels
             color = borderColor
         }
     }

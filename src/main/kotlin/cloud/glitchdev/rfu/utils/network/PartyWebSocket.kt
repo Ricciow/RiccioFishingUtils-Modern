@@ -112,7 +112,7 @@ object PartyWebSocket : RegisteredEvent {
                 
                 if (event.type == WebSocketEventType.SYNC) {
                     val newParties = event.data ?: emptyList()
-                    newParties.forEach { it.convertLegacyEmojis() }
+                    newParties.forEach { it.normalizeLegacyData() }
                     myParty = newParties.find { it.user == User.getUsername() }
                     PartyFinderEvents.handleSync(newParties)
                 }
@@ -129,7 +129,7 @@ object PartyWebSocket : RegisteredEvent {
                 when (event.type) {
                     WebSocketEventType.CREATED, WebSocketEventType.UPDATED -> {
                         event.data?.let { updatedParty ->
-                            updatedParty.convertLegacyEmojis()
+                            updatedParty.normalizeLegacyData()
                             if (updatedParty.user == User.getUsername()) {
                                 myParty = updatedParty
                             }
@@ -172,8 +172,13 @@ object PartyWebSocket : RegisteredEvent {
             try {
                 val type = object : TypeToken<WebSocketEvent<PlayerRequisitesResult>>() {}.type
                 val event = gson.fromJson<WebSocketEvent<PlayerRequisitesResult>>(msg, type)
-                if (event.type == WebSocketEventType.SYNC && event.data != null) {
-                    PartyRequirementsManager.updatePlayerRequisites(event.data, User.profileId)
+                val result = event.data
+                if (event.type == WebSocketEventType.SYNC && result != null) {
+                    mc.execute {
+                        if (result.canApplyTo(User.profileId)) {
+                            PartyRequirementsManager.updatePlayerRequisites(result, result.profileId)
+                        }
+                    }
                 }
             } catch (e: Exception) {
                 RFULogger.error("Error parsing player requisites sync: ", e)
@@ -204,7 +209,8 @@ object PartyWebSocket : RegisteredEvent {
         WebSocketClient.subscribe("/topic/party/info", infoCallback)
     }
 
-    private fun FishingParty.convertLegacyEmojis() {
+    private fun FishingParty.normalizeLegacyData() {
+        removeLootingRequirement()
         title = Emoji.convertLegacyEmojis(title)
         description = Emoji.convertLegacyEmojis(description)
     }
@@ -254,12 +260,14 @@ object PartyWebSocket : RegisteredEvent {
     }
 
     fun publishParty(party: FishingParty) {
+        party.removeLootingRequirement()
         party.profileId = User.profileId
         lastParty = party.deepCopy()
         WebSocketClient.send("/app/party/publish", party.copy(level = party.level.coerceAtMost(50), overflow = party.requiredOverflow()))
     }
 
     fun editParty(party: FishingParty) {
+        party.removeLootingRequirement()
         party.profileId = User.profileId
         lastParty = party.deepCopy()
         WebSocketClient.send("/app/party/edit", party.copy(level = party.level.coerceAtMost(50), overflow = party.requiredOverflow()))

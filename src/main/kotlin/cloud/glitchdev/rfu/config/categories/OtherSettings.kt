@@ -5,6 +5,7 @@ import cloud.glitchdev.rfu.config.SoundTitleSettings
 import cloud.glitchdev.rfu.config.TitleSettings
 import cloud.glitchdev.rfu.constants.chat.MessageTypes
 import cloud.glitchdev.rfu.constants.ui.TooltipGuiScale
+import cloud.glitchdev.rfu.constants.ui.PartyFinderGuiScale
 import cloud.glitchdev.rfu.constants.ui.VisiblePlayerEquipment
 import cloud.glitchdev.rfu.constants.text.TextColor.LIGHT_RED
 
@@ -206,6 +207,12 @@ object OtherSettings : Category("Other") {
             description = "${LIGHT_RED}This feature requires backend acceptance!"
             condition = { !BackendSettings.backendAccepted }
         }
+    }
+
+    var partyFinderGuiScale by enum(PartyFinderGuiScale.DEFAULT) {
+        name = Literal("Party Finder GUI Scale")
+        description = Literal("The GUI scale for the Party Finder screen.")
+        condition = { BackendSettings.backendAccepted }
     }
 
     var partyFinderAlert by boolean(false) {

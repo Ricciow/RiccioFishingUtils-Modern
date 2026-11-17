@@ -28,7 +28,6 @@ class UIFilterArea(private val filterHeight : YConstraint, var onFilterChange: (
     private val partyTypeToggles = linkedMapOf<PartyTypeOption, UIToggleCard>()
     lateinit var killerToggle: UIToggleCard
     lateinit var endermanToggle: UIToggleCard
-    lateinit var lootingToggle: UIToggleCard
     lateinit var brainFoodToggle: UIToggleCard
     lateinit var bloodshotToggle: UIToggleCard
     lateinit var witherImpactToggle: UIToggleCard
@@ -108,13 +107,6 @@ class UIFilterArea(private val filterHeight : YConstraint, var onFilterChange: (
             y = CramSiblingConstraint(2f)
         } childOf bottomArea
 
-        lootingToggle = UIToggleCard(DataOption("looting_5", "Looting 5")) {
-            onFilterChange()
-        }.constrain {
-            x = CramSiblingConstraint(4f)
-            y = CramSiblingConstraint(2f)
-        } childOf bottomArea
-
         brainFoodToggle = UIToggleCard(DataOption("brain_food", "Brain Food")) {
             onFilterChange()
         }.constrain {
@@ -167,7 +159,6 @@ class UIFilterArea(private val filterHeight : YConstraint, var onFilterChange: (
 
             if (killerToggle.selected && !party.getRequisite("has_killer", "Has Killer").value) return@filter false
             if (endermanToggle.selected && !party.getRequisite("enderman_9", "Enderman 9").value) return@filter false
-            if (lootingToggle.selected && !party.getRequisite("looting_5", "Looting 5").value) return@filter false
             if (brainFoodToggle.selected && !party.getRequisite("brain_food", "Brain Food").value) return@filter false
             if (bloodshotToggle.selected && !party.getRequisite("bloodshot", "Bloodshot").value) return@filter false
             if (witherImpactToggle.selected && !party.getRequisite("wither_impact", "Wither Impact").value) return@filter false

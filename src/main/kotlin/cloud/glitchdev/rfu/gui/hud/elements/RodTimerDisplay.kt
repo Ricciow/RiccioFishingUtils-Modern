@@ -1,23 +1,19 @@
 package cloud.glitchdev.rfu.gui.hud.elements
 
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
-import cloud.glitchdev.rfu.constants.text.TextColor.LIGHT_RED
-import cloud.glitchdev.rfu.constants.text.TextColor.YELLOW
-import cloud.glitchdev.rfu.constants.text.TextEffects.BOLD
 import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
-import cloud.glitchdev.rfu.utils.dsl.toMcCodes
-import gg.essential.elementa.components.UIContainer
-import gg.essential.elementa.constraints.CenterConstraint
-import gg.essential.elementa.constraints.ChildBasedSizeConstraint
-import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.width
 
 @HudElement
 object RodTimerDisplay : AbstractTextHudElement("rodTimer") {
+    const val DEFAULT_MAX_TIME = 3f
+    private const val PREVIEW_TIME = 1.5f
+
     var rodTime : Float = -1f
+    var maxTime : Float = DEFAULT_MAX_TIME
     override val relatedSetting = "Rod Timer"
     override val requirement: Boolean
         get() = GeneralFishing.rodTimerDisplay
@@ -27,24 +23,33 @@ object RodTimerDisplay : AbstractTextHudElement("rodTimer") {
     override fun onUpdateState() {
         super.onUpdateState()
 
-        val readyText = "$LIGHT_RED$BOLD${GeneralFishing.rodTimerReadyText.toMcCodes()}"
+        val format = GeneralFishing.rodTimerStyle.format
+        val string = if (rodTime == 0f) {
+            format.ready()
+        } else {
+            val time = if (rodTime > 0) rodTime else PREVIEW_TIME
+            format.countdown(time, remainingFraction(time))
+        }
+
+        val widest = listOf(
+            format.ready(),
+            format.countdown(DEFAULT_MAX_TIME, 1f),
+            format.countdown(0.1f, 0f),
+            string
+        ).flatMap { it.lines() }.maxOf { it.width(scale) }
 
         container.constrain {
-            width = if(rodTime == 0f) {
-                readyText.width(scale).pixels()
-            } else {
-                ChildBasedSizeConstraint()
-            }
+            width = widest.pixels()
         }
 
-        val string = if(rodTime > 0) {
-            "$YELLOW$BOLD$rodTime"
-        } else if(rodTime == 0f) {
-            readyText
-        } else {
-            "$YELLOW${BOLD}3.0"
+        text.constrain {
+            x = format.alignment.toXConstraint()
         }
 
-        text.setText(string)
+        text.setText(string, format.alignment)
+    }
+
+    private fun remainingFraction(time: Float): Float {
+        return ((time - 0.1f) / (maxTime - 0.2f)).coerceIn(0f, 1f)
     }
 }

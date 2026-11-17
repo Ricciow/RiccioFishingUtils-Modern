@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.gui.components.elementa
 
+import cloud.glitchdev.rfu.constants.ui.TextAlignment
 import gg.essential.elementa.UIComponent
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIText
@@ -27,13 +28,13 @@ class MultilineHudText(private var scale: Float) : UIContainer() {
         }
     }
 
-    fun setLines(hudLines: List<HudLine>) {
+    fun setLines(hudLines: List<HudLine>, alignment: TextAlignment = TextAlignment.LEFT) {
         currentText = hudLines.joinToString("\n") { it.text }
         lines.forEach { removeChild(it) }
         lines.clear()
         lines.addAll(hudLines.map { line ->
             UIText(line.text).constrain {
-                x = 0.pixels()
+                x = alignment.toXConstraint()
                 y = SiblingConstraint()
                 width = ScaledTextConstraint(scale)
                 height = TextAspectConstraint()
@@ -42,11 +43,11 @@ class MultilineHudText(private var scale: Float) : UIContainer() {
         })
     }
 
-    fun setText(value: String) {
+    fun setText(value: String, alignment: TextAlignment = TextAlignment.LEFT) {
         if (value.isEmpty()) {
             setLines(emptyList())
         } else {
-            setLines(value.split("\n").map { HudLine(it) })
+            setLines(value.split("\n").map { HudLine(it) }, alignment)
         }
     }
 

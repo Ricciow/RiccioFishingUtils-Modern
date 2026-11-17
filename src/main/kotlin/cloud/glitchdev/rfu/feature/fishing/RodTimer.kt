@@ -30,6 +30,12 @@ object RodTimer : Feature {
                 timer?.name?.string?.toFloatOrNull() ?: -1f
             }
 
+            RodTimerDisplay.maxTime = if (RodTimerDisplay.rodTime < 0) {
+                RodTimerDisplay.DEFAULT_MAX_TIME
+            } else {
+                maxOf(RodTimerDisplay.maxTime, RodTimerDisplay.rodTime)
+            }
+
             isHoldingRod = mc.player?.mainHandItem?.item?.descriptionId == "item.minecraft.fishing_rod"
 
             RodTimerDisplay.updateState()

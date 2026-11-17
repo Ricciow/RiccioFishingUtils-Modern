@@ -30,6 +30,10 @@ data class FishingParty(
     var players: Players,
     var overflow: Long? = null
 ) {
+    fun removeLootingRequirement() {
+        requisites.removeAll { it.id == "looting_5" }
+    }
+
     fun requiredOverflow(): Long = overflow
         ?: (Skills.getTotalXpAtLevel(level) - Skills.getTotalXpAtLevel(50)).coerceAtLeast(0)
 
@@ -40,13 +44,13 @@ data class FishingParty(
         return Requisite(id, name, false)
     }
 
-    fun setRequisite(id: String, name: String, value: Boolean) {
+    fun setRequisite(id: String, name: String, value: Boolean, minimumLevel: Int? = null) {
         val requisite = requisites.find { requisite -> requisite.id == id }
 
         if (requisite != null) {
-            requisite.update(name, value)
+            requisite.update(name, value, minimumLevel)
         } else {
-            requisites.add(Requisite(id, name, value))
+            requisites.add(Requisite(id, name, value, minimumLevel))
         }
     }
 
@@ -74,7 +78,6 @@ data class FishingParty(
                 mutableListOf(
                     Requisite("has_killer", "Has Killer", false),
                     Requisite("enderman_9", "Enderman 9", false),
-                    Requisite("looting_5", "Looting 5", false),
                     Requisite("brain_food", "Brain Food", false),
                     Requisite("bloodshot", "Bloodshot", false),
                     Requisite("wither_impact", "Wither Impact", false),
@@ -89,15 +92,22 @@ data class FishingParty(
 data class Requisite(
     val id: String,
     var name: String,
-    var value: Boolean
+    var value: Boolean,
+    @SerializedName("minimum_level")
+    var minimumLevel: Int? = null
 ) {
-    fun update(name: String = this.name, value: Boolean = this.value) {
+    fun update(name: String = this.name, value: Boolean = this.value, minimumLevel: Int? = this.minimumLevel) {
         this.name = name
         this.value = value
+        this.minimumLevel = minimumLevel
     }
 
     fun toDataOption(): DataOption {
-        return DataOption(id, name)
+        val label = if (id == "bobbin_time") {
+            val numeral = when (minimumLevel) { 3 -> "III"; 4 -> "IV"; 5 -> "V"; else -> "?" }
+            "Bobbin' Time $numeral"
+        } else name
+        return DataOption(id, label)
     }
 }
 
