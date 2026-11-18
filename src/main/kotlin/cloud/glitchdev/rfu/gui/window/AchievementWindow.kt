@@ -15,6 +15,7 @@ import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.achievement.Achievement
 import cloud.glitchdev.rfu.utils.gui.UIImages
+import cloud.glitchdev.rfu.utils.gui.setHidden
 import gg.essential.elementa.components.ScrollComponent
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
@@ -122,6 +123,7 @@ object AchievementWindow : BaseWindow() {
                 AchievementCategory.INK -> "/assets/rfu/ui/squid.png"
                 AchievementCategory.TROPHY_FISHING -> "/assets/rfu/ui/trophy.png"
                 AchievementCategory.SPECIAL -> "/assets/rfu/ui/looting_5.png"
+                AchievementCategory.LEGACY -> "/assets/resourcefulconfig/textures/gui/sprites/icons/clipboard_list.png"
             }
             val image = UIImages.ofResource(iconPath)
             val btn = UIButton.withImage(image, 5f) {
@@ -179,7 +181,16 @@ object AchievementWindow : BaseWindow() {
     }
 
     private fun refreshAchievements() {
+        val visibleAchievements = AchievementProvider.getVisibleAchievements()
+        val hasLegacyAchievements = visibleAchievements.any { it.category == AchievementCategory.LEGACY }
+        if (!hasLegacyAchievements && selectedCategory == AchievementCategory.LEGACY) {
+            selectedCategory = AchievementCategory.GENERAL
+        }
+
         categoryButtons.forEach { (cat, btn) ->
+            if (cat == AchievementCategory.LEGACY) {
+                btn.setHidden(!hasLegacyAchievements)
+            }
             if (selectedCategory == cat) {
                 btn.colors {
                     textColor = UIScheme.pfFilterButtonSelected.toConstraint()
@@ -204,7 +215,7 @@ object AchievementWindow : BaseWindow() {
         }
         achievementComponents.clear()
 
-        AchievementProvider.getVisibleAchievements()
+        visibleAchievements
             .filter { it.category == selectedCategory }
             .sortedWith(compareBy(
                 {

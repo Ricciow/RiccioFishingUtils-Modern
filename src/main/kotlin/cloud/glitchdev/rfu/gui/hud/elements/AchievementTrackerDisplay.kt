@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.gui.hud.elements
 
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementManager
+import cloud.glitchdev.rfu.achievement.AchievementProvider
 import cloud.glitchdev.rfu.achievement.interfaces.IStageAchievement
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.text.TextColor.GRAY
@@ -31,7 +32,10 @@ object AchievementTrackerDisplay : AbstractHudElement("achievementTrackerDisplay
     override val requirement: Boolean
         get() = OtherSettings.achievementTrackerDisplay
     override val isElementActive: Boolean
-        get() = AchievementHandler.getTrackedAchievements().isNotEmpty()
+        get() = AchievementHandler.getTrackedAchievements().any { getVisibleAchievement(it) != null }
+
+    private fun getVisibleAchievement(id: String) =
+        AchievementManager.getAchievement(id)?.takeIf(AchievementProvider::isVisible)
 
     private val container = UIContainer().constrain {
         width = ChildBasedMaxSizeConstraint()
@@ -56,8 +60,8 @@ object AchievementTrackerDisplay : AbstractHudElement("achievementTrackerDisplay
     override fun onUpdateState() {
         achievementLines.forEach { container.removeChild(it) }
 
-        val trackedIds = AchievementHandler.getTrackedAchievements()
-        if (trackedIds.isEmpty()) {
+        val trackedAchievements = AchievementHandler.getTrackedAchievements().mapNotNull(::getVisibleAchievement)
+        if (trackedAchievements.isEmpty()) {
             if (isEditing) {
                 achievementLines = listOf(
                     UIText("Achievement Tracker").constrain {
@@ -72,9 +76,7 @@ object AchievementTrackerDisplay : AbstractHudElement("achievementTrackerDisplay
             return
         }
 
-        achievementLines = trackedIds.mapNotNull { id ->
-            val achievement = AchievementManager.getAchievement(id) ?: return@mapNotNull null
-            
+        achievementLines = trackedAchievements.map { achievement ->
             val name = if (achievement is IStageAchievement && !achievement.isCompleted) {
                 achievement.getStageName(achievement.currentStage) ?: achievement.name
             } else {

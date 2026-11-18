@@ -6,6 +6,10 @@ import cloud.glitchdev.rfu.events.AbstractEventManager
 
 abstract class BaseAchievement : IAchievement {
     protected val activeListeners = mutableListOf<AbstractEventManager.ManagedTask<*, *>>()
+
+    private val isLegacy: Boolean
+        get() = category == AchievementCategory.LEGACY
+    private var isApplyingDebugChange = false
     
     private var _isCompleted: Boolean = false
     override val isCompleted: Boolean
@@ -31,7 +35,7 @@ abstract class BaseAchievement : IAchievement {
             }
         }
         
-        if (!isCompleted) {
+        if (!isCompleted && !isLegacy) {
             setupListeners()
         }
     }
@@ -56,7 +60,7 @@ abstract class BaseAchievement : IAchievement {
     }
 
     fun postReload() {
-        if (!isCompleted) {
+        if (!isCompleted && !isLegacy) {
             setupListeners()
         }
     }
@@ -64,15 +68,14 @@ abstract class BaseAchievement : IAchievement {
     abstract fun setupListeners()
 
     protected open fun complete() {
-        if (_isCompleted) return
+        if (_isCompleted || (isLegacy && !isApplyingDebugChange)) return
         _isCompleted = true
         unregisterAllListeners()
         AchievementProvider.fireAchievementUnlocked(this)
     }
 
     open fun debugComplete() {
-        _isCheated = true
-        complete()
+        applyDebugChange { complete() }
     }
 
     open fun debugReset() {
@@ -81,12 +84,21 @@ abstract class BaseAchievement : IAchievement {
         _progress = 0.0f
         unregisterAllListeners()
         loadState(emptyMap())
-        setupListeners()
+        if (!isLegacy) {
+            setupListeners()
+        }
         AchievementProvider.fireAchievementUpdated(this)
     }
 
-    fun markAsCheated() {
+    protected fun applyDebugChange(change: () -> Unit) {
         _isCheated = true
+        val wasApplyingDebugChange = isApplyingDebugChange
+        isApplyingDebugChange = true
+        try {
+            change()
+        } finally {
+            isApplyingDebugChange = wasApplyingDebugChange
+        }
     }
 
     protected fun unregisterAllListeners() {

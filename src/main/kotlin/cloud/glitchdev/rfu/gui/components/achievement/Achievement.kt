@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.gui.components.achievement
 
+import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.interfaces.IAchievement
 import cloud.glitchdev.rfu.achievement.interfaces.IStageAchievement
@@ -180,6 +181,16 @@ class Achievement(
             height = TextWrappingConstraint()
             color = UIScheme.achievementDescriptionColor.toConstraint()
         } childOf container
+
+        if (achievement.category == AchievementCategory.LEGACY) {
+            UIWrappedText("Legacy achievement. No longer obtainable.").constrain {
+                x = 0.pixels()
+                y = SiblingConstraint(UIScheme.pfCardSmallPadding)
+                width = 100.percent()
+                height = TextWrappingConstraint()
+                color = UIScheme.legacyAchievementTextColor.toConstraint()
+            } childOf container
+        }
 
         val arrowSection = UIContainer().constrain {
             x = 0.pixels

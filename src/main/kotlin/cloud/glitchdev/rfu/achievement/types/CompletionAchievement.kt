@@ -46,13 +46,14 @@ abstract class CompletionAchievement : BaseAchievement() {
     }
 
     override fun debugComplete() {
-        markAsCheated()
-        for (achievement in achievements) {
-            if (!achievement.isCompleted) {
-                achievement.debugComplete()
+        applyDebugChange {
+            for (achievement in achievements) {
+                if (!achievement.isCompleted) {
+                    achievement.debugComplete()
+                }
             }
+            complete()
         }
-        complete()
     }
 
     override fun debugReset() {

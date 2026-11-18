@@ -26,13 +26,11 @@ abstract class NumericAchievement : BaseAchievement() {
 
     fun debugAddProgress(amount: Long = 1L) {
         if (isCompleted) return
-        markAsCheated()
-        addProgress(amount)
+        applyDebugChange { addProgress(amount) }
     }
 
     override fun debugComplete() {
-        markAsCheated()
-        currentCount = targetCount
+        applyDebugChange { currentCount = targetCount }
     }
 
     override fun debugReset() {
