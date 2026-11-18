@@ -2,6 +2,7 @@ plugins {
     id("net.fabricmc.fabric-loom")
     kotlin("jvm")
     id("com.google.devtools.ksp")
+    id("dev.detekt") version "2.0.0-alpha.6"
     id("com.modrinth.minotaur") version "2.10.0"
 }
 

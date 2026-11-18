@@ -11,3 +11,4 @@
 ### Fixes
 
 ### Backend
+- Added Detekt checks
