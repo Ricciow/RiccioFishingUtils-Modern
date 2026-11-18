@@ -9,6 +9,9 @@
 - Changed Prince's Crown Jewel to just say Crown Jewel
 
 ### Fixes
+- Fixed duplicate hotspot shares and alerts.
+- Corrected the coordinates in shared hotspot messages.
 
 ### Backend
 - Added Detekt checks
+- Hotspot detection now reacts to entity updates, optimizing :dog:.

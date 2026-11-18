@@ -18,7 +18,6 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.dimension.BuiltinDimensionTypes
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
-import kotlin.jvm.optionals.getOrElse
 import kotlin.jvm.optionals.getOrNull
 
 @AutoRegister
@@ -91,21 +90,12 @@ object  World : RegisteredEvent {
         registerLocationEvent(-1) { event ->
             isInSkyblock = event.serverType.getOrNull() == GameType.SKYBLOCK
             lobby = event.serverName
-            val islandName = event.map.getOrElse {
-                if (island != null) {
-                    HotSpotEvents.clearHotspots()
-                    HotspotCache.clearSessionBuffs()
-                }
-                island = null
-                return@registerLocationEvent
-            }
-
-            val newIsland = FishingIslands.findIslandObject(islandName)
+            val newIsland = event.map.getOrNull()?.let(FishingIslands::findIslandObject)
             if (newIsland != island) {
-                HotSpotEvents.clearHotspots()
+                island = newIsland
                 HotspotCache.clearSessionBuffs()
+                HotSpotEvents.reloadHotspotsForIsland()
             }
-            island = newIsland
         }
 
         registerSeaCreatureCatchEvent(priority = -100) { sc, _, _, _, _ ->

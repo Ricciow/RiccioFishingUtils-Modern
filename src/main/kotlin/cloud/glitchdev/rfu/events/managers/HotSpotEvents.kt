@@ -2,7 +2,6 @@ package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.RiccioFishingUtils
 import cloud.glitchdev.rfu.config.categories.HotSpotSettings
-import cloud.glitchdev.rfu.constants.fishing.FishingIslands
 import cloud.glitchdev.rfu.constants.fishing.HotSpotConstants
 import cloud.glitchdev.rfu.constants.fishing.HotspotType
 import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
@@ -11,12 +10,16 @@ import cloud.glitchdev.rfu.data.fishing.HotspotCache
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
+import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.EntityAddedEvents.registerEntityAddedEvent
+import cloud.glitchdev.rfu.events.managers.EntityDataEvents.registerEntityDataEvent
 import cloud.glitchdev.rfu.events.managers.ParticleEvents.registerParticleEvent
 import cloud.glitchdev.rfu.events.managers.ParticleEvents.ParticleRenderEvents.registerParticleRenderEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
-import cloud.glitchdev.rfu.events.managers.EntityRenderEvents.registerEntityRenderEvent
 import cloud.glitchdev.rfu.utils.World
 import gg.essential.universal.utils.toUnformattedString
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.data.other.OtherManager
@@ -38,8 +41,8 @@ import net.minecraft.core.particles.DustParticleOptions
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket
 import net.minecraft.tags.FluidTags
+import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.decoration.ArmorStand
-import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
@@ -94,126 +97,18 @@ object HotSpotEvents : RegisteredEvent {
             )
         }
 
-        registerTickEvent(interval = 2) { client ->
-            val world = client.level ?: return@registerTickEvent
-            val entities = world.entitiesForRendering()
-            val seenUuids = mutableSetOf<UUID>()
-            val now = System.currentTimeMillis()
-
-            entities.forEach { entity ->
-                val isHotspot = entity.customName?.toUnformattedString()?.contains("HOTSPOT") ?: return@forEach
-
-                if (isHotspot) {
-                    val uuid = entity.uuid
-                    seenUuids.add(uuid)
-
-                    if (!hotspots.containsKey(uuid)) {
-                        val pos = entity.position()
-                        val blockPos = BlockPos.containing(pos.x, pos.y, pos.z)
-
-                        // Check if there is a virtual hotspot at this location and remove it
-                        val virtualUuid = UUID.nameUUIDFromBytes("virtual_${blockPos}".toByteArray())
-                        val virtualHotspot = hotspots.remove(virtualUuid)
-                        virtualUuids.remove(virtualUuid)
-
-                        // Try to find cached buff first, otherwise start as UNKNOWN
-                        val cachedBuff = findCachedBuff(blockPos, World.island)
-                        val buff = cachedBuff ?: ""
-                        val liquid = getLiquidType(pos, world)
-                        val hotspot = Hotspot(uuid, pos, buff, 0f, liquid)
-                        hotspot.isNotified = true
-                        hotspots[uuid] = hotspot
-                        if (virtualHotspot != null && virtualHotspot.isNotified) {
-                            HotSpotDisposedEventManager.runTasks(virtualHotspot)
-                        }
-                        HotSpotDetectedEventManager.runTasks(hotspot)
-                    } else {
-                        val hotspot = hotspots[uuid]!!
-                        virtualUuids.remove(uuid)
-                        if (!hotspot.isNotified) {
-                            hotspot.isNotified = true
-                            HotSpotDetectedEventManager.runTasks(hotspot)
-                        }
-                    }
-                }
-            }
-
-            val playerPos = client.player?.position()
-            if (playerPos != null) {
-                seenUuids.forEach { uuid ->
-                    val hotspot = hotspots[uuid] ?: return@forEach
-                    if (hotspot.type != HotspotType.UNKNOWN ||
-                        playerPos.distanceTo(hotspot.center) >= HotSpotConstants.SHARE_DISTANCE
-                    ) return@forEach
-
-                    val buff = findBuffNearby(hotspot.center, world)
-                    if (HotspotType.fromBuff(buff) == HotspotType.UNKNOWN) return@forEach
-
-                    hotspot.buff = buff
-                    HotspotCache.updateBuff(hotspot.blockPos, hotspot.liquid, buff, hotspot.island)
-                    HotSpotChangedEventManager.runTasks(hotspots.values.toList())
-                }
-            }
-
-            val iterator = hotspots.entries.iterator()
-            while (iterator.hasNext()) {
-                val entry = iterator.next()
-                val uuid = entry.key
-                val hotspot = entry.value
-
-                val isSeen = seenUuids.contains(uuid)
-
-                if (!isSeen) {
-                    val player = client.player
-                    val distanceToPlayer = player?.position()?.distanceTo(hotspot.center) ?: 0.0
-
-                    if (distanceToPlayer < HotSpotConstants.RANGE_DISPOSE_DISTANCE) {
-                        if (hotspot.rangeEntryTime == null) {
-                            hotspot.rangeEntryTime = now
-                        }
-
-                        if (now - (hotspot.rangeEntryTime ?: now) > HotSpotConstants.RANGE_ENTRY_TIMEOUT_MS && now - hotspot.lastUpdate > HotSpotConstants.RANGE_ENTRY_TIMEOUT_MS) {
-                            iterator.remove()
-                            virtualUuids.remove(uuid)
-                            if (hotspot.isNotified) {
-                                HotSpotDisposedEventManager.runTasks(hotspot)
-                            }
-                            continue
-                        }
-                    } else {
-                        hotspot.rangeEntryTime = null
-                    }
-
-                    virtualUuids.add(uuid)
-
-                    val timeout = if (hotspot.isExternal) HotSpotConstants.EXTERNAL_TIMEOUT_MS else HotSpotConstants.INACTIVITY_TIMEOUT_MS
-                    if (now - hotspot.lastUpdate > timeout) {
-                        iterator.remove()
-                        virtualUuids.remove(uuid)
-                        if (hotspot.isNotified) {
-                            HotSpotDisposedEventManager.runTasks(hotspot)
-                        }
-                    }
-                }
+        registerEntityAddedEvent(callback = ::onEntityChanged)
+        registerEntityDataEvent(callback = ::onEntityChanged)
+        ClientEntityEvents.ENTITY_UNLOAD.register { entity, world ->
+            if (world === RiccioFishingUtils.mc.level && entity is ArmorStand) {
+                markHotspotVirtual(entity)
             }
         }
+        ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register { _, _ -> clearHotspots() }
+        registerDisconnectEvent { clearHotspots() }
 
-        registerEntityRenderEvent { entity, isVisible, _ ->
-            if (!isVisible) return@registerEntityRenderEvent
-            val name = entity.customName?.toUnformattedString() ?: return@registerEntityRenderEvent
-            if (HotspotType.fromBuff(name) != HotspotType.UNKNOWN) {
-                val pos = entity.position()
-                val nearestHotspot = hotspots.values
-                    .minByOrNull { it.center.distanceTo(pos) }
-
-                if (nearestHotspot != null && nearestHotspot.center.distanceTo(pos) < 5.0) {
-                    HotspotCache.updateBuff(nearestHotspot.blockPos, nearestHotspot.liquid, name, nearestHotspot.island)
-                    if (nearestHotspot.buff != name) {
-                        nearestHotspot.buff = name
-                        HotSpotChangedEventManager.runTasks(hotspots.values.toList())
-                    }
-                }
-            }
+        registerTickEvent(interval = 2) { client ->
+            if (virtualUuids.isNotEmpty()) expireVirtualHotspots(client.player?.position())
         }
 
         registerParticleEvent { packet ->
@@ -409,21 +304,106 @@ object HotSpotEvents : RegisteredEvent {
         }
     }
 
-    private fun findBuffNearby(pos: Vec3, world: ClientLevel): String {
-        val searchBox = AABB(
-            pos.x - HotSpotConstants.BUFF_SEARCH_HORIZONTAL, pos.y - HotSpotConstants.BUFF_SEARCH_VERTICAL, pos.z - HotSpotConstants.BUFF_SEARCH_HORIZONTAL, 
-            pos.x + HotSpotConstants.BUFF_SEARCH_HORIZONTAL, pos.y + HotSpotConstants.BUFF_SEARCH_VERTICAL, pos.z + HotSpotConstants.BUFF_SEARCH_HORIZONTAL
-        )
-        
-        val entities = world.getEntitiesOfClass(ArmorStand::class.java, searchBox).toList()
-        
-        for (entity in entities) {
-            val name = entity.customName?.toUnformattedString() ?: continue
-            if (HotspotType.fromBuff(name) != HotspotType.UNKNOWN) {
-                return name
-            }
+    private fun onEntityChanged(entity: Entity) {
+        if (entity !is ArmorStand || entity.isRemoved) return
+        val world = entity.level() as? ClientLevel ?: return
+        if (world !== RiccioFishingUtils.mc.level) return
+
+        val name = entity.customName?.toUnformattedString()
+        if (name?.contains("HOTSPOT") == true) {
+            trackHotspot(entity, world)
+            return
         }
-        return ""
+
+        markHotspotVirtual(entity)
+        if (name == null || HotspotType.fromBuff(name) == HotspotType.UNKNOWN) return
+
+        val label = world.getEntity(entity.id - 1) as? ArmorStand ?: return
+        if (label.isHotspotLabel()) trackHotspot(label, world)
+    }
+
+    private fun ArmorStand.isHotspotLabel(): Boolean =
+        !isRemoved && customName?.toUnformattedString()?.contains("HOTSPOT") == true
+
+    private fun markHotspotVirtual(label: ArmorStand) {
+        val hotspot = hotspots[label.uuid] ?: return
+        if (hotspot.entityId != label.id || !virtualUuids.add(label.uuid)) return
+        if (hotspot.type != HotspotType.UNKNOWN) {
+            HotspotCache.updateBuff(hotspot.blockPos, hotspot.liquid, hotspot.buff, hotspot.island)
+        }
+    }
+
+    private fun expireVirtualHotspots(playerPos: Vec3?) {
+        val now = System.currentTimeMillis()
+        val disposed = mutableListOf<Hotspot>()
+        val iterator = virtualUuids.iterator()
+        while (iterator.hasNext()) {
+            val uuid = iterator.next()
+            val hotspot = hotspots[uuid]
+            if (hotspot != null && !hasVirtualHotspotExpired(hotspot, playerPos, now)) continue
+
+            iterator.remove()
+            hotspots.remove(uuid)
+            if (hotspot?.isNotified == true) disposed.add(hotspot)
+        }
+        disposed.forEach(HotSpotDisposedEventManager.runTasks)
+    }
+
+    private fun hasVirtualHotspotExpired(hotspot: Hotspot, playerPos: Vec3?, now: Long): Boolean {
+        val inactiveFor = now - hotspot.lastUpdate
+        val distance = playerPos?.distanceTo(hotspot.center) ?: 0.0
+        if (distance < HotSpotConstants.RANGE_DISPOSE_DISTANCE) {
+            val rangeEntryTime = hotspot.rangeEntryTime ?: now.also { hotspot.rangeEntryTime = it }
+            if (now - rangeEntryTime > HotSpotConstants.RANGE_ENTRY_TIMEOUT_MS &&
+                inactiveFor > HotSpotConstants.RANGE_ENTRY_TIMEOUT_MS
+            ) return true
+        } else {
+            hotspot.rangeEntryTime = null
+        }
+
+        val timeout = if (hotspot.isExternal) HotSpotConstants.EXTERNAL_TIMEOUT_MS else HotSpotConstants.INACTIVITY_TIMEOUT_MS
+        return inactiveFor > timeout
+    }
+
+    private fun trackHotspot(label: ArmorStand, world: ClientLevel) {
+        val buff = (world.getEntity(label.id + 1) as? ArmorStand)?.customName?.toUnformattedString()
+            ?.takeIf { HotspotType.fromBuff(it) != HotspotType.UNKNOWN }
+        val uuid = label.uuid
+        val existing = hotspots[uuid]
+        if (existing != null) {
+            virtualUuids.remove(uuid)
+            existing.rangeEntryTime = null
+            if (buff != null) {
+                HotspotCache.updateBuff(existing.blockPos, existing.liquid, buff, existing.island)
+                if (existing.buff != buff) {
+                    existing.buff = buff
+                    HotSpotChangedEventManager.runTasks(hotspots.values.toList())
+                }
+            }
+            if (!existing.isNotified) {
+                existing.isNotified = true
+                HotSpotDetectedEventManager.runTasks(existing)
+            }
+            return
+        }
+
+        val pos = label.position()
+        val blockPos = BlockPos.containing(pos.x, pos.y, pos.z)
+        val virtualUuid = UUID.nameUUIDFromBytes("virtual_${blockPos}".toByteArray())
+        val virtualHotspot = hotspots.remove(virtualUuid)
+        virtualUuids.remove(virtualUuid)
+
+        val liquid = getLiquidType(pos, world)
+        val hotspot = Hotspot(uuid, pos, buff.orEmpty(), liquid = liquid, entityId = label.id)
+        hotspot.isNotified = true
+        hotspots[uuid] = hotspot
+        if (buff != null) {
+            HotspotCache.updateBuff(blockPos, liquid, buff, hotspot.island)
+        }
+        if (virtualHotspot?.isNotified == true) {
+            HotSpotDisposedEventManager.runTasks(virtualHotspot)
+        }
+        HotSpotDetectedEventManager.runTasks(hotspot)
     }
 
     private fun getHotspotParticle(packet: ClientboundLevelParticlesPacket): HotspotParticle? {
@@ -482,16 +462,21 @@ object HotSpotEvents : RegisteredEvent {
         return sqrt((this.x - pos.x).pow(2.0) + (this.z - pos.z).pow(2.0))
     }
 
-    private fun findCachedBuff(pos: BlockPos, island: FishingIslands?): String? {
-        val cached = HotspotCache.getCachedEntries(island).find { it.first == pos }
-        val data = cached?.second ?: return null
-        val now = System.currentTimeMillis()
-        return if (now - data.lastMetadataUpdate < HotSpotConstants.METADATA_EXPIRY_MS) data.sessionBuff else null
+    fun reloadHotspotsForIsland() {
+        val world = RiccioFishingUtils.mc.level
+        val loadedLabels = if (world == null) emptyList() else hotspots.values.mapNotNull { hotspot ->
+            val entityId = hotspot.entityId ?: return@mapNotNull null
+            val label = world.getEntity(entityId) as? ArmorStand ?: return@mapNotNull null
+            label.takeIf { it.uuid == hotspot.uuid && it.isHotspotLabel() }
+        }
+        clearHotspots()
+        if (world != null) loadedLabels.forEach { trackHotspot(it, world) }
     }
 
-    fun clearHotspots() {
-        hotspots.clear()
+    private fun clearHotspots() {
         virtualUuids.clear()
+        if (hotspots.isEmpty()) return
+        hotspots.clear()
         HotSpotChangedEventManager.runTasks(emptyList())
     }
 

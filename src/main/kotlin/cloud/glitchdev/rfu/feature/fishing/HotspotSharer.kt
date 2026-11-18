@@ -17,63 +17,38 @@ import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.TextUtils
-import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
 import net.minecraft.network.chat.Style
 import kotlin.math.ceil
-import java.util.UUID
+import kotlin.math.floor
 
 @RFUFeature
 object HotspotSharer : Feature {
-    private val notifiedHotspots = mutableSetOf<BlockPos>()
-    private val lastAlertStates = mutableMapOf<UUID, AlertState>()
-    private enum class AlertState {
-        OUT_OF_RANGE, UNKNOWN_BUFF, ALREADY_NOTIFIED, AUTO_SHARE, LOCAL_ALERT
-    }
+    private val notifiedEntityIds = mutableSetOf<Int>()
 
     override fun onInitialize() {
         registerTickEvent(interval = 20) {
-            val hotspots = HotSpotEvents.getAllHotspots().toList()
-            notifiedHotspots.retainAll(hotspots.map { it.blockPos }.toSet())
-            lastAlertStates.keys.retainAll(hotspots.map { it.uuid }.toSet())
             if (!HotSpotSettings.shareHotspotAlert) return@registerTickEvent
 
             val player = mc.player ?: return@registerTickEvent
-            hotspots.forEach { hotspot ->
-                val distance = player.position().distanceTo(hotspot.center)
-                val state = when {
-                    distance >= HotSpotConstants.SHARE_DISTANCE -> AlertState.OUT_OF_RANGE
-                    hotspot.type == HotspotType.UNKNOWN -> AlertState.UNKNOWN_BUFF
-                    hotspot.blockPos in notifiedHotspots -> AlertState.ALREADY_NOTIFIED
-                    HotSpotSettings.autoShareHotspot && Party.inParty -> AlertState.AUTO_SHARE
-                    else -> AlertState.LOCAL_ALERT
-                }
-                when (state) {
-                    AlertState.AUTO_SHARE -> shareHotspot(hotspot)
-                    AlertState.LOCAL_ALERT -> showShareMessage(hotspot)
-                    else -> return@forEach
-                }
-                notifiedHotspots.add(hotspot.blockPos)
-            }
-        }
+            HotSpotEvents.getAllHotspots().forEach { hotspot ->
+                val entityId = hotspot.entityId ?: return@forEach
+                if (entityId in notifiedEntityIds) return@forEach
+                if (hotspot.type == HotspotType.UNKNOWN) return@forEach
+                if (player.position().distanceTo(hotspot.center) >= HotSpotConstants.SHARE_DISTANCE) return@forEach
 
-        HotSpotEvents.registerHotSpotDisposeEvent { hotspot ->
-            if (HotSpotEvents.getAllHotspots().none { it.blockPos == hotspot.blockPos }) {
-                notifiedHotspots.remove(hotspot.blockPos)
+                shareHotspot(hotspot, sendToParty = HotSpotSettings.autoShareHotspot && Party.inParty)
             }
-            lastAlertStates.remove(hotspot.uuid)
         }
 
         registerLocationEvent {
-            notifiedHotspots.clear()
-            lastAlertStates.clear()
+            notifiedEntityIds.clear()
         }
 
         registerDisconnectEvent {
-            notifiedHotspots.clear()
-            lastAlertStates.clear()
+            notifiedEntityIds.clear()
         }
 
         registerKeybind {
@@ -90,11 +65,11 @@ object HotspotSharer : Feature {
 
         val player = mc.player ?: return
         val nearestHotspot = HotSpotEvents.getAllHotspots()
-            .filter { it.type != HotspotType.UNKNOWN }
+            .filter { it.entityId != null && it.type != HotspotType.UNKNOWN }
             .minByOrNull { player.position().distanceTo(it.center) }
 
         if (nearestHotspot != null && player.position().distanceTo(nearestHotspot.center) < HotSpotConstants.SHARE_DISTANCE) {
-            shareHotspot(nearestHotspot)
+            shareHotspot(nearestHotspot, sendToParty = true)
         } else {
             Chat.sendMessage(TextUtils.rfuLiteral("No hotspots nearby to share!", TextColor.LIGHT_RED))
         }
@@ -111,18 +86,31 @@ object HotspotSharer : Feature {
         }
     }
 
-    private fun shareHotspot(hotspot: Hotspot) {
-        if (!Party.inParty) return
-        val pos = hotspot.center
+    private fun shareHotspot(hotspot: Hotspot, sendToParty: Boolean) {
+        val entityId = hotspot.entityId ?: return
+        if (sendToParty && !Party.inParty) return
+
         val name = formatHotspotShareName(hotspot)
-        Chat.sendCommand("pc $name Hotspot | ${ceil(pos.x).toInt()}, ${ceil(pos.y).toInt()}, ${ceil(pos.z).toInt()}")
+        val pos = hotspot.center
+        val shareMessage = buildString {
+            append(name)
+            append(" Hotspot | ")
+            append(floor(pos.x).toInt())
+            append(", ")
+            append(floor(pos.y).toInt() - 2)
+            append(", ")
+            append(floor(pos.z).toInt())
+        }
+
+        if (sendToParty) {
+            Chat.sendCommand("pc $shareMessage")
+        } else {
+            showShareMessage(hotspot, name, shareMessage)
+        }
+        notifiedEntityIds.add(entityId)
     }
 
-    private fun showShareMessage(hotspot: Hotspot) {
-        val pos = hotspot.center
-        val name = formatHotspotShareName(hotspot)
-        val location = "${ceil(pos.x).toInt()}, ${ceil(pos.y).toInt()}, ${ceil(pos.z).toInt()}"
-        val shareMessage = "$name Hotspot | $location"
+    private fun showShareMessage(hotspot: Hotspot, name: String, shareMessage: String) {
         val effectName = Component.literal(name).withStyle(Style.EMPTY.withColor(hotspot.color.rgb))
         
         val base = TextUtils.rfuLiteral("Near a ", TextColor.CYAN)
