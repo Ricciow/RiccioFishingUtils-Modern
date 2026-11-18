@@ -24,6 +24,7 @@ import kotlin.math.ceil
 import kotlin.time.Clock
 import kotlin.time.Instant
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
+import net.minecraft.client.Minecraft
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
@@ -368,21 +369,68 @@ object DropsHistory {
         val endIndex = minOf(startIndex + PAGE_SIZE, reversedHistory.size)
         val pageItems = reversedHistory.subList(startIndex, endIndex)
 
-        pageItems.forEachIndexed { i, record ->
-            val displayIndex = startIndex + i + 1
-            val sincePart = record.sinceCount?.let { "$WHITE$it " } ?: ""
-            val mfPart = record.magicFind?.let { "$AQUAMARINE($it% \uE01A) " } ?: ""
-            val mobPart = record.mobName?.let { "$GRAY($it) " } ?: ""
-            text.append(
-                Component.literal("\n $GRAY$displayIndex - $YELLOW${record.date.toFormattedDate()}$YELLOW: $sincePart$mfPart$mobPart")
-                    .append(preMagicFindUpdateWarning(record))
+        val rows = pageItems.mapIndexed { i, record ->
+            listOf(
+                Component.literal("$GRAY${startIndex + i + 1}"),
+                Component.literal("$GRAY-"),
+                Component.literal("$YELLOW${record.date.toFormattedDate()}:"),
+                Component.literal(record.sinceCount?.let { "$WHITE$it" } ?: ""),
+                Component.literal(record.magicFind?.let { "$AQUAMARINE($it% \uE01A)" } ?: ""),
+                Component.literal(record.mobName?.let { "$GRAY($it)" } ?: ""),
+                preMagicFindUpdateWarning(record)
             )
         }
+        alignHistoryRows(rows, Minecraft.getInstance().font::width).forEach { text.append(it) }
 
         val name = drop.displayName.uppercase().replace(" ", "_")
         val baseCommand = "/rfudrophistory $name"
         text.append(buildFooter(currentPage, totalPages, baseCommand))
         return text
+    }
+
+    private fun alignHistoryRows(rows: List<List<Component>>, width: (Component) -> Int): List<Component> {
+        if (rows.isEmpty()) return emptyList()
+
+        val spaceWidth = width(Component.literal(" ")).coerceAtLeast(1)
+        val boldSpaceWidth = width(Component.literal("$BOLD $RESET")).coerceAtLeast(1)
+        val cellWidths = rows.map { row -> row.map(width) }
+        val lineWidths = IntArray(rows.size)
+        val lines = rows.map { Component.literal("\n") }
+
+        rows.first().indices.forEach { column ->
+            val populatedRows = rows.indices.filter { cellWidths[it][column] > 0 }
+            if (populatedRows.isEmpty()) return@forEach
+
+            val minEdge = populatedRows.maxOf { row -> lineWidths[row] } + spaceWidth
+            val edge = (minEdge..minEdge + spaceWidth * boldSpaceWidth).firstOrNull { candidate ->
+                populatedRows.all { row ->
+                    val gap = candidate - lineWidths[row]
+                    val padding = columnPadding(gap, spaceWidth, boldSpaceWidth)
+                    width(Component.literal(padding)) == gap
+                }
+            } ?: minEdge
+
+            populatedRows.forEach { row ->
+                val gap = edge - lineWidths[row]
+                val padding = Component.literal(columnPadding(gap, spaceWidth, boldSpaceWidth))
+                lines[row].append(padding).append(rows[row][column])
+                lineWidths[row] += width(padding) + cellWidths[row][column]
+            }
+        }
+        return lines
+    }
+
+    private fun columnPadding(width: Int, spaceWidth: Int, boldSpaceWidth: Int): String {
+        if (width <= 0) return ""
+
+        for (boldSpaces in 0..spaceWidth) {
+            val remaining = width - boldSpaces * boldSpaceWidth
+            if (remaining >= 0 && remaining % spaceWidth == 0) {
+                return " ".repeat(remaining / spaceWidth) +
+                    if (boldSpaces > 0) "$BOLD${" ".repeat(boldSpaces)}$RESET" else ""
+            }
+        }
+        return " ".repeat((width + spaceWidth / 2) / spaceWidth)
     }
 
     private fun buildFooter(currentPage: Int, totalPages: Int, baseCommand: String): Component {
