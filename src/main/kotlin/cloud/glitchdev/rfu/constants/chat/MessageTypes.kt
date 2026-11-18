@@ -10,7 +10,7 @@ enum class MessageTypes(val displayName: String, val regex: Regex) {
     CATCH("Catch", """(?:Double Hook!|It's a Double Hook! Woot woot!|It's a Double Hook!)""".toExactRegex()),
     COMBO("Combo", """\+\d+ Kill Combo (.+)""".toExactRegex()),
     BLOCKS("Blocks in the way", """There are blocks in the way!""".toExactRegex()),
-    THUNDER_SPARK("Thunder Spark", """Try clicking this Thunder Spark with an Empty Thunder Bottle to collect it!""".toExactRegex()),
+    THUNDER_SPARK("Thunder Spark", """Try clicking this Thunder Spark with an Empty Thunder in a Bottle to collect it!""".toExactRegex()),
     COCOON("Cocoon", """CAUGHT! You cocooned (?:an? )?(.+)!""".toExactRegex()),
     SACKS("Sacks", """\[Sacks\] \+\d+ items?\. \(Last \d+s\.\)""".toExactRegex()),
     CHARM("Charm", """(?:CHARM! You charmed .+ and received .+|LOOT SHARE You received \d+ .+? Shards? for assisting .+!)""".toExactRegex()),

@@ -16,6 +16,7 @@
 - Fixed duplicate hotspot shares and alerts.
 - Corrected the coordinates in shared hotspot messages.
 - Automatic hotspot sharing now requires being fishing to trigger.
+- Fixed thunder bottle message hiding not working anymore
 
 ### Backend
 - Added Detekt checks
