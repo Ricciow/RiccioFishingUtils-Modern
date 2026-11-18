@@ -232,7 +232,7 @@ object HudWindow : BaseWindow(false) {
         return false
     }
 
-    fun handleMouseReleased(mouseX: Double, mouseY: Double, button: Int): Boolean {
+    fun handleMouseReleased(): Boolean {
         if (isEditingOpen) return false
         val wasInteracting = isInteractingWithHud
         window.mouseRelease()
@@ -240,7 +240,7 @@ object HudWindow : BaseWindow(false) {
         return wasInteracting
     }
 
-    fun handleMouseDragged(mouseX: Double, mouseY: Double, button: Int, dx: Double, dy: Double): Boolean {
+    fun handleMouseDragged(): Boolean {
         if (isEditingOpen) return false
         if (isInteractingWithHud) {
             return true
@@ -478,7 +478,7 @@ object HudWindow : BaseWindow(false) {
         hSnapLine.isFloating = true
 
         // Create dots for lines
-        for (i in 0 until 100) {
+        repeat(100) {
             UIBlock(Color.WHITE).constrain {
                 x = CenterConstraint()
                 y = SiblingConstraint(5f)

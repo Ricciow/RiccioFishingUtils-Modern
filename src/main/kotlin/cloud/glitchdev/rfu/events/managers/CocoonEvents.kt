@@ -6,7 +6,6 @@ import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
-import net.minecraft.network.chat.Component
 
 @AutoRegister
 object CocoonEvents : AbstractEventManager<(SeaCreatures) -> Unit, CocoonEvents.CocoonEvent>(), RegisteredEvent {

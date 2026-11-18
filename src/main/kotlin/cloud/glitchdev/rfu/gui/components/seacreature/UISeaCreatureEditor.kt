@@ -276,7 +276,7 @@ class UISeaCreatureEditor : UIContainer() {
     }
 
     private fun updatePreviews() {
-        val sc = currentSc ?: return
+        if (currentSc == null) return
         val style = styleInput.getText()
         val name = nameInput.getText()
         val plural = pluralInput.getText()

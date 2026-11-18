@@ -372,10 +372,10 @@ object DailyStreakDebug : AbstractCommand("dailies") {
         val countsMap = mutableMapOf<String, Int>()
         val rng = Random()
 
-        for (run in 0 until runs) {
+        repeat(runs) {
             val candidatePool = pool.toMutableList()
-            repeat(3.coerceAtMost(candidatePool.size)) {
-                val picked = ChallengeRegistry.getWeightedRandomChallenge(candidatePool, rng) ?: return@repeat
+            repeat(3.coerceAtMost(candidatePool.size)) pick@{
+                val picked = ChallengeRegistry.getWeightedRandomChallenge(candidatePool, rng) ?: return@pick
                 countsMap[picked.id] = (countsMap[picked.id] ?: 0) + 1
                 candidatePool.remove(picked)
             }

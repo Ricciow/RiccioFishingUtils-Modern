@@ -48,13 +48,15 @@ class UIDropdownCard(
         color = UIScheme.pfCardBorder.toConstraint()
     }
 
-    private val body = UIRoundedRectangle(5f).constrain {
-        x = CenterConstraint()
-        y = CenterConstraint()
-        width = 100.percent - (borderWidth * 2).pixels
-        height = 100.percent - (borderWidth * 2).pixels
-        color = UIScheme.pfCardBg.toConstraint()
-    } childOf frame
+    init {
+        UIRoundedRectangle(5f).constrain {
+            x = CenterConstraint()
+            y = CenterConstraint()
+            width = 100.percent - (borderWidth * 2).pixels
+            height = 100.percent - (borderWidth * 2).pixels
+            color = UIScheme.pfCardBg.toConstraint()
+        } childOf frame
+    }
 
     private val headerBackground = UIRoundedRectangle(5f).constrain {
         width = 100.percent

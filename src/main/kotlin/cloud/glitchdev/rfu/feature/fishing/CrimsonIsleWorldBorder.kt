@@ -3,7 +3,6 @@ package cloud.glitchdev.rfu.feature.fishing
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.LavaFishing
 import cloud.glitchdev.rfu.constants.fishing.FishingIslands
-import cloud.glitchdev.rfu.events.managers.WorldBorderRenderEvents.WorldBorderRenderContext
 import cloud.glitchdev.rfu.events.managers.WorldBorderRenderEvents.registerWorldBorderRenderEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature

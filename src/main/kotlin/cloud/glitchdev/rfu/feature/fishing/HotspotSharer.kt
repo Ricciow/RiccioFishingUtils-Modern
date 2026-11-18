@@ -2,7 +2,6 @@ package cloud.glitchdev.rfu.feature.fishing
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.HotSpotSettings
-import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.fishing.HotSpotConstants
 import cloud.glitchdev.rfu.constants.fishing.HotspotType
 import cloud.glitchdev.rfu.constants.text.TextColor
@@ -17,7 +16,6 @@ import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.Party
-import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.utils.TextUtils
 import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.ClickEvent

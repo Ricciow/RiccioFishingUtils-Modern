@@ -12,7 +12,6 @@ import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.world.phys.Vec3
 
 import cloud.glitchdev.rfu.constants.fishing.Bait
-import cloud.glitchdev.rfu.events.managers.BaitEventManager
 import cloud.glitchdev.rfu.data.fishing.Hotspot
 
 @AutoRegister

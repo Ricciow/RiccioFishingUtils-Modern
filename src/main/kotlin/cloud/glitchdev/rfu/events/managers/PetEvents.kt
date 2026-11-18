@@ -1,6 +1,5 @@
 package cloud.glitchdev.rfu.events.managers
 
-import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.data.other.OtherManager
 import cloud.glitchdev.rfu.data.other.data.StringEntry
 import cloud.glitchdev.rfu.events.AbstractEventManager
@@ -11,7 +10,6 @@ import cloud.glitchdev.rfu.events.managers.SlotClickedEvents.registerSlotClicked
 import cloud.glitchdev.rfu.utils.dsl.removeFormatting
 import gg.essential.universal.utils.toFormattedString
 import gg.essential.universal.utils.toUnformattedString
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.core.component.DataComponents
 
 object PetEvents {

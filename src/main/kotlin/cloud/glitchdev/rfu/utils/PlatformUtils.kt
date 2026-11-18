@@ -1,8 +1,8 @@
 package cloud.glitchdev.rfu.utils
 
-import java.net.URI
 //? if >=26.3 {
 import com.mojang.blaze3d.Blaze3D
+import java.net.URI
 //?} else {
 /*import net.minecraft.util.Util
 *///?}

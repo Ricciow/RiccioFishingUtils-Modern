@@ -11,7 +11,6 @@ import cloud.glitchdev.rfu.utils.JsonFile
 import cloud.glitchdev.rfu.utils.Sounds
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.World
-import net.minecraft.network.chat.Component
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime

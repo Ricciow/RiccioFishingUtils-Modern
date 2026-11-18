@@ -14,7 +14,6 @@ import gg.essential.elementa.dsl.plus
 import cloud.glitchdev.rfu.gui.components.colors
 import cloud.glitchdev.rfu.gui.components.Colorable
 import gg.essential.elementa.dsl.toConstraint
-import java.awt.Color
 
 class UIRadio(
     val values: ArrayList<DataOption>,

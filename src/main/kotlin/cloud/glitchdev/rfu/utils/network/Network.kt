@@ -204,7 +204,7 @@ object Network : RegisteredEvent {
         }
     }
 
-    fun deleteRequest(url : String, useToken : Boolean = false, body: HttpRequest.BodyPublisher = HttpRequest.BodyPublishers.noBody(), callback: (Response) -> Unit) {
+    fun deleteRequest(url : String, useToken : Boolean = false, callback: (Response) -> Unit) {
         try {
             val requestBuilder = HttpRequest.newBuilder()
                 .uri(URI.create(url))

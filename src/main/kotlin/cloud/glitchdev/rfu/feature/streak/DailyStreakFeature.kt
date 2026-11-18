@@ -11,7 +11,6 @@ import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.World
-import net.minecraft.network.chat.Component
 
 @RFUFeature
 object DailyStreakFeature : Feature {

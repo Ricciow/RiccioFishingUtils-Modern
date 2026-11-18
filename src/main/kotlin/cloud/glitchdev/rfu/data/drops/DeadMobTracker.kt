@@ -7,9 +7,7 @@ import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
 import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
 import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDeathEvent
-import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.Coroutines
-import cloud.glitchdev.rfu.utils.TextUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import net.minecraft.world.phys.Vec3

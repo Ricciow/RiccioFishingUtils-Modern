@@ -1,8 +1,6 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
-import cloud.glitchdev.rfu.events.AutoRegister
-import cloud.glitchdev.rfu.events.RegisteredEvent
 import net.minecraft.client.renderer.state.level.WorldBorderRenderState
 import net.minecraft.world.level.border.WorldBorder
 import net.minecraft.world.phys.Vec3

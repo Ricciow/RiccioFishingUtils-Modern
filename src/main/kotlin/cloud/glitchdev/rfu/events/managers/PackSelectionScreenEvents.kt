@@ -1,8 +1,6 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
-import cloud.glitchdev.rfu.events.AutoRegister
-import cloud.glitchdev.rfu.events.RegisteredEvent
 import net.minecraft.client.gui.screens.packs.PackSelectionScreen
 
 object PackSelectionScreenEvents : AbstractEventManager<(PackSelectionScreen) -> Unit, PackSelectionScreenEvents.PackSelectionScreenTickEvent>() {

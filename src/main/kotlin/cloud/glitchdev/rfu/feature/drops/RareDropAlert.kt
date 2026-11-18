@@ -12,7 +12,6 @@ import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat.sendMessage
 import cloud.glitchdev.rfu.utils.Chat.sendPartyMessage
 import cloud.glitchdev.rfu.utils.Coroutines
-import cloud.glitchdev.rfu.utils.Title
 import cloud.glitchdev.rfu.utils.dsl.formatTemplate
 import cloud.glitchdev.rfu.utils.dsl.toReadableString
 import gg.essential.universal.utils.toUnformattedString

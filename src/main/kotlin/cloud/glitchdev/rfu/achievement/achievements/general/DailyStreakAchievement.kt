@@ -5,7 +5,6 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
-import cloud.glitchdev.rfu.data.streak.DailyStreakManager
 import cloud.glitchdev.rfu.events.managers.DailyStreakEvents.registerStreakUpdatedEvent
 
 @Achievement
