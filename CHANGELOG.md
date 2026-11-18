@@ -2,6 +2,7 @@
 
 ### Features
 - Added official support for colors in party finder using &
+- Added an option between Party and All Chat for hotspot sharing.
 
 ### Changes
 - Drops before mf update now have a small [!] warning in /rfudrophistory.
@@ -12,6 +13,7 @@
 ### Fixes
 - Fixed duplicate hotspot shares and alerts.
 - Corrected the coordinates in shared hotspot messages.
+- Automatic hotspot sharing now requires being fishing to trigger.
 
 ### Backend
 - Added Detekt checks

@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.config.categories
 import cloud.glitchdev.rfu.config.Category
 import cloud.glitchdev.rfu.config.SoundTitleSettings
 import cloud.glitchdev.rfu.config.TitleSettings
+import cloud.glitchdev.rfu.constants.fishing.HotspotShareChat
 import cloud.glitchdev.rfu.constants.fishing.HotspotType
 
 object HotSpotSettings : Category("Hot Spots") {
@@ -83,23 +84,28 @@ object HotSpotSettings : Category("Hot Spots") {
     init {
         dualSeparator {
             title = "Sharing"
-            description = "Share hotspots with your party!"
+            description = "Share hotspots in chat."
         }
     }
 
     var shareHotspotAlert by reloadableBoolean(true) {
         name = Literal("Share Hotspot Alert")
-        description = Literal("Sends a clickable chat message to share the hotspot with your party!")
+        description = Literal("Shows a clickable share message for nearby hotspots.")
+    }
+
+    var hotspotShareChat by enum("autoShareHotspotChat", HotspotShareChat.PARTY) {
+        name = Literal("Hotspot Share Chat")
+        description = Literal("Choose the chat the hotspot message is sent to.")
     }
 
     var autoShareHotspot by boolean(false) {
         name = Literal("Auto Share Hotspot")
-        description = Literal("Automatically shares the hotspot with your party when you're nearby!")
+        description = Literal("Automatically shares nearby hotspots in the selected chat during a fishing session.")
         condition = { shareHotspotAlert }
     }
 
     var shareHotspotKey by key(0) {
         name = Literal("Share Hotspot Keybind")
-        description = Literal("Keybind to manually share the nearest hotspot with your party.")
+        description = Literal("Keybind to share the nearest hotspot in the selected chat.")
     }
 }

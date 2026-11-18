@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.feature.fishing
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.HotSpotSettings
 import cloud.glitchdev.rfu.constants.fishing.HotSpotConstants
+import cloud.glitchdev.rfu.constants.fishing.HotspotShareChat
 import cloud.glitchdev.rfu.constants.fishing.HotspotType
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
@@ -21,7 +22,7 @@ import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
 import net.minecraft.network.chat.Style
-import kotlin.math.ceil
+import java.util.UUID
 import kotlin.math.floor
 
 @RFUFeature
@@ -33,13 +34,16 @@ object HotspotSharer : Feature {
             if (!HotSpotSettings.shareHotspotAlert) return@registerTickEvent
 
             val player = mc.player ?: return@registerTickEvent
+            val channel = HotSpotSettings.hotspotShareChat
+            val autoShare = HotSpotSettings.autoShareHotspot && (channel != HotspotShareChat.PARTY || Party.inParty)
+            if (autoShare && !FishingSession.isFishing) return@registerTickEvent
             HotSpotEvents.getAllHotspots().forEach { hotspot ->
                 val entityId = hotspot.entityId ?: return@forEach
                 if (entityId in notifiedEntityIds) return@forEach
                 if (hotspot.type == HotspotType.UNKNOWN) return@forEach
                 if (player.position().distanceTo(hotspot.center) >= HotSpotConstants.SHARE_DISTANCE) return@forEach
 
-                shareHotspot(hotspot, sendToParty = HotSpotSettings.autoShareHotspot && Party.inParty)
+                shareHotspot(hotspot, channel, sendImmediately = autoShare)
             }
         }
 
@@ -58,7 +62,8 @@ object HotspotSharer : Feature {
     }
 
     private fun shareNearestHotspot() {
-        if (!Party.inParty) {
+        val channel = HotSpotSettings.hotspotShareChat
+        if (channel == HotspotShareChat.PARTY && !Party.inParty) {
             Chat.sendMessage(TextUtils.rfuLiteral("You must be in a party to share hotspots!", TextColor.LIGHT_RED))
             return
         }
@@ -69,7 +74,7 @@ object HotspotSharer : Feature {
             .minByOrNull { player.position().distanceTo(it.center) }
 
         if (nearestHotspot != null && player.position().distanceTo(nearestHotspot.center) < HotSpotConstants.SHARE_DISTANCE) {
-            shareHotspot(nearestHotspot, sendToParty = true)
+            shareHotspot(nearestHotspot, channel, sendImmediately = true)
         } else {
             Chat.sendMessage(TextUtils.rfuLiteral("No hotspots nearby to share!", TextColor.LIGHT_RED))
         }
@@ -86,13 +91,14 @@ object HotspotSharer : Feature {
         }
     }
 
-    private fun shareHotspot(hotspot: Hotspot, sendToParty: Boolean) {
+    private fun shareHotspot(hotspot: Hotspot, channel: HotspotShareChat, sendImmediately: Boolean) {
         val entityId = hotspot.entityId ?: return
-        if (sendToParty && !Party.inParty) return
 
         val name = formatHotspotShareName(hotspot)
         val pos = hotspot.center
-        val shareMessage = buildString {
+        val command = buildString {
+            append(channel.command)
+            append(' ')
             append(name)
             append(" Hotspot | ")
             append(floor(pos.x).toInt())
@@ -100,51 +106,42 @@ object HotspotSharer : Feature {
             append(floor(pos.y).toInt() - 2)
             append(", ")
             append(floor(pos.z).toInt())
+            if (channel == HotspotShareChat.ALL_CHAT) {
+                append(" <@")
+                append(UUID.randomUUID().toString().substringBefore('-'))
+                append('>')
+            }
         }
 
-        if (sendToParty) {
-            Chat.sendCommand("pc $shareMessage")
+        if (sendImmediately) {
+            Chat.sendCommand(command)
         } else {
-            showShareMessage(hotspot, name, shareMessage)
+            showShareMessage(hotspot, name, channel, command.takeIf { channel != HotspotShareChat.PARTY || Party.inParty })
         }
         notifiedEntityIds.add(entityId)
     }
 
-    private fun showShareMessage(hotspot: Hotspot, name: String, shareMessage: String) {
+    private fun showShareMessage(hotspot: Hotspot, name: String, channel: HotspotShareChat, command: String?) {
         val effectName = Component.literal(name).withStyle(Style.EMPTY.withColor(hotspot.color.rgb))
-        
         val base = TextUtils.rfuLiteral("Near a ", TextColor.CYAN)
             .append(effectName.copy())
-            .append(" ${TextColor.CYAN}hotspot! ")
-        
-        val clickComponent = Component.literal("${TextColor.LIGHT_BLUE}${TextEffects.BOLD}[Party]")
-            .setStyle(
-                Style.EMPTY
-                    .withClickEvent(ClickEvent.RunCommand("/pc $shareMessage"))
-                    .withHoverEvent(HoverEvent.ShowText(
-                        Component.literal("${TextColor.YELLOW}Click to share this ")
-                            .append(effectName.copy())
-                            .append(" ${TextColor.YELLOW}hotspot with your party!")
-                    ))
-            )
-            
-        if (Party.inParty) {
-            base.append(clickComponent)
-            base.append(" ")
-        }
+            .append(" ${TextColor.CYAN}hotspot!")
 
-        base.append(
-            Component.literal("${TextColor.YELLOW}${TextEffects.BOLD}[All Chat]")
-                .setStyle(
-                    Style.EMPTY
-                        .withClickEvent(ClickEvent.RunCommand("/ac $shareMessage"))
-                        .withHoverEvent(HoverEvent.ShowText(
-                            Component.literal("${TextColor.YELLOW}Click to share this ")
-                                .append(effectName.copy())
-                                .append(" ${TextColor.YELLOW}hotspot in all chat!")
-                        ))
-                )
-        )
+        if (command != null) {
+            val buttonColor = if (channel == HotspotShareChat.PARTY) TextColor.LIGHT_BLUE else TextColor.YELLOW
+            base.append(" ").append(
+                Component.literal("$buttonColor${TextEffects.BOLD}[$channel]")
+                    .setStyle(
+                        Style.EMPTY
+                            .withClickEvent(ClickEvent.RunCommand("/$command"))
+                            .withHoverEvent(HoverEvent.ShowText(
+                                Component.literal("${TextColor.YELLOW}Click to share this ")
+                                    .append(effectName.copy())
+                                    .append(" ${TextColor.YELLOW}hotspot!")
+                            ))
+                    )
+            )
+        }
         Chat.sendMessage(base)
     }
 }
