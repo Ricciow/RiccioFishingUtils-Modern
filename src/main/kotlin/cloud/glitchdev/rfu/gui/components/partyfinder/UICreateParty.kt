@@ -8,6 +8,7 @@ import cloud.glitchdev.rfu.data.other.data.PartyPresetData
 import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.UIPopup
 import cloud.glitchdev.rfu.gui.components.textinput.UIDecoratedTextInput
+import cloud.glitchdev.rfu.gui.components.textinput.ColorCodeText
 import cloud.glitchdev.rfu.gui.components.dropdown.UIDropdown
 import cloud.glitchdev.rfu.gui.components.dropdown.UIDropdownCard
 import cloud.glitchdev.rfu.gui.components.textinput.UIWrappedDecoratedTextInput
@@ -176,7 +177,7 @@ class UICreateParty : UIContainer() {
         } childOf row1
 
         createLabel("TITLE", titleGroup, 0f)
-        titleField = UIDecoratedTextInput("Party Title", 2f).constrain {
+        titleField = UIDecoratedTextInput("Party Title", 2f, allowColors = true).constrain {
             x = 0.pixels()
             y = SiblingConstraint(UIScheme.pfLabelSpacing)
             width = 100.percent()
@@ -211,7 +212,7 @@ class UICreateParty : UIContainer() {
 
     private fun createRow2(parent: UIContainer) {
         createLabel("DESCRIPTION", parent, UIScheme.pfSectionSpacing)
-        descriptionField = UIWrappedDecoratedTextInput("Party Description", 2f).constrain {
+        descriptionField = UIWrappedDecoratedTextInput("Party Description", 2f, allowColors = true).constrain {
             x = 0.pixels()
             y = SiblingConstraint(UIScheme.pfLabelSpacing)
             width = 100.percent()
@@ -560,8 +561,8 @@ class UICreateParty : UIContainer() {
 
     private fun updatePartyModel() {
         party.profileId = User.profileId
-        party.title = titleField.getText()
-        party.description = descriptionField.getText()
+        party.title = ColorCodeText.toFormatted(titleField.getText())
+        party.description = ColorCodeText.toFormatted(descriptionField.getText())
         party.island = islandField.getSelectedItem().value as FishingIslands
         updatePartyTypeVisibility(party.island)
         party.level = (levelField.getText().toIntOrNull() ?: 0).coerceIn(0, 50)
