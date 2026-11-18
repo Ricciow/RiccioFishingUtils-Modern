@@ -3,10 +3,8 @@ package cloud.glitchdev.rfu.feature.drops
 import cloud.glitchdev.rfu.constants.fishing.IRareDrop
 import cloud.glitchdev.rfu.constants.fishing.RareDrops
 import cloud.glitchdev.rfu.constants.skyblock.Dyes
-import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextColor.*
 import cloud.glitchdev.rfu.constants.text.TextEffects.*
-import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.data.drops.DropHistory
 import cloud.glitchdev.rfu.data.drops.DropManager
 import cloud.glitchdev.rfu.data.drops.DropRecord
@@ -20,19 +18,35 @@ import cloud.glitchdev.rfu.utils.dsl.toFormattedDate
 import com.mojang.brigadier.arguments.IntegerArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import kotlin.math.ceil
 import kotlin.time.Clock
 import kotlin.time.Instant
+import kotlin.time.toJavaInstant
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
+import net.minecraft.ChatFormatting
 import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.components.ChatComponent
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
+import net.minecraft.network.chat.MutableComponent
 import net.minecraft.network.chat.Style
 
 object DropsHistory {
     private const val PAGE_SIZE = 10
     private val MAGIC_FIND_UPDATE = Instant.parse("2026-11-17T10:00:00Z")
+    private val OVERVIEW_DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yy")
+
+    private fun dropNameComponent(drop: IRareDrop): MutableComponent {
+        val style = if (drop is Dyes) {
+            Style.EMPTY.withColor(drop.hex.toInt(16))
+        } else {
+            Style.EMPTY.withColor(ChatFormatting.getByCode(drop.rarity.color.code.last()))
+        }
+        return Component.literal(drop.displayName).setStyle(style)
+    }
 
     private fun preMagicFindUpdateWarning(record: DropRecord): Component {
         if (record.date >= MAGIC_FIND_UPDATE) return Component.empty()
@@ -217,7 +231,7 @@ object DropsHistory {
 
         val extraInfo = buildString {
             if (resolvedMob != null) append(" from $resolvedMob")
-            if (magicFind != null) append(" ($magicFind% \uE01A)")
+            if (magicFind != null) append(" ($magicFind\uE01A)")
             if (customCount != null) append(" [count: $customCount]")
         }
 
@@ -291,20 +305,10 @@ object DropsHistory {
 
         allItems.sortByDescending { it.lastDrop.date }
 
-        val totalPages = maxOf(1, ceil(allItems.size.toDouble() / PAGE_SIZE).toInt())
-        val currentPage = page.coerceIn(1, totalPages)
-        val startIndex = (currentPage - 1) * PAGE_SIZE
-        val endIndex = minOf(startIndex + PAGE_SIZE, allItems.size)
-        val pageItems = allItems.subList(startIndex, endIndex)
-
-        pageItems.forEach { item ->
+        val rows = allItems.mapNotNull { item ->
             try {
-                val itemName = item.drop.displayName
                 val totalCount = item.history.size
                 val lastDrop = item.lastDrop
-                val sincePart = lastDrop.sinceCount?.let { " ($it)" } ?: ""
-                val mfPart = lastDrop.magicFind?.let { " $AQUAMARINE(${it}% \uE01A)" } ?: ""
-                val mobPart = lastDrop.mobName?.let { " $DARK_GRAY($GRAY$it$DARK_GRAY)" } ?: ""
                 val name = item.drop.displayName.uppercase().replace(" ", "_")
                 val itemCmd = "/rfudrophistory $name"
 
@@ -316,16 +320,40 @@ object DropsHistory {
                     if (relevant.isNotEmpty()) " $DARK_GRAY(${relevant.joinToString(", ") { "$GRAY${it.first}: $WHITE${it.second}" }}$DARK_GRAY)" else ""
                 } else ""
 
-                val line = Component.literal("\n $YELLOW$BOLD- $WHITE$itemName: $YELLOW$totalCount$breakdownStr ${YELLOW}- Last: $WHITE${lastDrop.date.toFormattedDate()}$WHITE$sincePart$mfPart$mobPart")
-                    .setStyle(
-                        Style.EMPTY
-                            .withClickEvent(ClickEvent.RunCommand(itemCmd))
-                            .withHoverEvent(HoverEvent.ShowText(Component.literal("Click to view $itemName history")))
-                    )
-                text.append(line.append(preMagicFindUpdateWarning(lastDrop)))
+                val details = dropNameComponent(item.drop)
+                    .append(Component.literal("\n${YELLOW}Total: $WHITE$totalCount$breakdownStr"))
+                    .append(Component.literal("\n${YELLOW}Last drop: $WHITE${lastDrop.date.toFormattedDate()}"))
+                lastDrop.sinceCount?.let { details.append(Component.literal("\n${YELLOW}Catches since previous drop: $WHITE$it")) }
+                lastDrop.magicFind?.let { details.append(Component.literal("\n${AQUAMARINE}Magic Find: ($it\uE01A)")) }
+                lastDrop.mobName?.let { details.append(Component.literal("\n${GRAY}Creature: $it")) }
+                details.append(Component.literal("\n${YELLOW}Click to view history"))
+
+                val style = Style.EMPTY
+                    .withClickEvent(ClickEvent.RunCommand(itemCmd))
+                    .withHoverEvent(HoverEvent.ShowText(details))
+                listOf(
+                    Component.literal("$YELLOW$BOLD-"),
+                    dropNameComponent(item.drop).append(Component.literal("$GRAY:")),
+                    Component.literal("$YELLOW$totalCount"),
+                    Component.literal("$WHITE${OVERVIEW_DATE_FORMAT.format(lastDrop.date.toJavaInstant().atZone(ZoneId.systemDefault()))}"),
+                    Component.literal(lastDrop.magicFind?.let { "$AQUAMARINE($it\uE01A)" } ?: ""),
+                    Component.literal(lastDrop.mobName?.let { "$GRAY($it)" } ?: ""),
+                    preMagicFindUpdateWarning(lastDrop)
+                ) to style
             } catch (e: Exception) {
                 RFULogger.error("Error on rfudrophistory:", e)
+                null
             }
+        }
+        val mc = Minecraft.getInstance()
+        val chatWidth = (ChatComponent.getWidth(mc.options.chatWidth().get()) / mc.options.chatScale().get()).toInt() - 4
+        // Fit all entries before pagination so column positions and visibility stay the same on every page.
+        val lines = fitOverviewRows(rows.map { it.first }, mc.font::width, chatWidth)
+        val totalPages = maxOf(1, ceil(lines.size.toDouble() / PAGE_SIZE).toInt())
+        val currentPage = page.coerceIn(1, totalPages)
+        val startIndex = (currentPage - 1) * PAGE_SIZE
+        lines.drop(startIndex).take(PAGE_SIZE).forEachIndexed { index, line ->
+            text.append(line.copy().setStyle(rows[startIndex + index].second))
         }
 
         text.append(buildFooter(currentPage, totalPages, "/rfudrophistory"))
@@ -346,7 +374,9 @@ object DropsHistory {
     }
 
     private fun singleDropHistoryMessage(drop: IRareDrop, history: List<DropRecord>, page: Int): Component {
-        val text = TextUtils.rfuLiteral("${drop.displayName}:", GOLD)
+        val text = TextUtils.rfuLiteral("")
+            .append(dropNameComponent(drop))
+            .append(Component.literal("$GRAY:"))
 
         if (history.isEmpty()) {
             return text.append(Component.literal("\n $LIGHT_RED${BOLD}No drops :("))
@@ -373,9 +403,9 @@ object DropsHistory {
             listOf(
                 Component.literal("$GRAY${startIndex + i + 1}"),
                 Component.literal("$GRAY-"),
-                Component.literal("$YELLOW${record.date.toFormattedDate()}:"),
+                Component.literal("$YELLOW${record.date.toFormattedDate()}$GRAY:"),
                 Component.literal(record.sinceCount?.let { "$WHITE$it" } ?: ""),
-                Component.literal(record.magicFind?.let { "$AQUAMARINE($it% \uE01A)" } ?: ""),
+                Component.literal(record.magicFind?.let { "$AQUAMARINE($it\uE01A)" } ?: ""),
                 Component.literal(record.mobName?.let { "$GRAY($it)" } ?: ""),
                 preMagicFindUpdateWarning(record)
             )
@@ -386,6 +416,39 @@ object DropsHistory {
         val baseCommand = "/rfudrophistory $name"
         text.append(buildFooter(currentPage, totalPages, baseCommand))
         return text
+    }
+
+    private fun fitOverviewRows(
+        rows: List<List<Component>>,
+        width: (Component) -> Int,
+        maxWidth: Int
+    ): List<Component> {
+        if (rows.isEmpty()) return emptyList()
+
+        val cells = rows.map { it.toMutableList() }
+        fun layout() = alignHistoryRows(cells, width)
+        fun lineWidth(line: Component) = line.siblings.sumOf(width)
+        var lines = layout()
+        // Preserve the short date and Magic Find before the optional creature column.
+        for (column in listOf(5, 4, 3)) {
+            if (lines.all { lineWidth(it) <= maxWidth }) return lines
+            cells.forEach { it[column] = Component.empty() }
+            lines = layout()
+        }
+
+        val names = rows.map { it[1].plainCopy().string }
+        for (length in names.maxOf { it.length } downTo 0) {
+            if (lines.all { lineWidth(it) <= maxWidth }) return lines
+            cells.forEachIndexed { index, row ->
+                if (names[index].length > length) {
+                    row[1] = Component.literal("${names[index].take(length)}...")
+                        .setStyle(rows[index][1].style)
+                        .append(Component.literal("$GRAY:"))
+                }
+            }
+            lines = layout()
+        }
+        return lines
     }
 
     private fun alignHistoryRows(rows: List<List<Component>>, width: (Component) -> Int): List<Component> {

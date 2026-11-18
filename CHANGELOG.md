@@ -6,6 +6,7 @@
 ### Changes
 - Drops before mf update now have a small [!] warning in /rfudrophistory.
 - Made the drop history text more aligned
+- Changed Prince's Crown Jewel to just say Crown Jewel
 
 ### Fixes
 
