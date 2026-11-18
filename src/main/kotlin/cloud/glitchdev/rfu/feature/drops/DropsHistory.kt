@@ -31,6 +31,22 @@ import net.minecraft.network.chat.Style
 
 object DropsHistory {
     private const val PAGE_SIZE = 10
+    private val MAGIC_FIND_UPDATE = Instant.parse("2026-11-17T10:00:00Z")
+
+    private fun preMagicFindUpdateWarning(record: DropRecord): Component {
+        if (record.date >= MAGIC_FIND_UPDATE) return Component.empty()
+
+        return Component.literal(" $GOLD[!]$RESET").setStyle(
+            Style.EMPTY.withHoverEvent(
+                HoverEvent.ShowText(
+                    Component.literal(
+                        "$YELLOW${BOLD}Old Magic Find\n" +
+                            "${GRAY}This drop occurred before the Magic Find update."
+                    )
+                )
+            )
+        )
+    }
 
     private val dropSuggestions: List<String>
         get() = (
@@ -305,7 +321,7 @@ object DropsHistory {
                             .withClickEvent(ClickEvent.RunCommand(itemCmd))
                             .withHoverEvent(HoverEvent.ShowText(Component.literal("Click to view $itemName history")))
                     )
-                text.append(line)
+                text.append(line.append(preMagicFindUpdateWarning(lastDrop)))
             } catch (e: Exception) {
                 RFULogger.error("Error on rfudrophistory:", e)
             }
@@ -357,7 +373,10 @@ object DropsHistory {
             val sincePart = record.sinceCount?.let { "$WHITE$it " } ?: ""
             val mfPart = record.magicFind?.let { "$AQUAMARINE($it% \uE01A) " } ?: ""
             val mobPart = record.mobName?.let { "$GRAY($it) " } ?: ""
-            text.append(Component.literal("\n $GRAY$displayIndex - $YELLOW${record.date.toFormattedDate()}$YELLOW: $sincePart$mfPart$mobPart"))
+            text.append(
+                Component.literal("\n $GRAY$displayIndex - $YELLOW${record.date.toFormattedDate()}$YELLOW: $sincePart$mfPart$mobPart")
+                    .append(preMagicFindUpdateWarning(record))
+            )
         }
 
         val name = drop.displayName.uppercase().replace(" ", "_")
