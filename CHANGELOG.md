@@ -1,6 +1,7 @@
 # v1.20.3 - Minor
 
 ### Features
+- The Bobbin' Time display now has the Magic find and Tracking bonuses and its configurable.
 - Added official support for colors in party finder using &
 - Added an option between Party and All Chat for hotspot sharing.
 - Mute Annoying Sounds now silences the reindrake's gifts in Jerry's Workshop.
