@@ -18,6 +18,7 @@ object MuteAnnoyingSounds : Feature {
                 FishingIslands.BAYOU -> sound.identifier == SoundEvents.GHAST_AMBIENT.location()
                 FishingIslands.ISLE -> sound.identifier == SoundEvents.ELDER_GUARDIAN_AMBIENT.location()
                     || sound.identifier == SoundEvents.ELDER_GUARDIAN_AMBIENT_LAND.location()
+                FishingIslands.JERRY -> sound.identifier == SoundEvents.TOTEM_USE.location()
                 else -> false
             }
             if (mute) cancelable.cancel()

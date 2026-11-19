@@ -262,7 +262,7 @@ object GeneralFishing : Category("General Fishing") {
 
     var muteAnnoyingSounds by boolean(false) {
         name = Literal("Mute Annoying Sounds")
-        description = Literal("Mutes Ghast Crying in Backwater Bayou and Elder Guardian moans in the Crimson Isle.")
+        description = Literal("Mutes Ghast cries in Backwater Bayou, Elder Guardian moans in the Crimson Isle, and totem activation in Jerry's Workshop.")
     }
 
     var bobbinTimeDisplay by reloadableBoolean(true) {

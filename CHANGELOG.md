@@ -3,6 +3,7 @@
 ### Features
 - Added official support for colors in party finder using &
 - Added an option between Party and All Chat for hotspot sharing.
+- Mute Annoying Sounds now silences the reindrake's gifts in Jerry's Workshop.
 
 ### Changes
 - Drops before mf update now have a small [!] warning in /rfudrophistory.
