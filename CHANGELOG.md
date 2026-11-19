@@ -18,6 +18,7 @@
 - Corrected the coordinates in shared hotspot messages.
 - Automatic hotspot sharing now requires being fishing to trigger.
 - Fixed thunder bottle message hiding not working anymore
+- Removed shadows from emoji icons on party finder.
 
 ### Backend
 - Added Detekt checks
