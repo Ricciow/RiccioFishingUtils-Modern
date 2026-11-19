@@ -95,16 +95,6 @@
       }
     ]
   },
-  "gdrag_alert": {
-    "category": "player",
-    "subtitle": "No Golden Dragon",
-    "sounds": [
-      {
-        "name": "block.note_block.pling",
-        "type": "event"
-      }
-    ]
-  },
   "inventory_full": {
     "category": "player",
     "subtitle": "Inventory Full",

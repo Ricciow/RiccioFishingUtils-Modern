@@ -87,7 +87,6 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
     fun getStyle(scName: String): String = resolve(scName) { it.style } ?: ""
     fun isSpecial(scName: String): Boolean = resolve(scName) { it.special } ?: false
     fun isLsRangeEnabled(scName: String): Boolean = isSpecial(scName) && (resolve(scName) { it.lsRangeEnabled } ?: false)
-    fun isGdragAlert(scName: String): Boolean = isSpecial(scName) && (resolve(scName) { it.gdragAlert } ?: false)
     fun isRareSCAlert(scName: String): Boolean = isSpecial(scName) && (resolve(scName) { it.rareSCAlert } ?: false)
     fun isBossbarEnabled(scName: String): Boolean = isSpecial(scName) && (resolve(scName) { it.bossbar } ?: false)
     fun isMergeBossbarHpEnabled(scName: String): Boolean = isBossbarEnabled(scName) && (resolve(scName) { it.mergeBossbarHp } ?: scName.contains("Scuttler", ignoreCase = true))
@@ -109,7 +108,6 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
             updated = updated.copy(
                 lsRangeEnabled = false,
                 bossbar = false,
-                gdragAlert = false,
                 rareSCAlert = false,
                 invulnerabilityTimer = false
             )
@@ -172,7 +170,6 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
                 condition = buildCondition(scConfig.creatures[scName]?.conditions ?: defaultConfig.creatures[scName]?.conditions),
                 lsRangeEnabled = isLsRangeEnabled(scName),
                 bossbar = isBossbarEnabled(scName),
-                gdragAlert = isGdragAlert(scName),
                 rareSCAlert = isRareSCAlert(scName),
                 mergeBossbarHp = isMergeBossbarHpEnabled(scName),
                 scDisplayColor = resolve(scName) { it.scDisplayColor } ?: "§f",

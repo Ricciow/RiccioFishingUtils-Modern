@@ -133,19 +133,6 @@ object SeaCreatureConfig : Category("Sea Creatures") {
 
     init {
         dualSeparator {
-            title = "Golden Dragon"
-            description = "Alerts for when you're not using a Golden Dragon"
-        }
-    }
-
-    val goldenDragon by obj(GoldenDragonTitleSettings()) {
-        name = Literal("Golden Dragon Alert")
-        description = Literal("Toggle and edit the title, subtitle, duration, and preview.")
-        searchTerms = listOf("golden dragon", "goldendragon", "title", "subtitle", "duration", "sound", "volume", "gdrag", "pet warning", "health threshold", "gdrag alert threshold", "low health")
-    }
-
-    init {
-        dualSeparator {
             title = "Messages"
             description = "Customize messages sent when catching rare SCs"
         }
@@ -269,27 +256,5 @@ object SeaCreatureConfig : Category("Sea Creatures") {
     var scCapDisplay by reloadableBoolean(false) {
         name = Literal("Sea Creature Cap Display")
         description = Literal("Displays the number of active sea creatures owned by you.")
-    }
-
-    class GoldenDragonTitleSettings : SoundTitleSettings(
-        title = "&c&lNO G-DRAGON!",
-        subtitle = "&eEquip your Golden Dragon!",
-        duration = 40,
-        soundId = "rfu:gdrag_alert"
-    ) {
-        init {
-            separator {
-                title = "Trigger Options"
-                condition = { enabled }
-            }
-        }
-
-        var threshold by int(20) {
-            name = Literal("GDrag Alert Threshold (%)")
-            description = Literal("The health percentage at which the alert will trigger.")
-            range = 1..100
-            slider = true
-            condition = { enabled }
-        }
     }
 }

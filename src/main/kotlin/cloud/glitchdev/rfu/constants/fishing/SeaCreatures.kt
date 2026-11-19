@@ -22,7 +22,6 @@ class SeaCreatures(
     val condition: (Hotspot?, Vec3, Bait?) -> Boolean = { _, _, _ -> true },
     val lsRangeEnabled: Boolean = true,
     val bossbar: Boolean = false,
-    val gdragAlert: Boolean = false,
     val rareSCAlert: Boolean = false,
     val mergeBossbarHp: Boolean = false,
     val scDisplayColor: String = "§f",

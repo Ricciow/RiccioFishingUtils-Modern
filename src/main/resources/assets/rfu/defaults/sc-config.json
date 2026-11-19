@@ -12,7 +12,6 @@
       "category": "GENERAL_WATER",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§3"
     },
@@ -27,7 +26,6 @@
       "category": "ISLE",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§c"
     },
@@ -42,7 +40,6 @@
       "category": "ISLE",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§c"
     },
@@ -57,7 +54,6 @@
       "category": "ISLE",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§c"
     },
@@ -72,7 +68,6 @@
       "category": "ISLE",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§c"
     },
@@ -91,7 +86,6 @@
         "isFestival": true
       },
       "bossbar": true,
-      "gdragAlert": false,
       "rareSCAlert": true,
       "scDisplayColor": "§f"
     },
@@ -106,7 +100,6 @@
       "category": "ISLE",
       "lsRangeEnabled": true,
       "bossbar": true,
-      "gdragAlert": true,
       "rareSCAlert": true,
       "scDisplayColor": "§4"
     },
@@ -121,7 +114,6 @@
       "category": "GENERAL_WATER",
       "lsRangeEnabled": true,
       "bossbar": true,
-      "gdragAlert": false,
       "rareSCAlert": true,
       "scDisplayColor": "§9"
     },
@@ -136,7 +128,6 @@
       "category": "HOLLOWS",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§9"
     },
@@ -151,7 +142,6 @@
       "category": "HOLLOWS",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§9"
     },
@@ -166,7 +156,6 @@
       "category": "BAYOU",
       "lsRangeEnabled": true,
       "bossbar": true,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§2"
     },
@@ -181,7 +170,6 @@
       "category": "BAYOU",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§a"
     },
@@ -196,7 +184,6 @@
       "category": "DWARVEN",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§6"
     },
@@ -211,7 +198,6 @@
       "category": "GALATEA",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§a"
     },
@@ -226,7 +212,6 @@
       "category": "GENERAL_WATER",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§3"
     },
@@ -244,7 +229,6 @@
         "hotspot": "WATER"
       },
       "bossbar": true,
-      "gdragAlert": false,
       "rareSCAlert": true,
       "scDisplayColor": "§9"
     },
@@ -259,7 +243,6 @@
       "category": "BAYOU",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§a"
     },
@@ -277,7 +260,6 @@
         "bait": "CARROT"
       },
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": true,
       "scDisplayColor": "§6"
     },
@@ -292,7 +274,6 @@
       "category": "GALATEA",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§a"
     },
@@ -307,7 +288,6 @@
       "category": "GENERAL_WATER",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§3"
     },
@@ -335,7 +315,6 @@
         ]
       },
       "bossbar": true,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§6"
     },
@@ -353,7 +332,6 @@
         "isSpooky": true
       },
       "bossbar": true,
-      "gdragAlert": false,
       "rareSCAlert": true,
       "scDisplayColor": "§5"
     },
@@ -368,7 +346,6 @@
       "category": "GALATEA",
       "lsRangeEnabled": true,
       "bossbar": true,
-      "gdragAlert": false,
       "rareSCAlert": true,
       "scDisplayColor": "§2"
     },
@@ -383,7 +360,6 @@
       "category": "DWARVEN",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§6"
     },
@@ -398,7 +374,6 @@
       "category": "ISLE",
       "lsRangeEnabled": true,
       "bossbar": true,
-      "gdragAlert": true,
       "rareSCAlert": true,
       "scDisplayColor": "§4"
     },
@@ -413,7 +388,6 @@
       "category": "ISLE",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§c"
     },
@@ -431,7 +405,6 @@
         "isFestival": true
       },
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§b"
     },
@@ -446,7 +419,6 @@
       "category": "GENERAL_WATER",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§3"
     },
@@ -464,7 +436,6 @@
         "hotspot": "WATER"
       },
       "bossbar": true,
-      "gdragAlert": true,
       "rareSCAlert": true,
       "scDisplayColor": "§9"
     },
@@ -479,7 +450,6 @@
       "category": "GALATEA",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§a"
     },
@@ -494,7 +464,6 @@
       "category": "GENERAL_WATER",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§3"
     },
@@ -509,7 +478,6 @@
       "category": "GENERAL_WATER",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§3"
     },
@@ -524,7 +492,6 @@
       "category": "GENERAL_WATER",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§3"
     },
@@ -539,7 +506,6 @@
       "category": "GENERAL_WATER",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§3"
     },
@@ -554,7 +520,6 @@
       "category": "GENERAL_WATER",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§3"
     },
@@ -569,7 +534,6 @@
       "category": "GENERAL_WATER",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§3"
     },
@@ -584,7 +548,6 @@
       "category": "GALATEA",
       "lsRangeEnabled": true,
       "bossbar": true,
-      "gdragAlert": false,
       "rareSCAlert": true,
       "scDisplayColor": "§2"
     },
@@ -599,7 +562,6 @@
       "category": "GALATEA",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§a"
     },
@@ -614,7 +576,6 @@
       "category": "GALATEA",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§c"
     },
@@ -632,7 +593,6 @@
         "hotspot": "WATER"
       },
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§3"
     },
@@ -650,7 +610,6 @@
         "hotspot": "WATER"
       },
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§9"
     },
@@ -668,7 +627,6 @@
         "hotspot": "WATER"
       },
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§3"
     },
@@ -686,7 +644,6 @@
         "hotspot": "WATER"
       },
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§3"
     },
@@ -701,7 +658,6 @@
       "category": "OASIS",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§a"
     },
@@ -716,7 +672,6 @@
       "category": "OASIS",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§a"
     },
@@ -731,7 +686,6 @@
       "category": "HOLLOWS",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§c"
     },
@@ -746,7 +700,6 @@
       "category": "HOLLOWS",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§6"
     },
@@ -761,7 +714,6 @@
       "category": "HOLLOWS",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§6"
     },
@@ -776,7 +728,6 @@
       "category": "DWARVEN",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§6"
     },
@@ -791,7 +742,6 @@
       "category": "DWARVEN",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§6"
     },
@@ -806,7 +756,6 @@
       "category": "BAYOU",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§a"
     },
@@ -821,7 +770,6 @@
       "category": "BAYOU",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§a"
     },
@@ -836,7 +784,6 @@
       "category": "BAYOU",
       "lsRangeEnabled": true,
       "bossbar": true,
-      "gdragAlert": true,
       "rareSCAlert": true,
       "scDisplayColor": "§2"
     },
@@ -854,7 +801,6 @@
         "isSpooky": true
       },
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§5"
     },
@@ -872,7 +818,6 @@
         "isSpooky": true
       },
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§5"
     },
@@ -890,7 +835,6 @@
         "isSpooky": true
       },
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§5"
     },
@@ -908,7 +852,6 @@
         "isSpooky": true
       },
       "bossbar": true,
-      "gdragAlert": false,
       "rareSCAlert": true,
       "scDisplayColor": "§5"
     },
@@ -923,7 +866,6 @@
       "category": "WINTER",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§b"
     },
@@ -938,7 +880,6 @@
       "category": "WINTER",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§b"
     },
@@ -953,7 +894,6 @@
       "category": "WINTER",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§b"
     },
@@ -968,7 +908,6 @@
       "category": "WINTER",
       "lsRangeEnabled": true,
       "bossbar": true,
-      "gdragAlert": false,
       "rareSCAlert": true,
       "scDisplayColor": "§f"
     },
@@ -983,7 +922,6 @@
       "category": "WINTER",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§b"
     },
@@ -998,7 +936,6 @@
       "category": "WINTER",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": true,
       "scDisplayColor": "§f"
     },
@@ -1016,7 +953,6 @@
         "isFestival": true
       },
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§b"
     },
@@ -1034,7 +970,6 @@
         "isFestival": true
       },
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§b"
     },
@@ -1049,7 +984,6 @@
       "category": "ISLE",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§c"
     },
@@ -1064,7 +998,6 @@
       "category": "ISLE",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§c"
     },
@@ -1079,7 +1012,6 @@
       "category": "ISLE",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§c"
     },
@@ -1107,7 +1039,6 @@
         ]
       },
       "bossbar": true,
-      "gdragAlert": true,
       "rareSCAlert": true,
       "scDisplayColor": "§4"
     },
@@ -1125,7 +1056,6 @@
         "hotspot": "LAVA"
       },
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§c"
     },
@@ -1143,7 +1073,6 @@
         "hotspot": "LAVA"
       },
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§c"
     },
@@ -1161,7 +1090,6 @@
         "hotspot": "LAVA"
       },
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§c"
     },
@@ -1179,7 +1107,6 @@
         "hotspot": "LAVA"
       },
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§c"
     },
@@ -1197,7 +1124,6 @@
         "hotspot": "LAVA"
       },
       "bossbar": true,
-      "gdragAlert": false,
       "rareSCAlert": true,
       "mergeBossbarHp": true,
       "scDisplayColor": "§4"
@@ -1216,7 +1142,6 @@
         "hotspot": "LAVA"
       },
       "bossbar": true,
-      "gdragAlert": true,
       "rareSCAlert": true,
       "scDisplayColor": "§4"
     },
@@ -1231,7 +1156,6 @@
       "category": "ATOLL",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§2"
     },
@@ -1246,7 +1170,6 @@
       "category": "ATOLL",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§2"
     },
@@ -1261,7 +1184,6 @@
       "category": "ATOLL",
       "lsRangeEnabled": true,
       "bossbar": true,
-      "gdragAlert": true,
       "rareSCAlert": true,
       "scDisplayColor": "§a"
     },
@@ -1276,7 +1198,6 @@
       "category": "ATOLL",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§2"
     },
@@ -1291,7 +1212,6 @@
       "category": "ATOLL",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": true,
       "invulnerabilityTimer": false,
       "scDisplayColor": "§a"
@@ -1307,7 +1227,6 @@
       "category": "ATOLL",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§2"
     },
@@ -1322,7 +1241,6 @@
       "category": "TORRHUS",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§6"
     },
@@ -1337,7 +1255,6 @@
       "category": "TORRHUS",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§6"
     },
@@ -1352,7 +1269,6 @@
       "category": "TORRHUS",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§6"
     },
@@ -1367,7 +1283,6 @@
       "category": "TORRHUS",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§6"
     },
@@ -1382,7 +1297,6 @@
       "category": "TORRHUS",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": true,
       "scDisplayColor": "§6"
     },
@@ -1397,7 +1311,6 @@
       "category": "TORRHUS",
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": true,
       "scDisplayColor": "§6"
     },
@@ -1415,7 +1328,6 @@
       },
       "lsRangeEnabled": false,
       "bossbar": false,
-      "gdragAlert": false,
       "rareSCAlert": false,
       "scDisplayColor": "§6"
     }

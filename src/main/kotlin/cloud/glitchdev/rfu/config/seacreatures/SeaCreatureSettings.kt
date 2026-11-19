@@ -23,7 +23,6 @@ data class SeaCreatureSetting(
     val lsRangeEnabled: Boolean?,
     val conditions: SeaCreatureConditions?,
     val bossbar: Boolean?,
-    val gdragAlert: Boolean?,
     val rareSCAlert: Boolean?,
     val scDisplayColor: String?,
     val rarePartyMessage: String?,
@@ -33,7 +32,7 @@ data class SeaCreatureSetting(
 ) {
     companion object {
         fun empty(): SeaCreatureSetting = SeaCreatureSetting(
-            null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null
+            null, null, null, null, null, null, null, null, null, null, null, null, null, null, null
         )
     }
 }
