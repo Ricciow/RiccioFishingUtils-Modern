@@ -13,7 +13,7 @@ enum class MessageTypes(val displayName: String, val regex: Regex) {
     THUNDER_SPARK("Thunder Spark", """Try clicking this Thunder Spark with an Empty Thunder in a Bottle to collect it!""".toExactRegex()),
     COCOON("Cocoon", """CAUGHT! You cocooned (?:an? )?(.+)!""".toExactRegex()),
     SACKS("Sacks", """\[Sacks\] \+\d+ items?\. \(Last \d+s\.\)""".toExactRegex()),
-    CHARM("Charm", """(?:CHARM! You charmed .+ and received .+|LOOT SHARE You received \d+ .+? Shards? for assisting .+!)""".toExactRegex()),
+    CHARM("Charm", """(?:CHARM! You charmed .+ and received .+|LOOT SHARE! You received \d+ .+? Shards? for assisting .+!)""".toExactRegex()),
     HURRICANE_BOTTLE("Hurricane in a Bottle", """(?:> )?Your (?:Empty )?Hurricane (?:in a )?Bottle has absorbed .+""".toExactRegex()),
     VANQUISHER("Vanquisher", """A Vanquisher is spawning nearby!""".toExactRegex()),
     TREASURES("Treasures", """(?:\uE025\s*)?(?:GOOD|GREAT|OUTSTANDING) CATCH! You caught .+!""".toExactRegex()),
