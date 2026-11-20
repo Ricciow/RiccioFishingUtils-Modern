@@ -44,6 +44,11 @@ object ChatEvents : RegisteredEvent {
             if(!result) RFULogger.dev("Sent commnad was cancelled: $command")
             result
         }
+
+        ClientSendMessageEvents.MODIFY_COMMAND.register { command ->
+            if (Chat.isSendingModCommand) return@register command
+            ModifyCommandEventManager.runTasks(command)
+        }
     }
 
     fun registerSendChatEvent(
@@ -65,6 +70,13 @@ object ChatEvents : RegisteredEvent {
         callback: (message: String) -> String
     ): ModifyChatEventManager.ModifyChatEvent {
         return ModifyChatEventManager.register(priority, callback)
+    }
+
+    fun registerModifyCommandEvent(
+        priority: Int = 20,
+        callback: (command: String) -> String
+    ): ModifyCommandEventManager.ModifyCommandEvent {
+        return ModifyCommandEventManager.register(priority, callback)
     }
 
     fun registerAnyChatEvent(
@@ -241,6 +253,30 @@ object ChatEvents : RegisteredEvent {
             priority: Int = 20,
             callback: (command: String) -> Boolean
         ) : ManagedTask<(command: String) -> Boolean, SendCommandEvent>(priority, callback) {
+            override fun register() = submitTask(this)
+            override fun unregister() = removeTask(this)
+        }
+    }
+
+    object ModifyCommandEventManager : AbstractEventManager<(command: String) -> String, ModifyCommandEventManager.ModifyCommandEvent>() {
+        override val runTasks: (command: String) -> String = { command ->
+            var result = command
+            for (event in tasks) {
+                safeExecution(mainThread = false) {
+                    result = event.callback(result)
+                }
+            }
+            result
+        }
+
+        fun register(priority: Int = 20, callback: (command: String) -> String): ModifyCommandEvent {
+            return ModifyCommandEvent(priority, callback).register()
+        }
+
+        class ModifyCommandEvent(
+            priority: Int = 20,
+            callback: (command: String) -> String
+        ) : ManagedTask<(command: String) -> String, ModifyCommandEvent>(priority, callback) {
             override fun register() = submitTask(this)
             override fun unregister() = removeTask(this)
         }

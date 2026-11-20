@@ -5,6 +5,7 @@ import cloud.glitchdev.rfu.constants.text.Emoji
 import cloud.glitchdev.rfu.constants.text.EmojiData
 import cloud.glitchdev.rfu.data.other.EmojiPreferences
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerModifyChatEvent
+import cloud.glitchdev.rfu.events.managers.ChatEvents.registerModifyCommandEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import net.minecraft.client.StringSplitter
@@ -30,16 +31,63 @@ object EmojiFeature : Feature {
         .takeIf { it.isNotEmpty() }
         ?.toRegex(RegexOption.IGNORE_CASE)
 
+    private val singleArgChatCommands = setOf(
+        "ac", "achat", "allchat",
+        "pc", "pchat", "partychat",
+        "gc", "gchat", "guildchat",
+        "oc", "ochat", "officerchat",
+        "cc", "cchat", "coopchat",
+        "r", "reply", "shout",
+    )
+    private val whisperCommands = setOf("msg", "w", "tell", "message", "whisper")
+    private val subChatCommands = setOf("g", "guild", "p", "party", "co", "coop")
+
     override fun onInitialize() {
         registerModifyChatEvent { message ->
             if (!OtherSettings.emojis) return@registerModifyChatEvent message
-            val expanded = outgoingTrigger?.replace(message) { match ->
-                Emoji.MESSAGE_REPLACEMENTS[match.value.lowercase()]
-                    ?.takeIf(EmojiPreferences::isEnabled)
-                    ?.messageReplacement ?: match.value
-            } ?: return@registerModifyChatEvent message
-            return@registerModifyChatEvent if (StringUtil.trimChatMessage(expanded) == expanded) expanded else message
+            val expanded = expandOutgoing(message)
+            if (StringUtil.trimChatMessage(expanded) == expanded) expanded else message
         }
+
+        registerModifyCommandEvent { command ->
+            if (!OtherSettings.emojis) return@registerModifyCommandEvent command
+            val messageStart = chatCommandMessageStart(command) ?: return@registerModifyCommandEvent command
+            val expanded = command.substring(0, messageStart) + expandOutgoing(command.substring(messageStart))
+            if (StringUtil.trimChatMessage(expanded) == expanded) expanded else command
+        }
+    }
+
+    private fun expandOutgoing(message: String): String {
+        return outgoingTrigger?.replace(message) { match ->
+            Emoji.MESSAGE_REPLACEMENTS[match.value.lowercase()]
+                ?.takeIf(EmojiPreferences::isEnabled)
+                ?.messageReplacement ?: match.value
+        } ?: message
+    }
+
+    private fun chatCommandMessageStart(command: String): Int? {
+        val firstSpace = command.indexOf(' ')
+        if (firstSpace <= 0) return null
+        val name = command.substring(0, firstSpace).lowercase()
+        val firstArgStart = command.indexOfFirstAfter(firstSpace) { it != ' ' } ?: return null
+        if (name in singleArgChatCommands) return firstArgStart
+
+        if (name in whisperCommands || name in subChatCommands) {
+            val secondSpace = command.indexOf(' ', firstArgStart)
+            if (secondSpace == -1) return null
+            if (name in subChatCommands && !command.substring(firstArgStart, secondSpace).equals("chat", ignoreCase = true)) {
+                return null
+            }
+            return command.indexOfFirstAfter(secondSpace) { it != ' ' }
+        }
+        return null
+    }
+
+    private inline fun String.indexOfFirstAfter(startIndex: Int, predicate: (Char) -> Boolean): Int? {
+        for (i in startIndex until length) {
+            if (predicate(this[i])) return i
+        }
+        return null
     }
 
     private fun hasPossibleEmoji(text: String): Boolean = text.contains(':') ||
