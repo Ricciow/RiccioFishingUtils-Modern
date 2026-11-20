@@ -21,6 +21,7 @@
 - The “What is Magic Find?” achievement has been retired. Players who previously had it can find it under the Legacy tab.
 
 ### Fixes
+- Fiery Scuttlers now trigger a single alert and sound per group of up to six instead of triggering for each one.
 - Fixed duplicate hotspot shares and alerts.
 - Corrected the coordinates in shared hotspot messages.
 - Automatic hotspot sharing now requires being fishing to trigger.
