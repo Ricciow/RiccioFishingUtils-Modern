@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.feature.other
 
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.text.Emoji
+import cloud.glitchdev.rfu.constants.text.EmojiData
 import cloud.glitchdev.rfu.data.other.EmojiPreferences
 import com.mojang.brigadier.context.StringRange
 import com.mojang.brigadier.suggestion.Suggestions
@@ -25,11 +26,14 @@ object EmojiAutocomplete {
         }
         if (matches.isEmpty()) return null
 
+        val byShortestTrigger = compareBy<Map.Entry<String, EmojiData>> { it.key.length }
+            .thenBy { it.key.lowercase() }
         val uniqueMatches = matches.entries
             .groupBy { it.value }
             .mapNotNull { (_, entries) ->
-                entries.minByOrNull { it.key.length }
+                entries.minWithOrNull(byShortestTrigger)
             }
+            .sortedWith(byShortestTrigger)
 
         val range = StringRange.between(lastWordIndex, cursorPosition)
         val suggestionsList = uniqueMatches.map { entry ->
