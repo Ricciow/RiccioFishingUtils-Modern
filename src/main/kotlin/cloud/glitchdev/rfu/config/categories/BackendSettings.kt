@@ -35,6 +35,15 @@ object BackendSettings : Category("Backend Settings") {
         condition = { false }
     }
 
+    var loadScConfigFromBackend by observable(boolean(true) {
+        name = Literal("Sync SC Config")
+        description = Literal("Automatically downloads the public Sea Creature config from RFU.")
+    }) { _, newValue ->
+        if (newValue) {
+            SeaCreatureSettingsManager.updateFromBackend()
+        }
+    }
+
     init {
         dualSeparator {
             title = "Data Sharing"
@@ -46,15 +55,5 @@ object BackendSettings : Category("Backend Settings") {
         name = Literal("Share Vicent Data")
         description = Literal("Sends the current dyes in rotation to the RFU back-end when the vincent menu is opened so everyone can know them!")
         condition = { backendAccepted }
-    }
-
-    var loadScConfigFromBackend by observable(boolean(true) {
-        name = Literal("Sync SC Config")
-        description = Literal("Automatically synchronizes Sea Creature configurations from the RFU backend.")
-        condition = { backendAccepted }
-    }) { _, newValue ->
-        if (newValue && backendAccepted) {
-            SeaCreatureSettingsManager.updateFromBackend()
-        }
     }
 }

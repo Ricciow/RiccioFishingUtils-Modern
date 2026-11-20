@@ -287,7 +287,7 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
     }
 
     override fun register() {
-        if (BackendSettings.backendAccepted && BackendSettings.loadScConfigFromBackend) {
+        if (BackendSettings.loadScConfigFromBackend) {
             updateFromBackend()
         }
     }
