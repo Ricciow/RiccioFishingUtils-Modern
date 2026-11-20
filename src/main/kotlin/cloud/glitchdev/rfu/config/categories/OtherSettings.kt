@@ -1,5 +1,7 @@
 package cloud.glitchdev.rfu.config.categories
 
+import cloud.glitchdev.rfu.RiccioFishingUtils.mc
+
 import cloud.glitchdev.rfu.config.Category
 import cloud.glitchdev.rfu.config.SoundTitleSettings
 import cloud.glitchdev.rfu.config.TitleSettings
@@ -8,6 +10,7 @@ import cloud.glitchdev.rfu.constants.ui.TooltipGuiScale
 import cloud.glitchdev.rfu.constants.ui.PartyFinderGuiScale
 import cloud.glitchdev.rfu.constants.ui.VisiblePlayerEquipment
 import cloud.glitchdev.rfu.constants.text.TextColor.LIGHT_RED
+import cloud.glitchdev.rfu.gui.window.EmojiEditWindow
 
 object OtherSettings : Category("Other") {
 
@@ -150,7 +153,23 @@ object OtherSettings : Category("Other") {
 
     var emojis by reloadableBoolean(true) {
         name = Literal("Toggle Emojis")
-        description = Literal("Replaces triggers like :dog: with the respective emoji. Use /rfuemojis to see all emojis!")
+        description = Literal("Replaces triggers like :dog: with the respective emoji. Use /rfuemojis to browse and manage emojis.")
+    }
+
+    init {
+        customButton(
+            {
+                //~ if >=26.2 'screen' -> 'gui.screen()' {
+                val editor = EmojiEditWindow(mc.gui.screen())
+                //~}
+                //~ if >=26.2 'setScreen' -> 'gui.setScreen' {
+                mc.gui.setScreen(editor)
+                //~}
+            },
+            "Edit Emojis",
+            "Choose which emojis are enabled.",
+            "Edit"
+        )
     }
 
     var returnCompletesEmoji by boolean(true) {

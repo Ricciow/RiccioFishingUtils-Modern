@@ -4,6 +4,8 @@ import cloud.glitchdev.rfu.achievement.migration.AchievementMigration
 import cloud.glitchdev.rfu.config.RFUSettings
 import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.config.migration.ConfigMigration
+import cloud.glitchdev.rfu.constants.text.BundledEmojiSprites
+import cloud.glitchdev.rfu.constants.text.EmojiPack
 import net.fabricmc.api.ClientModInitializer
 import net.minecraft.client.Minecraft
 import cloud.glitchdev.rfu.generated.RFULoader
@@ -41,6 +43,8 @@ object RiccioFishingUtils : ClientModInitializer {
     private var isInitialized = false
 
     override fun onInitializeClient() {
+        EmojiPack.updateEmojiPack()
+        BundledEmojiSprites.register()
         RFULoader.registerInstantEvents()
 
         ClientLifecycleEvents.CLIENT_STARTED.register {

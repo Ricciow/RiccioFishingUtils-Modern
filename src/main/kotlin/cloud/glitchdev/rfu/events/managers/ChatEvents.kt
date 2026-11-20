@@ -34,6 +34,10 @@ object ChatEvents : RegisteredEvent {
             result
         }
 
+        ClientSendMessageEvents.MODIFY_CHAT.register { message ->
+            ModifyChatEventManager.runTasks(message)
+        }
+
         ClientSendMessageEvents.ALLOW_COMMAND.register { command ->
             if (Chat.isSendingModCommand) return@register true
             val result = SendCommandEventManager.runTasks(command)
@@ -54,6 +58,13 @@ object ChatEvents : RegisteredEvent {
         callback: (message: String) -> Boolean
     ) : SendCommandEventManager.SendCommandEvent {
         return SendCommandEventManager.register(priority, callback)
+    }
+
+    fun registerModifyChatEvent(
+        priority: Int = 20,
+        callback: (message: String) -> String
+    ): ModifyChatEventManager.ModifyChatEvent {
+        return ModifyChatEventManager.register(priority, callback)
     }
 
     fun registerAnyChatEvent(
@@ -184,6 +195,30 @@ object ChatEvents : RegisteredEvent {
             priority: Int = 20,
             callback: (message: String) -> Boolean
         ) : ManagedTask<(message: String) -> Boolean, SendChatEvent>(priority, callback) {
+            override fun register() = submitTask(this)
+            override fun unregister() = removeTask(this)
+        }
+    }
+
+    object ModifyChatEventManager : AbstractEventManager<(message: String) -> String, ModifyChatEventManager.ModifyChatEvent>() {
+        override val runTasks: (message: String) -> String = { message ->
+            var result = message
+            for (event in tasks) {
+                safeExecution(mainThread = false) {
+                    result = event.callback(result)
+                }
+            }
+            result
+        }
+
+        fun register(priority: Int = 20, callback: (message: String) -> String): ModifyChatEvent {
+            return ModifyChatEvent(priority, callback).register()
+        }
+
+        class ModifyChatEvent(
+            priority: Int = 20,
+            callback: (message: String) -> String
+        ) : ManagedTask<(message: String) -> String, ModifyChatEvent>(priority, callback) {
             override fun register() = submitTask(this)
             override fun unregister() = removeTask(this)
         }

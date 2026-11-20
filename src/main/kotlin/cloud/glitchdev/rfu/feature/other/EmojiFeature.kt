@@ -3,6 +3,10 @@ package cloud.glitchdev.rfu.feature.other
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.text.Emoji
 import cloud.glitchdev.rfu.constants.text.EmojiData
+import cloud.glitchdev.rfu.data.other.EmojiPreferences
+import cloud.glitchdev.rfu.events.managers.ChatEvents.registerModifyChatEvent
+import cloud.glitchdev.rfu.feature.Feature
+import cloud.glitchdev.rfu.feature.RFUFeature
 import net.minecraft.client.StringSplitter
 import net.minecraft.client.gui.Font
 import net.minecraft.network.chat.FormattedText
@@ -10,11 +14,33 @@ import net.minecraft.network.chat.Style
 import net.minecraft.util.FormattedCharSequence
 import net.minecraft.util.FormattedCharSink
 import net.minecraft.util.StringDecomposer
+import net.minecraft.util.StringUtil
 import java.util.Optional
 
-object EmojiFeature {
+@RFUFeature
+object EmojiFeature : Feature {
     private val colonTriggers = Emoji.COLON_TRIGGERS.mapKeys { it.key.lowercase() }
     private val otherTriggers = Emoji.CUSTOM_TRIGGERS.mapKeys { it.key.lowercase() }
+    private val outgoingTrigger = Emoji.MESSAGE_REPLACEMENTS.keys
+        .sortedByDescending { it.length }
+        .joinToString("|") { trigger ->
+            val literal = Regex.escape(trigger)
+            if (trigger.startsWith(':') && trigger.endsWith(':')) literal else "(?<!\\S)$literal(?!\\S)"
+        }
+        .takeIf { it.isNotEmpty() }
+        ?.toRegex(RegexOption.IGNORE_CASE)
+
+    override fun onInitialize() {
+        registerModifyChatEvent { message ->
+            if (!OtherSettings.emojis) return@registerModifyChatEvent message
+            val expanded = outgoingTrigger?.replace(message) { match ->
+                Emoji.MESSAGE_REPLACEMENTS[match.value.lowercase()]
+                    ?.takeIf(EmojiPreferences::isEnabled)
+                    ?.messageReplacement ?: match.value
+            } ?: return@registerModifyChatEvent message
+            return@registerModifyChatEvent if (StringUtil.trimChatMessage(expanded) == expanded) expanded else message
+        }
+    }
 
     private fun hasPossibleEmoji(text: String): Boolean = text.contains(':') ||
         otherTriggers.keys.any { text.contains(it, ignoreCase = true) }
@@ -34,11 +60,12 @@ object EmojiFeature {
             val end = text.indexOf(':', start + 1)
             if (end == -1) break
             val trigger = text.substring(start, end + 1).lowercase()
-            val emoji = colonTriggers[trigger]
+            val emoji = colonTriggers[trigger]?.takeIf(EmojiPreferences::isEnabled)
             if (emoji != null) matches.add(EmojiMatch(start, end + 1, emoji))
             searchIndex = if (emoji != null) end + 1 else start + 1
         }
         for ((trigger, emoji) in otherTriggers) {
+            if (!EmojiPreferences.isEnabled(emoji)) continue
             var index = text.indexOf(trigger, ignoreCase = true)
             while (index != -1) {
                 val replacement = emoji.textReplacement.orEmpty()

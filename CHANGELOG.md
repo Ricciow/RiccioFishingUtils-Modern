@@ -7,6 +7,8 @@
 - Mute Annoying Sounds now silences the reindrake's gifts in Jerry's Workshop.
 - Added an option to show the Bobbin' Time Magic Find bonus when a rare sea creature dies.
 - Added Mute Non-RFU Sounds to silence game audio while keeping RFU alerts and the timer ding.
+- Added /rfuemojis or /rfuemojiedit to browse, search, and manage emojis.
+- Emojis now automatically update from the RFU Emojis repository.
 
 ### Changes
 - Made kill time and personal best messages only one message.

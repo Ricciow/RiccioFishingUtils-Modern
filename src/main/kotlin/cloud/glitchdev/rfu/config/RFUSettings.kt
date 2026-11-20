@@ -56,15 +56,15 @@ object RFUSettings : ConfigKt("rfu/settings") {
             condition = { isOutdated }
         }
 
-        element(EmojiConfigButton(Emoji.icon("discord"), "RFU Discord", "\nJoin the rfu discord!", "Join") {
+        element(EmojiConfigButton({ Emoji.icon("discord") }, "RFU Discord", "\nJoin the rfu discord!", "Join") {
             PlatformUtils.openUri("https://discord.gg/JfrXm6TqXz")
         })
 
-        element(EmojiConfigButton(Emoji.icon("github"), "Github", "\nContribute to the mod's development! Leave a star <3", "Open") {
+        element(EmojiConfigButton({ Emoji.icon("github") }, "Github", "\nContribute to the mod's development! Leave a star <3", "Open") {
             PlatformUtils.openUri("https://github.com/ricciow/ricciofishingutils-modern")
         })
 
-        element(EmojiConfigButton(Emoji.icon("patreon"), "Patreon", "\nHelp me maintain the servers, not really a must but thanks if you do <3", "Open") {
+        element(EmojiConfigButton({ Emoji.icon("patreon") }, "Patreon", "\nHelp me maintain the servers, not really a must but thanks if you do <3", "Open") {
             PlatformUtils.openUri("https://www.patreon.com/cw/Ricciow")
         })
 

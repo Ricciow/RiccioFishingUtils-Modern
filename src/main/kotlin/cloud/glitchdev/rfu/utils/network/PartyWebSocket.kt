@@ -5,7 +5,6 @@ import cloud.glitchdev.rfu.RiccioFishingUtils.API_URL
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.chat.RegexConstants.PLAYER_REGEX
-import cloud.glitchdev.rfu.constants.text.Emoji
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents
@@ -211,8 +210,6 @@ object PartyWebSocket : RegisteredEvent {
 
     private fun FishingParty.normalizeLegacyData() {
         removeLootingRequirement()
-        title = Emoji.convertLegacyEmojis(title)
-        description = Emoji.convertLegacyEmojis(description)
     }
 
     fun requestPlayerRequisites(profileId: String? = User.profileId, force: Boolean = false) {
