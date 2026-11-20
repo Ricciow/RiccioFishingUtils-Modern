@@ -1,4 +1,4 @@
-# v1.20.3 - Minor
+# v1.21.0 - Major
 
 ### Features
 - The Bobbin' Time display now has the Magic find and Tracking bonuses and its configurable.
