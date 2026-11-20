@@ -30,6 +30,7 @@ import cloud.glitchdev.rfu.data.party.PartyPresetsManager
 import cloud.glitchdev.rfu.utils.dsl.isIgnored
 import cloud.glitchdev.rfu.utils.dsl.removeRankTag
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
+import cloud.glitchdev.rfu.utils.dsl.withoutObfuscation
 import cloud.glitchdev.rfu.feature.partyfinder.PartyRequeueAlert
 import com.google.gson.Gson
 import com.google.gson.JsonObject
@@ -111,7 +112,7 @@ object PartyWebSocket : RegisteredEvent {
                 
                 if (event.type == WebSocketEventType.SYNC) {
                     val newParties = event.data ?: emptyList()
-                    newParties.forEach { it.normalizeLegacyData() }
+                    newParties.forEach { it.normalizeListing() }
                     myParty = newParties.find { it.user == User.getUsername() }
                     PartyFinderEvents.handleSync(newParties)
                 }
@@ -128,7 +129,7 @@ object PartyWebSocket : RegisteredEvent {
                 when (event.type) {
                     WebSocketEventType.CREATED, WebSocketEventType.UPDATED -> {
                         event.data?.let { updatedParty ->
-                            updatedParty.normalizeLegacyData()
+                            updatedParty.normalizeListing()
                             if (updatedParty.user == User.getUsername()) {
                                 myParty = updatedParty
                             }
@@ -208,8 +209,10 @@ object PartyWebSocket : RegisteredEvent {
         WebSocketClient.subscribe("/topic/party/info", infoCallback)
     }
 
-    private fun FishingParty.normalizeLegacyData() {
+    private fun FishingParty.normalizeListing() {
         removeLootingRequirement()
+        title = title.withoutObfuscation()
+        description = description.withoutObfuscation()
     }
 
     fun requestPlayerRequisites(profileId: String? = User.profileId, force: Boolean = false) {
@@ -257,14 +260,14 @@ object PartyWebSocket : RegisteredEvent {
     }
 
     fun publishParty(party: FishingParty) {
-        party.removeLootingRequirement()
+        party.normalizeListing()
         party.profileId = User.profileId
         lastParty = party.deepCopy()
         WebSocketClient.send("/app/party/publish", party.copy(level = party.level.coerceAtMost(50), overflow = party.requiredOverflow()))
     }
 
     fun editParty(party: FishingParty) {
-        party.removeLootingRequirement()
+        party.normalizeListing()
         party.profileId = User.profileId
         lastParty = party.deepCopy()
         WebSocketClient.send("/app/party/edit", party.copy(level = party.level.coerceAtMost(50), overflow = party.requiredOverflow()))

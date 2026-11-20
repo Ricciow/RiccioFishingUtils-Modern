@@ -1,29 +1,33 @@
 package cloud.glitchdev.rfu.gui.components.textinput
 
+import cloud.glitchdev.rfu.utils.dsl.withoutObfuscation
+
 internal class ColorCodeText(val text: String) {
     private val offsets = IntArray(text.length + 1)
     private val styles = Array(text.length) { "" }
     private val preview: String
 
     init {
+        val editable = toEditable(text)
         var color = ""
         var formats = ""
         var markerEnd = 0
         preview = buildString {
             for (index in text.indices) {
                 offsets[index] = length
-                if (isCodeAt(text, index, '&')) markerEnd = index + 2
+                if (isCodeAt(editable, index, '&')) markerEnd = index + 2
                 val style = if (index < markerEnd) "\u00a7r\u00a77" else "\u00a7r$color$formats"
                 styles[index] = style
                 if (index == 0 || styles[index - 1] != style) append(style)
-                append(text[index])
+                append(editable[index])
                 if (index + 1 == markerEnd) {
-                    val code = text[index].lowercaseChar()
+                    val code = editable[index].lowercaseChar()
                     when (code) {
                         in '0'..'9', in 'a'..'f', 'r' -> {
                             color = if (code == 'r') "" else "\u00a7$code"
                             formats = ""
                         }
+                        'k' -> Unit
                         else -> if (!formats.contains(code)) formats += "\u00a7$code"
                     }
                 }
@@ -48,6 +52,6 @@ internal class ColorCodeText(val text: String) {
         }
 
         fun toEditable(text: String): String = convert(text, '\u00a7', '&')
-        fun toFormatted(text: String): String = convert(text, '&', '\u00a7')
+        fun toFormatted(text: String): String = convert(text.withoutObfuscation(), '&', '\u00a7')
     }
 }
