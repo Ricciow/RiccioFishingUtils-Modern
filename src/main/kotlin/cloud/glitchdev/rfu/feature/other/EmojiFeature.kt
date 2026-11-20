@@ -66,15 +66,21 @@ object EmojiFeature : Feature {
         }
         for ((trigger, emoji) in otherTriggers) {
             if (!EmojiPreferences.isEnabled(emoji)) continue
+            val wordOnly = trigger.all { it.isLetterOrDigit() }
             var index = text.indexOf(trigger, ignoreCase = true)
             while (index != -1) {
+                val end = index + trigger.length
+                val bounded = !wordOnly || (
+                    (index == 0 || !text[index - 1].isLetterOrDigit() || (index >= 2 && text[index - 2] == '§')) &&
+                    (end == text.length || !text[end].isLetterOrDigit())
+                )
                 val replacement = emoji.textReplacement.orEmpty()
                 val triggerOffset = replacement.indexOf(trigger, ignoreCase = true)
                 val alreadyExpanded = triggerOffset >= 0 && text.regionMatches(
                     index - triggerOffset, replacement, 0, replacement.length, ignoreCase = true
                 )
-                if (!alreadyExpanded) matches.add(EmojiMatch(index, index + trigger.length, emoji))
-                index = text.indexOf(trigger, index + trigger.length, ignoreCase = true)
+                if (bounded && !alreadyExpanded) matches.add(EmojiMatch(index, end, emoji))
+                index = text.indexOf(trigger, end, ignoreCase = true)
             }
         }
         matches.sortBy { it.start }
