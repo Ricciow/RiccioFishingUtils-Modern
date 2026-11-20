@@ -100,7 +100,7 @@ object  World : RegisteredEvent {
 
         registerSeaCreatureCatchEvent(priority = -100) { sc, _, _, _, _ ->
             if (!isInSkyblock || isOnAlpha) return@registerSeaCreatureCatchEvent
-            when (sc.category) {
+            when (sc.category.id) {
                 SeaCreatureCategory.SPOOKY -> spookyFestivalDay = SBDayIndex
                 SeaCreatureCategory.SHARK -> fishingFestivalDay = SBDayIndex
                 else -> Unit

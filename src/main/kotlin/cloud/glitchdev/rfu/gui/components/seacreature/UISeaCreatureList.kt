@@ -1,5 +1,6 @@
 ﻿package cloud.glitchdev.rfu.gui.components.seacreature
 
+import cloud.glitchdev.rfu.constants.fishing.SeaCreatureCategory
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.textinput.UIDecoratedTextInput
@@ -70,7 +71,7 @@ class UISeaCreatureList(val onSelect: (SeaCreatures) -> Unit) : UIRoundedRectang
                 sc.category.displayName.contains(query, ignoreCase = true)
             }
             .groupBy { it.category }
-            .toSortedMap(compareBy { it.displayName })
+            .toSortedMap(compareBy<SeaCreatureCategory> { it.displayName }.thenBy { it.id })
 
         grouped.forEach { (category, creatures) ->
             val headerContainer = UIContainer().constrain {

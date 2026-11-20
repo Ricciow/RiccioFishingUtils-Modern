@@ -9,13 +9,14 @@ import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.dsl.toMcCodes
+import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.network.chat.Component
 
 @RFUFeature
 object CatchMessageReplacer : Feature {
     override fun onInitialize() {
-        registerAllowGameEvent(SeaCreatureCatchEvents.SC_MESSAGE_REGEX) { _, _, _ ->
-            !SeaCreatureConfig.replaceCatchMessages
+        registerAllowGameEvent { message, _, _ ->
+            !SeaCreatureConfig.replaceCatchMessages || SeaCreatures.getByCatchMessage(message.toUnformattedString()) == null
         }
 
         registerAllowGameEvent(SeaCreatureCatchEvents.DOUBLE_HOOK_REGEX) { _, _, _ ->

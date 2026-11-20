@@ -1,5 +1,63 @@
 {
   "version": 1,
+  "categories": {
+    "GENERAL_WATER": {
+      "displayName": "General Water",
+      "islands": ["Hub", "The Farming Islands", "Spider's Den", "Crystal Hollows", "Dwarven Mines", "The Park"]
+    },
+    "HOTSPOT_WATER": {
+      "displayName": "Hotspot Water",
+      "islands": ["Backwater Bayou", "Hub", "Spider's Den", "Jerry's Workshop", "Lotus Atoll", "Torrhus Canyon"]
+    },
+    "HOTSPOT_LAVA": {
+      "displayName": "Hotspot Lava",
+      "islands": ["Crimson Isle"]
+    },
+    "OASIS": {
+      "displayName": "Oasis (The Farming Islands)",
+      "islands": ["The Farming Islands"]
+    },
+    "HOLLOWS": {
+      "displayName": "Crystal Hollows",
+      "islands": ["Crystal Hollows"]
+    },
+    "DWARVEN": {
+      "displayName": "Dwarven Mines",
+      "islands": ["Dwarven Mines"]
+    },
+    "SPOOKY": {
+      "displayName": "Spooky",
+      "islands": ["Hub", "The Farming Islands", "Galatea", "Spider's Den", "Crystal Hollows", "Backwater Bayou", "The Park"]
+    },
+    "WINTER": {
+      "displayName": "Jerry's Workshop",
+      "islands": ["Jerry's Workshop"]
+    },
+    "SHARK": {
+      "displayName": "Shark",
+      "islands": ["Hub", "The Farming Islands", "Galatea", "Spider's Den", "Crystal Hollows", "Backwater Bayou", "The Park"]
+    },
+    "ISLE": {
+      "displayName": "Crimson Isle",
+      "islands": ["Crimson Isle"]
+    },
+    "GALATEA": {
+      "displayName": "Moonglade Marsh",
+      "islands": ["Galatea"]
+    },
+    "BAYOU": {
+      "displayName": "Backwater Bayou",
+      "islands": ["Backwater Bayou"]
+    },
+    "ATOLL": {
+      "displayName": "Lotus Atoll",
+      "islands": ["Lotus Atoll"]
+    },
+    "TORRHUS": {
+      "displayName": "Torrhus Canyon",
+      "islands": ["Torrhus Canyon"]
+    }
+  },
   "creatures": {
     "Sea Walker": {
       "name": "Sea Walker",

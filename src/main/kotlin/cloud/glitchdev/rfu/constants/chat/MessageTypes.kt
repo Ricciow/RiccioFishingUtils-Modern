@@ -21,7 +21,7 @@ enum class MessageTypes(val displayName: String, val regex: Regex) {
     STEALTH("Stealth Enchantment", """The .+ didn't notice your presence thanks to your Stealth enchantment!""".toExactRegex());
 
     fun matches(message: String): Boolean {
-        if (this == CATCH && SeaCreatures.entries.any { it.catchMessage == message }) return true
+        if (this == CATCH && SeaCreatures.getByCatchMessage(message) != null) return true
 
         val match = regex.find(message) ?: return false
         return this != COMBO || !match.groupValues[1].contains("Magic Find")

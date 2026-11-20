@@ -27,5 +27,6 @@
 - Removed shadows from emoji icons on party finder.
 
 ### Backend
+- Sea creature categories and islands now refresh through sea creature config sync.
 - Added Detekt checks
 - Hotspot detection now reacts to entity updates, optimizing :dog:.
