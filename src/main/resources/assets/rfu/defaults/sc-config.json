@@ -7,7 +7,7 @@
     },
     "HOTSPOT_WATER": {
       "displayName": "Hotspot Water",
-      "islands": ["Backwater Bayou", "Hub", "Spider's Den", "Jerry's Workshop", "Lotus Atoll", "Torrhus Canyon"]
+      "islands": ["Backwater Bayou", "Hub", "Spider's Den", "Jerry's Workshop", "Lotus Atoll", "Torrhus Canyon", "The Park"]
     },
     "HOTSPOT_LAVA": {
       "displayName": "Hotspot Lava",

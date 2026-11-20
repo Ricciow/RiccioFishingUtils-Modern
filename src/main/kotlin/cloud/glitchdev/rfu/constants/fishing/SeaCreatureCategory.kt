@@ -14,5 +14,7 @@ data class SeaCreatureCategory(val id: String) {
         const val SPOOKY = "SPOOKY"
         const val SHARK = "SHARK"
         const val WINTER = "WINTER"
+        val HOTSPOT_WATER = SeaCreatureCategory("HOTSPOT_WATER")
+        val HOTSPOT_LAVA = SeaCreatureCategory("HOTSPOT_LAVA")
     }
 }

@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.model.party
 import cloud.glitchdev.rfu.constants.chat.PartyTypes
 import cloud.glitchdev.rfu.constants.fishing.FishingIslands
 import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
+import cloud.glitchdev.rfu.constants.fishing.SeaCreatureCategory
 
 enum class PartyTypeOption(val label: String, val fishingType: PartyTypes) {
     LAVA("Lava", PartyTypes.REGULAR),
@@ -15,10 +16,8 @@ enum class PartyTypeOption(val label: String, val fishingType: PartyTypes) {
         LAVA -> LiquidTypes.LAVA.takeIf { it in island.availableLiquids }
         WATER -> LiquidTypes.WATER.takeIf { it in island.availableLiquids }
         HOTSPOT -> when (island) {
-            FishingIslands.ISLE -> LiquidTypes.LAVA
-            FishingIslands.BAYOU, FishingIslands.PARK, FishingIslands.SPIDER,
-            FishingIslands.JERRY, FishingIslands.HUB, FishingIslands.ATOLL,
-            FishingIslands.TORRHUS -> LiquidTypes.WATER
+            in SeaCreatureCategory.HOTSPOT_LAVA.islands -> LiquidTypes.LAVA
+            in SeaCreatureCategory.HOTSPOT_WATER.islands -> LiquidTypes.WATER
             else -> null
         }
         TREASURE -> if (LiquidTypes.WATER in island.availableLiquids) LiquidTypes.WATER else LiquidTypes.LAVA
