@@ -70,7 +70,7 @@ object RareScDeathMessage : Feature {
                 val amount = BobbinTimeBonus.formatAmount(bobbinBonus)
                 message.append(
                     Component.literal(" ${TextColor.AQUAMARINE}(+$amount${BobbinTimeBonus.MAGIC_FIND.suffix})")
-                        .withStyle(Style.EMPTY.withHoverEvent(HoverEvent.ShowText(Component.literal("${TextColor.DARK_GRAY}Bobbin' Time Bonus"))))
+                        .withStyle(Style.EMPTY.withHoverEvent(HoverEvent.ShowText(Component.literal("${TextColor.AQUAMARINE}Bobbin' Time Bonus"))))
                 )
             }
 
