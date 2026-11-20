@@ -46,19 +46,31 @@ object SeaCreatureConfig : Category("Sea Creatures") {
         description = Literal("Makes rare sea creatures glow.\n§cUse at your own risk!")
     }
 
+    var invulnerabilityTimer by reloadableBoolean(true) {
+        name = Literal("Invulnerability Timer")
+        description = Literal("Displays the invulnerability timer on rare sea creatures and Vanquishers.")
+    }
+
+    init {
+        dualSeparator {
+            title = "Death Messages"
+            description = "Kill times and personal bests for rare sea creatures"
+        }
+    }
+
     var timeToKill by boolean(true) {
-        name = Literal("Time to kill")
-        description = Literal("Sends a message after killing a rare Sea Creature saying how long it took.")
+        name = Literal("Time To Kill")
+        description = Literal("Shows how long it took to kill a rare sea creature.")
     }
 
     var killTimePersonalBest by boolean(true) {
         name = Literal("Kill Time PB")
-        description = Literal("Sends personal best message for kill times on rare sea creatures.")
+        description = Literal("Announces new personal bests.")
     }
 
-    var invulnerabilityTimer by reloadableBoolean(true) {
-        name = Literal("Invulnerability Timer")
-        description = Literal("Displays the invulnerability timer on rare sea creatures and Vanquishers.")
+    var bobbinTimeDeathMessage by boolean(true) {
+        name = Literal("Bobbin' Time")
+        description = Literal("Shows the Magic Find bonus at death while wearing Bobbin' Time armor.")
     }
 
     init {

@@ -9,7 +9,6 @@ import cloud.glitchdev.rfu.constants.text.TextEffects.BOLD
 import cloud.glitchdev.rfu.feature.fishing.BobbinTime
 import cloud.glitchdev.rfu.gui.hud.AbstractFishingHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
-import kotlin.math.roundToInt
 
 @HudElement
 object BobbinTimeDisplay : AbstractFishingHudElement("bobbinTime") {
@@ -33,14 +32,7 @@ object BobbinTimeDisplay : AbstractFishingHudElement("bobbinTime") {
             displayPercentage = BobbinTime.buffPercentage
         }
 
-        val percentageVal = displayPercentage * 100
-        val rounded = (percentageVal * 10).roundToInt() / 10.0
-        val bonusValue = if (rounded % 1.0 == 0.0) {
-            rounded.toInt().toString()
-        } else {
-            rounded.toString()
-        }
-
+        val bonusValue = BobbinTimeBonus.formatAmount(displayPercentage)
         val selectedBonuses = GeneralFishing.bobbinTimeBonuses
         val bonuses = BobbinTimeBonus.entries.filter { it in selectedBonuses }
         val countText = "${LIGHT_GREEN}${BOLD}Bobbin: ${YELLOW}$displayCount"

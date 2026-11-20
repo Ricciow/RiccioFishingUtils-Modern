@@ -5,8 +5,10 @@
 - Added official support for colors in party finder using &
 - Added an option between Party and All Chat for hotspot sharing.
 - Mute Annoying Sounds now silences the reindrake's gifts in Jerry's Workshop.
+- Added an option to show the Bobbin' Time Magic Find bonus when a rare sea creature dies.
 
 ### Changes
+- Made kill time and personal best messages only one message.
 - Removed the Golden Dragon alert.
 - Drops before mf update now have a small [!] warning in /rfudrophistory.
 - Made the drop history text more aligned
