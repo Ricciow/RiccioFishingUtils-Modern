@@ -63,7 +63,7 @@ object Emoji {
     val CUSTOM_TRIGGERS: Map<String, EmojiData> = allEmojis.flatMap { emoji ->
         val triggers = when {
             emoji.messageReplacement == null -> emoji.customTriggers
-            emoji.textReplacement != null || emoji.font != null -> listOf(emoji.messageReplacement)
+            emoji.textReplacement != null || emoji.font != null -> emoji.customTriggers + emoji.messageReplacement
             else -> emptyList()
         }
         triggers.map { it to emoji }
