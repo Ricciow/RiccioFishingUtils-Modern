@@ -42,7 +42,9 @@ object RodTimer : Feature {
         }
 
         registerEntityRenderEvent { entity, _, event ->
-            if(!GeneralFishing.rodTimerDisplay && !GeneralFishing.rodTimerSound) return@registerEntityRenderEvent
+            if (!GeneralFishing.rodTimerDisplay && !GeneralFishing.rodTimerSound && !GeneralFishing.muteNonRfuSounds) {
+                return@registerEntityRenderEvent
+            }
             if(!isHoldingRod) return@registerEntityRenderEvent
 
             if (timer != null && entity.id == timer?.id) {

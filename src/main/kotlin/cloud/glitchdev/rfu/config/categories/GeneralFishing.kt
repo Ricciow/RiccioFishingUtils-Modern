@@ -266,6 +266,11 @@ object GeneralFishing : Category("General Fishing") {
         description = Literal("Mutes Ghast cries in Backwater Bayou, Elder Guardian moans in the Crimson Isle, and totem activation in Jerry's Workshop.")
     }
 
+    var muteNonRfuSounds by boolean(false) {
+        name = Literal("Mute Non-RFU Sounds")
+        description = Literal("Silences all other audios.")
+    }
+
     var bobbinTimeDisplay by reloadableBoolean(true) {
         name = Literal("Bobbin' Time Display")
         description = Literal("Display nearby bobbers and Bobbin' Time bonus on screen")

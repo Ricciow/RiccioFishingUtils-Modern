@@ -117,6 +117,16 @@
       }
     ]
   },
+  "rod_timer_expired": {
+    "category": "player",
+    "subtitle": "Rod Timer Expired",
+    "sounds": [
+      {
+        "name": "minecraft:block.note_block.pling",
+        "type": "event"
+      }
+    ]
+  },
   "daily_challenge" : {
     "category": "player",
     "subtitle": "Daily Challenge Completed",

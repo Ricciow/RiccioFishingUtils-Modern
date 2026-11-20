@@ -13,9 +13,7 @@ object RodTimerSound : Feature {
 
     override fun onInitialize() {
         registerTickEvent(0, 2) { _ ->
-            if (!GeneralFishing.rodTimerSound) return@registerTickEvent
-
-            val text = RodTimer.timer?.name?.toUnformattedString()
+            val text = RodTimer.timer?.takeUnless { it.isRemoved }?.name?.toUnformattedString()
 
             val currentRodTime = if (text == "!!!") {
                 0f
@@ -23,12 +21,12 @@ object RodTimerSound : Feature {
                 text?.toFloatOrNull() ?: -1f
             }
 
-            if (currentRodTime != -1f) {
-                if (currentRodTime != lastRodTime) {
+            if (currentRodTime >= 0f && currentRodTime != lastRodTime) {
+                if (currentRodTime == 0f && GeneralFishing.muteNonRfuSounds) {
+                    Sounds.playSound("rfu:rod_timer_expired")
+                } else if (GeneralFishing.rodTimerSound) {
                     val progress = 1f - (currentRodTime / 3.0f).coerceIn(0f, 1f)
-                    
                     val pitch = 0.5f + progress * 1.5f
-                    
                     Sounds.playSound("rfu:rod_timer", pitch)
                 }
             }
