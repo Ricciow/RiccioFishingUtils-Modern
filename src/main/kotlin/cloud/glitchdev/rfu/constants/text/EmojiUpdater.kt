@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.constants.text
 
+import cloud.glitchdev.rfu.config.categories.DevSettings
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
@@ -34,6 +35,17 @@ internal object EmojiUpdater {
 
     internal fun defaultCacheDir(): Path = FabricLoader.getInstance().configDir.resolve("rfu/repo")
 
+    internal fun configuredLatestReleaseUrl(): String {
+        if (!DevSettings.devMode || !DevSettings.useCustomEmojiRepo) return DEFAULT_LATEST_RELEASE_URL
+        val url = DevSettings.emojiReleaseUrl.trim()
+        val scheme = runCatching { URI.create(url).scheme?.lowercase() }.getOrNull()
+        if (scheme != "https" && scheme != "http") {
+            logger.warn("[RFU] Invalid custom emoji release URL '{}'; using default.", url)
+            return DEFAULT_LATEST_RELEASE_URL
+        }
+        return url
+    }
+
     private fun userAgent(): String {
         val version = runCatching {
             FabricLoader.getInstance().getModContainer("rfu")
@@ -50,16 +62,18 @@ internal object EmojiUpdater {
 
     internal fun fetchLatestRelease(
         cacheDir: Path = defaultCacheDir(),
-        latestReleaseUrl: String = DEFAULT_LATEST_RELEASE_URL,
+        latestReleaseUrl: String = configuredLatestReleaseUrl(),
         client: HttpClient = defaultHttpClient,
     ): EmojiPack.Bundle? {
         val zipPath = cacheDir.resolve(BUNDLE_FILE)
         val metaPath = cacheDir.resolve(CACHE_META_NAME)
         val cachedMeta = readMetadata(metaPath)
         val cachedBytes = readValidCache(zipPath, cachedMeta)
+        // Only trust cached tag/etag when the cache came from the same source repo.
+        val comparableMeta = cachedMeta?.takeIf { (it.source ?: DEFAULT_LATEST_RELEASE_URL) == latestReleaseUrl }
 
         return try {
-            fetchLatestReleaseInternal(zipPath, metaPath, cachedMeta, cachedBytes, latestReleaseUrl, client)
+            fetchLatestReleaseInternal(zipPath, metaPath, comparableMeta, cachedBytes, latestReleaseUrl, client)
         } catch (e: Exception) {
             logger.warn("[RFU] Failed to check for remote emoji updates: {}", e.message ?: e.javaClass.simpleName)
             cachedBytes?.let(::parseQuietly)
@@ -114,7 +128,7 @@ internal object EmojiUpdater {
 
         if (cachedBytes != null && cachedMeta != null && isAlreadyUpToDate(cachedMeta, tagName, expectedSha256)) {
             if (responseEtag != cachedMeta.etag || cachedMeta.tag != tagName) {
-                writeMetadata(metaPath, cachedMeta.copy(tag = tagName, etag = responseEtag ?: cachedMeta.etag))
+                writeMetadata(metaPath, cachedMeta.copy(tag = tagName, etag = responseEtag ?: cachedMeta.etag, source = latestReleaseUrl))
             }
             logger.info("[RFU] Emoji pack is up to date ({}).", tagName)
             return cachedBundle()
@@ -131,7 +145,7 @@ internal object EmojiUpdater {
 
         val bundle = EmojiPack.parseBundle(zipBytes)
         writeBytesAtomically(zipPath, zipBytes)
-        writeMetadata(metaPath, CacheMetadata(tag = tagName, etag = responseEtag, sha256 = actualSha256))
+        writeMetadata(metaPath, CacheMetadata(tag = tagName, etag = responseEtag, sha256 = actualSha256, source = latestReleaseUrl))
         logger.info("[RFU] Updated emoji pack to {} ({} entries).", tagName, bundle.entries.size)
         return bundle
     }
@@ -233,6 +247,7 @@ internal object EmojiUpdater {
         val tag: String? = null,
         val etag: String? = null,
         val sha256: String? = null,
+        val source: String? = null,
     )
 
     private data class GitHubRelease(

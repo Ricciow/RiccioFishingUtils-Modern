@@ -76,6 +76,18 @@ object DevSettings : Category("Developer") {
         condition = { devMode && useCustomWebSocket }
     }
 
+    var useCustomEmojiRepo by reloadableBoolean(false) {
+        name = Literal("Use Custom Emoji Repo")
+        description = Literal("Enable to use emoji packs from a custom source. Requires a restart.")
+        condition = { devMode }
+    }
+
+    var emojiReleaseUrl by string("https://api.github.com/repos/Ricciow/RFU-Emojis/releases/latest") {
+        name = Literal("Emojis Source")
+        description = Literal("URL that provides the emojis.")
+        condition = { devMode && useCustomEmojiRepo }
+    }
+
     var bypassHypixelCheck by observable(boolean(false) {
         name = Literal("Bypass Hypixel Check")
         description = Literal("Bypasses the requirement of being on Hypixel to connect to the websocket.")
