@@ -17,10 +17,11 @@ data class EmojiData(
     val ascent: Int = 7,
     val messageReplacement: String? = null,
     val category: String = "general",
+    val id: String = aliases.firstOrNull() ?: "",
 ) {
-    val primaryAlias: String get() = aliases.firstOrNull() ?: ""
+    val primaryAlias: String get() = aliases.firstOrNull() ?: id
     val text: String get() = textReplacement ?: messageReplacement ?: ":$primaryAlias:"
-    val displayName: String get() = Emoji.formatDisplayName(aliases.maxByOrNull { it.length } ?: primaryAlias)
+    val displayName: String get() = Emoji.formatDisplayName(aliases.maxByOrNull { it.length } ?: id)
     val triggers: List<String> get() = aliases.map { ":$it:" } + customTriggers
     val font: FontDescription.AtlasSprite? = sprite?.let {
         FontDescription.AtlasSprite(Identifier.withDefaultNamespace("gui"), Identifier.fromNamespaceAndPath("rfu", "emoji/$it"))
@@ -62,7 +63,7 @@ object Emoji {
     val CUSTOM_TRIGGERS: Map<String, EmojiData> = allEmojis.flatMap { emoji ->
         val triggers = when {
             emoji.messageReplacement == null -> emoji.customTriggers
-            emoji.textReplacement != null -> listOf(emoji.messageReplacement)
+            emoji.textReplacement != null || emoji.font != null -> listOf(emoji.messageReplacement)
             else -> emptyList()
         }
         triggers.map { it to emoji }

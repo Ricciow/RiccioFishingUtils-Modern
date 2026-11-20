@@ -133,12 +133,13 @@ internal object EmojiPack {
                 png
             }
             val aliases = metadata.aliases.orEmpty().filter { it.isNotBlank() }
+            val resolvedAliases = if (metadata.useIdAsAlias) listOf(id) + aliases else aliases
             val customTriggers = metadata.customTriggers.orEmpty().filter { it.isNotBlank() }
             val category = metadata.category?.takeIf { it.isNotBlank() } ?: "general"
             Entry(
                 emoji = EmojiData(
                     sprite = spriteId,
-                    aliases = listOf(id) + aliases,
+                    aliases = resolvedAliases,
                     customTriggers = customTriggers,
                     textReplacement = metadata.textReplacement?.let { text ->
                         formattingCode.replace(text) { "§${it.groupValues[1]}" }
@@ -147,6 +148,7 @@ internal object EmojiPack {
                     height = metadata.height,
                     ascent = metadata.ascent,
                     category = category,
+                    id = id,
                 ),
                 texture = texture,
                 listed = metadata.listed,
@@ -190,6 +192,7 @@ internal object EmojiPack {
         val height: Int = 8,
         val ascent: Int = 7,
         val listed: Boolean = true,
+        val useIdAsAlias: Boolean = true,
         val category: String? = "general",
     )
 }
