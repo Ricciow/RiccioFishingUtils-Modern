@@ -21,6 +21,8 @@
 - The “What is Magic Find?” achievement has been retired. Players who previously had it can find it under the Legacy tab.
 
 ### Fixes
+- Fixed trackers resetting when an individual tracker went quiet during an active fishing session.
+- Fixed skill XP and chat/action bar tracking missing messages canceled by other mods or failing on maxed skills.
 - Fiery Scuttlers now trigger a single alert and sound per group of up to six instead of triggering for each one.
 - Fixed duplicate hotspot shares and alerts.
 - Corrected the coordinates in shared hotspot messages.
@@ -30,6 +32,7 @@
 - Removed shadows from emoji icons on party finder.
 
 ### Backend
+- Isolated chat and skill event listeners so errors in one listener do not skip others.
 - Sea creature categories and islands now refresh through sea creature config sync.
 - Sea creature config sync works independently of the Connect to Backend setting.
 - Added Detekt checks

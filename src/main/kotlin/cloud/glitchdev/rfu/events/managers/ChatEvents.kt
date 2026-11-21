@@ -13,19 +13,56 @@ import net.minecraft.network.chat.Component
 
 @AutoRegister
 object ChatEvents : RegisteredEvent {
+    private var lastHandledChatMessage: Component? = null
+    private var lastHandledGameMessage: Component? = null
+    private var lastHandledGameOverlay = false
+
     override fun register() {
         ClientReceiveMessageEvents.ALLOW_CHAT.register { message, _, _, _, _ ->
             if (Chat.isSendingModMessage) return@register true
+            lastHandledChatMessage = message
             val result = ChatEventManager.runTasks(message)
             if(!result) RFULogger.dev("Chat message was hid: ${message.toFormattedString()}")
             result
         }
 
+        ClientReceiveMessageEvents.CHAT.register { _, _, _, _, _ ->
+            if (!Chat.isSendingModMessage) {
+                lastHandledChatMessage = null
+            }
+        }
+
+        ClientReceiveMessageEvents.CHAT_CANCELED.register { message, _, _, _, _ ->
+            if (Chat.isSendingModMessage) return@register
+            if (lastHandledChatMessage === message) {
+                lastHandledChatMessage = null
+                return@register
+            }
+            ChatEventManager.runTasks(message)
+        }
+
         ClientReceiveMessageEvents.ALLOW_GAME.register { message, overlay ->
             if (Chat.isSendingModMessage) return@register true
+            lastHandledGameMessage = message
+            lastHandledGameOverlay = overlay
             val result = GameEventManager.runTasks(message, overlay)
             if(!result) RFULogger.dev("Game message was hid: ${message.toFormattedString()}")
             result
+        }
+
+        ClientReceiveMessageEvents.GAME.register { _, _ ->
+            if (!Chat.isSendingModMessage) {
+                lastHandledGameMessage = null
+            }
+        }
+
+        ClientReceiveMessageEvents.GAME_CANCELED.register { message, overlay ->
+            if (Chat.isSendingModMessage) return@register
+            if (lastHandledGameMessage === message && lastHandledGameOverlay == overlay) {
+                lastHandledGameMessage = null
+                return@register
+            }
+            GameEventManager.runTasks(message, overlay)
         }
 
         ClientSendMessageEvents.ALLOW_CHAT.register { message ->
@@ -149,8 +186,10 @@ object ChatEvents : RegisteredEvent {
     object ChatEventManager : AbstractEventManager<(text: Component) -> Boolean, ChatEventManager.ChatEvent>() {
         override val runTasks: (text: Component) -> Boolean = { text ->
             var result = true
-            safeExecution {
-                for (event in tasks) if (!event.callback(text)) result = false
+            for (event in tasks) {
+                safeExecution {
+                    if (!event.callback(text)) result = false
+                }
             }
             result
         }
@@ -171,8 +210,10 @@ object ChatEvents : RegisteredEvent {
     object GameEventManager : AbstractEventManager<(text: Component, overlay: Boolean) -> Boolean, GameEventManager.GameEvent>() {
         override val runTasks: (text: Component, overlay: Boolean) -> Boolean = { text, overlay ->
             var result = true
-            safeExecution {
-                for (event in tasks) if (!event.callback(text, overlay)) result = false
+            for (event in tasks) {
+                safeExecution {
+                    if (!event.callback(text, overlay)) result = false
+                }
             }
             result
         }
@@ -193,8 +234,10 @@ object ChatEvents : RegisteredEvent {
     object SendChatEventManager : AbstractEventManager<(message: String) -> Boolean, SendChatEventManager.SendChatEvent>() {
         override val runTasks: (message: String) -> Boolean = { message ->
             var result = true
-            safeExecution {
-                for (event in tasks) if (!event.callback(message)) result = false
+            for (event in tasks) {
+                safeExecution {
+                    if (!event.callback(message)) result = false
+                }
             }
             result
         }
@@ -239,8 +282,10 @@ object ChatEvents : RegisteredEvent {
     object SendCommandEventManager : AbstractEventManager<(command: String) -> Boolean, SendCommandEventManager.SendCommandEvent>() {
         override val runTasks: (command: String) -> Boolean = { command ->
             var result = true
-            safeExecution {
-                for (event in tasks) if (!event.callback(command)) result = false
+            for (event in tasks) {
+                safeExecution {
+                    if (!event.callback(command)) result = false
+                }
             }
             result
         }

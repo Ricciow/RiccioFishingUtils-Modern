@@ -5,9 +5,9 @@ import cloud.glitchdev.rfu.constants.skyblock.SkillType
 
 object SkillEvents : AbstractEventManager<(skill: SkillType, xp: Long) -> Unit, SkillEvents.SkillXpUpdateEvent>() {
     override val runTasks: (SkillType, Long) -> Unit = { skill, xp ->
-        safeExecution {
-            tasks.forEach { event ->
-                if (event.skill == null || event.skill == skill) {
+        tasks.forEach { event ->
+            if (event.skill == null || event.skill == skill) {
+                safeExecution {
                     event.callback(skill, xp)
                 }
             }
