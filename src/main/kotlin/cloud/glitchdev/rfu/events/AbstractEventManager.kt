@@ -1,7 +1,11 @@
 package cloud.glitchdev.rfu.events
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
+import cloud.glitchdev.rfu.config.categories.DevSettings
+import cloud.glitchdev.rfu.constants.text.TextColor
+import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.RFULogger
+import cloud.glitchdev.rfu.utils.TextUtils
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
@@ -26,27 +30,26 @@ abstract class AbstractEventManager<CB, T : AbstractEventManager.ManagedTask<CB,
     abstract val runTasks : CB
 
     fun safeExecution(mainThread: Boolean = true, func: () -> Unit) {
-        if (mainThread) {
-            if (mc.isSameThread) {
-                try {
-                    func()
-                } catch (e: Exception) {
-                    RFULogger.error("Error in safeExecution:", e)
-                }
-            } else {
-                mc.execute {
-                    try {
-                        func()
-                    } catch (e: Exception) {
-                        RFULogger.error("Error in safeExecution:", e)
-                    }
-                }
-            }
+        if (mainThread && !mc.isSameThread) {
+            mc.execute { executeSafely(func) }
         } else {
-            try {
-                func()
-            } catch (e: Exception) {
-                RFULogger.error("Error in safeExecution:", e)
+            executeSafely(func)
+        }
+    }
+
+    private fun executeSafely(func: () -> Unit) {
+        try {
+            func()
+        } catch (e: Exception) {
+            val managerName = this::class.simpleName ?: "EventManager"
+            RFULogger.error("Error in safeExecution ($managerName):", e)
+            if (DevSettings.devMode) {
+                Chat.sendMessage(
+                    TextUtils.debugLiteral(
+                        "Error in $managerName: ${e::class.simpleName}: ${e.message ?: "Unknown error"}",
+                        TextColor.LIGHT_RED
+                    )
+                )
             }
         }
     }

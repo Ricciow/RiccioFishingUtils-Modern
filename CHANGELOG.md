@@ -38,3 +38,4 @@
 - Sea creature config sync works independently of the Connect to Backend setting.
 - Added Detekt checks
 - Hotspot detection now reacts to entity updates, optimizing :dog:.
+- Added error chat messages when Developer Mode is enabled.
