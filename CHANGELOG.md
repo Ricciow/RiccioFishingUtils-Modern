@@ -30,6 +30,7 @@
 - Fixed thunder bottle message hiding not working anymore
 - Fixed lootshared shards message hiding not working anymore
 - Removed shadows from emoji icons on party finder.
+- Fixed text shadows on Party Finder.
 
 ### Backend
 - Isolated chat and skill event listeners so errors in one listener do not skip others.

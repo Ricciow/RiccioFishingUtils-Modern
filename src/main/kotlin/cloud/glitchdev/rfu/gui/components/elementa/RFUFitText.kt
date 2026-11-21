@@ -13,7 +13,6 @@ import gg.essential.elementa.renderer.ElementaExtractor
 import net.minecraft.client.Minecraft
 import net.minecraft.locale.Language
 import net.minecraft.network.chat.FormattedText
-import java.awt.Color
 
 /** Draws a single line at its requested scale, shrinking only when its rendered text exceeds the width. */
 class RFUFitText(private var text: String, private val maxScale: Float = 1f) : UIComponent() {
@@ -47,8 +46,6 @@ class RFUFitText(private var text: String, private val maxScale: Float = 1f) : U
         if (scale <= 0f) return
         val font = getFontProvider()
         val y = getTop() + if (constraints.y is CenterConstraint) font.getBelowLineHeight() * scale else 0f
-        font.extractMcScale(
-            extractor, text, getColor(), getLeft(), y, scale, true, Color.BLACK
-        )
+        font.extractMcScale(extractor, text, getColor(), getLeft(), y, scale)
     }
 }
