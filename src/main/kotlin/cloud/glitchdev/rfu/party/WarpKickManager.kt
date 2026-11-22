@@ -33,6 +33,9 @@ object WarpKickManager : RegisteredEvent {
 
     fun isUserOnList(username: String): Boolean = kickList.contains(username)
 
+    val pendingRejoinCount: Int
+        get() = pendingRejoin.count { it !in Party.members.keys }
+
     val kickListSize
         get() = kickList.size
 
@@ -42,28 +45,28 @@ object WarpKickManager : RegisteredEvent {
             return
         }
 
-        if (Party.members.size == 2 && Party.members.keys.any { isUserOnList(it) }) {
+        val currentMembers = Party.members.keys.toList()
+        val usersToKick = kickList.filter { it in currentMembers }
+
+        if (Party.members.size > 1 && usersToKick.size >= Party.members.size - 1) {
             Chat.sendPartyMessage("No need to warp. (Togglewarp ON)")
             return
         }
 
-        val currentMembers = Party.members.keys.toList()
-        val usersToKick = kickList.filter { it in currentMembers }
-        
         if (usersToKick.isEmpty()) {
             Chat.sendCommand("p warp")
             return
         }
 
         usersToKick.forEach { user ->
+            pendingRejoin.add(user)
             Chat.sendCommand("p kick $user")
 
-            pendingRejoin.add(user)
             Coroutines.launch {
                 delay(60000)
-                if (pendingRejoin.contains(user)) {
+                if (pendingRejoin.remove(user)) {
                     kickList.remove(user)
-                    pendingRejoin.remove(user)
+                    Party.syncPartyFinderListing()
                 }
             }
         }
@@ -91,7 +94,7 @@ object WarpKickManager : RegisteredEvent {
             }
         }
 
-        registerOnPartyChangeEvent { inParty, isLeader, _, members ->
+        registerOnPartyChangeEvent(priority = 10) { inParty, isLeader, _, members ->
             if (inParty && isLeader) {
                 kickList.removeIf { it !in members.keys && it !in pendingRejoin }
                 pendingRejoin.removeIf { it in members.keys }

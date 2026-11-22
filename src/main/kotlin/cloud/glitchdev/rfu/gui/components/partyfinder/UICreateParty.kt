@@ -500,6 +500,7 @@ class UICreateParty : UIContainer() {
                         popup.showWarning("You must be the party leader to do this!")
                         submitButton.disabled = false
                     } else {
+                        party.players.current = if (Party.inParty) maxOf(Party.effectiveMemberCount, 1) else 1
                         PartyWebSocket.submitParty(party)
                     }
                 }
@@ -567,7 +568,7 @@ class UICreateParty : UIContainer() {
         updatePartyTypeVisibility(party.island)
         party.level = (levelField.getText().toIntOrNull() ?: 0).coerceIn(0, 50)
         party.overflow = if (party.level == 50) parseOverflow() ?: party.overflow else 0L
-        party.players.current = if (Party.inParty) Party.memberCount else 1
+        party.players.current = if (Party.inParty) maxOf(Party.effectiveMemberCount, 1) else 1
         party.players.max = maxPlayersField.getText().toIntOrNull() ?: 6
 
         party.setRequisite("has_killer", "Has Killer", killerToggle.selected)

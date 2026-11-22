@@ -33,6 +33,7 @@
 - Fixed lootshared shards message hiding not working anymore
 - Removed shadows from emoji icons on party finder.
 - Fixed text shadows on Party Finder.
+- Fixed Party Finder temporarily lowering the party player count during a !tw warp and letting other players join.
 
 ### Backend
 - Isolated chat and skill event listeners so errors in one listener do not skip others.

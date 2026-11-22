@@ -326,7 +326,7 @@ object PartyWebSocket : RegisteredEvent {
 
         party.profileId = User.profileId
         party.user = User.getUsername()
-        party.players.current = if (Party.inParty) maxOf(Party.memberCount, 1) else 1
+        party.players.current = if (Party.inParty) maxOf(Party.effectiveMemberCount, 1) else 1
 
         val validation = PartyRequirementsManager.canCreateParty(party)
         if (!validation.isSuccess) {
@@ -352,7 +352,7 @@ object PartyWebSocket : RegisteredEvent {
                     Chat.sendMessage(TextUtils.rfupfLiteral("You must be the party leader to do this!", TextColor.LIGHT_RED))
                 } else {
                     lastSubmitTime = System.currentTimeMillis()
-                    party.players.current = if (Party.inParty) maxOf(Party.memberCount, 1) else 1
+                    party.players.current = if (Party.inParty) maxOf(Party.effectiveMemberCount, 1) else 1
                     submitParty(party)
                     Chat.sendMessage(TextUtils.rfupfLiteral("Party requeued!", TextColor.LIGHT_GREEN))
                 }

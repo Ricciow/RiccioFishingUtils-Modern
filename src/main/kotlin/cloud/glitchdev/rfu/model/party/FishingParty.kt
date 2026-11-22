@@ -83,7 +83,7 @@ data class FishingParty(
                     Requisite("wither_impact", "Wither Impact", false),
                 ),
                 listOf(),
-                Players(maxOf(Party.memberCount, 1), 6)
+                Players(maxOf(Party.effectiveMemberCount, 1), 6)
             )
         }
     }

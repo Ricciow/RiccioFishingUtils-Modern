@@ -242,7 +242,7 @@ object OtherSettings : Category("Other") {
 
     var partyRequeueAlert by boolean(true) {
         name = Literal("Party Requeue Alert")
-        description = Literal("Sends a message with a requeue button when your party is dequeued or stops being full.")
+        description = Literal("Sends a message with a requeue button when your party is dequeued.")
         condition = { BackendSettings.backendAccepted }
     }
 

@@ -18,6 +18,7 @@ import cloud.glitchdev.rfu.events.managers.PartyEvents
 import cloud.glitchdev.rfu.events.managers.PartyEvents.registerOnPartyChangeEvent
 import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
 import cloud.glitchdev.rfu.model.party.FishingParty
+import cloud.glitchdev.rfu.party.WarpKickManager
 import cloud.glitchdev.rfu.utils.command.AbstractCommand
 import cloud.glitchdev.rfu.utils.command.Command
 import cloud.glitchdev.rfu.utils.dsl.removeRankTag
@@ -44,6 +45,8 @@ object Party : RegisteredEvent {
     var isAllInvite = false
     val members: MutableMap<String, ClientboundPartyInfoPacket.PartyRole> = mutableMapOf()
     var memberCount = 0
+    val effectiveMemberCount: Int
+        get() = if (inParty && isLeader) memberCount + WarpKickManager.pendingRejoinCount else memberCount
     var requestedUser: String? = null
     private val joinedCooldowns: MutableMap<String, Long> = mutableMapOf()
     private val pendingPFInvites: MutableSet<String> = ConcurrentHashMap.newKeySet()
@@ -85,6 +88,10 @@ object Party : RegisteredEvent {
         }
 
         registerJoinRequestEvent { applicant ->
+            val currentParty = PartyWebSocket.myParty
+            if (currentParty != null && effectiveMemberCount >= currentParty.players.max) {
+                return@registerJoinRequestEvent
+            }
             if (OtherSettings.autoAcceptPlayers) {
                 sendPFInvite(applicant, preventDuplicate = true)
             } else {
@@ -180,19 +187,8 @@ object Party : RegisteredEvent {
             executePartyChange()
         }
 
-        registerOnPartyChangeEvent { _, isLeader, _, _ ->
-            val currentParty: FishingParty? = PartyWebSocket.myParty
-            if (currentParty != null) {
-                if (isLeader) {
-                    val updatedParty = currentParty.copy(
-                        players = currentParty.players.copy(current = memberCount),
-                        profileId = User.profileId
-                    )
-                    PartyWebSocket.editParty(updatedParty)
-                } else {
-                    PartyWebSocket.deleteParty(User.getUsername())
-                }
-            }
+        registerOnPartyChangeEvent { _, _, _, _ ->
+            syncPartyFinderListing()
         }
 
         PartyFinderEvents.MyPartyChanged.register { party ->
@@ -205,6 +201,19 @@ object Party : RegisteredEvent {
             if (PartyWebSocket.myParty != null) {
                 PartyWebSocket.deleteParty(User.getUsername())
             }
+        }
+    }
+
+    fun syncPartyFinderListing() {
+        val currentParty: FishingParty = PartyWebSocket.myParty ?: return
+        if (isLeader) {
+            val updatedParty = currentParty.copy(
+                players = currentParty.players.copy(current = effectiveMemberCount),
+                profileId = User.profileId
+            )
+            PartyWebSocket.editParty(updatedParty)
+        } else {
+            PartyWebSocket.deleteParty(User.getUsername())
         }
     }
 
