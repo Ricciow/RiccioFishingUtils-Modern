@@ -9,6 +9,7 @@
 - Added Mute Non-RFU Sounds to silence game audio while keeping RFU alerts and the timer ding.
 - Added /rfuemojis or /rfuemojiedit to browse, search, and manage emojis.
 - Emojis now automatically update from the RFU Emojis repository.
+- Added setting that lets muted party members request a warp with Hypixel's muted private message.
 
 ### Changes
 - Made kill time and personal best messages only one message.

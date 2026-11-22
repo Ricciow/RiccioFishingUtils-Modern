@@ -68,10 +68,16 @@ object PartySettings : Category("Party") {
         condition = { togglePartyCommands }
     }
 
-    var toggleWarpCommand by boolean(true) {
+    var toggleWarpCommand by reloadableBoolean(true) {
         name = Literal("Enable Warp Command")
         description = Literal("Enables or disables the !warp party command.")
         condition = { togglePartyCommands }
+    }
+
+    var warpOnMutedMessage by boolean(false) {
+        name = Literal("Warp on Muted Messages")
+        description = Literal("Treats the I'm muted message as a !warp command.")
+        condition = { togglePartyCommands && toggleWarpCommand }
     }
 
     var toggleToggleWarpCommand by boolean(true) {
