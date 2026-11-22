@@ -222,6 +222,14 @@ class UICreateParty : UIContainer() {
             hoverColor = UIScheme.pfInputBgHovered.toConstraint()
         } childOf parent
         descriptionField.setText(party.description)
+
+        UIText("Use &0-9 or &a-f for colors in the title and description.").constrain {
+            x = 0.pixels()
+            y = SiblingConstraint(UIScheme.pfLabelSpacing)
+            width = TextAspectConstraint()
+            height = ScaledTextConstraint(0.75f)
+            color = UIScheme.pfCardUserColor.toConstraint()
+        } childOf parent
     }
 
     private fun createRow3(parent: UIContainer) {
