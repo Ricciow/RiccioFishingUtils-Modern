@@ -66,8 +66,9 @@ object Announcements : Feature {
         if (announcement.id == lastShownId) return
         lastShownId = announcement.id
 
+        val message = announcement.message.replace("\\n", "\n")
         Chat.sendMessage(
-            announcement.message.toInteractiveText(
+            message.toInteractiveText(
                 "/rfuannouncement open",
                 Component.literal("Open announcement")
             )
