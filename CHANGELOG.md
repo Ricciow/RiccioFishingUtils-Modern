@@ -12,6 +12,7 @@
 - Added setting that lets muted party members request a warp with Hypixel's muted private message.
 
 ### Changes
+- Renamed !version command to !rfuversion
 - Made kill time and personal best messages only one message.
 - Removed the Golden Dragon alert.
 - Drops before mf update now have a small [!] warning in /rfudrophistory.

@@ -6,8 +6,9 @@ import cloud.glitchdev.rfu.party.PartyCommand
 
 @PartyCommand
 object VersionCommand : AbstractPartyCommand(
-    name = "version",
+    name = "rfuversion",
     description = "Shows the current RFU version.",
+    aliases = listOf("version"),
     responseTemplates = listOf(
         "RFU version: {version}" to "&9&l{sender}: &e{1}"
     )
