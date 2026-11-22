@@ -4,7 +4,7 @@
 - The Bobbin' Time display now has the Magic find and Tracking bonuses and its configurable.
 - Added official support for colors in party finder using &
 - Added an option between Party and All Chat for hotspot sharing.
-- Mute Annoying Sounds now silences the reindrake's gifts in Jerry's Workshop.
+- Mute Annoying Sounds now silences the reindrake's gifts in Jerry's Workshop and Jade Dragon sounds in Galatea.
 - Added an option to show the Bobbin' Time Magic Find bonus when a rare sea creature dies.
 - Added Mute Non-RFU Sounds to silence game audio while keeping RFU alerts and the timer ding.
 - Added /rfuemojis or /rfuemojiedit to browse, search, and manage emojis.
