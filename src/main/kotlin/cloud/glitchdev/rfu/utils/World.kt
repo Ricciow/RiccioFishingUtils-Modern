@@ -109,8 +109,8 @@ object  World : RegisteredEvent {
 
         registerJoinEvent(priority = -100) { wasConnected ->
             if (!wasConnected) {
-                val ip = mc.currentServer?.ip?.lowercase()
-                val isAlpha = ip != null && (ip == "alpha.hypixel.net" || ip.endsWith(".alpha.hypixel.net"))
+                val host = mc.currentServer?.ip?.substringBefore(':')?.lowercase()
+                val isAlpha = host != null && (host == "alpha.hypixel.net" || host.endsWith(".alpha.hypixel.net"))
 
                 if (isAlpha) {
                     isOnAlpha = true
@@ -122,8 +122,8 @@ object  World : RegisteredEvent {
                     isOnAlpha = false
                 }
 
-                isOnHypixel = ip != null && listOf("hypixel.net", "hypixel.fast").any {
-                    ip == it || ip.endsWith(".$it")
+                isOnHypixel = host != null && listOf("hypixel.net", "hypixel.fast").any {
+                    host == it || host.endsWith(".$it")
                 }
             }
         }

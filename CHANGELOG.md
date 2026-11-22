@@ -34,6 +34,7 @@
 - Removed shadows from emoji icons on party finder.
 - Fixed text shadows on Party Finder.
 - Fixed Party Finder temporarily lowering the party player count during a !tw warp and letting other players join.
+- Fixed Hypixel detection when the server address includes a port.
 
 ### Backend
 - Isolated chat and skill event listeners so errors in one listener do not skip others.
