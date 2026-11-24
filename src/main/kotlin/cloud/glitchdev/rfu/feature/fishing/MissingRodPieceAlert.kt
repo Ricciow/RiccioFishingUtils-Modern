@@ -2,7 +2,8 @@ package cloud.glitchdev.rfu.feature.fishing
 
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
-import cloud.glitchdev.rfu.events.managers.ItemUsedEvents.registerItemUsedEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerItemUsedEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.dsl.isFishingRod
@@ -10,8 +11,8 @@ import cloud.glitchdev.rfu.utils.dsl.hasDescriptionText
 
 @RFUFeature
 object MissingRodPieceAlert : Feature {
-    override fun onInitialize() {
-        registerItemUsedEvent { item ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerItemUsedEvent { item ->
             if (!GeneralFishing.missingRodPiece.enabled) return@registerItemUsedEvent
             if (!FishingSession.isFishing) return@registerItemUsedEvent
             if (!item.isFishingRod()) return@registerItemUsedEvent

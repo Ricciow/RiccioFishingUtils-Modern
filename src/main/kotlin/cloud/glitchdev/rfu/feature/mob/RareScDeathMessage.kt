@@ -7,8 +7,9 @@ import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.data.catches.CatchTracker
 import cloud.glitchdev.rfu.data.mob.SkyblockEntity
-import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDeathEvent
-import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDisposeEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerMobDeathEvent
+import cloud.glitchdev.rfu.events.managers.registerMobDisposeEvent
 import cloud.glitchdev.rfu.events.managers.SeaCreaturePersonalBestEvents
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
@@ -25,12 +26,12 @@ import kotlin.time.Clock
 object RareScDeathMessage : Feature {
     private val encouragements = listOf("Amazing", "Incredible", "Outstanding", "Fantastic", "Brilliant", "Unreal")
 
-    override fun onInitialize() {
-        registerMobDisposeEvent { entities ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerMobDisposeEvent { entities ->
             onMobDeath(entities, isDisposal = true)
         }
 
-        registerMobDeathEvent { entities ->
+        scope.registerMobDeathEvent { entities ->
             onMobDeath(entities)
         }
     }

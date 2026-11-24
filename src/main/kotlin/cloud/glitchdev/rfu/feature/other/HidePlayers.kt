@@ -3,7 +3,8 @@ package cloud.glitchdev.rfu.feature.other
 import cloud.glitchdev.rfu.access.PlayerVisibilityRenderStateAccess
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.ui.VisiblePlayerEquipment
-import cloud.glitchdev.rfu.events.managers.PlayerRenderStateEvents.registerPlayerRenderStateEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerPlayerRenderStateEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.feature.fishing.FishingSession
@@ -22,8 +23,8 @@ import net.minecraft.world.item.ItemStack
 
 @RFUFeature
 object HidePlayers : Feature {
-    override fun onInitialize() {
-        registerPlayerRenderStateEvent { player, state -> prepareRenderState(player, state) }
+    override fun onInitialize(scope: EventScope) {
+        scope.registerPlayerRenderStateEvent { player, state -> prepareRenderState(player, state) }
     }
 
     private fun prepareRenderState(player: Avatar, state: AvatarRenderState) {

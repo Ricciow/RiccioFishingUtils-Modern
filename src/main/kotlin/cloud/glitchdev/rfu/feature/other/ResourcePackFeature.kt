@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.feature.other
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.MOD_ID
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.RFULogger
@@ -12,7 +13,7 @@ import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import kotlin.io.path.nameWithoutExtension
 import kotlin.use
-import cloud.glitchdev.rfu.events.managers.PackSelectionScreenEvents.registerPackSelectionScreenTickEvent
+import cloud.glitchdev.rfu.events.managers.registerPackSelectionScreenTickEvent
 import java.nio.file.attribute.FileTime
 
 @RFUFeature
@@ -20,7 +21,7 @@ object ResourcePackFeature : Feature {
     private var lastUpdate: FileTime? = null
     private val soundsDir by lazy { mc.gameDirectory.toPath().resolve("resourcepacks/RFU Custom Sounds/assets/$MOD_ID/sounds") }
 
-    override fun onInitialize() {
+    override fun onInitialize(scope: EventScope) {
         generate(Sounds.registeredSounds)
         try {
             if (Files.exists(soundsDir)) {
@@ -30,7 +31,7 @@ object ResourcePackFeature : Feature {
             RFULogger.error("Error while loading sounds", e)
         }
 
-        registerPackSelectionScreenTickEvent {
+        scope.registerPackSelectionScreenTickEvent {
             if (Files.exists(soundsDir)) {
                 val lastModified = Files.getLastModifiedTime(soundsDir)
                 if (lastUpdate == null || lastModified > lastUpdate) {

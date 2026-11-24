@@ -4,10 +4,11 @@ import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.HotSpotSettings
 import cloud.glitchdev.rfu.constants.fishing.HotspotType
 import cloud.glitchdev.rfu.data.fishing.Hotspot
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.HotSpotEvents
-import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
-import cloud.glitchdev.rfu.events.managers.RenderEvents.registerRenderEvent
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.registerRenderEvent
+import cloud.glitchdev.rfu.events.managers.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.gui.UIScheme.decreaseOpacity
@@ -20,12 +21,12 @@ import java.util.concurrent.atomic.AtomicReference
 object HotspotPointer : Feature {
     private val bestHotspotRef = AtomicReference<Hotspot?>(null)
 
-    override fun onInitialize() {
-        registerLocationEvent {
+    override fun onInitialize(scope: EventScope) {
+        scope.registerLocationEvent {
             bestHotspotRef.set(null)
         }
 
-        registerTickEvent(interval = 10) {
+        scope.registerTickEvent(interval = 10) {
             if (!HotSpotSettings.hotspotPointer || !FishingSession.isHotspotFishing) {
                 bestHotspotRef.set(null)
                 return@registerTickEvent
@@ -66,7 +67,7 @@ object HotspotPointer : Feature {
             bestHotspotRef.set(calculatedBest)
         }
 
-        registerRenderEvent { context ->
+        scope.registerRenderEvent { context ->
             if (!HotSpotSettings.hotspotPointer || !FishingSession.isHotspotFishing) return@registerRenderEvent
 
             val bestHotspot = bestHotspotRef.get() ?: return@registerRenderEvent

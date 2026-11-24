@@ -1,7 +1,8 @@
 package cloud.glitchdev.rfu.feature.mob
 
 import cloud.glitchdev.rfu.config.categories.LavaFishing
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerGameEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Sounds
@@ -15,8 +16,8 @@ object JawbusDeathAlert : Feature {
 
     private var lastAlert : Instant = Instant.DISTANT_PAST
 
-    override fun onInitialize() {
-        registerGameEvent(JAWBUS_DEATH_REGEX) { _, _, matches ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerGameEvent(JAWBUS_DEATH_REGEX) { _, _, matches ->
             if(!LavaFishing.jawbusDeath.enabled) return@registerGameEvent
             val now = Clock.System.now()
             if(now - lastAlert > 30.seconds) {

@@ -2,12 +2,13 @@ package cloud.glitchdev.rfu.feature.mob
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.data.mob.DeployableManager
 import cloud.glitchdev.rfu.data.mob.DeployableType
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
+import cloud.glitchdev.rfu.events.managers.registerJoinEvent
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.Sounds
 
@@ -15,12 +16,12 @@ import cloud.glitchdev.rfu.utils.Sounds
 object DeployableTimers : Feature {
     private val previouslyActive = HashMap<DeployableType, DeployableManager.Deployable?>()
 
-    override fun onInitialize() {
-        registerJoinEvent {
+    override fun onInitialize(scope: EventScope) {
+        scope.registerJoinEvent {
             previouslyActive.clear()
         }
 
-        registerTickEvent(interval = 20) {
+        scope.registerTickEvent(interval = 20) {
             val active = DeployableManager.getActiveDeployables()
             val player = mc.player
 

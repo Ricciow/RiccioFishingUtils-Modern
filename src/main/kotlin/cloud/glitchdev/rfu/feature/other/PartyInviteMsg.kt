@@ -4,7 +4,8 @@ import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerGameEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat
@@ -27,8 +28,8 @@ object PartyInviteMsg : Feature {
 
     private val ME_ONLY_REGEX = """^(me+(\sme+)*)[?.!]?$""".toRegex(RegexOption.IGNORE_CASE)
 
-    override fun onInitialize() {
-        registerGameEvent(CHAT_REGEX) { _, _, matches ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerGameEvent(CHAT_REGEX) { _, _, matches ->
             if (!OtherSettings.partyInviteMsgs) return@registerGameEvent
 
             val groups = matches?.groupValues ?: return@registerGameEvent
@@ -49,7 +50,7 @@ object PartyInviteMsg : Feature {
             sendInviteMessage(playerName)
         }
 
-        registerGameEvent(BOOP_REGEX) { _, _, matches ->
+        scope.registerGameEvent(BOOP_REGEX) { _, _, matches ->
             if (!OtherSettings.partyInviteMsgs) return@registerGameEvent
             val player = matches?.groupValues?.getOrNull(1) ?: return@registerGameEvent
             if (player.isUser()) return@registerGameEvent

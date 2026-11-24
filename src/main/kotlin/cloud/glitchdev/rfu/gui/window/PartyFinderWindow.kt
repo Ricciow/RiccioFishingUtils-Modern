@@ -3,18 +3,19 @@ package cloud.glitchdev.rfu.gui.window
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.skyblock.SkillType
-import cloud.glitchdev.rfu.events.managers.CloseConfigEvents.registerCloseConfigEvent
-import cloud.glitchdev.rfu.events.managers.HudRenderEvents.registerHudRenderEvent
-import cloud.glitchdev.rfu.events.managers.KeybindEvents.registerKeybind
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerCloseConfigEvent
+import cloud.glitchdev.rfu.events.managers.registerHudRenderEvent
+import cloud.glitchdev.rfu.events.managers.registerKeybind
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.UIPopup
-import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyListChangedEvent
-import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyCreatedEvent
-import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyUpdatedEvent
-import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerInfoMessageEvent
-import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
+import cloud.glitchdev.rfu.events.managers.registerPartyListChangedEvent
+import cloud.glitchdev.rfu.events.managers.registerPartyCreatedEvent
+import cloud.glitchdev.rfu.events.managers.registerPartyUpdatedEvent
+import cloud.glitchdev.rfu.events.managers.registerInfoMessageEvent
+import cloud.glitchdev.rfu.events.managers.registerErrorMessageEvent
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents
-import cloud.glitchdev.rfu.events.managers.SkillEvents.registerSkillXpUpdateEvent
+import cloud.glitchdev.rfu.events.managers.registerSkillXpUpdateEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.gui.components.UIButton
@@ -90,9 +91,6 @@ object PartyFinderWindow : BaseWindow(false), Feature {
     lateinit var scrollArea : ScrollComponent
     lateinit var partiesContainer : UIContainer
 
-    //To force initialization of gui
-    override fun onInitialize() {}
-
     override fun onOpenWindow() {
         super.onOpenWindow()
         newGuiScale = OtherSettings.partyFinderGuiScale.scaleValue
@@ -123,33 +121,35 @@ object PartyFinderWindow : BaseWindow(false), Feature {
     init {
         create()
         onUpdate()
+    }
 
-        registerCloseConfigEvent {
+    override fun onInitialize(scope: EventScope) {
+        scope.registerCloseConfigEvent {
             halloweenComponent.update()
         }
 
-        registerPartyListChangedEvent { parties ->
+        scope.registerPartyListChangedEvent { parties ->
             this.parties = parties
             onUpdate()
         }
 
-        registerSkillXpUpdateEvent(SkillType.FISHING) { _, _ -> updateFiltering() }
+        scope.registerSkillXpUpdateEvent(SkillType.FISHING) { _, _ -> updateFiltering() }
 
-        registerPartyCreatedEvent { party ->
+        scope.registerPartyCreatedEvent { party ->
             if (party.user == User.getUsername()) {
                 creationOpen = false
                 onUpdate()
             }
         }
 
-        registerPartyUpdatedEvent { party ->
+        scope.registerPartyUpdatedEvent { party ->
             if (party.user == User.getUsername()) {
                 creationOpen = false
                 onUpdate()
             }
         }
 
-        registerErrorMessageEvent { message, origin ->
+        scope.registerErrorMessageEvent { message, origin ->
             //~ if >=26.2 'screen' -> 'gui.screen()' {
             if (mc.gui.screen() == this && (origin == "/app/party/join" || origin == "/app/party/report" || origin == "/app/party/delete")) {
             //~}
@@ -157,7 +157,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             }
         }
 
-        registerInfoMessageEvent { message, isWarning ->
+        scope.registerInfoMessageEvent { message, isWarning ->
             //~ if >=26.2 'screen' -> 'gui.screen()' {
             if (mc.gui.screen() == this) {
             //~}
@@ -167,7 +167,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             }
         }
 
-        registerKeybind {
+        scope.registerKeybind {
             key = { OtherSettings.peekPartyFinderKeybind }
             onPress = {
                 if (!World.isOnAlpha) {
@@ -195,7 +195,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             }
         }
 
-        registerHudRenderEvent(50) { context, ticks ->
+        scope.registerHudRenderEvent(50) { context, ticks ->
             if (isPeeking) {
                 extractRenderState(context, 0, 0, ticks)
             }

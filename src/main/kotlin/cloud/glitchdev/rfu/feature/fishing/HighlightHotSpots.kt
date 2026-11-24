@@ -3,8 +3,9 @@ package cloud.glitchdev.rfu.feature.fishing
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.HotSpotSettings
 import cloud.glitchdev.rfu.config.categories.HotSpotSettings.hotspotBorderOpacity
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.HotSpotEvents
-import cloud.glitchdev.rfu.events.managers.RenderEvents.registerRenderEvent
+import cloud.glitchdev.rfu.events.managers.registerRenderEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.rendering.Render3D
@@ -18,8 +19,8 @@ import net.minecraft.world.phys.Vec3
 @RFUFeature
 object HighlightHotSpots : Feature {
 
-    override fun onInitialize() {
-        registerRenderEvent { context ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerRenderEvent { context ->
             if (!HotSpotSettings.highlightHotSpots) return@registerRenderEvent
 
             val world = mc.level ?: return@registerRenderEvent

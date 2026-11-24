@@ -5,8 +5,11 @@ import cloud.glitchdev.rfu.constants.fishing.IRareDrop
 import cloud.glitchdev.rfu.constants.fishing.RareDrops
 import cloud.glitchdev.rfu.data.drops.DropManager
 import cloud.glitchdev.rfu.data.drops.DropRecord
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerAllowGameEvent
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.DropEvents
+import cloud.glitchdev.rfu.events.managers.registerAllowGameEvent
+import cloud.glitchdev.rfu.events.managers.registerDyeDropEvent
+import cloud.glitchdev.rfu.events.managers.registerRareDropEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat.sendMessage
@@ -20,14 +23,14 @@ import net.minecraft.network.chat.Component
 
 @RFUFeature
 object RareDropAlert : Feature {
-    override fun onInitialize() {
-        registerAllowGameEvent(DropEvents.RARE_DROP_REGEX) { _, _, matches ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerAllowGameEvent(DropEvents.RARE_DROP_REGEX) { _, _, matches ->
             val dropName = matches?.groupValues?.getOrNull(1) ?: return@registerAllowGameEvent true
             val rareDrop = RareDrops.getRelatedDrop(dropName) ?: return@registerAllowGameEvent true
             !(DropsSettings.customRareDropMessage && rareDrop in DropsSettings.rareDrops)
         }
 
-        DropEvents.registerRareDropEvent { rareDrop, magicFind, mobName ->
+        scope.registerRareDropEvent { rareDrop, magicFind, mobName ->
             if (rareDrop !in DropsSettings.rareDrops) return@registerRareDropEvent true
             
             val history = DropManager.dropHistory.getOrAdd(rareDrop).history
@@ -36,7 +39,7 @@ object RareDropAlert : Feature {
             true
         }
 
-        DropEvents.registerDyeDropEvent { dyeDrop, magicFind, mobName ->
+        scope.registerDyeDropEvent { dyeDrop, magicFind, mobName ->
             if (dyeDrop !in DropsSettings.dyeDrops) return@registerDyeDropEvent
             
             val history = DropManager.dropHistory.getOrAdd(dyeDrop).history

@@ -1,9 +1,10 @@
 package cloud.glitchdev.rfu.feature.mob
 
 import cloud.glitchdev.rfu.config.categories.OtherSettings
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
-import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDetectEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.registerMobDetectEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.data.mob.SkyblockEntity
@@ -13,8 +14,8 @@ import cloud.glitchdev.rfu.utils.Sounds
 object LittlefootAlert : Feature {
     private var lastEntities : Set<SkyblockEntity> = setOf()
 
-    override fun onInitialize() {
-        registerMobDetectEvent { entities ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerMobDetectEvent { entities ->
             if(!OtherSettings.littlefoot.enabled) return@registerMobDetectEvent
             
             val littlefoots = entities.filter { !it.isRemoved() && it.sbName.contains("Littlefoot", ignoreCase = true) }.toSet()
@@ -32,11 +33,11 @@ object LittlefootAlert : Feature {
             }
         }
 
-        registerLocationEvent {
+        scope.registerLocationEvent {
             lastEntities = emptySet()
         }
 
-        registerDisconnectEvent {
+        scope.registerDisconnectEvent {
             lastEntities = emptySet()
         }
     }

@@ -9,6 +9,7 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 import java.io.OutputStream
 
 private const val AUTO_REGISTER = "cloud.glitchdev.rfu.events.AutoRegister"
+private const val RFU_FEATURE = "cloud.glitchdev.rfu.feature.RFUFeature"
 
 private data class GeneratorSpec(
     val annotation: String,
@@ -33,7 +34,7 @@ class FeatureProcessor(
                 requiredSuperType = "cloud.glitchdev.rfu.achievement.BaseAchievement"
             ),
             GeneratorSpec(
-                annotation = "cloud.glitchdev.rfu.feature.RFUFeature",
+                annotation = RFU_FEATURE,
                 loaderFuncName = "loadFeatures",
                 methodToCall = "onInitialize",
                 requiredSuperType = "cloud.glitchdev.rfu.feature.Feature"
@@ -133,6 +134,7 @@ class FeatureProcessor(
             writer.write("package $packageName\n\n")
 
             val allSymbols = symbolsMap.values.flatten()
+            writer.write("import cloud.glitchdev.rfu.feature.FeatureScopes\n")
 
             // Detect duplicate simple names so we can use fully-qualified references for them
             val simpleNameCounts = allSymbols
@@ -148,12 +150,16 @@ class FeatureProcessor(
                 .forEach { writer.write("import $it\n") }
 
             writer.write("\nobject $fileName {\n")
+            writer.write("    private val featureScopes = FeatureScopes()\n")
 
             specs.forEach { spec ->
                 val symbols = symbolsMap[spec] ?: emptyList()
+                val scoped = spec.annotation == RFU_FEATURE
 
                 writer.write("\n    fun ${spec.loaderFuncName}() {\n")
-                if (symbols.isEmpty()) writer.write("        // No entries found\n")
+                if (scoped) writer.write("        featureScopes.load { scope ->\n")
+                val indent = if (scoped) "            " else "        "
+                if (symbols.isEmpty()) writer.write("$indent// No entries found\n")
 
                 symbols.forEach { symbol ->
                     val simpleName = symbol.simpleName.asString()
@@ -163,15 +169,13 @@ class FeatureProcessor(
                     } else {
                         simpleName
                     }
-                    writer.write("        ")
-                    if (symbol.classKind == ClassKind.OBJECT) {
-                        writer.write("$ref.${spec.methodToCall}()")
-                    } else {
-                        writer.write("$ref().${spec.methodToCall}()")
-                    }
-                    writer.write("\n")
+                    val instance = if (symbol.classKind == ClassKind.OBJECT) ref else "$ref()"
+                    val arguments = if (scoped) "scope.child()" else ""
+                    writer.write("$indent$instance.${spec.methodToCall}($arguments)\n")
                 }
+                if (scoped) writer.write("        }\n")
                 writer.write("    }\n")
+                if (scoped) writer.write("\n    fun unloadFeatures() = featureScopes.close()\n")
             }
             writer.write("}")
         }

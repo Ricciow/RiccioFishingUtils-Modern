@@ -1,7 +1,8 @@
 package cloud.glitchdev.rfu.feature.other
 
 import cloud.glitchdev.rfu.config.categories.OtherSettings
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerGameEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
@@ -10,8 +11,8 @@ import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 object PetLevelUpAlert : Feature {
     val LEVEL_UP_REGEX = """Your (.+) leveled up to level (\d+)!""".toExactRegex()
 
-    override fun onInitialize() {
-        registerGameEvent(LEVEL_UP_REGEX) { text, _, _ ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerGameEvent(LEVEL_UP_REGEX) { text, _, _ ->
             if (!OtherSettings.petLevelUp.enabled) return@registerGameEvent
 
             val match = LEVEL_UP_REGEX.find(text.string) ?: return@registerGameEvent

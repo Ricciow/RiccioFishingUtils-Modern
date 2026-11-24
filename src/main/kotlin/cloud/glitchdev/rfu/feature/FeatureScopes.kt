@@ -2,16 +2,17 @@ package cloud.glitchdev.rfu.feature
 
 import cloud.glitchdev.rfu.events.EventScope
 
-abstract class ScopedFeature : Feature {
-    private var events: EventScope? = null
+internal class FeatureScopes {
+    private var activeScope: EventScope? = null
 
-    final override fun onInitialize() {
-        stop()
+    fun load(initialize: (EventScope) -> Unit) {
+        if (activeScope != null) return
         val scope = EventScope()
+        activeScope = scope
         try {
-            onInitialize(scope)
-            events = scope
+            initialize(scope)
         } catch (failure: Throwable) {
+            activeScope = null
             try {
                 scope.close()
             } catch (cleanupFailure: Throwable) {
@@ -21,11 +22,9 @@ abstract class ScopedFeature : Feature {
         }
     }
 
-    fun stop() {
-        val scope = events
-        events = null
+    fun close() {
+        val scope = activeScope
+        activeScope = null
         scope?.close()
     }
-
-    protected abstract fun onInitialize(scope: EventScope)
 }

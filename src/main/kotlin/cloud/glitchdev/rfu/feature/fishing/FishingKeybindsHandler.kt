@@ -6,15 +6,16 @@ import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig.RARE_SC_REGEX
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.data.mob.MobManager
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.keybind.KeyContext
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.ItemUsedEvents.registerItemUsedEvent
-import cloud.glitchdev.rfu.events.managers.KeybindEvents.registerKeybind
-import cloud.glitchdev.rfu.events.managers.OptionsSaveEvents.registerAfterOptionsSave
-import cloud.glitchdev.rfu.events.managers.OptionsSaveEvents.registerBeforeOptionsSave
-import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
-import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.registerItemUsedEvent
+import cloud.glitchdev.rfu.events.managers.registerKeybind
+import cloud.glitchdev.rfu.events.managers.registerAfterOptionsSave
+import cloud.glitchdev.rfu.events.managers.registerBeforeOptionsSave
+import cloud.glitchdev.rfu.events.managers.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.managers.registerShutdownEvent
+import cloud.glitchdev.rfu.events.managers.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat
@@ -36,8 +37,10 @@ object FishingKeybindsHandler : Feature {
     private var wasSavedWhileApplied = false
     private val originalKeys = mutableMapOf<KeyMapping, InputConstants.Key>()
 
-    override fun onInitialize() {
-        registerKeybind {
+    override fun onInitialize(scope: EventScope) {
+        scope.onClose(::revertKeybinds)
+
+        scope.registerKeybind {
             key = { CustomBinds.resetBindsKeybind }
             priority = 100
             context = KeyContext.ANY
@@ -50,44 +53,44 @@ object FishingKeybindsHandler : Feature {
             }
         }
 
-        registerItemUsedEvent { item ->
+        scope.registerItemUsedEvent { item ->
             if (item.isFishingRod()) {
                 lastCastTime = System.currentTimeMillis()
                 updateState()
             }
         }
 
-        registerSeaCreatureCatchEvent { _, _, _, _, _ ->
+        scope.registerSeaCreatureCatchEvent { _, _, _, _, _ ->
             if (isTemporarilySuspended) {
                 isTemporarilySuspended = false
                 updateState()
             }
         }
 
-        registerDisconnectEvent {
+        scope.registerDisconnectEvent {
             isTemporarilySuspended = false
             revertKeybinds()
         }
 
-        registerShutdownEvent {
+        scope.registerShutdownEvent {
             revertKeybinds()
         }
 
-        registerBeforeOptionsSave {
+        scope.registerBeforeOptionsSave {
             if (isApplied) {
                 wasSavedWhileApplied = true
                 revertKeybinds()
             }
         }
 
-        registerAfterOptionsSave {
+        scope.registerAfterOptionsSave {
             if (wasSavedWhileApplied) {
                 wasSavedWhileApplied = false
                 updateState()
             }
         }
 
-        registerTickEvent(interval = 1) {
+        scope.registerTickEvent(interval = 1) {
             updateState()
         }
     }

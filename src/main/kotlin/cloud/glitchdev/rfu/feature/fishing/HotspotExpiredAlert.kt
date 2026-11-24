@@ -2,9 +2,10 @@
 
 import cloud.glitchdev.rfu.config.categories.HotSpotSettings
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.HotSpotEvents
-import cloud.glitchdev.rfu.events.managers.HotSpotEvents.registerHotSpotDisposeEvent
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.registerHotSpotDisposeEvent
+import cloud.glitchdev.rfu.events.managers.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Sounds
@@ -14,8 +15,8 @@ import java.util.UUID
 object HotspotExpiredAlert : Feature {
     private var currentHotspotId: UUID? = null
 
-    override fun onInitialize() {
-        registerTickEvent(interval = 20) {
+    override fun onInitialize(scope: EventScope) {
+        scope.registerTickEvent(interval = 20) {
             if (!HotSpotSettings.hotspotExpired.enabled) return@registerTickEvent
 
             val bobber = mc.player?.fishing
@@ -31,7 +32,7 @@ object HotspotExpiredAlert : Feature {
             }
         }
 
-        registerHotSpotDisposeEvent { hotspot ->
+        scope.registerHotSpotDisposeEvent { hotspot ->
             if (!HotSpotSettings.hotspotExpired.enabled) return@registerHotSpotDisposeEvent
             if (hotspot.uuid != currentHotspotId) return@registerHotSpotDisposeEvent
 

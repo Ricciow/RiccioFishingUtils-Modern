@@ -9,6 +9,7 @@ import cloud.glitchdev.rfu.constants.text.EmojiPack
 import net.fabricmc.api.ClientModInitializer
 import net.minecraft.client.Minecraft
 import cloud.glitchdev.rfu.generated.RFULoader
+import cloud.glitchdev.rfu.utils.RFULogger
 import com.teamresourceful.resourcefulconfig.api.loader.Configurator
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents
 import net.fabricmc.loader.impl.FabricLoaderImpl
@@ -54,6 +55,13 @@ object RiccioFishingUtils : ClientModInitializer {
             RFULoader.registerCommands()
             RFULoader.registerPartyCommands()
             RFULoader.registerEvents()
+            ClientLifecycleEvents.CLIENT_STOPPING.register {
+                try {
+                    RFULoader.unloadFeatures()
+                } catch (failure: Exception) {
+                    RFULogger.error("Failed to unload RFU features", failure)
+                }
+            }
             RFULoader.registerHud()
             RFULoader.registerAchievements()
             RFULoader.postInitializeEvents()

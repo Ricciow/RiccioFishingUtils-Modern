@@ -3,10 +3,11 @@ package cloud.glitchdev.rfu.feature.other
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.text.TextColor
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerAnyChatEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.RenderEvents.registerRenderEvent
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerAnyChatEvent
+import cloud.glitchdev.rfu.events.managers.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.registerRenderEvent
+import cloud.glitchdev.rfu.events.managers.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat
@@ -69,8 +70,8 @@ object ChatCoordinates : Feature {
 
     private val markers = mutableMapOf<Pair<String, Coordinates>, Marker>()
 
-    override fun onInitialize() {
-        registerAnyChatEvent { text, _ ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerAnyChatEvent { text, _ ->
             if (!OtherSettings.renderChatCoords || mc.level == null) return@registerAnyChatEvent
             val message = parse(text.toUnformattedString()) ?: return@registerAnyChatEvent
             val (x, y, z) = message.coordinates
@@ -88,7 +89,7 @@ object ChatCoordinates : Feature {
             ))
         }
 
-        registerTickEvent {
+        scope.registerTickEvent {
             if (!OtherSettings.renderChatCoords) {
                 markers.clear()
                 return@registerTickEvent
@@ -101,7 +102,7 @@ object ChatCoordinates : Feature {
             }
         }
 
-        registerRenderEvent { context ->
+        scope.registerRenderEvent { context ->
             if (!OtherSettings.renderChatCoords || mc.level == null) return@registerRenderEvent
             for (marker in markers.values) {
                 val playerInfo = mc.connection?.getPlayerInfo(marker.sender)
@@ -141,7 +142,7 @@ object ChatCoordinates : Feature {
         }
 
         ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register { _, _ -> markers.clear() }
-        registerDisconnectEvent { markers.clear() }
+        scope.registerDisconnectEvent { markers.clear() }
     }
 
     /** Extracts coordinates from the message body, never from ranks or usernames. */

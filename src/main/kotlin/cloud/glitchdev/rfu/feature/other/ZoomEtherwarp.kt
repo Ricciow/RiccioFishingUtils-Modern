@@ -6,11 +6,11 @@ import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.registerFovEvent
 import cloud.glitchdev.rfu.events.managers.registerTickEvent
 import cloud.glitchdev.rfu.feature.RFUFeature
-import cloud.glitchdev.rfu.feature.ScopedFeature
+import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.utils.dsl.hasDescriptionText
 
 @RFUFeature
-object ZoomEtherwarp : ScopedFeature() {
+object ZoomEtherwarp : Feature {
     private var zoomProgress = 0.0f
     private var lastZoomProgress = 0.0f
 

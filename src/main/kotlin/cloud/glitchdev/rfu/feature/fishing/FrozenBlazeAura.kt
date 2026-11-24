@@ -1,9 +1,10 @@
 package cloud.glitchdev.rfu.feature.fishing
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.ArmorEvents
-import cloud.glitchdev.rfu.events.managers.ArmorEvents.registerArmorChangeEvent
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.registerArmorChangeEvent
+import cloud.glitchdev.rfu.events.managers.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import kotlin.time.Duration
@@ -36,9 +37,9 @@ object FrozenBlazeAura : Feature {
         get() = (TIMEOUT - maxOf(lastMouseActivity.elapsedNow(), lastPlayerActivity.elapsedNow()))
             .coerceIn(Duration.ZERO, TIMEOUT)
 
-    override fun onInitialize() {
-        registerArmorChangeEvent { updateArmor() }
-        registerTickEvent(interval = 5) {
+    override fun onInitialize(scope: EventScope) {
+        scope.registerArmorChangeEvent { updateArmor() }
+        scope.registerTickEvent(interval = 5) {
             val player = mc.player
 
             if (player == null) {

@@ -2,8 +2,9 @@ package cloud.glitchdev.rfu.feature.fishing
 
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
-import cloud.glitchdev.rfu.events.managers.EntityRemovedEvents.registerEntityRemovedEvent
-import cloud.glitchdev.rfu.events.managers.ItemUsedEvents.registerItemUsedEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerEntityRemovedEvent
+import cloud.glitchdev.rfu.events.managers.registerItemUsedEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Sounds
@@ -13,8 +14,8 @@ object FailCastAlert : Feature {
     private var isFishing = false
     private var sentAlert = false
 
-    override fun onInitialize() {
-        registerItemUsedEvent { item ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerItemUsedEvent { item ->
             if(!GeneralFishing.failCast.enabled) return@registerItemUsedEvent
             if (item.item.descriptionId == "item.minecraft.fishing_rod") {
                 sentAlert = false
@@ -26,7 +27,7 @@ object FailCastAlert : Feature {
             }
         }
 
-        registerEntityRemovedEvent { entityId ->
+        scope.registerEntityRemovedEvent { entityId ->
             if(!GeneralFishing.failCast.enabled) return@registerEntityRemovedEvent
             if(entityId != mc.player?.fishing?.id) return@registerEntityRemovedEvent
             if(!isFishing) return@registerEntityRemovedEvent

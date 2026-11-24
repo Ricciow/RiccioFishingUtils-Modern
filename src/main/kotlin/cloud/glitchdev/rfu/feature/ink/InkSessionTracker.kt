@@ -10,7 +10,8 @@ import cloud.glitchdev.rfu.constants.text.TextEffects.BOLD
 import cloud.glitchdev.rfu.data.catches.CatchTracker.catchHistory
 import cloud.glitchdev.rfu.data.collections.CollectionItem
 import cloud.glitchdev.rfu.data.collections.CollectionsHandler
-import cloud.glitchdev.rfu.events.managers.CollectionEvents.registerCollectionUpdateEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerCollectionUpdateEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.feature.fishing.FishingSession
@@ -61,7 +62,7 @@ object InkSessionTracker : Feature {
             return (hoursNeeded * 3600).seconds
         }
 
-    override fun onInitialize() {
+    override fun onInitialize(scope: EventScope) {
         // Initialize start counts
         val squid = SeaCreatures.get("Squid")
         val inkling = SeaCreatures.get("Inkling")
@@ -74,7 +75,7 @@ object InkSessionTracker : Feature {
         squidStart = catchHistory.getOrAdd(squid).total.toLong()
         inklingStart = catchHistory.getOrAdd(inkling).total.toLong()
 
-        registerCollectionUpdateEvent { item, amount, _, isSync ->
+        scope.registerCollectionUpdateEvent { item, amount, _, isSync ->
             if (item == CollectionItem.INK_SAC && amount > 0 && !isSync) {
                 handleInk(amount.toDouble())
             }

@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.feature.other
 
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.gui.hud.elements.BestiaryHUD
@@ -15,8 +16,8 @@ object BestiaryDisplay : Feature {
     var bestiaries = listOf<BestiaryEntry>()
         private set
 
-    override fun onInitialize() {
-        registerTickEvent(interval = 20) {
+    override fun onInitialize(scope: EventScope) {
+        scope.registerTickEvent(interval = 20) {
             bestiaries = Tablist.getTablistAsStrings().mapNotNull { text ->
                     val result = bestiaryRegex.find(text.removeFormatting()) ?: return@mapNotNull null
 

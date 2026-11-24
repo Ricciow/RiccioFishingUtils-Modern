@@ -3,7 +3,8 @@ package cloud.glitchdev.rfu.feature.fishing
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.LavaFishing
 import cloud.glitchdev.rfu.constants.fishing.FishingIslands
-import cloud.glitchdev.rfu.events.managers.WorldBorderRenderEvents.registerWorldBorderRenderEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerWorldBorderRenderEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.World
@@ -19,8 +20,8 @@ object CrimsonIsleWorldBorder : Feature {
     private const val FADE_END_DISTANCE = 30.0
     private const val FADE_STEEPNESS = 4.0
 
-    override fun onInitialize() {
-        registerWorldBorderRenderEvent { context ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerWorldBorderRenderEvent { context ->
             if (!LavaFishing.showCrimsonIsleWorldBorder || World.island != FishingIslands.ISLE) return@registerWorldBorderRenderEvent
             val player = mc.player ?: return@registerWorldBorderRenderEvent
             if (mc.level == null) return@registerWorldBorderRenderEvent

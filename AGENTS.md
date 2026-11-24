@@ -181,15 +181,18 @@ Features are core functionality units.
 
 *   **Definition:** Kotlin `object` implementing `Feature`.
 *   **Annotation:** `@RFUFeature`.
-*   **Initialization:** Implement `onInitialize()` to register listeners.
+*   Implement `onInitialize(scope: EventScope)` and register listeners on the supplied scope. The feature loader closes it on unload and client shutdown.
 
 **Example:**
 
 ```kotlin
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerTickEvent
+
 @RFUFeature
 object MyFeature : Feature {
-    override fun onInitialize() {
-        registerTickEvent(interval = 20) {
+    override fun onInitialize(scope: EventScope) {
+        scope.registerTickEvent(interval = 20) {
             // Logic
         }
     }

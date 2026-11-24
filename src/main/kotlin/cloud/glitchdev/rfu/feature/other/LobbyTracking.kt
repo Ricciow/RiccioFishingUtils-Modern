@@ -3,7 +3,8 @@ package cloud.glitchdev.rfu.feature.other
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextStyle
-import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerLocationEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat
@@ -17,8 +18,8 @@ import kotlin.time.Instant
 object LobbyTracking : Feature {
     val visitedLobbies : HashMap<String, Instant> = hashMapOf()
 
-    override fun onInitialize() {
-        registerLocationEvent {
+    override fun onInitialize(scope: EventScope) {
+        scope.registerLocationEvent {
             if(OtherSettings.lobbyTracking) {
                 val lobby = World.lobby
                 val now = Clock.System.now()

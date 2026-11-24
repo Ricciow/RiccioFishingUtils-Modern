@@ -5,16 +5,17 @@ import cloud.glitchdev.rfu.access.CameraFluidStateAccess
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.config.categories.LavaFishing
 import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
-import cloud.glitchdev.rfu.events.managers.CloseConfigEvents.registerCloseConfigEvent
-import cloud.glitchdev.rfu.events.managers.EntityFireRenderEvents.registerEntityFireRenderEvent
-import cloud.glitchdev.rfu.events.managers.FluidRenderEvents.registerFluidRenderEvent
-import cloud.glitchdev.rfu.events.managers.FogEvents.registerFogColorEvent
-import cloud.glitchdev.rfu.events.managers.FogEvents.registerFinalFogEvent
-import cloud.glitchdev.rfu.events.managers.FogEvents.registerCameraFluidEvent
-import cloud.glitchdev.rfu.events.managers.FogEvents.registerWaterVisionFluidEvent
-import cloud.glitchdev.rfu.events.managers.ScreenEffectEvents.registerFireOverlayEvent
-import cloud.glitchdev.rfu.events.managers.ScreenEffectEvents.registerWaterOverlayEvent
-import cloud.glitchdev.rfu.events.managers.ScreenEffectEvents.registerWaterOverlayAppearanceEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerCloseConfigEvent
+import cloud.glitchdev.rfu.events.managers.registerEntityFireRenderEvent
+import cloud.glitchdev.rfu.events.managers.registerFluidRenderEvent
+import cloud.glitchdev.rfu.events.managers.registerFogColorEvent
+import cloud.glitchdev.rfu.events.managers.registerFinalFogEvent
+import cloud.glitchdev.rfu.events.managers.registerCameraFluidEvent
+import cloud.glitchdev.rfu.events.managers.registerWaterVisionFluidEvent
+import cloud.glitchdev.rfu.events.managers.registerFireOverlayEvent
+import cloud.glitchdev.rfu.events.managers.registerWaterOverlayEvent
+import cloud.glitchdev.rfu.events.managers.registerWaterOverlayAppearanceEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import net.minecraft.client.Camera
@@ -47,8 +48,8 @@ object CustomLiquids : Feature {
     @Volatile
     private var waterModelCache: ModelCache? = null
 
-    override fun onInitialize() {
-        registerFluidRenderEvent { context ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerFluidRenderEvent { context ->
             val liquid = context.fluidState.customLiquid() ?: return@registerFluidRenderEvent
             val style = liquid.customStyle
             val source = if (liquid == style) context.model else context.getBaseModel(
@@ -59,7 +60,7 @@ object CustomLiquids : Feature {
             context.opacity = CustomLiquidTextures.opacity(liquid, style)
         }
 
-        registerCameraFluidEvent { context ->
+        scope.registerCameraFluidEvent { context ->
             val liquid = context.state.customLiquid() ?: return@registerCameraFluidEvent
             context.disableFog = liquid.disableFog ||
                 (liquid.customStyle == LiquidTypes.LAVA && CustomLiquidTextures.opacity(liquid, LiquidTypes.LAVA) == 0)
@@ -70,7 +71,7 @@ object CustomLiquids : Feature {
             }
         }
 
-        registerFogColorEvent { context ->
+        scope.registerFogColorEvent { context ->
             val liquid = customLiquidAt(context.camera) ?: return@registerFogColorEvent
             val color = liquid.customColor ?: return@registerFogColorEvent
             if (context.environment is LavaFogEnvironment || context.environment is WaterFogEnvironment) {
@@ -79,7 +80,7 @@ object CustomLiquids : Feature {
             }
         }
 
-        registerFinalFogEvent { fog, camera, _, _, _ ->
+        scope.registerFinalFogEvent { fog, camera, _, _, _ ->
             val liquid = customLiquidAt(camera) ?: return@registerFinalFogEvent
             if (liquid.disableFog) {
                 applyFogOpacity(fog, 0)
@@ -88,17 +89,17 @@ object CustomLiquids : Feature {
             }
         }
 
-        registerWaterVisionFluidEvent { context ->
+        scope.registerWaterVisionFluidEvent { context ->
             val liquid = customLiquidAtEyes(context.player) ?: return@registerWaterVisionFluidEvent
             context.submerged = liquid.customStyle == LiquidTypes.WATER
         }
 
-        registerWaterOverlayEvent { context ->
+        scope.registerWaterOverlayEvent { context ->
             val liquid = customLiquidAtEyes(context.player) ?: return@registerWaterOverlayEvent
             context.visible = liquid.customStyle == LiquidTypes.WATER
         }
 
-        registerWaterOverlayAppearanceEvent { context ->
+        scope.registerWaterOverlayAppearanceEvent { context ->
             val liquid = customLiquidAtEyes(context.player) ?: return@registerWaterOverlayAppearanceEvent
             val color = liquid.customColor ?: return@registerWaterOverlayAppearanceEvent
             if (liquid.customStyle == LiquidTypes.WATER) {
@@ -107,18 +108,18 @@ object CustomLiquids : Feature {
             }
         }
 
-        registerFireOverlayEvent { context ->
+        scope.registerFireOverlayEvent { context ->
             if (hideFireEffects()) context.visible = false
         }
 
-        registerEntityFireRenderEvent { context ->
+        scope.registerEntityFireRenderEvent { context ->
             if (hideFireEffects() && (context.entity is Avatar || context.entity is FishingHook || context.entity is ItemEntity)) {
                 context.visible = false
             }
         }
 
         var previousSettings = renderSettings()
-        registerCloseConfigEvent {
+        scope.registerCloseConfigEvent {
             val settings = renderSettings()
             val needsRebuild = previousSettings.zip(settings).any { (previous, current) ->
                 previous != current && (previous.enabled || current.enabled)

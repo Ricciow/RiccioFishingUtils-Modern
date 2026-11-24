@@ -3,7 +3,8 @@
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.LotusAtollSettings
 import cloud.glitchdev.rfu.constants.fishing.FishingIslands
-import cloud.glitchdev.rfu.events.managers.RenderEvents.registerRenderEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerRenderEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.World
@@ -26,8 +27,8 @@ object LilypadSizeDisplayFeature : Feature {
         var lastChangeTime: Long
     )
 
-    override fun onInitialize() {
-        registerRenderEvent { context ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerRenderEvent { context ->
             if (!LotusAtollSettings.lilypadSizeDisplay) return@registerRenderEvent
             if (World.island != FishingIslands.ATOLL) return@registerRenderEvent
 

@@ -4,8 +4,9 @@ import cloud.glitchdev.rfu.RiccioFishingUtils
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.text.TextColor.*
 import cloud.glitchdev.rfu.constants.text.TextEffects.BOLD
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.registerLocationEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat
@@ -28,8 +29,8 @@ import kotlin.jvm.optionals.getOrNull
 object WalkthroughFeature : Feature {
     private var wasInSkyblock = false
 
-    override fun onInitialize() {
-        registerLocationEvent { event ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerLocationEvent { event ->
             val inSkyblock = event.serverType.getOrNull() == GameType.SKYBLOCK || World.isInSkyblock
             if (!wasInSkyblock && inSkyblock) {
                 if (!OtherSettings.walkthroughAcknowledged) {
@@ -44,7 +45,7 @@ object WalkthroughFeature : Feature {
             wasInSkyblock = inSkyblock
         }
 
-        registerDisconnectEvent {
+        scope.registerDisconnectEvent {
             wasInSkyblock = false
         }
     }

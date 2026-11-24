@@ -2,7 +2,8 @@ package cloud.glitchdev.rfu.feature.other
 
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Sounds
@@ -12,8 +13,8 @@ object FullInventoryAlert : Feature {
     private var wasFull = false
     private var lastAlertTime = 0L
 
-    override fun onInitialize() {
-        registerTickEvent(interval = 10) {
+    override fun onInitialize(scope: EventScope) {
+        scope.registerTickEvent(interval = 10) {
             if (!OtherSettings.fullInventory.enabled) return@registerTickEvent
             val player = mc.player ?: return@registerTickEvent
 

@@ -4,8 +4,9 @@ import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.text.Emoji
 import cloud.glitchdev.rfu.constants.text.EmojiData
 import cloud.glitchdev.rfu.data.other.EmojiPreferences
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerModifyChatEvent
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerModifyCommandEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerModifyChatEvent
+import cloud.glitchdev.rfu.events.managers.registerModifyCommandEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import net.minecraft.client.StringSplitter
@@ -42,14 +43,14 @@ object EmojiFeature : Feature {
     private val whisperCommands = setOf("msg", "w", "tell", "message", "whisper")
     private val subChatCommands = setOf("g", "guild", "p", "party", "co", "coop")
 
-    override fun onInitialize() {
-        registerModifyChatEvent { message ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerModifyChatEvent { message ->
             if (!OtherSettings.emojis) return@registerModifyChatEvent message
             val expanded = expandOutgoing(message)
             if (StringUtil.trimChatMessage(expanded) == expanded) expanded else message
         }
 
-        registerModifyCommandEvent { command ->
+        scope.registerModifyCommandEvent { command ->
             if (!OtherSettings.emojis) return@registerModifyCommandEvent command
             val messageStart = chatCommandMessageStart(command) ?: return@registerModifyCommandEvent command
             val expanded = command.substring(0, messageStart) + expandOutgoing(command.substring(messageStart))

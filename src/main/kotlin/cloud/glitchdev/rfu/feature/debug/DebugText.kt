@@ -3,7 +3,8 @@ package cloud.glitchdev.rfu.feature.debug
 import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextStyle
-import cloud.glitchdev.rfu.events.managers.RenderEvents.registerRenderEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerRenderEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.TextUtils
@@ -36,8 +37,8 @@ object DebugText : Feature, AbstractCommand("text") {
 
     private val activeTexts = mutableListOf<FloatingText>()
 
-    override fun onInitialize() {
-        registerRenderEvent { context ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerRenderEvent { context ->
             if (!DevSettings.devMode) return@registerRenderEvent
 
             val now = System.currentTimeMillis()
