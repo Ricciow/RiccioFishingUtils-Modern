@@ -13,7 +13,7 @@ class EventScope : AutoCloseable {
     internal fun <F : ManagedTask<*, *>, S : ManagedTask<*, *>> registerTaskPair(
         register: () -> Pair<F, S>,
     ): Pair<F, S> = register(register) { (first, second) ->
-        runCleanup(listOf({ second.unregister() }, { first.unregister() }))
+        runScopeActions(listOf({ second.unregister() }, { first.unregister() }))
     }
 
     private fun <T> register(register: () -> T, unregister: (T) -> Unit): T {
@@ -45,20 +45,20 @@ class EventScope : AutoCloseable {
         closed = true
         val actions = cleanup.toList()
         cleanup.clear()
-        runCleanup(actions.asReversed())
+        runScopeActions(actions.asReversed())
     }
+}
 
-    private fun runCleanup(actions: List<() -> Unit>) {
-        var failure: Throwable? = null
-        actions.forEach { action ->
-            try {
-                action()
-            } catch (error: Throwable) {
-                val first = failure
-                if (first == null) failure = error
-                else if (first !== error) first.addSuppressed(error)
-            }
+internal fun runScopeActions(actions: List<() -> Unit>) {
+    var failure: Throwable? = null
+    actions.forEach { action ->
+        try {
+            action()
+        } catch (error: Throwable) {
+            val first = failure
+            if (first == null) failure = error
+            else if (first !== error) first.addSuppressed(error)
         }
-        failure?.let { throw it }
     }
+    failure?.let { throw it }
 }

@@ -4,6 +4,7 @@ import cloud.glitchdev.rfu.config.categories.DailyStreakSettings
 import cloud.glitchdev.rfu.constants.text.Emoji
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.EventScopes
 import cloud.glitchdev.rfu.events.managers.progress.DailyStreakEvents
 import cloud.glitchdev.rfu.feature.streak.challenge.ChallengeRegistry
 import cloud.glitchdev.rfu.utils.Chat
@@ -21,7 +22,7 @@ object DailyStreakManager {
     private val file = JsonFile("data", "daily_streak.json", DailyStreakData::class.java, { DailyStreakData() })
     val data: DailyStreakData get() = file.data
 
-    private var dayScope: EventScope? = null
+    private val dayScopes = EventScopes()
     private val challengeScopes = mutableMapOf<String, EventScope>()
 
     fun getTodayDateString(): String = LocalDate.now(ZoneOffset.UTC).toString()
@@ -42,7 +43,7 @@ object DailyStreakManager {
         val today = getTodayDateString()
         val expectedCount = ChallengeRegistry.getPoolChallenges().size.coerceAtMost(3).coerceAtLeast(1)
         if (data.currentDate == today && data.todayChallenges.size == expectedCount) {
-            if (dayScope == null) updateChallengeListeners()
+            if (dayScopes.activeScope == null) updateChallengeListeners()
             return
         }
 
@@ -65,11 +66,22 @@ object DailyStreakManager {
         data.todayChallenges = poolChallenges.map { DailyChallenge(it.id) }
 
         saveData()
-        if (dayScope == null) updateChallengeListeners()
+        if (dayScopes.activeScope == null) updateChallengeListeners()
     }
 
     private fun updateChallengeListeners() {
-        val parent = dayScope ?: EventScope().also { dayScope = it }
+        val parent = dayScopes.activeScope
+        if (parent == null) {
+            dayScopes.load { scope ->
+                scope.onClose(challengeScopes::clear)
+                attachChallengeListeners(scope)
+            }
+        } else {
+            attachChallengeListeners(parent)
+        }
+    }
+
+    private fun attachChallengeListeners(parent: EventScope) {
         val activeChallenges = data.todayChallenges.asSequence()
             .filterNot { it.isCompleted }
             .mapNotNull { it.baseDef }
@@ -98,10 +110,7 @@ object DailyStreakManager {
     }
 
     fun unregisterAllListeners() {
-        val scope = dayScope
-        dayScope = null
-        challengeScopes.clear()
-        scope?.close()
+        dayScopes.close()
     }
 
     fun addProgressForChallenge(challengeId: String, amount: Int = 1) {

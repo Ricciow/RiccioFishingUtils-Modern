@@ -39,7 +39,10 @@ object MobyDuckFeature : Feature {
     private val expiredRegex = """Moby-Duck has expired!?""".toExactRegex()
 
     override fun onInitialize(scope: EventScope) {
-        scope.onClose(::closeCountdown)
+        scope.onClose {
+            serverCountdownTask?.let { entry.remainingTicks = it.remainingTicks }
+            closeCountdown()
+        }
 
         scope.registerAnyChatEvent(mobyDuckRegex) { _, match ->
             val isCollectors = match?.groupValues?.getOrNull(1)?.isNotEmpty() == true

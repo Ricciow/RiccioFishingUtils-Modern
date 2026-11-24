@@ -14,6 +14,8 @@ import net.minecraft.core.component.DataComponents
 
 @RFUFeature
 object CollectionMenuTracker : Feature {
+    private data class Poll(val screen: AbstractContainerScreen<*>, val startTick: Long)
+    private var activePoll: Poll? = null
     private var pollingScope: EventScope? = null
 
     override fun onInitialize(scope: EventScope) {
@@ -23,7 +25,8 @@ object CollectionMenuTracker : Feature {
             }
         }
         scope.registerDisconnectEvent { stopPolling() }
-        scope.onClose { stopPolling() }
+        scope.onClose { pollingScope = null }
+        activePoll?.let { attachPolling(scope, it) }
     }
 
     private fun startPolling(scope: EventScope, containerId: Int) {
@@ -31,20 +34,26 @@ object CollectionMenuTracker : Feature {
         val menu = screen.menu
         if (menu.containerId != containerId) return
 
-        val pollStartTick = mc.level?.gameTime ?: return
+        val startTick = mc.level?.gameTime ?: return
         stopPolling()
+        val poll = Poll(screen, startTick)
+        activePoll = poll
+        attachPolling(scope, poll)
+    }
+
+    private fun attachPolling(scope: EventScope, poll: Poll) {
         val polling = scope.child()
         pollingScope = polling
         polling.registerTickEvent { client ->
             val gameTime = client.level?.gameTime
 
-            if (gameTime == null || gameTime - pollStartTick > 400L || UScreen.currentScreen !== screen) {
+            if (gameTime == null || gameTime - poll.startTick > 400L || UScreen.currentScreen !== poll.screen) {
                 stopPolling()
                 return@registerTickEvent
             }
             if (gameTime % 20L != 0L) return@registerTickEvent
 
-            for (slot in menu.slots) {
+            for (slot in poll.screen.menu.slots) {
                 val lore = slot.item[DataComponents.LORE]?.lines?.map { it.toUnformattedString() } ?: continue
                 for (line in lore) {
                     for (item in CollectionItem.entries) {
@@ -59,6 +68,7 @@ object CollectionMenuTracker : Feature {
     }
 
     private fun stopPolling() {
+        activePoll = null
         val scope = pollingScope
         pollingScope = null
         scope?.close()

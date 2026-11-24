@@ -6,6 +6,7 @@ import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig.RARE_SC_REGEX
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.EventScopes
 import cloud.glitchdev.rfu.events.managers.render.registerRenderEvent
 import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.utils.rendering.Render3D
@@ -72,7 +73,7 @@ class SkyblockEntity(
     private var isGlowing: Boolean = false
     private var glowColor: Color = Color.WHITE
 
-    private var eventScope: EventScope? = null
+    private val eventScopes = EventScopes()
     private var countdownScope: EventScope? = null
     private var disposed = false
     private val renderers = mutableListOf<(LevelRenderContext, LivingEntity) -> Unit>()
@@ -253,14 +254,22 @@ class SkyblockEntity(
 
     fun registerRenderer(renderer: (LevelRenderContext, LivingEntity) -> Unit) {
         if (disposed) return
-        if (renderers.isEmpty()) {
-            listeners().registerRenderEvent { context ->
-                for (r in renderers) {
-                    r(context, this.modelEntity)
-                }
+        eventScopes.load(::initializeListeners)
+        renderers.add(renderer)
+    }
+
+    private fun initializeListeners(scope: EventScope) {
+        scope.registerRenderEvent { context ->
+            for (renderer in renderers) {
+                renderer(context, modelEntity)
             }
         }
-        renderers.add(renderer)
+        countdownEvent?.takeUnless { it.isCompleted }?.let { timer ->
+            val countdown = scope.child()
+            countdownScope = countdown
+            countdown.registerTask(timer::register)
+        }
+        scope.onClose { countdownScope = null }
     }
 
     fun registerLsRange() {
@@ -302,7 +311,7 @@ class SkyblockEntity(
     ) {
         if (disposed) return
         countdownScope?.close()
-        val scope = listeners().child()
+        val scope = eventScopes.load(::initializeListeners).child()
         countdownScope = scope
         countdownEvent = scope.registerServerCountdownEvent(totalTicks)
         timerCondition = condition
@@ -348,18 +357,14 @@ class SkyblockEntity(
                 applyGlowToParts(false, Color.WHITE)
             }
         } finally {
-            val scope = eventScope
-            eventScope = null
             countdownScope = null
             countdownEvent = null
             renderers.clear()
             hasTimer = false
             timerCondition = { true }
-            scope?.close()
+            eventScopes.close()
         }
     }
-
-    private fun listeners(): EventScope = eventScope ?: EventScope().also { eventScope = it }
 
     data class NameTagData(
         val sbName: String,

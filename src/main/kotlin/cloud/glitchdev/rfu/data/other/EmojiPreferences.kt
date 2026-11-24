@@ -12,7 +12,9 @@ object EmojiPreferences : Feature {
     private var file: JsonFile<Data>? = null
 
     override fun onInitialize(scope: EventScope) {
-        file = JsonFile(filename = "emoji_preferences.json", type = Data::class.java, defaultFactory = ::Data)
+        if (file == null) {
+            file = JsonFile(filename = "emoji_preferences.json", type = Data::class.java, defaultFactory = ::Data)
+        }
     }
 
     fun isEnabled(emoji: EmojiData): Boolean = file?.data?.disabled?.contains(emoji.primaryAlias) != true

@@ -3,9 +3,10 @@ package cloud.glitchdev.rfu.achievement
 import cloud.glitchdev.rfu.achievement.interfaces.IAchievement
 import cloud.glitchdev.rfu.data.achievements.AchievementHandler
 import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.EventScopes
 
 abstract class BaseAchievement : IAchievement {
-    private var listenerScope: EventScope? = null
+    private val listenerScopes = EventScopes()
 
     private val isLegacy: Boolean
         get() = category == AchievementCategory.LEGACY
@@ -68,19 +69,7 @@ abstract class BaseAchievement : IAchievement {
     abstract fun setupListeners(scope: EventScope)
 
     private fun startListeners() {
-        if (listenerScope != null) return
-        val scope = EventScope()
-        listenerScope = scope
-        try {
-            setupListeners(scope)
-        } catch (failure: Throwable) {
-            try {
-                unregisterAllListeners()
-            } catch (cleanupFailure: Throwable) {
-                if (cleanupFailure !== failure) failure.addSuppressed(cleanupFailure)
-            }
-            throw failure
-        }
+        listenerScopes.load(::setupListeners)
     }
 
     protected open fun complete() {
@@ -118,9 +107,7 @@ abstract class BaseAchievement : IAchievement {
     }
 
     protected fun unregisterAllListeners() {
-        val scope = listenerScope
-        listenerScope = null
-        scope?.close()
+        listenerScopes.close()
     }
     
     open fun loadState(progressData: Map<String, Any>) {}
