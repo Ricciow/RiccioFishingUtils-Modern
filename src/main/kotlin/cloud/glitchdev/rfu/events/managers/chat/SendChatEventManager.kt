@@ -15,10 +15,6 @@ object SendChatEventManager : AbstractEventManager<(message: String) -> Boolean,
         result
     }
 
-    fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (message: String) -> Boolean): SendChatEvent {
-        return SendChatEvent(priority, callback).register()
-    }
-
     class SendChatEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (message: String) -> Boolean

@@ -14,10 +14,6 @@ object AchievementUpdatedEvents : AbstractEventManager<(IAchievement) -> Unit, A
         }
     }
 
-    fun registerAchievementUpdatedEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (IAchievement) -> Unit): AchievementUpdatedEvent {
-        return AchievementUpdatedEvent(priority, callback).register()
-    }
-
     class AchievementUpdatedEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (IAchievement) -> Unit

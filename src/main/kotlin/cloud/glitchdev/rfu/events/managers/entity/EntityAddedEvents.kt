@@ -12,13 +12,6 @@ object EntityAddedEvents : AbstractEventManager<(entity : Entity) -> Unit, Entit
         }
     }
 
-    fun registerEntityAddedEvent(
-        priority: Int = DEFAULT_EVENT_PRIORITY,
-        callback: (entity : Entity) -> Unit
-    ): EntityAddedEvent {
-        return EntityAddedEvent(priority, callback).register()
-    }
-
     class EntityAddedEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (entity : Entity) -> Unit

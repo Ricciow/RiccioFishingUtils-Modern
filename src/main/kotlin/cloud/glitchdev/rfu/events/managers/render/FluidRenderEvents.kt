@@ -14,9 +14,6 @@ object FluidRenderEvents : AbstractEventManager<(FluidRenderEvents.FluidRenderCo
         }
     }
 
-    fun registerFluidRenderEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (FluidRenderContext) -> Unit): FluidRenderEvent =
-        FluidRenderEvent(priority, callback).register()
-
     class FluidRenderContext(
         val fluidState: FluidState,
         var model: FluidModel,

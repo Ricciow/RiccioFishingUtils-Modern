@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.events.managers.chat
 
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
@@ -19,7 +20,7 @@ object ChatEvents : RegisteredEvent {
     private var lastHandledGameMessage: Component? = null
     private var lastHandledGameOverlay = false
 
-    override fun register() {
+    override fun register(scope: EventScope) {
         ClientReceiveMessageEvents.ALLOW_CHAT.register { message, _, _, _, _ ->
             if (Chat.isSendingModMessage) return@register true
             lastHandledChatMessage = message
@@ -90,37 +91,9 @@ object ChatEvents : RegisteredEvent {
         }
     }
 
-    fun registerSendChatEvent(
-        priority: Int = DEFAULT_EVENT_PRIORITY,
-        callback: (message: String) -> Boolean
-    ) : SendChatEventManager.SendChatEvent {
-        return SendChatEventManager.register(priority, callback)
-    }
-
-    fun registerSendCommandEvent(
-        priority: Int = DEFAULT_EVENT_PRIORITY,
-        callback: (message: String) -> Boolean
-    ) : SendCommandEventManager.SendCommandEvent {
-        return SendCommandEventManager.register(priority, callback)
-    }
-
-    fun registerModifyChatEvent(
-        priority: Int = DEFAULT_EVENT_PRIORITY,
-        callback: (message: String) -> String
-    ): ModifyChatEventManager.ModifyChatEvent {
-        return ModifyChatEventManager.register(priority, callback)
-    }
-
-    fun registerModifyCommandEvent(
-        priority: Int = DEFAULT_EVENT_PRIORITY,
-        callback: (command: String) -> String
-    ): ModifyCommandEventManager.ModifyCommandEvent {
-        return ModifyCommandEventManager.register(priority, callback)
-    }
-
     @ScopedRegistration
     @Defaults("filter = null")
-    fun registerAnyChatEvent(
+    internal fun registerAnyChatEvent(
         filter: Regex? = null,
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (text: Component, matches: MatchResult?) -> Unit
@@ -134,7 +107,7 @@ object ChatEvents : RegisteredEvent {
 
     @ScopedRegistration
     @Defaults("filter = null")
-    fun registerChatEvent(
+    internal fun registerChatEvent(
         filter: Regex? = null,
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (text: Component, matches: MatchResult?) -> Unit
@@ -147,7 +120,7 @@ object ChatEvents : RegisteredEvent {
 
     @ScopedRegistration
     @Defaults("filter = null", "isOverlay = false")
-    fun registerGameEvent(
+    internal fun registerGameEvent(
         filter: Regex? = null,
         priority: Int = DEFAULT_EVENT_PRIORITY,
         isOverlay: Boolean = false,
@@ -163,35 +136,35 @@ object ChatEvents : RegisteredEvent {
 
     @ScopedRegistration
     @Defaults("filter = null")
-    fun registerAllowChatEvent(
+    internal fun registerAllowChatEvent(
         filter: Regex? = null,
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (text: Component, matches: MatchResult?) -> Boolean
     ): ChatEventManager.ChatEvent {
-        return ChatEventManager.register(priority) { text ->
+        return ChatEventManager.ChatEvent(priority) { text ->
             if (filter != null) {
-                val match = filter.find(text.toUnformattedString()) ?: return@register true
-                return@register callback(text, match)
+                val match = filter.find(text.toUnformattedString()) ?: return@ChatEvent true
+                return@ChatEvent callback(text, match)
             }
 
-            return@register callback(text, null)
-        }
+            callback(text, null)
+        }.register()
     }
 
     @ScopedRegistration
     @Defaults("filter = null")
-    fun registerAllowGameEvent(
+    internal fun registerAllowGameEvent(
         filter: Regex? = null,
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (text: Component, overlay: Boolean, matches: MatchResult?) -> Boolean
     ): GameEventManager.GameEvent {
-        return GameEventManager.register(priority) { text, overlay ->
+        return GameEventManager.GameEvent(priority) { text, overlay ->
             if (filter != null) {
-                val match = filter.find(text.toUnformattedString()) ?: return@register true
-                return@register callback(text, overlay, match)
+                val match = filter.find(text.toUnformattedString()) ?: return@GameEvent true
+                return@GameEvent callback(text, overlay, match)
             }
 
-            return@register callback(text, overlay, null)
-        }
+            callback(text, overlay, null)
+        }.register()
     }
 }

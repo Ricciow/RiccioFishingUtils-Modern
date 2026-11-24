@@ -11,13 +11,6 @@ object EntityRemovedEvents : AbstractEventManager<(entityId : Int) -> Unit, Enti
         }
     }
 
-    fun registerEntityRemovedEvent(
-        priority: Int = DEFAULT_EVENT_PRIORITY,
-        callback: (entityId : Int) -> Unit
-    ): EntityRemovedEvent {
-        return EntityRemovedEvent(priority, callback).register()
-    }
-
     class EntityRemovedEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (entityId : Int) -> Unit

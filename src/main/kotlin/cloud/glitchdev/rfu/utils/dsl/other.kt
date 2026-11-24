@@ -1,7 +1,7 @@
 package cloud.glitchdev.rfu.utils.dsl
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.MOD_ID
-import cloud.glitchdev.rfu.events.managers.inventory.ArmorEvents
+import cloud.glitchdev.rfu.events.managers.inventory.ArmorChangeEventManager
 import net.minecraft.resources.Identifier
 
 fun getResource(resource : String) : Identifier {
@@ -14,4 +14,4 @@ fun parseResource(id :  String) : Identifier? {
     return result
 }
 
-fun isWearingTrophyHunterArmor(): Boolean = ArmorEvents.currentArmorSet.isWearingTrophyHunterArmor
+fun isWearingTrophyHunterArmor(): Boolean = ArmorChangeEventManager.currentArmorSet.isWearingTrophyHunterArmor

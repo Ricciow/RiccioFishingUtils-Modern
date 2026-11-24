@@ -1,5 +1,9 @@
 package cloud.glitchdev.rfu.feature.fishing
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.fishing.registerTrophyFishCatchEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerTrophyFrogCatchEvent
+import cloud.glitchdev.rfu.events.managers.inventory.registerContainerOpenEvent
 import cloud.glitchdev.rfu.constants.fishing.TrophyFish
 import cloud.glitchdev.rfu.constants.fishing.TrophyFrog
 import cloud.glitchdev.rfu.constants.fishing.TrophyTier
@@ -9,9 +13,6 @@ import cloud.glitchdev.rfu.data.fishing.TrophyCountEntry
 import cloud.glitchdev.rfu.data.fishing.TrophyDataManager
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.inventory.ContainerEvents.registerContainerOpenEvent
-import cloud.glitchdev.rfu.events.managers.fishing.TrophyCatchEvents.registerTrophyFishCatchEvent
-import cloud.glitchdev.rfu.events.managers.fishing.TrophyCatchEvents.registerTrophyFrogCatchEvent
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.TextUtils
 import gg.essential.universal.utils.toUnformattedString
@@ -23,22 +24,22 @@ object TrophyCountTracker : RegisteredEvent {
         .toRegex(RegexOption.IGNORE_CASE)
     private val syncAlertsSent = mutableSetOf<TrophyType>()
 
-    override fun register() {
-        registerTrophyFrogCatchEvent { frog, tier, amount ->
+    override fun register(scope: EventScope) {
+        scope.registerTrophyFrogCatchEvent { frog, tier, amount ->
             TrophyDataManager.data.count.frogCount.getOrPut(frog.name) { TrophyCountEntry(frog.displayName) }
                 .addCatch(tier, amount)
             TrophyDataManager.save()
             sendSyncAlert(TrophyType.FROG)
         }
 
-        registerTrophyFishCatchEvent { fish, tier, amount ->
+        scope.registerTrophyFishCatchEvent { fish, tier, amount ->
             TrophyDataManager.data.count.fishCount.getOrPut(fish.name) { TrophyCountEntry(fish.displayName) }
                 .addCatch(tier, amount)
             TrophyDataManager.save()
             sendSyncAlert(TrophyType.FISH)
         }
 
-        registerContainerOpenEvent { containerName, _, items ->
+        scope.registerContainerOpenEvent { containerName, _, items ->
             if (containerName != "Trophy Frogs" && containerName != "Trophy Fish") return@registerContainerOpenEvent
             val data = TrophyDataManager.data.count
             var updated = false

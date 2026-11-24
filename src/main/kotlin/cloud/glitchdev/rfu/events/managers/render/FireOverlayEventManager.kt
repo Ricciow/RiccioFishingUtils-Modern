@@ -12,9 +12,6 @@ object FireOverlayEventManager : AbstractEventManager<(OverlayContext) -> Unit, 
         }
     }
 
-    fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (OverlayContext) -> Unit): FireOverlayEvent =
-        FireOverlayEvent(priority, callback).register()
-
     class FireOverlayEvent(priority: Int, callback: (OverlayContext) -> Unit) :
         ManagedTask<(OverlayContext) -> Unit, FireOverlayEvent>(priority, callback) {
         override fun register() = submitTask(this)

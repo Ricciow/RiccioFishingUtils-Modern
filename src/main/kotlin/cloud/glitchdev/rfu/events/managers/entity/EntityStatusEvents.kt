@@ -12,13 +12,6 @@ object EntityStatusEvents : AbstractEventManager<(entity: Entity, status: Byte) 
         }
     }
 
-    fun registerEntityStatusEvent(
-        priority: Int = DEFAULT_EVENT_PRIORITY,
-        callback: (entity: Entity, status: Byte) -> Unit
-    ): EntityStatusEvent {
-        return EntityStatusEvent(priority, callback).register()
-    }
-
     class EntityStatusEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (entity: Entity, status: Byte) -> Unit

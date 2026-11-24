@@ -1,10 +1,12 @@
 package cloud.glitchdev.rfu.utils.network
+
 import cloud.glitchdev.rfu.RiccioFishingUtils.API_URL
 import cloud.glitchdev.rfu.RiccioFishingUtils.RFU_VERSION
 import cloud.glitchdev.rfu.constants.text.TextColor.*
 import cloud.glitchdev.rfu.events.AutoRegister
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.connection.ConnectionEvents.registerJoinEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerJoinEvent
 import cloud.glitchdev.rfu.model.version.ModVersion
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.RFULogger
@@ -20,8 +22,8 @@ object VersionHttp : RegisteredEvent{
     var isOutdated = false
         private set
 
-    override fun register() {
-        registerJoinEvent(delayMillis = 3000) { wasConnected ->
+    override fun register(scope: EventScope) {
+        scope.registerJoinEvent(delayMillis = 3000) { wasConnected ->
             if(!wasConnected) {
                 verifyVersion()
             }

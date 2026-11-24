@@ -13,10 +13,6 @@ object PartyJoined : AbstractEventManager<() -> Unit, PartyJoined.PartyJoinedEve
         }
     }
 
-    fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: () -> Unit): PartyJoinedEvent {
-        return PartyJoinedEvent(priority, callback).register()
-    }
-
     class PartyJoinedEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: () -> Unit

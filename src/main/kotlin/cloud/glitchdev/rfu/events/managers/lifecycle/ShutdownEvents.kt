@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.events.managers.lifecycle
 
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.RegisteredEvent
@@ -8,7 +9,7 @@ import net.minecraft.client.Minecraft
 
 @EventManager
 object ShutdownEvents : AbstractEventManager<(Minecraft) -> Unit, ShutdownEvents.ShutdownEvent>(), RegisteredEvent {
-    override fun register() {
+    override fun register(scope: EventScope) {
         ClientLifecycleEvents.CLIENT_STOPPING.register { client ->
             runTasks(client)
         }
@@ -20,10 +21,6 @@ object ShutdownEvents : AbstractEventManager<(Minecraft) -> Unit, ShutdownEvents
                 task.callback(client)
             }
         }
-    }
-
-    fun registerShutdownEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (Minecraft) -> Unit): ShutdownEvent {
-        return ShutdownEvent(priority, callback).register()
     }
 
     class ShutdownEvent(

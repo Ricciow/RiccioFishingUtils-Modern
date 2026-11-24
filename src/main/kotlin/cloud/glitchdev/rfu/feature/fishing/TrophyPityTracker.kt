@@ -1,5 +1,9 @@
 package cloud.glitchdev.rfu.feature.fishing
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.fishing.registerTrophyFishCatchEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerTrophyFrogCatchEvent
+import cloud.glitchdev.rfu.events.managers.inventory.registerContainerOpenEvent
 import cloud.glitchdev.rfu.constants.fishing.TrophyFish
 import cloud.glitchdev.rfu.constants.fishing.TrophyFrog
 import cloud.glitchdev.rfu.constants.fishing.TrophyTier
@@ -10,9 +14,6 @@ import cloud.glitchdev.rfu.data.fishing.TrophyDataManager
 import cloud.glitchdev.rfu.data.fishing.TrophyPityEntry
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.inventory.ContainerEvents.registerContainerOpenEvent
-import cloud.glitchdev.rfu.events.managers.fishing.TrophyCatchEvents.registerTrophyFishCatchEvent
-import cloud.glitchdev.rfu.events.managers.fishing.TrophyCatchEvents.registerTrophyFrogCatchEvent
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.TextUtils
 import gg.essential.universal.utils.toUnformattedString
@@ -26,16 +27,16 @@ object TrophyPityTracker : RegisteredEvent {
     val lastCaughtTimes = mutableMapOf<String, Long>()
     private val sessionTrophyCatches = mutableMapOf<TrophyType, Int>()
 
-    override fun register() {
-        registerTrophyFrogCatchEvent { frog, tier, amount ->
+    override fun register(scope: EventScope) {
+        scope.registerTrophyFrogCatchEvent { frog, tier, amount ->
             handleCatch(TrophyDataManager.data.pity.frogPity, frog.name, frog, TrophyType.FROG, tier, amount)
         }
 
-        registerTrophyFishCatchEvent { fish, tier, amount ->
+        scope.registerTrophyFishCatchEvent { fish, tier, amount ->
             handleCatch(TrophyDataManager.data.pity.fishPity, fish.name, fish, TrophyType.FISH, tier, amount)
         }
 
-        registerContainerOpenEvent { _, _, items ->
+        scope.registerContainerOpenEvent { _, _, items ->
             var updated = false
             val data = TrophyDataManager.data.pity
             for (item in items) {

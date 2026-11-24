@@ -16,10 +16,6 @@ object GameEventManager : AbstractEventManager<(text: Component, overlay: Boolea
         result
     }
 
-    fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (text: Component, overlay: Boolean) -> Boolean): GameEvent {
-        return GameEvent(priority, callback).register()
-    }
-
     class GameEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (text: Component, overlay: Boolean) -> Boolean

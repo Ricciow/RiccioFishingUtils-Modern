@@ -17,13 +17,6 @@ object ContainerEvents : AbstractEventManager<(containerId: Int, itens: List<Ite
         }
     }
 
-    fun registerContainerOpenEvent(
-        priority: Int = DEFAULT_EVENT_PRIORITY,
-        callback: (containerName: String, containerId: Int, itens: List<ItemStack>) -> Unit
-    ): ContainerOpenEvent {
-        return ContainerOpenEvent(priority, callback).register()
-    }
-
     class ContainerOpenEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (containerName: String, containerId: Int, itens: List<ItemStack>) -> Unit

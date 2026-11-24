@@ -189,7 +189,11 @@ class FeatureProcessor(
                         simpleName
                     }
                     val instance = if (symbol.classKind == ClassKind.OBJECT) ref else "$ref()"
-                    val arguments = if (scope != null) "scope.child()" else ""
+                    val arguments = when {
+                        scope != null -> "scope.child()"
+                        spec.annotation == AUTO_REGISTER -> "EventScopes.startup"
+                        else -> ""
+                    }
                     writer.write("$indent$instance.${spec.methodToCall}($arguments)\n")
                 }
                 if (scope != null) writer.write("        }\n")

@@ -14,13 +14,6 @@ object SlotRenderEvents : AbstractEventManager<(GuiGraphicsExtractor, AbstractCo
         }
     }
 
-    fun registerSlotRenderEvent(
-        priority: Int = DEFAULT_EVENT_PRIORITY,
-        callback: (graphics: GuiGraphicsExtractor, screen: AbstractContainerScreen<*>, slot: Slot) -> Unit
-    ): SlotRenderEvent {
-        return SlotRenderEvent(priority, callback).register()
-    }
-
     class SlotRenderEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (GuiGraphicsExtractor, AbstractContainerScreen<*>, Slot) -> Unit

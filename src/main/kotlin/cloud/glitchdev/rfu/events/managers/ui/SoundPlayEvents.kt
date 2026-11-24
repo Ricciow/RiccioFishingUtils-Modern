@@ -15,13 +15,6 @@ object SoundPlayEvents : AbstractEventManager<(SoundInstance, Cancelable<SoundEn
         }
     }
 
-    fun registerSoundPlayEvent(
-        priority: Int = DEFAULT_EVENT_PRIORITY,
-        callback: (SoundInstance, Cancelable<SoundEngine.PlayResult>) -> Unit
-    ): SoundPlayEvent {
-        return SoundPlayEvent(priority, callback).register()
-    }
-
     class SoundPlayEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (SoundInstance, Cancelable<SoundEngine.PlayResult>) -> Unit

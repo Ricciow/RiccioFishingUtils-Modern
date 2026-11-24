@@ -13,10 +13,6 @@ object TrophyFishCatchEventManager : AbstractEventManager<(fish: TrophyFish, tie
         }
     }
 
-    fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (fish: TrophyFish, tier: TrophyTier, amount: Int) -> Unit): TrophyFishCatchEvent {
-        return TrophyFishCatchEvent(priority, callback).register()
-    }
-
     class TrophyFishCatchEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (fish: TrophyFish, tier: TrophyTier, amount: Int) -> Unit

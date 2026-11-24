@@ -1,18 +1,19 @@
 package cloud.glitchdev.rfu.events.managers.fishing
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.lifecycle.TickEvents.registerTickEvent
 import net.minecraft.world.entity.projectile.FishingHook
 
 @EventManager
 object BobberLiquidEvents : AbstractEventManager<(FishingHook) -> Unit, BobberLiquidEvents.BobberLiquidEvent>(), RegisteredEvent {
     private var lastHookId = -1
 
-    override fun register() {
-        registerTickEvent(0, 5) { _ ->
+    override fun register(scope: EventScope) {
+        scope.registerTickEvent(0, 5) { _ ->
             val player = mc.player ?: return@registerTickEvent
             val fishingHook = player.fishing ?: run {
                 lastHookId = -1
@@ -35,10 +36,6 @@ object BobberLiquidEvents : AbstractEventManager<(FishingHook) -> Unit, BobberLi
                 task.callback(bobber)
             }
         }
-    }
-
-    fun registerBobberLiquidEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (FishingHook) -> Unit): BobberLiquidEvent {
-        return BobberLiquidEvent(priority, callback).register()
     }
 
     class BobberLiquidEvent(

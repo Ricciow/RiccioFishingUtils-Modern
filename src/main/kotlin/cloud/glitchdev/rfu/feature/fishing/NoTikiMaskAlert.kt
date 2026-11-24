@@ -3,7 +3,7 @@ package cloud.glitchdev.rfu.feature.fishing
 import cloud.glitchdev.rfu.config.categories.HotSpotSettings
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.inventory.ArmorEvents
+import cloud.glitchdev.rfu.events.managers.inventory.ArmorChangeEventManager
 import cloud.glitchdev.rfu.events.managers.fishing.HotSpotEvents
 import cloud.glitchdev.rfu.events.managers.inventory.registerItemUsedEvent
 import cloud.glitchdev.rfu.feature.Feature
@@ -19,7 +19,7 @@ object NoTikiMaskAlert : Feature {
             if (!item.isFishingRod()) return@registerItemUsedEvent
             if (mc.player?.fishing != null) return@registerItemUsedEvent
 
-            if (isFishingOnHotspot() && !ArmorEvents.currentArmorSet.isWearingTikiMask) {
+            if (isFishingOnHotspot() && !ArmorChangeEventManager.currentArmorSet.isWearingTikiMask) {
                 HotSpotSettings.noTikiMask.show()
             }
         }

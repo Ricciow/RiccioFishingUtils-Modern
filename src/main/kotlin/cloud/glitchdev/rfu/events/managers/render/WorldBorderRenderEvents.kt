@@ -14,9 +14,6 @@ object WorldBorderRenderEvents : AbstractEventManager<(WorldBorderRenderEvents.W
         }
     }
 
-    fun registerWorldBorderRenderEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (WorldBorderRenderContext) -> Unit): WorldBorderRenderEvent =
-        WorldBorderRenderEvent(priority, callback).register()
-
     class WorldBorderRenderContext(
         val border: WorldBorder,
         val partialTick: Float,

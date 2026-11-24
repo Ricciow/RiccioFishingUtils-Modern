@@ -16,10 +16,6 @@ object AchievementStageUnlockedEvents : AbstractEventManager<(IStageAchievement)
         }
     }
 
-    fun registerAchievementStageUnlockedEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (IStageAchievement) -> Unit): AchievementStageUnlockedEvent {
-        return AchievementStageUnlockedEvent(priority, callback).register()
-    }
-
     class AchievementStageUnlockedEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (IStageAchievement) -> Unit

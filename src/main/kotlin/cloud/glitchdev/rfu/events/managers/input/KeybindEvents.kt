@@ -1,5 +1,8 @@
 package cloud.glitchdev.rfu.events.managers.input
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.connection.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
@@ -9,8 +12,6 @@ import cloud.glitchdev.rfu.events.keybind.KeyContext
 import cloud.glitchdev.rfu.events.keybind.KeyModifier
 import cloud.glitchdev.rfu.events.keybind.KeybindBuilder
 import cloud.glitchdev.rfu.events.keybind.KeybindTask
-import cloud.glitchdev.rfu.events.managers.connection.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.lifecycle.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.events.registration.Defaults
 import cloud.glitchdev.rfu.events.registration.ScopedRegistration
 import cloud.glitchdev.rfu.utils.dsl.toConfigCode
@@ -28,9 +29,9 @@ object KeybindEvents : AbstractEventManager<() -> Unit, KeybindTask>(), Register
     val pressedKeys: MutableSet<Int> = ConcurrentHashMap.newKeySet()
     val activeTasks: MutableSet<KeybindTask> = ConcurrentHashMap.newKeySet()
 
-    override fun register() {
-        registerTickEvent { runHeldTasks() }
-        registerDisconnectEvent {
+    override fun register(scope: EventScope) {
+        scope.registerTickEvent { runHeldTasks() }
+        scope.registerDisconnectEvent {
             safeExecution {
                 activeTasks.forEach { it.onRelease?.invoke() }
                 activeTasks.clear()
@@ -173,7 +174,7 @@ object KeybindEvents : AbstractEventManager<() -> Unit, KeybindTask>(), Register
         "onRepeat = null",
         "name = null",
     )
-    fun registerKeybind(
+    internal fun registerKeybind(
         key: () -> Int,
         priority: Int = DEFAULT_EVENT_PRIORITY,
         context: KeyContext = KeyContext.IN_GAME,
@@ -219,7 +220,7 @@ object KeybindEvents : AbstractEventManager<() -> Unit, KeybindTask>(), Register
         "onRepeat = null",
         "name = null",
     )
-    fun registerKeybind(
+    internal fun registerKeybind(
         key: Int,
         priority: Int = DEFAULT_EVENT_PRIORITY,
         context: KeyContext = KeyContext.IN_GAME,
@@ -250,13 +251,7 @@ object KeybindEvents : AbstractEventManager<() -> Unit, KeybindTask>(), Register
     )
 
     @ScopedRegistration
-    fun registerKeybind(builder: KeybindBuilder.() -> Unit): KeybindTask =
+    internal fun registerKeybind(builder: KeybindBuilder.() -> Unit): KeybindTask =
         KeybindBuilder().apply(builder).build().register()
 
-    fun registerRawInputEvent(
-        priority: Int = DEFAULT_EVENT_PRIORITY,
-        callback: (code: Int, action: Int, modifiers: Int) -> Unit
-    ): RawInputEventManager.RawInputEvent {
-        return RawInputEventManager.register(priority, callback)
-    }
 }

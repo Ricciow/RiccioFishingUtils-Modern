@@ -1,18 +1,19 @@
 package cloud.glitchdev.rfu.events.managers.fishing
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.chat.registerGameEvent
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.chat.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 
 @EventManager
 object CocoonEvents : AbstractEventManager<(SeaCreatures) -> Unit, CocoonEvents.CocoonEvent>(), RegisteredEvent {
     val COCOON_REGEX = """CAUGHT! You cocooned (?:an? )?(.+?)!""".toExactRegex()
 
-    override fun register() {
-        registerGameEvent(COCOON_REGEX) { _, _, matches ->
+    override fun register(scope: EventScope) {
+        scope.registerGameEvent(COCOON_REGEX) { _, _, matches ->
             val scDisplayName = matches?.groupValues?.getOrNull(1)
             if (scDisplayName != null) {
                 val sc = SeaCreatures.entries.find { it.scDisplayName.equals(scDisplayName, ignoreCase = true) }
@@ -29,10 +30,6 @@ object CocoonEvents : AbstractEventManager<(SeaCreatures) -> Unit, CocoonEvents.
                 task.callback(sc)
             }
         }
-    }
-
-    fun registerCocoonEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (SeaCreatures) -> Unit): CocoonEvent {
-        return CocoonEvent(priority, callback).register()
     }
 
     class CocoonEvent(

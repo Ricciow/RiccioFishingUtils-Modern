@@ -14,13 +14,6 @@ object RareDropEventManager : AbstractEventManager<(rareDrop: RareDrops, magicFi
         result
     }
 
-    fun register(
-        priority: Int = DEFAULT_EVENT_PRIORITY,
-        callback: (rareDrop: RareDrops, magicFind: Int?, mobName: String?) -> Boolean
-    ): RareDropEvent {
-        return RareDropEvent(priority, callback).register()
-    }
-
     class RareDropEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (rareDrop: RareDrops, magicFind: Int?, mobName: String?) -> Boolean

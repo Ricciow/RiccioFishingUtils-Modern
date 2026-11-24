@@ -12,9 +12,6 @@ object EntityFireRenderEvents : AbstractEventManager<(EntityFireRenderEvents.Ent
         }
     }
 
-    fun registerEntityFireRenderEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (EntityFireContext) -> Unit): EntityFireEvent =
-        EntityFireEvent(priority, callback).register()
-
     class EntityFireContext(val entity: Entity, var visible: Boolean)
 
     class EntityFireEvent(priority: Int, callback: (EntityFireContext) -> Unit) :

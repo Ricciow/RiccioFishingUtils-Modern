@@ -15,9 +15,6 @@ object CameraFluidEventManager : AbstractEventManager<(CameraFluidEventManager.C
         }
     }
 
-    fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (CameraFluidContext) -> Unit): CameraFluidEvent =
-        CameraFluidEvent(priority, callback).register()
-
     class CameraFluidContext(val camera: Camera, val state: FluidState, val tag: TagKey<Fluid>, var matches: Boolean) {
         var disableFog: Boolean = false
     }

@@ -11,10 +11,6 @@ object FishingSessionResumeEventManager : AbstractEventManager<() -> Unit, Fishi
         }
     }
 
-    fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: () -> Unit): FishingSessionResumeEvent {
-        return FishingSessionResumeEvent(priority, callback).register()
-    }
-
     class FishingSessionResumeEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: () -> Unit

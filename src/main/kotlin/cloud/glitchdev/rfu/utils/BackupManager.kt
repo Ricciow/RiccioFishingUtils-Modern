@@ -1,9 +1,10 @@
 package cloud.glitchdev.rfu.utils
 
+import cloud.glitchdev.rfu.events.EventScopes
+import cloud.glitchdev.rfu.events.managers.connection.registerJoinEvent
 import cloud.glitchdev.rfu.RiccioFishingUtils.CONFIG_DIR
 import cloud.glitchdev.rfu.RiccioFishingUtils.MOD_ID
 import cloud.glitchdev.rfu.constants.text.TextColor
-import cloud.glitchdev.rfu.events.managers.connection.ConnectionEvents.registerJoinEvent
 import com.google.gson.JsonObject
 import com.teamresourceful.resourcefulconfig.api.patching.ConfigPatchEvent
 import com.teamresourceful.resourcefulconfig.common.jsonc.JsoncObject
@@ -33,7 +34,7 @@ object BackupManager {
             backupDir.mkdirs()
         }
 
-        registerJoinEvent(delayMillis = 2000) {
+        EventScopes.startup.registerJoinEvent(delayMillis = 2000) {
             val notifications = flushNotifications()
             notifications.forEach { msg ->
                 Chat.sendMessage(TextUtils.rfuLiteral(msg))

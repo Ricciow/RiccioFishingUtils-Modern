@@ -7,7 +7,7 @@ import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.BaseAchievement
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.inventory.ArmorEvents
+import cloud.glitchdev.rfu.events.managers.inventory.ArmorChangeEventManager
 import cloud.glitchdev.rfu.events.managers.inventory.registerArmorChangeEvent
 import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import gg.essential.universal.utils.toUnformattedString
@@ -36,7 +36,7 @@ object MinMaxingAchievement : BaseAchievement() {
         val player = mc.player ?: return
         val mainHand = player.mainHandItem.customName ?: return
 
-        if (mainHand.isValidTarget("Hellfire Rod") && ArmorEvents.currentArmorSet.isWearingMagmaLord10StarredSet) {
+        if (mainHand.isValidTarget("Hellfire Rod") && ArmorChangeEventManager.currentArmorSet.isWearingMagmaLord10StarredSet) {
             complete()
         }
     }

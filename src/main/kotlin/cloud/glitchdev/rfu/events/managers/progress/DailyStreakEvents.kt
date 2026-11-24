@@ -14,10 +14,6 @@ object DailyStreakEvents : AbstractEventManager<(DailyStreakData) -> Unit, Daily
         }
     }
 
-    fun registerStreakUpdatedEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (DailyStreakData) -> Unit): DailyStreakUpdatedEvent {
-        return DailyStreakUpdatedEvent(priority, callback).register()
-    }
-
     class DailyStreakUpdatedEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (DailyStreakData) -> Unit

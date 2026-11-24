@@ -14,10 +14,6 @@ object LocationEventManager : AbstractEventManager<(ClientboundLocationPacket) -
         }
     }
 
-    fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (ClientboundLocationPacket) -> Unit) : LocationEvent {
-        return LocationEvent(priority, callback).register()
-    }
-
     class LocationEvent(
         override var priority: Int = DEFAULT_EVENT_PRIORITY,
         callback : (ClientboundLocationPacket) -> Unit,

@@ -1,5 +1,14 @@
 package cloud.glitchdev.rfu.data.mob
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.connection.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerJoinEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.entity.registerEntityAddedEvent
+import cloud.glitchdev.rfu.events.managers.entity.registerEntityDataEvent
+import cloud.glitchdev.rfu.events.managers.entity.registerEntityRemovedEvent
+import cloud.glitchdev.rfu.events.managers.entity.registerEntityStatusEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.events.managers.entity.MobDeathEventManager
 import cloud.glitchdev.rfu.events.managers.entity.MobDetectEventManager
 import cloud.glitchdev.rfu.events.managers.entity.MobDisposeEventManager
@@ -8,14 +17,6 @@ import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.connection.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.connection.ConnectionEvents.registerJoinEvent
-import cloud.glitchdev.rfu.events.managers.entity.EntityAddedEvents.registerEntityAddedEvent
-import cloud.glitchdev.rfu.events.managers.entity.EntityDataEvents.registerEntityDataEvent
-import cloud.glitchdev.rfu.events.managers.entity.EntityRemovedEvents.registerEntityRemovedEvent
-import cloud.glitchdev.rfu.events.managers.entity.EntityStatusEvents.registerEntityStatusEvent
-import cloud.glitchdev.rfu.events.managers.connection.HypixelModApiEvents.registerLocationEvent
-import cloud.glitchdev.rfu.events.managers.lifecycle.TickEvents.registerTickEvent
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.world.entity.Entity
@@ -31,8 +32,8 @@ object MobManager : RegisteredEvent {
     private val uniqueSbEntities = HashSet<SkyblockEntity>()
     private val pendingNametags = HashSet<Int>()
 
-    override fun register() {
-        registerEntityAddedEvent { entity ->
+    override fun register(scope: EventScope) {
+        scope.registerEntityAddedEvent { entity ->
             val world = entity.level() as? ClientLevel ?: return@registerEntityAddedEvent
             if (entity is ArmorStand && checkSbEntity(entity, world)) {
                 MobDetectEventManager.runTasks(uniqueSbEntities.toSet())
@@ -44,7 +45,7 @@ object MobManager : RegisteredEvent {
             }
         }
 
-        registerEntityDataEvent { entity ->
+        scope.registerEntityDataEvent { entity ->
             val world = entity.level() as? ClientLevel ?: return@registerEntityDataEvent
             val trackedEntity = sbEntities[entity.id]
             if (trackedEntity != null) {
@@ -61,7 +62,7 @@ object MobManager : RegisteredEvent {
             }
         }
 
-        registerEntityRemovedEvent { entityId ->
+        scope.registerEntityRemovedEvent { entityId ->
             pendingNametags.remove(entityId)
             val sbEntity = sbEntities[entityId] ?: return@registerEntityRemovedEvent
             if (entityId == sbEntity.nameTagEntity.id) {
@@ -91,7 +92,7 @@ object MobManager : RegisteredEvent {
             }
         }
 
-        registerEntityStatusEvent { entity, status ->
+        scope.registerEntityStatusEvent { entity, status ->
             if (status == EntityEvent.DEATH) {
                 val sbEntity = sbEntities[entity.id] ?: return@registerEntityStatusEvent
                 if (!sbEntity.isDying && sbEntity.modelEntities.any { it.id == entity.id }) {
@@ -101,7 +102,7 @@ object MobManager : RegisteredEvent {
             }
         }
 
-        registerTickEvent(interval = 5) {
+        scope.registerTickEvent(interval = 5) {
             val world = mc.level ?: return@registerTickEvent
 
             checkPendingNametags(world)
@@ -116,15 +117,15 @@ object MobManager : RegisteredEvent {
             }
         }
 
-        registerLocationEvent {
+        scope.registerLocationEvent {
             clearAll()
         }
 
-        registerJoinEvent {
+        scope.registerJoinEvent {
             clearAll()
         }
 
-        registerDisconnectEvent {
+        scope.registerDisconnectEvent {
             clearAll()
         }
     }

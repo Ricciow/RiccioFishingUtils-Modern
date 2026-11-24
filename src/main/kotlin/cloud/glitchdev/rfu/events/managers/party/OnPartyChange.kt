@@ -12,10 +12,6 @@ object OnPartyChange : AbstractEventManager<(Boolean, Boolean, Boolean, Map<Stri
         }
     }
 
-    fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (Boolean, Boolean, Boolean, Map<String, ClientboundPartyInfoPacket.PartyRole>) -> Unit): OnPartyChangeEvent {
-        return OnPartyChangeEvent(priority, callback).register()
-    }
-
     class OnPartyChangeEvent(priority: Int, callback: (Boolean, Boolean, Boolean, Map<String, ClientboundPartyInfoPacket.PartyRole>) -> Unit) : ManagedTask<(Boolean, Boolean, Boolean, Map<String, ClientboundPartyInfoPacket.PartyRole>) -> Unit, OnPartyChangeEvent>(priority, callback) {
         override fun register() = submitTask(this)
         override fun unregister() = removeTask(this)

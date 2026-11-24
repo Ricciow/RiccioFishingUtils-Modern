@@ -25,10 +25,6 @@ object JoinEventManager : AbstractEventManager<(wasConnected : Boolean) -> Unit,
         }
     }
 
-    fun register(priority: Int = DEFAULT_EVENT_PRIORITY, delayMillis: Long = DEFAULT_JOIN_DELAY_MILLIS, callback: (wasConnected: Boolean) -> Unit): JoinEvent {
-        return JoinEvent(priority, delayMillis, callback).register()
-    }
-
     @Defaults("delayMillis = ${DEFAULT_JOIN_DELAY_MILLIS}L")
     class JoinEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,

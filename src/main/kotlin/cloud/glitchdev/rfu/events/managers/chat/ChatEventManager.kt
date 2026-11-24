@@ -16,10 +16,6 @@ object ChatEventManager : AbstractEventManager<(text: Component) -> Boolean, Cha
         result
     }
 
-    fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (text: Component) -> Boolean): ChatEvent {
-        return ChatEvent(priority, callback).register()
-    }
-
     class ChatEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (text: Component) -> Boolean

@@ -11,10 +11,6 @@ object AfkStatusEventManager : AbstractEventManager<(Boolean) -> Unit, AfkStatus
         }
     }
 
-    fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (Boolean) -> Unit): AfkStatusEvent {
-        return AfkStatusEvent(priority, callback).register()
-    }
-
     class AfkStatusEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (Boolean) -> Unit

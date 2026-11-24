@@ -6,7 +6,7 @@ import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.events.managers.ui.ErrorEvents
 import cloud.glitchdev.rfu.events.managers.player.AfkEvents
-import cloud.glitchdev.rfu.events.managers.connection.WebSocketEvents
+import cloud.glitchdev.rfu.events.managers.connection.ConnectionStatusChanged
 import cloud.glitchdev.rfu.utils.Coroutines
 import com.google.gson.Gson
 import java.net.URI
@@ -68,7 +68,7 @@ object WebSocketClient {
         private set(value) {
             if (field != value) {
                 field = value
-                WebSocketEvents.trigger(value)
+                ConnectionStatusChanged.runTasks(value)
             }
         }
 
@@ -230,7 +230,7 @@ object WebSocketClient {
                     val map = gson.fromJson(msg, Map::class.java)
                     val errorMsg = map["message"]?.toString() ?: "Unknown error"
                     val origin = map["origin"]?.toString() ?: "UNKNOWN"
-                    ErrorEvents.trigger(errorMsg, origin)
+                    ErrorEvents.runTasks(errorMsg, origin)
                 } catch (e: Exception) {
                     RFULogger.error("Error parsing backend error message: ", e)
                 }

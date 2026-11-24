@@ -7,6 +7,7 @@ import net.minecraft.client.DeltaTracker
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.client.renderer.fog.FogData
 
+/** Runs after atmospheric fog is configured. */
 @EventManager(register = false)
 object FogEventManager : AbstractEventManager<(FogData, Camera, ClientLevel, Float, DeltaTracker) -> Unit, FogEventManager.FogEvent>() {
     override val runTasks: (FogData, Camera, ClientLevel, Float, DeltaTracker) -> Unit = { fog, camera, level, renderDistance, deltaTracker ->
@@ -14,9 +15,6 @@ object FogEventManager : AbstractEventManager<(FogData, Camera, ClientLevel, Flo
             tasks.forEach { it.callback(fog, camera, level, renderDistance, deltaTracker) }
         }
     }
-
-    fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (FogData, Camera, ClientLevel, Float, DeltaTracker) -> Unit): FogEvent =
-        FogEvent(priority, callback).register()
 
     class FogEvent(
         priority: Int,

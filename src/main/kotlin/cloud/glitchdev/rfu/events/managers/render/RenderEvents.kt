@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.events.managers.render
 
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.RegisteredEvent
@@ -8,7 +9,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents
 
 @EventManager
 object RenderEvents : AbstractEventManager<(LevelRenderContext) -> Unit, RenderEvents.RenderEvent>(), RegisteredEvent {
-    override fun register() {
+    override fun register(scope: EventScope) {
         LevelRenderEvents.COLLECT_SUBMITS.register { context ->
             runTasks(context)
         }
@@ -18,10 +19,6 @@ object RenderEvents : AbstractEventManager<(LevelRenderContext) -> Unit, RenderE
         safeExecution {
             tasks.forEach { task -> task.callback(context) }
         }
-    }
-
-    fun registerRenderEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (LevelRenderContext) -> Unit): RenderEvent {
-        return RenderEvent(priority, callback).register()
     }
 
     class RenderEvent(

@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.events.managers.lifecycle
 
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.RegisteredEvent
@@ -11,7 +12,7 @@ import net.minecraft.client.Minecraft
 object TickEvents : AbstractEventManager<(Minecraft) -> Unit, TickEvents.TickEvent>(), RegisteredEvent {
     private const val DEFAULT_INTERVAL = 1L
 
-    override fun register() {
+    override fun register(scope: EventScope) {
         ClientTickEvents.END_CLIENT_TICK.register { client ->
             runTasks(client)
         }
@@ -25,10 +26,6 @@ object TickEvents : AbstractEventManager<(Minecraft) -> Unit, TickEvents.TickEve
                 }
             }
         }
-    }
-
-    fun registerTickEvent(priority: Int = DEFAULT_EVENT_PRIORITY, interval: Long = DEFAULT_INTERVAL, callback: (Minecraft) -> Unit): TickEvent {
-        return TickEvent(priority, interval, callback).register()
     }
 
     @Defaults("interval = ${DEFAULT_INTERVAL}L")

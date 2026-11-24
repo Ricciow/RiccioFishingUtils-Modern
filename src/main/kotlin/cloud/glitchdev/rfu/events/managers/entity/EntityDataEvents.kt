@@ -12,13 +12,6 @@ object EntityDataEvents : AbstractEventManager<(entity : Entity) -> Unit, Entity
         }
     }
 
-    fun registerEntityDataEvent(
-        priority: Int = DEFAULT_EVENT_PRIORITY,
-        callback: (entity : Entity) -> Unit
-    ): EntityDataEvent {
-        return EntityDataEvent(priority, callback).register()
-    }
-
     class EntityDataEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (entity : Entity) -> Unit

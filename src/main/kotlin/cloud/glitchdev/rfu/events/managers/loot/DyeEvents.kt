@@ -14,19 +14,11 @@ object DyeEvents : AbstractEventManager<(dyes: Dyes?) -> Unit, DyeEvents.DyeUpda
         }
     }
 
-    fun registerDyeUpdateEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (Dyes?) -> Unit): DyeUpdateEvent {
-        return DyeUpdateEvent(priority, callback).register()
-    }
-
     class DyeUpdateEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (Dyes?) -> Unit
     ) : ManagedTask<(Dyes?) -> Unit, DyeUpdateEvent>(priority, callback) {
         override fun register() = submitTask(this)
         override fun unregister() = removeTask(this)
-    }
-
-    fun trigger(dyes: Dyes?) {
-        runTasks(dyes)
     }
 }

@@ -13,11 +13,6 @@ object PlayerRenderStateEvents : AbstractEventManager<(Avatar, AvatarRenderState
         }
     }
 
-    fun registerPlayerRenderStateEvent(
-        priority: Int = DEFAULT_EVENT_PRIORITY,
-        callback: (Avatar, AvatarRenderState) -> Unit
-    ): PlayerRenderStateEvent = PlayerRenderStateEvent(priority, callback).register()
-
     class PlayerRenderStateEvent(
         priority: Int,
         callback: (Avatar, AvatarRenderState) -> Unit

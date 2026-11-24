@@ -12,13 +12,6 @@ object SetSlotEvents : AbstractEventManager<(containerId: Int, slot: Int, item: 
         }
     }
 
-    fun registerSetSlotEvent(
-        priority: Int = DEFAULT_EVENT_PRIORITY,
-        callback: (containerId: Int, slot: Int, item: ItemStack) -> Unit
-    ): SetSlotEvent {
-        return SetSlotEvent(priority, callback).register()
-    }
-
     class SetSlotEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (containerId: Int, slot: Int, item: ItemStack) -> Unit

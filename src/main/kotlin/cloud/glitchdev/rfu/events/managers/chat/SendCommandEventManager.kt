@@ -15,10 +15,6 @@ object SendCommandEventManager : AbstractEventManager<(command: String) -> Boole
         result
     }
 
-    fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (command: String) -> Boolean): SendCommandEvent {
-        return SendCommandEvent(priority, callback).register()
-    }
-
     class SendCommandEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (command: String) -> Boolean

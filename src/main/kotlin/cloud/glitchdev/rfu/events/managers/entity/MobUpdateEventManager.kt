@@ -12,10 +12,6 @@ object MobUpdateEventManager : AbstractEventManager<(SkyblockEntity) -> Unit, Mo
         }
     }
 
-    fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (SkyblockEntity) -> Unit): MobUpdateEvent {
-        return MobUpdateEvent(priority, callback).register()
-    }
-
     class MobUpdateEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (SkyblockEntity) -> Unit

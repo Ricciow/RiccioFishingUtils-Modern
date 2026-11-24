@@ -1,13 +1,14 @@
 package cloud.glitchdev.rfu.utils
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.chat.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.inventory.registerContainerOpenEvent
 import cloud.glitchdev.rfu.constants.skyblock.SkillType
 import cloud.glitchdev.rfu.constants.skyblock.Skills
 import cloud.glitchdev.rfu.data.skills.SkillsData
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.chat.ChatEvents.registerGameEvent
-import cloud.glitchdev.rfu.events.managers.connection.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.inventory.ContainerEvents.registerContainerOpenEvent
 import cloud.glitchdev.rfu.events.managers.progress.SkillEvents
 import cloud.glitchdev.rfu.utils.dsl.toSkillLevel
 import gg.essential.universal.utils.toUnformattedString
@@ -28,8 +29,8 @@ object SkillTracker : RegisteredEvent {
     private val LORE_PROGRESS_REGEX = """(?<![0-9,.])([0-9][0-9,]*(?:\.[0-9]+)?[kMB]?)\s*/\s*([0-9][0-9,]*(?:\.[0-9]+)?[kMB]?)""".toRegex(RegexOption.IGNORE_CASE)
     private val LORE_TOTAL_XP_REGEX = """^[\s-]*([0-9][0-9,]*(?:\.[0-9]+)?)\s*$""".toRegex()
 
-    override fun register() {
-        registerGameEvent(ACTION_BAR_REGEX, isOverlay = true) { msg, _, matches ->
+    override fun register(scope: EventScope) {
+        scope.registerGameEvent(ACTION_BAR_REGEX, isOverlay = true) { msg, _, matches ->
             if (matches == null) return@registerGameEvent
             val gainedXpStr = matches.groupValues[1]
             val skillName = matches.groupValues[2]
@@ -65,9 +66,9 @@ object SkillTracker : RegisteredEvent {
             setSkillXp(skill, newTotal)
         }
 
-        registerDisconnectEvent { lastPercentageGains.clear() }
+        scope.registerDisconnectEvent { lastPercentageGains.clear() }
 
-        registerContainerOpenEvent { _, _, items ->
+        scope.registerContainerOpenEvent { _, _, items ->
             for (item in items) {
                 val name = item.hoverName.toUnformattedString()
                 val match = SKILL_ITEM_NAME_REGEX.find(name) ?: continue

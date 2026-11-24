@@ -1,12 +1,12 @@
 package cloud.glitchdev.rfu.events.managers.player
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.connection.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.input.registerRawInputEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
-import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.connection.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.input.KeybindEvents.registerRawInputEvent
-import cloud.glitchdev.rfu.events.managers.lifecycle.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.events.managers.input.KeybindEvents
 
 @AutoRegister
@@ -25,8 +25,8 @@ object AfkEvents : RegisteredEvent {
     private var lastYaw = 0f
     private var lastPitch = 0f
 
-    override fun register() {
-        registerTickEvent(interval = 20) {
+    override fun register(scope: EventScope) {
+        scope.registerTickEvent(interval = 20) {
             if (mc.player == null || mc.level == null) return@registerTickEvent
 
             val mouseX = mc.mouseHandler.xpos()
@@ -58,12 +58,12 @@ object AfkEvents : RegisteredEvent {
             }
         }
 
-        registerDisconnectEvent {
+        scope.registerDisconnectEvent {
             isAfk = false
             lastActivityTimeMs = System.currentTimeMillis()
         }
 
-        registerRawInputEvent { _, _, _ ->
+        scope.registerRawInputEvent { _, _, _ ->
             recordActivity()
         }
     }
@@ -83,10 +83,4 @@ object AfkEvents : RegisteredEvent {
         }
     }
 
-    fun registerAfkStatusChangedEvent(
-        priority: Int = DEFAULT_EVENT_PRIORITY,
-        callback: (isAfk: Boolean) -> Unit
-    ): AfkStatusEventManager.AfkStatusEvent {
-        return AfkStatusEventManager.register(priority, callback)
-    }
 }

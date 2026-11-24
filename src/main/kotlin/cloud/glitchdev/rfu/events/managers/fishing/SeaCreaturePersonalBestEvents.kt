@@ -14,13 +14,6 @@ object SeaCreaturePersonalBestEvents : AbstractEventManager<(SeaCreatures, Long)
         }
     }
 
-    fun registerSeaCreaturePersonalBestEvent(
-        priority: Int = DEFAULT_EVENT_PRIORITY,
-        callback: (SeaCreatures, durationMillis: Long) -> Unit
-    ): SeaCreaturePersonalBestEvent {
-        return SeaCreaturePersonalBestEvent(priority, callback).register()
-    }
-
     class SeaCreaturePersonalBestEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (SeaCreatures, Long) -> Unit

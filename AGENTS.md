@@ -169,6 +169,8 @@ Event managers live in domain packages such as `chat`, `fishing`, and `lifecycle
 
 KSP generates one `ScopedRegistrations.kt` per package with the `EventScope.registerXEvent` extensions for that package. Use `@ScopedRegistration` on a method when registration needs a custom signature or filtering and `@Defaults` to declare defaults copied into the generated extension.
 
+`RegisteredEvent.register(scope)` and `postInitialize(scope)` receive the client startup scope. Use the generated `scope.registerXEvent` functions for managed listeners. The startup scope closes at client shutdown and stays active during a listener restart.
+
 Common managers:
 - `lifecycle.TickEvents`: `registerTickEvent(priority, interval) { ... }`
 - `chat.ChatEventManager` and `chat.GameEventManager`: `registerChatEvent`, `registerGameEvent(regex)`.

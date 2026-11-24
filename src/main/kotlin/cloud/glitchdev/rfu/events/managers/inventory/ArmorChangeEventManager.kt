@@ -1,11 +1,11 @@
 package cloud.glitchdev.rfu.events.managers.inventory
 
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.data.ArmorSet
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.inventory.SetSlotEvents.registerSetSlotEvent
 import cloud.glitchdev.rfu.utils.Coroutines
 import kotlinx.coroutines.Job
 
@@ -23,8 +23,8 @@ object ArmorChangeEventManager : AbstractEventManager<(ArmorSet) -> Unit, ArmorC
         }
     }
 
-    override fun register() {
-        registerSetSlotEvent { containerId, slot, _ ->
+    override fun register(scope: EventScope) {
+        scope.registerSetSlotEvent { containerId, slot, _ ->
             if (debounceJob != null || !isArmorSlot(containerId, slot)) return@registerSetSlotEvent
 
             debounceJob = Coroutines.setTimeout(DEBOUNCE_DELAY_MS) {
@@ -49,13 +49,6 @@ object ArmorChangeEventManager : AbstractEventManager<(ArmorSet) -> Unit, ArmorC
             currentArmorSet = newSet
             runTasks(newSet)
         }
-    }
-
-    fun register(
-        priority: Int = DEFAULT_EVENT_PRIORITY,
-        callback: (ArmorSet) -> Unit
-    ): ArmorChangeEvent {
-        return ArmorChangeEvent(priority, callback).register()
     }
 
     class ArmorChangeEvent(

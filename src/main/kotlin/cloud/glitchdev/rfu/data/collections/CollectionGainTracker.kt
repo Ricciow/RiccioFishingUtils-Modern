@@ -1,11 +1,12 @@
 ﻿package cloud.glitchdev.rfu.data.collections
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.chat.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.managers.inventory.registerSetSlotEvent
+import cloud.glitchdev.rfu.events.managers.progress.registerSkillXpUpdateEvent
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.chat.ChatEvents.registerGameEvent
-import cloud.glitchdev.rfu.events.managers.fishing.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
-import cloud.glitchdev.rfu.events.managers.inventory.SetSlotEvents.registerSetSlotEvent
-import cloud.glitchdev.rfu.events.managers.progress.SkillEvents.registerSkillXpUpdateEvent
 import cloud.glitchdev.rfu.constants.skyblock.SkillType
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.client.Minecraft
@@ -19,16 +20,16 @@ object CollectionGainTracker : RegisteredEvent {
     
     private var lastFishingTime = 0L
 
-    override fun register() {
-        registerSkillXpUpdateEvent(SkillType.FISHING) { _, _ ->
+    override fun register(scope: EventScope) {
+        scope.registerSkillXpUpdateEvent(SkillType.FISHING) { _, _ ->
             lastFishingTime = System.currentTimeMillis()
         }
 
-        registerSeaCreatureCatchEvent { _, _, _, _, _ ->
+        scope.registerSeaCreatureCatchEvent { _, _, _, _, _ ->
             lastFishingTime = System.currentTimeMillis()
         }
 
-        registerSetSlotEvent { containerId, slot, item ->
+        scope.registerSetSlotEvent { containerId, slot, item ->
             if (containerId != PLAYER_INVENTORY_ID || item.isEmpty) return@registerSetSlotEvent
             // Hotbar/Inventory slots
             if (slot !in 9..44) return@registerSetSlotEvent
@@ -59,7 +60,7 @@ object CollectionGainTracker : RegisteredEvent {
         }
 
         // Track sack additions
-        registerGameEvent(SACKS_MESSAGE_REGEX, isOverlay = false) { text, _, _ ->
+        scope.registerGameEvent(SACKS_MESSAGE_REGEX, isOverlay = false) { text, _, _ ->
             val hoverText = text.siblings.firstNotNullOfOrNull { component ->
                 val hover = component.style.hoverEvent
                 if (hover is HoverEvent.ShowText) {

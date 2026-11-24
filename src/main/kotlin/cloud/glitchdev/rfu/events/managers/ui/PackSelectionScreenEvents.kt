@@ -12,10 +12,6 @@ object PackSelectionScreenEvents : AbstractEventManager<(PackSelectionScreen) ->
         }
     }
 
-    fun registerPackSelectionScreenTickEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (PackSelectionScreen) -> Unit): PackSelectionScreenTickEvent {
-        return PackSelectionScreenTickEvent(priority, callback).register()
-    }
-
     class PackSelectionScreenTickEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (PackSelectionScreen) -> Unit

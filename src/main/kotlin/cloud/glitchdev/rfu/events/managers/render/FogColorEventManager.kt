@@ -14,9 +14,6 @@ object FogColorEventManager : AbstractEventManager<(FogColorEventManager.FogColo
         }
     }
 
-    fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (FogColorContext) -> Unit): FogColorEvent =
-        FogColorEvent(priority, callback).register()
-
     class FogColorContext(val camera: Camera, val environment: FogEnvironment) {
         var color: Color? = null
         var preserveBrightness: Boolean = false

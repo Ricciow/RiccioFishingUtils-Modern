@@ -12,9 +12,6 @@ object WaterOverlayAppearanceEventManager : AbstractEventManager<(WaterOverlayAp
         }
     }
 
-    fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (WaterOverlayAppearanceContext) -> Unit): WaterOverlayAppearanceEvent =
-        WaterOverlayAppearanceEvent(priority, callback).register()
-
     class WaterOverlayAppearanceEvent(priority: Int, callback: (WaterOverlayAppearanceContext) -> Unit) :
         ManagedTask<(WaterOverlayAppearanceContext) -> Unit, WaterOverlayAppearanceEvent>(priority, callback) {
         override fun register() = submitTask(this)

@@ -11,10 +11,6 @@ object DisconnectEventManager : AbstractEventManager<() -> Unit, DisconnectEvent
         }
     }
 
-    fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: () -> Unit) : DisconnectEvent {
-        return DisconnectEvent(priority, callback).register()
-    }
-
     class DisconnectEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: () -> Unit,

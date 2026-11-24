@@ -16,10 +16,6 @@ object ParticleEvents : AbstractEventManager<(packet: ClientboundLevelParticlesP
         runTasks(packet)
     }
 
-    fun registerParticleEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (packet: ClientboundLevelParticlesPacket) -> Unit): ParticleEvent {
-        return ParticleEvent(priority, callback).register()
-    }
-
     class ParticleEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (packet: ClientboundLevelParticlesPacket) -> Unit

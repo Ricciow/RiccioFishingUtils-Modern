@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.utils.network
 
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ui.AnnouncementEvents
@@ -13,7 +14,7 @@ import com.google.gson.reflect.TypeToken
 @AutoRegister
 object AnnouncementWebSocket : RegisteredEvent {
 
-    override fun register() {
+    override fun register(scope: EventScope) {
         RFULogger.dev("Registering AnnouncementWebSocket")
         val callback : (String) -> Unit = { msg ->
             try {
@@ -23,11 +24,11 @@ object AnnouncementWebSocket : RegisteredEvent {
                 when (event.type) {
                     WebSocketEventType.SYNC, WebSocketEventType.CREATED, WebSocketEventType.UPDATED -> {
                         RFULogger.dev("Announcement update received via WebSocket: ${event.data?.title}")
-                        AnnouncementEvents.trigger(event.data)
+                        AnnouncementEvents.runTasks(event.data)
                     }
                     WebSocketEventType.DELETED -> {
                         RFULogger.dev("Announcement deletion received via WebSocket")
-                        AnnouncementEvents.trigger(null)
+                        AnnouncementEvents.runTasks(null)
                     }
                 }
             } catch (e: Exception) {

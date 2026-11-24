@@ -14,10 +14,6 @@ object FovEvents : AbstractEventManager<(Cancelable<Float>, Float) -> Unit, FovE
         }
     }
 
-    fun registerFovEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (Cancelable<Float>, Float) -> Unit): FovEvent {
-        return FovEvent(priority, callback).register()
-    }
-
     class FovEvent(
         priority: Int,
         callback: (Cancelable<Float>, Float) -> Unit

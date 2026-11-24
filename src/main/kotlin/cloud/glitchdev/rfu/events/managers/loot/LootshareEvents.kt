@@ -1,10 +1,11 @@
 package cloud.glitchdev.rfu.events.managers.loot
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.chat.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.inventory.registerSetSlotEvent
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.chat.ChatEvents.registerGameEvent
-import cloud.glitchdev.rfu.events.managers.inventory.SetSlotEvents.registerSetSlotEvent
 import cloud.glitchdev.rfu.utils.Coroutines
 import gg.essential.universal.utils.toFormattedString
 import gg.essential.universal.utils.toUnformattedString
@@ -27,8 +28,8 @@ object LootshareEvents : AbstractEventManager<(contributors: List<String>, items
 
     private var processingJob: Job? = null
 
-    override fun register() {
-        registerGameEvent(LOOTSHARE_REGEX) { message, _, _ ->
+    override fun register(scope: EventScope) {
+        scope.registerGameEvent(LOOTSHARE_REGEX) { message, _, _ ->
             val playerName = message.toFormattedString().substringAfter("§r§e§lLOOT SHARE §r§fYou received loot for assisting ")
             val nowMs = System.currentTimeMillis()
 
@@ -43,7 +44,7 @@ object LootshareEvents : AbstractEventManager<(contributors: List<String>, items
             }
         }
 
-        registerSetSlotEvent { containerId, slot, item ->
+        scope.registerSetSlotEvent { containerId, slot, item ->
             if (containerId != PLAYER_INVENTORY_ID || item.isEmpty) return@registerSetSlotEvent
             //Hotbar/Inventory
             if (slot !in 9..43) return@registerSetSlotEvent
@@ -97,13 +98,6 @@ object LootshareEvents : AbstractEventManager<(contributors: List<String>, items
     private fun cleanOldEntries(nowMs: Long) {
         recentMessages.removeIf { nowMs - it.timeMs > CLEANUP_THRESHOLD_MS }
         recentItems.removeIf { nowMs - it.timeMs > CLEANUP_THRESHOLD_MS }
-    }
-
-    fun registerLootshareEvent(
-        priority: Int = DEFAULT_EVENT_PRIORITY,
-        callback: (contributors: List<String>, items: List<LootshareItem>) -> Unit
-    ): LootshareEvent {
-        return LootshareEvent(priority, callback).register()
     }
 
     data class LootshareItem(val itemStack: ItemStack, val diffCount: Int)

@@ -1,11 +1,12 @@
 package cloud.glitchdev.rfu.utils
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.chat.registerAnyChatEvent
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.data.other.OtherManager
 import cloud.glitchdev.rfu.data.other.data.StringEntry
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.chat.ChatEvents
 import cloud.glitchdev.rfu.model.network.ProfileSyncResponse
 import cloud.glitchdev.rfu.model.network.WebSocketEvent
 import cloud.glitchdev.rfu.model.network.WebSocketEventType
@@ -22,7 +23,7 @@ object User : RegisteredEvent {
     internal fun sameProfileId(first: String?, second: String?): Boolean =
         first?.trim()?.replace("-", "").orEmpty().equals(second?.trim()?.replace("-", "").orEmpty(), ignoreCase = true)
 
-    override fun register() {
+    override fun register(scope: EventScope) {
         WebSocketClient.subscribe("/user/queue/profile") { message ->
             try {
                 val type = object : TypeToken<WebSocketEvent<ProfileSyncResponse>>() {}.type
@@ -40,7 +41,7 @@ object User : RegisteredEvent {
             }
         }
 
-        ChatEvents.registerAnyChatEvent(Regex("""Profile ID:\s*([a-fA-F0-9\-]+)""")) { _, matches ->
+        scope.registerAnyChatEvent(Regex("""Profile ID:\s*([a-fA-F0-9\-]+)""")) { _, matches ->
             val id = matches?.groupValues?.getOrNull(1)?.trim() ?: return@registerAnyChatEvent
             updateProfileId(id)
         }

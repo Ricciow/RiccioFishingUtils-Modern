@@ -1,12 +1,13 @@
 package cloud.glitchdev.rfu.utils
 
+import cloud.glitchdev.rfu.events.EventScopes
+import cloud.glitchdev.rfu.events.managers.connection.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerJoinEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerShutdownEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.RiccioFishingUtils.CONFIG_DIR
 import cloud.glitchdev.rfu.RiccioFishingUtils.MOD_ID
 import cloud.glitchdev.rfu.constants.text.TextColor
-import cloud.glitchdev.rfu.events.managers.connection.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.connection.ConnectionEvents.registerJoinEvent
-import cloud.glitchdev.rfu.events.managers.lifecycle.ShutdownEvents.registerShutdownEvent
-import cloud.glitchdev.rfu.events.managers.lifecycle.TickEvents.registerTickEvent
 import com.google.gson.*
 import java.io.File
 import java.io.FileReader
@@ -47,19 +48,19 @@ class JsonFile<T : Any>(
         instances.add(this)
         load(triggerOnReload = false)
 
-        registerJoinEvent {
+        EventScopes.startup.registerJoinEvent {
             save()
         }
 
-        registerDisconnectEvent {
+        EventScopes.startup.registerDisconnectEvent {
             save()
         }
 
-        registerShutdownEvent {
+        EventScopes.startup.registerShutdownEvent {
             save()
         }
 
-        registerTickEvent(interval = 30 * 60 * 20L) {
+        EventScopes.startup.registerTickEvent(interval = 30 * 60 * 20L) {
             save()
         }
     }

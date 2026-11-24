@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.utils.command
 
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.constants.text.TextColor.*
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.events.AutoRegister
@@ -24,7 +25,7 @@ object CommandManager : RegisteredEvent{
         commands.add(command)
     }
 
-    override fun register() {
+    override fun register(scope: EventScope) {
         ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
             commands.forEach {
                 dispatcher.register(it.build())

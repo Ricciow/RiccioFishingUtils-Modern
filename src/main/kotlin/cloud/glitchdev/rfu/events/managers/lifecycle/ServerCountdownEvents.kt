@@ -1,10 +1,10 @@
 package cloud.glitchdev.rfu.events.managers.lifecycle
 
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
 import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.lifecycle.ServerTickEvents.registerServerTickEvent
 import cloud.glitchdev.rfu.events.registration.Defaults
 import cloud.glitchdev.rfu.events.registration.ScopedRegistration
 import kotlin.time.Duration
@@ -12,8 +12,8 @@ import kotlin.time.Duration.Companion.milliseconds
 
 @EventManager(generateRegistration = false)
 object ServerCountdownEvents : AbstractEventManager<() -> Unit, ServerCountdownEvents.ServerCountdownEvent>(), RegisteredEvent {
-    override fun register() {
-        registerServerTickEvent(0) {
+    override fun register(scope: EventScope) {
+        scope.registerServerTickEvent(0) {
             runTasks()
         }
     }
@@ -32,7 +32,7 @@ object ServerCountdownEvents : AbstractEventManager<() -> Unit, ServerCountdownE
         "onTick = null",
         "onComplete = null",
     )
-    fun registerServerCountdownEvent(
+    internal fun registerServerCountdownEvent(
         durationTicks: Long,
         interval: Long = 1L,
         priority: Int = DEFAULT_EVENT_PRIORITY,
@@ -43,7 +43,7 @@ object ServerCountdownEvents : AbstractEventManager<() -> Unit, ServerCountdownE
     }
 
     @ScopedRegistration
-    fun registerServerCountdownEvent(
+    internal fun registerServerCountdownEvent(
         durationTicks: Long,
         priority: Int = DEFAULT_EVENT_PRIORITY,
         onComplete: () -> Unit
@@ -58,7 +58,7 @@ object ServerCountdownEvents : AbstractEventManager<() -> Unit, ServerCountdownE
     }
 
     @ScopedRegistration
-    fun registerServerCountdownEvent(
+    internal fun registerServerCountdownEvent(
         durationTicks: Long,
         interval: Long,
         priority: Int = DEFAULT_EVENT_PRIORITY,
@@ -74,7 +74,7 @@ object ServerCountdownEvents : AbstractEventManager<() -> Unit, ServerCountdownE
     }
 
     @ScopedRegistration
-    fun registerServerCountdownEvent(
+    internal fun registerServerCountdownEvent(
         durationTicks: Long,
         interval: Long,
         onTick: (event: ServerCountdownEvent) -> Unit,

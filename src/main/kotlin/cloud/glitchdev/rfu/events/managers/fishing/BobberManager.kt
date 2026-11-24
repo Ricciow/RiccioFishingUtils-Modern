@@ -1,14 +1,15 @@
 package cloud.glitchdev.rfu.events.managers.fishing
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.connection.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerJoinEvent
+import cloud.glitchdev.rfu.events.managers.entity.registerEntityAddedEvent
+import cloud.glitchdev.rfu.events.managers.entity.registerEntityRemovedEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.data.fishing.BobberInfo
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.connection.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.connection.ConnectionEvents.registerJoinEvent
-import cloud.glitchdev.rfu.events.managers.entity.EntityAddedEvents.registerEntityAddedEvent
-import cloud.glitchdev.rfu.events.managers.entity.EntityRemovedEvents.registerEntityRemovedEvent
-import cloud.glitchdev.rfu.events.managers.lifecycle.TickEvents.registerTickEvent
 import gg.essential.universal.utils.toUnformattedString
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Clock
@@ -24,8 +25,8 @@ object BobberManager : RegisteredEvent {
     private val recentlyRemovedBobbers = ArrayList<BobberInfo>()
     private val entityToBobberMap = ConcurrentHashMap<Int, BobberInfo>()
 
-    override fun register() {
-        registerEntityAddedEvent { entity ->
+    override fun register(scope: EventScope) {
+        scope.registerEntityAddedEvent { entity ->
             if (entity is FishingHook) {
                 val owner = entity.playerOwner
                 val ownerName = owner?.name?.toUnformattedString()
@@ -46,7 +47,7 @@ object BobberManager : RegisteredEvent {
             }
         }
 
-        registerEntityRemovedEvent { entityId ->
+        scope.registerEntityRemovedEvent { entityId ->
             val info = activeBobbers.remove(entityId)
             if (info != null) {
                 info.removedTime = Clock.System.now()
@@ -57,7 +58,7 @@ object BobberManager : RegisteredEvent {
             entityToBobberMap.remove(entityId)
         }
 
-        registerTickEvent(interval = 1) {
+        scope.registerTickEvent(interval = 1) {
             val world = mc.level ?: return@registerTickEvent
 
             activeBobbers.forEach { (id, info) ->
@@ -82,11 +83,11 @@ object BobberManager : RegisteredEvent {
             }
         }
 
-        registerJoinEvent {
+        scope.registerJoinEvent {
             clearAll()
         }
 
-        registerDisconnectEvent {
+        scope.registerDisconnectEvent {
             clearAll()
         }
     }

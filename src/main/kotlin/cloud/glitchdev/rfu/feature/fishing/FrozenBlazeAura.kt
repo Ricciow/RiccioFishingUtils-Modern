@@ -2,7 +2,7 @@ package cloud.glitchdev.rfu.feature.fishing
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.inventory.ArmorEvents
+import cloud.glitchdev.rfu.events.managers.inventory.ArmorChangeEventManager
 import cloud.glitchdev.rfu.events.managers.inventory.registerArmorChangeEvent
 import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
@@ -71,7 +71,7 @@ object FrozenBlazeAura : Feature {
     }
 
     private fun updateArmor() {
-        val wearing = ArmorEvents.currentArmorSet.isWearingFrozenBlazeSet
+        val wearing = ArmorChangeEventManager.currentArmorSet.isWearingFrozenBlazeSet
         if (wearing && !hasFrozenBlazeArmor) refreshTimers()
         hasFrozenBlazeArmor = wearing
     }

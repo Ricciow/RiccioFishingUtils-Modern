@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.events.managers.entity
 
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
@@ -18,7 +19,7 @@ import net.minecraft.world.phys.EntityHitResult
 @EventManager
 object EntityInteractEvents : AbstractEventManager<(player: Player, world: Level, hand: InteractionHand, entity: Entity, hitResult: EntityHitResult?) -> Unit, EntityInteractEvents.EntityInteractEvent>(), RegisteredEvent {
 
-    override fun register() {
+    override fun register(scope: EventScope) {
         UseEntityCallback.EVENT.register { player, world, hand, entity, hitResult ->
             if (player == mc.player && world.isClientSide) {
                 runTasks(player, world, hand, entity, hitResult)
@@ -34,25 +35,18 @@ object EntityInteractEvents : AbstractEventManager<(player: Player, world: Level
         }
     }
 
-    fun registerEntityInteractEvent(
-        priority: Int = DEFAULT_EVENT_PRIORITY,
-        callback: (player: Player, world: Level, hand: InteractionHand, entity: Entity, hitResult: EntityHitResult?) -> Unit
-    ): EntityInteractEvent {
-        return EntityInteractEvent(priority, callback).register()
-    }
-
     @ScopedRegistration
     @Defaults("mainHandOnly = true")
-    fun registerEntityInteractEvent(
+    internal fun registerEntityInteractEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         mainHandOnly: Boolean = true,
         callback: (entity: Entity) -> Unit
     ): EntityInteractEvent {
-        return registerEntityInteractEvent(priority) { _, _, hand, entity, _ ->
+        return EntityInteractEvent(priority) { _, _, hand, entity, _ ->
             if (!mainHandOnly || hand == InteractionHand.MAIN_HAND) {
                 callback(entity)
             }
-        }
+        }.register()
     }
 
     class EntityInteractEvent(

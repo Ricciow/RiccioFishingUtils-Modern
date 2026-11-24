@@ -18,21 +18,14 @@ object SlotClickedEvents : AbstractEventManager<(slot: Slot, screen: AbstractCon
         }
     }
 
-    fun registerSlotClickedEvent(
-        priority: Int = DEFAULT_EVENT_PRIORITY,
-        callback: (slot: Slot, screen: AbstractContainerScreen<*>) -> Unit
-    ): SlotClickedEvent {
-        return SlotClickedEvent(priority, callback).register()
-    }
-
     @ScopedRegistration
-    fun registerSlotClicked(
+    internal fun registerSlotClicked(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (slot: Slot, title: String) -> Unit
     ): SlotClickedEvent {
-        return registerSlotClickedEvent(priority) { slot, screen ->
+        return SlotClickedEvent(priority) { slot, screen ->
             callback(slot, screen.title.toUnformattedString())
-        }
+        }.register()
     }
 
     class SlotClickedEvent(

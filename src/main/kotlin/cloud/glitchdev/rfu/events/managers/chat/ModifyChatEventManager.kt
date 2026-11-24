@@ -15,10 +15,6 @@ object ModifyChatEventManager : AbstractEventManager<(message: String) -> String
         result
     }
 
-    fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (message: String) -> String): ModifyChatEvent {
-        return ModifyChatEvent(priority, callback).register()
-    }
-
     class ModifyChatEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (message: String) -> String

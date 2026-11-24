@@ -12,10 +12,6 @@ object MobDisposeEventManager : AbstractEventManager<(Set<SkyblockEntity>) -> Un
         }
     }
 
-    fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (Set<SkyblockEntity>) -> Unit): MobDisposeEvent {
-        return MobDisposeEvent(priority, callback).register()
-    }
-
     class MobDisposeEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (Set<SkyblockEntity>) -> Unit

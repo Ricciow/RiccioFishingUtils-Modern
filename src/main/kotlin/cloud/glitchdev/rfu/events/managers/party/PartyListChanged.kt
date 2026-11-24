@@ -12,10 +12,6 @@ object PartyListChanged : AbstractEventManager<(List<FishingParty>) -> Unit, Par
         }
     }
 
-    fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (List<FishingParty>) -> Unit): PartyListChangedEvent {
-        return PartyListChangedEvent(priority, callback).register()
-    }
-
     class PartyListChangedEvent(priority: Int, callback: (List<FishingParty>) -> Unit) : ManagedTask<(List<FishingParty>) -> Unit, PartyListChangedEvent>(priority, callback) {
         override fun register() = submitTask(this)
         override fun unregister() = removeTask(this)

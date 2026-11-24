@@ -1,12 +1,13 @@
 package cloud.glitchdev.rfu.events.managers.player
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.chat.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.inventory.registerSlotClicked
 import cloud.glitchdev.rfu.data.other.OtherManager
 import cloud.glitchdev.rfu.data.other.data.StringEntry
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.chat.ChatEvents.registerGameEvent
-import cloud.glitchdev.rfu.events.managers.inventory.SlotClickedEvents.registerSlotClicked
 import cloud.glitchdev.rfu.utils.dsl.removeFormatting
 import gg.essential.universal.utils.toFormattedString
 import gg.essential.universal.utils.toUnformattedString
@@ -39,14 +40,14 @@ object PetUpdateEventManager : AbstractEventManager<(pet: String?, petName: Stri
         }
     }
 
-    override fun register() {
+    override fun register(scope: EventScope) {
         val entry = OtherManager.getField(SAVE_FIELD) {
             StringEntry(null)
         } as? StringEntry ?: StringEntry(null)
 
         currentPet = entry.value
 
-        registerSlotClicked { slot, title ->
+        scope.registerSlotClicked { slot, title ->
             val screenTitle = title.trim()
             if (PETS_SCREEN_REGEX.matches(screenTitle)) {
                 val pet = slot.item.hoverName.toFormattedString()
@@ -75,17 +76,17 @@ object PetUpdateEventManager : AbstractEventManager<(pet: String?, petName: Stri
             }
         }
 
-        registerGameEvent(AUTOPET_REGEX) { text, _, _ ->
+        scope.registerGameEvent(AUTOPET_REGEX) { text, _, _ ->
             val text = text.toFormattedString()
             val result = COLORED_AUTOPET_REGEX.find(text)?.groupValues ?: return@registerGameEvent
             updatePet(result.getOrNull(1))
         }
 
-        registerGameEvent(DESPAWNED_REGEX) { _, _, _ ->
+        scope.registerGameEvent(DESPAWNED_REGEX) { _, _, _ ->
             updatePet(null)
         }
 
-        registerGameEvent(LEVEL_UP_REGEX) { text, _, _ ->
+        scope.registerGameEvent(LEVEL_UP_REGEX) { text, _, _ ->
             val match = LEVEL_UP_REGEX.find(text.string) ?: return@registerGameEvent
             val leveledPetName = match.groupValues[1]
             val newLevel = match.groupValues[2]
@@ -99,7 +100,7 @@ object PetUpdateEventManager : AbstractEventManager<(pet: String?, petName: Stri
         }
     }
 
-    override fun postInitialize() {
+    override fun postInitialize(scope: EventScope) {
         runTasks(currentPet, currentPetName, currentPetLevel)
     }
 
@@ -107,13 +108,6 @@ object PetUpdateEventManager : AbstractEventManager<(pet: String?, petName: Stri
         currentPet = pet
         OtherManager.setField(SAVE_FIELD, StringEntry(pet))
         runTasks(pet, currentPetName, currentPetLevel)
-    }
-
-    fun register(
-        priority: Int = DEFAULT_EVENT_PRIORITY,
-        callback: (pet: String?, petName: String?, petLevel: Int?) -> Unit
-    ): PetUpdateEvent {
-        return PetUpdateEvent(priority, callback).register()
     }
 
     class PetUpdateEvent(

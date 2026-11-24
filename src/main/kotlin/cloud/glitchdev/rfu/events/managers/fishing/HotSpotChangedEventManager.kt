@@ -13,10 +13,6 @@ object HotSpotChangedEventManager : AbstractEventManager<(List<Hotspot>) -> Unit
         }
     }
 
-    fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (List<Hotspot>) -> Unit): HotSpotChangedEvent {
-        return HotSpotChangedEvent(priority, callback).register()
-    }
-
     class HotSpotChangedEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (List<Hotspot>) -> Unit

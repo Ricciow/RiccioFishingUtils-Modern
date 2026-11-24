@@ -13,10 +13,6 @@ object ParticleRenderEvents : AbstractEventManager<(packet: ClientboundLevelPart
         }
     }
 
-    fun registerParticleRenderEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (packet: ClientboundLevelParticlesPacket, cancelable: VoidCancelable) -> Unit): ParticleRenderEvent {
-        return ParticleRenderEvent(priority, callback).register()
-    }
-
     class ParticleRenderEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (packet: ClientboundLevelParticlesPacket, cancelable: VoidCancelable) -> Unit

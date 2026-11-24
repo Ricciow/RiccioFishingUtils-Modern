@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.events.managers.inventory
 
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.data.EquipmentSet
 import cloud.glitchdev.rfu.data.EquipmentSlotType
@@ -7,10 +8,6 @@ import cloud.glitchdev.rfu.data.other.OtherManager
 import cloud.glitchdev.rfu.data.other.data.StringEntry
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.inventory.ContainerEvents.registerContainerOpenEvent
-import cloud.glitchdev.rfu.events.managers.inventory.ItemUsedEvents.registerItemUsedEvent
-import cloud.glitchdev.rfu.events.managers.inventory.SetSlotEvents.registerSetSlotEvent
-import cloud.glitchdev.rfu.events.managers.inventory.SlotClickedEvents.registerSlotClicked
 import cloud.glitchdev.rfu.utils.Coroutines
 import gg.essential.universal.utils.toUnformattedString
 import kotlinx.coroutines.Job
@@ -24,14 +21,14 @@ object EquipmentTracker : RegisteredEvent {
     private var debounceJob: Job? = null
     private const val DEBOUNCE_DELAY_MS = 100L
 
-    override fun register() {
+    override fun register(scope: EventScope) {
         loadInitialEquipment()
 
-        registerContainerOpenEvent { containerName, _, items ->
+        scope.registerContainerOpenEvent { containerName, _, items ->
             scheduleDebouncedCheck { handleContainerUpdate(containerName, items) }
         }
 
-        registerSetSlotEvent { _, _, _ ->
+        scope.registerSetSlotEvent { _, _, _ ->
             scheduleDebouncedCheck {
                 //~ if >=26.2 'mc.screen' -> 'mc.gui.screen()' {
                 val screen = mc.gui.screen() ?: return@scheduleDebouncedCheck
@@ -43,7 +40,7 @@ object EquipmentTracker : RegisteredEvent {
             }
         }
 
-        registerSlotClicked { slot, title ->
+        scope.registerSlotClicked { slot, title ->
             if (title.contains("Equipment Sets")) {
                 if (slot.index in 36..44) {
                     val name = slot.item.hoverName.toUnformattedString()
@@ -54,7 +51,7 @@ object EquipmentTracker : RegisteredEvent {
             }
         }
 
-        registerItemUsedEvent { item ->
+        scope.registerItemUsedEvent { item ->
             handleItemUsed(item)
         }
     }
@@ -128,7 +125,7 @@ object EquipmentTracker : RegisteredEvent {
         if (!isEquipable) return
 
         val slotType = detectSlotTypeFromLore(lore) ?: return
-        val current = EquipmentEvents.currentEquipmentSet
+        val current = EquipmentChangeEventManager.currentEquipmentSet
 
         val currentSlotEquipped = when (slotType) {
             EquipmentSlotType.NECKLACE -> current.necklace
@@ -162,7 +159,7 @@ object EquipmentTracker : RegisteredEvent {
     }
 
     private fun updateIfChanged(newSet: EquipmentSet) {
-        if (EquipmentEvents.currentEquipmentSet.hasChanged(newSet)) {
+        if (EquipmentChangeEventManager.currentEquipmentSet.hasChanged(newSet)) {
             OtherManager.setField("equipment_necklace", StringEntry(newSet.necklace))
             OtherManager.setField("equipment_cloak", StringEntry(newSet.cloak))
             OtherManager.setField("equipment_belt", StringEntry(newSet.belt))

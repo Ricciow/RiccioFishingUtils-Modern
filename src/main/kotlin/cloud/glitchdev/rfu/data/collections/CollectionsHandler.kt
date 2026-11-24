@@ -22,7 +22,7 @@ object CollectionsHandler {
         jsonFile.data.collectionMap[item.name] = value
         
         // Only trigger if something changed
-        CollectionEvents.trigger(item, diff, value, isSync)
+        CollectionEvents.runTasks(item, diff, value, isSync)
     }
 
     fun add(item: CollectionItem, amount: Long, isSync: Boolean = false) {

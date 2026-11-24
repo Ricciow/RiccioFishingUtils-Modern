@@ -12,10 +12,6 @@ object MobDetectEventManager : AbstractEventManager<(Set<SkyblockEntity>) -> Uni
         }
     }
 
-    fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (Set<SkyblockEntity>) -> Unit): MobDetectEvent {
-        return MobDetectEvent(priority, callback).register()
-    }
-
     class MobDetectEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (Set<SkyblockEntity>) -> Unit

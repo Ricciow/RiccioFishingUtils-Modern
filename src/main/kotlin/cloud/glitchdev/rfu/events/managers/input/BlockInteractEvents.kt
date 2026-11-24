@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.events.managers.input
 
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.EventManager
@@ -11,7 +12,7 @@ import net.minecraft.world.InteractionResult
 
 @EventManager
 object BlockInteractEvents : AbstractEventManager<(BlockPos) -> Unit, BlockInteractEvents.BlockInteractEvent>(), RegisteredEvent {
-    override fun register() {
+    override fun register(scope: EventScope) {
         UseBlockCallback.EVENT.register { player, world, hand, hitResult ->
             if (player == mc.player && world.isClientSide && hand == InteractionHand.MAIN_HAND) {
                 runTasks(hitResult.blockPos)
@@ -24,10 +25,6 @@ object BlockInteractEvents : AbstractEventManager<(BlockPos) -> Unit, BlockInter
         safeExecution {
             tasks.forEach { it.callback(pos) }
         }
-    }
-
-    fun registerBlockInteractEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (BlockPos) -> Unit): BlockInteractEvent {
-        return BlockInteractEvent(priority, callback).register()
     }
 
     class BlockInteractEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (BlockPos) -> Unit) :

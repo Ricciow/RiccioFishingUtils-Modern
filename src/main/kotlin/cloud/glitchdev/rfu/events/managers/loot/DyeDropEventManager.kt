@@ -12,13 +12,6 @@ object DyeDropEventManager : AbstractEventManager<(dyeDrop: Dyes, magicFind : In
         }
     }
 
-    fun register(
-        priority: Int = DEFAULT_EVENT_PRIORITY,
-        callback: (dyeDrop: Dyes, magicFind : Int?, mobName: String?) -> Unit
-    ): DyeDropEvent {
-        return DyeDropEvent(priority, callback).register()
-    }
-
     class DyeDropEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (dyeDrop: Dyes, magicFind : Int?, mobName: String?) -> Unit

@@ -7,7 +7,7 @@ import cloud.glitchdev.rfu.config.categories.LavaFishing
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.data.mob.SkyblockEntity
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.inventory.ArmorEvents
+import cloud.glitchdev.rfu.events.managers.inventory.ArmorChangeEventManager
 import cloud.glitchdev.rfu.events.managers.chat.registerGameEvent
 import cloud.glitchdev.rfu.events.managers.entity.registerMobDeathEvent
 import cloud.glitchdev.rfu.events.managers.entity.registerMobDetectEvent
@@ -72,7 +72,7 @@ object SurvivalistAchievement : StageAchievement() {
                         maxJawbusHealth = currentHealth
                     }
 
-                    val isWearingArmor = ArmorEvents.currentArmorSet.isWearingAnyArmor
+                    val isWearingArmor = ArmorChangeEventManager.currentArmorSet.isWearingAnyArmor
 
                     if (isWearingArmor && maxJawbusHealth > 0L) {
                         val damageDealt = maxJawbusHealth - currentHealth

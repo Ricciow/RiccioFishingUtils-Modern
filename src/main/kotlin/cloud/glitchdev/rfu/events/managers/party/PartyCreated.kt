@@ -17,10 +17,6 @@ object PartyCreated : AbstractEventManager<(FishingParty) -> Unit, PartyCreated.
         }
     }
 
-    fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (FishingParty) -> Unit): PartyCreatedEvent {
-        return PartyCreatedEvent(priority, callback).register()
-    }
-
     class PartyCreatedEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (FishingParty) -> Unit

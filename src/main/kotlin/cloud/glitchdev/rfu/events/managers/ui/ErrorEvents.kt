@@ -11,16 +11,8 @@ object ErrorEvents : AbstractEventManager<(String, String) -> Unit, ErrorEvents.
         }
     }
 
-    fun registerErrorMessageEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (String, String) -> Unit): ErrorMessageEvent {
-        return ErrorMessageEvent(priority, callback).register()
-    }
-
     class ErrorMessageEvent(priority: Int, callback: (String, String) -> Unit) : ManagedTask<(String, String) -> Unit, ErrorMessageEvent>(priority, callback) {
         override fun register() = submitTask(this)
         override fun unregister() = removeTask(this)
-    }
-
-    fun trigger(message: String, origin: String) {
-        runTasks(message, origin)
     }
 }

@@ -14,19 +14,11 @@ object AnnouncementEvents : AbstractEventManager<(announcement: Announcement?) -
         }
     }
 
-    fun registerAnnouncementUpdateEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (Announcement?) -> Unit): AnnouncementUpdateEvent {
-        return AnnouncementUpdateEvent(priority, callback).register()
-    }
-
     class AnnouncementUpdateEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (Announcement?) -> Unit
     ) : ManagedTask<(Announcement?) -> Unit, AnnouncementUpdateEvent>(priority, callback) {
         override fun register() = submitTask(this)
         override fun unregister() = removeTask(this)
-    }
-
-    fun trigger(announcement: Announcement?) {
-        runTasks(announcement)
     }
 }

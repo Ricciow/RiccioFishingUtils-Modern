@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.events.managers.render
 
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.RegisteredEvent
@@ -18,7 +19,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor
 object HudRenderEvents : AbstractEventManager<(GuiGraphicsExtractor, Float) -> Unit, HudRenderEvents.HudRenderEvent>(), RegisteredEvent {
     private val HUD_ID = getResource("hud_renderer")
 
-    override fun register() {
+    override fun register(scope: EventScope) {
         try {
             HudElementRegistry.attachElementBefore(
                 VanillaHudElements.CHAT,
@@ -39,10 +40,6 @@ object HudRenderEvents : AbstractEventManager<(GuiGraphicsExtractor, Float) -> U
                 task.callback(context, tickDelta)
             }
         }
-    }
-
-    fun registerHudRenderEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (GuiGraphicsExtractor, Float) -> Unit): HudRenderEvent {
-        return HudRenderEvent(priority, callback).register()
     }
 
     class HudRenderEvent(

@@ -1,5 +1,7 @@
 package cloud.glitchdev.rfu.party
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.inventory.registerContainerOpenEvent
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.skyblock.SkillType
 import cloud.glitchdev.rfu.constants.skyblock.Skills
@@ -7,7 +9,6 @@ import cloud.glitchdev.rfu.data.other.OtherManager
 import cloud.glitchdev.rfu.data.other.data.BooleanEntry
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.inventory.ContainerEvents.registerContainerOpenEvent
 import cloud.glitchdev.rfu.events.managers.party.PartyFinderEvents
 import cloud.glitchdev.rfu.model.party.FishingParty
 import gg.essential.universal.utils.toUnformattedString
@@ -71,8 +72,8 @@ object PartyRequirementsManager : RegisteredEvent {
             PartyFinderEvents.refreshParties()
         }
 
-    override fun register() {
-        registerContainerOpenEvent { containerName, _, items ->
+    override fun register(scope: EventScope) {
+        scope.registerContainerOpenEvent { containerName, _, items ->
             if (containerName == "Tasks ➜ Consumables") {
                 val brainFoodItem = items.find { it.hoverName.toUnformattedString().contains("Brain Food", ignoreCase = true) }
                     ?: return@registerContainerOpenEvent

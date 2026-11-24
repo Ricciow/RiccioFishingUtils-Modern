@@ -3,7 +3,7 @@ package cloud.glitchdev.rfu.feature.fishing
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.data.ArmorSet
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.inventory.ArmorEvents
+import cloud.glitchdev.rfu.events.managers.inventory.ArmorChangeEventManager
 import cloud.glitchdev.rfu.events.managers.inventory.registerArmorChangeEvent
 import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
@@ -37,8 +37,8 @@ object BobbinTime : Feature {
     }
 
     private fun updateArmorRates() {
-        totalRatePerBobber = ArmorEvents.currentArmorSet.bobbinTimeRate
-        hasBobbinTimeArmor = ArmorEvents.currentArmorSet.hasBobbinTimeArmor
+        totalRatePerBobber = ArmorChangeEventManager.currentArmorSet.bobbinTimeRate
+        hasBobbinTimeArmor = ArmorChangeEventManager.currentArmorSet.hasBobbinTimeArmor
         BobbinTimeDisplay.updateState()
     }
 

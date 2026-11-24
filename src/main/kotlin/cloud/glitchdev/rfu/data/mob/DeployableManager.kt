@@ -1,13 +1,14 @@
 package cloud.glitchdev.rfu.data.mob
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.connection.registerJoinEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.data.mob.strategies.FlareStrategy
 import cloud.glitchdev.rfu.data.mob.strategies.FluxStrategy
 import cloud.glitchdev.rfu.data.mob.strategies.UmberellaStrategy
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.connection.ConnectionEvents.registerJoinEvent
-import cloud.glitchdev.rfu.events.managers.lifecycle.TickEvents.registerTickEvent
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.world.phys.Vec3
 import kotlin.math.round
@@ -44,13 +45,13 @@ object DeployableManager : RegisteredEvent {
         FluxStrategy()
     )
 
-    override fun register() {
-        registerTickEvent(0, 10) { client ->
+    override fun register(scope: EventScope) {
+        scope.registerTickEvent(0, 10) { client ->
             val world = client.level ?: return@registerTickEvent
             update(world)
         }
 
-        registerJoinEvent {
+        scope.registerJoinEvent {
             clearAll()
         }
     }

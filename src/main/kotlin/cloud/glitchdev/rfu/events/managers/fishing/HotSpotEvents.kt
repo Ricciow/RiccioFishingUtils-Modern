@@ -1,5 +1,13 @@
 package cloud.glitchdev.rfu.events.managers.fishing
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.chat.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.entity.registerEntityAddedEvent
+import cloud.glitchdev.rfu.events.managers.entity.registerEntityDataEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.render.registerParticleEvent
+import cloud.glitchdev.rfu.events.managers.render.registerParticleRenderEvent
 import cloud.glitchdev.rfu.RiccioFishingUtils
 import cloud.glitchdev.rfu.config.categories.HotSpotSettings
 import cloud.glitchdev.rfu.constants.fishing.HotSpotConstants
@@ -11,17 +19,8 @@ import cloud.glitchdev.rfu.data.fishing.Hotspot
 import cloud.glitchdev.rfu.data.fishing.HotspotCache
 import cloud.glitchdev.rfu.data.other.OtherManager
 import cloud.glitchdev.rfu.data.other.data.StringSetEntry
-import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.chat.ChatEvents.registerGameEvent
-import cloud.glitchdev.rfu.events.managers.connection.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.entity.EntityAddedEvents.registerEntityAddedEvent
-import cloud.glitchdev.rfu.events.managers.entity.EntityDataEvents.registerEntityDataEvent
-import cloud.glitchdev.rfu.events.managers.fishing.HotSpotChangedEventManager.HotSpotChangedEvent
-import cloud.glitchdev.rfu.events.managers.render.ParticleRenderEvents.registerParticleRenderEvent
-import cloud.glitchdev.rfu.events.managers.render.ParticleEvents.registerParticleEvent
-import cloud.glitchdev.rfu.events.managers.lifecycle.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.feature.fishing.FishingSession
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.TextUtils
@@ -60,10 +59,10 @@ object HotSpotEvents : RegisteredEvent {
         val isSmoke: Boolean
     )
 
-    override fun register() {
+    override fun register(scope: EventScope) {
         HotspotCache.getCachedEntries(null)
 
-        registerGameEvent("""Party > (?:\[[A-Z]+\+*] )?([0-9a-zA-Z_]{3,16}): (.*?) Hotspot (?:\||-) (-?\d+), (-?\d+), (-?\d+)""".toExactRegex()) { _, _, matches ->
+        scope.registerGameEvent("""Party > (?:\[[A-Z]+\+*] )?([0-9a-zA-Z_]{3,16}): (.*?) Hotspot (?:\||-) (-?\d+), (-?\d+), (-?\d+)""".toExactRegex()) { _, _, matches ->
             val groups = matches?.groupValues ?: return@registerGameEvent
             handleHotspotMessage(
                 sender = groups[1],
@@ -74,7 +73,7 @@ object HotSpotEvents : RegisteredEvent {
             )
         }
 
-        registerGameEvent("""(?:Party > )?(?:\[[A-Z]+\+*] )?([0-9a-zA-Z_]{3,16}): x: (-?\d+), y: (-?\d+), z: (-?\d+) \| (?:(.*?) )?Hotspot(?: at [^|]+)?(?: \| @\w+)?""".toRegex()) { _, _, matches ->
+        scope.registerGameEvent("""(?:Party > )?(?:\[[A-Z]+\+*] )?([0-9a-zA-Z_]{3,16}): x: (-?\d+), y: (-?\d+), z: (-?\d+) \| (?:(.*?) )?Hotspot(?: at [^|]+)?(?: \| @\w+)?""".toRegex()) { _, _, matches ->
             val groups = matches?.groupValues ?: return@registerGameEvent
             val stat = groups[5].trim().ifBlank { "Unknown" }
             handleHotspotMessage(
@@ -86,7 +85,7 @@ object HotSpotEvents : RegisteredEvent {
             )
         }
 
-        registerGameEvent("""(?:Party > )?(?:\[[A-Z]+\+*] )?([0-9a-zA-Z_]{3,16}): x: (-?\d+), y: (-?\d+), z: (-?\d+) \| ([^|]+) \| [a-zA-Z0-9_-]+""".toRegex()) { _, _, matches ->
+        scope.registerGameEvent("""(?:Party > )?(?:\[[A-Z]+\+*] )?([0-9a-zA-Z_]{3,16}): x: (-?\d+), y: (-?\d+), z: (-?\d+) \| ([^|]+) \| [a-zA-Z0-9_-]+""".toRegex()) { _, _, matches ->
             val groups = matches?.groupValues ?: return@registerGameEvent
             handleHotspotMessage(
                 sender = groups[1],
@@ -97,21 +96,21 @@ object HotSpotEvents : RegisteredEvent {
             )
         }
 
-        registerEntityAddedEvent(callback = ::onEntityChanged)
-        registerEntityDataEvent(callback = ::onEntityChanged)
+        scope.registerEntityAddedEvent(callback = ::onEntityChanged)
+        scope.registerEntityDataEvent(callback = ::onEntityChanged)
         ClientEntityEvents.ENTITY_UNLOAD.register { entity, world ->
             if (world === RiccioFishingUtils.mc.level && entity is ArmorStand) {
                 markHotspotVirtual(entity)
             }
         }
         ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register { _, _ -> clearHotspots() }
-        registerDisconnectEvent { clearHotspots() }
+        scope.registerDisconnectEvent { clearHotspots() }
 
-        registerTickEvent(interval = 2) { client ->
+        scope.registerTickEvent(interval = 2) { client ->
             if (virtualUuids.isNotEmpty()) expireVirtualHotspots(client.player?.position())
         }
 
-        registerParticleEvent { packet ->
+        scope.registerParticleEvent { packet ->
             val particle = getHotspotParticle(packet) ?: return@registerParticleEvent
             val pos = particle.pos
             var closestHotspot = findClosestHotspot(particle)
@@ -169,7 +168,7 @@ object HotSpotEvents : RegisteredEvent {
             }
         }
 
-        registerParticleRenderEvent { packet, cancelable ->
+        scope.registerParticleRenderEvent { packet, cancelable ->
             if (!HotSpotSettings.highlightHotSpots) return@registerParticleRenderEvent
 
             val particle = getHotspotParticle(packet) ?: return@registerParticleRenderEvent
@@ -184,25 +183,13 @@ object HotSpotEvents : RegisteredEvent {
             }
         }
 
-        registerHotSpotDetectedEvent {
+        scope.registerHotSpotDetectedEvent {
             HotSpotChangedEventManager.runTasks(hotspots.values.toList())
         }
 
-        registerHotSpotDisposeEvent {
+        scope.registerHotSpotDisposeEvent {
             HotSpotChangedEventManager.runTasks(hotspots.values.toList())
         }
-    }
-
-    fun registerHotSpotDetectedEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (Hotspot) -> Unit): HotSpotDetectedEventManager.HotSpotDetectedEvent {
-        return HotSpotDetectedEventManager.register(priority, callback)
-    }
-
-    fun registerHotSpotDisposeEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (Hotspot) -> Unit): HotSpotDisposedEventManager.HotSpotDisposedEvent {
-        return HotSpotDisposedEventManager.register(priority, callback)
-    }
-
-    fun registerHotSpotChangedEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (List<Hotspot>) -> Unit): HotSpotChangedEvent {
-        return HotSpotChangedEventManager.register(priority, callback)
     }
 
     fun getHotspotAt(pos: Vec3): Hotspot? {

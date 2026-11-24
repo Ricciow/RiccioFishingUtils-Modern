@@ -14,10 +14,6 @@ object JoinRequest : AbstractEventManager<(String) -> Unit, JoinRequest.JoinRequ
         }
     }
 
-    fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (String) -> Unit): JoinRequestEvent {
-        return JoinRequestEvent(priority, callback).register()
-    }
-
     class JoinRequestEvent(priority: Int, callback: (String) -> Unit) : ManagedTask<(String) -> Unit, JoinRequestEvent>(priority, callback) {
         override fun register() = submitTask(this)
         override fun unregister() = removeTask(this)

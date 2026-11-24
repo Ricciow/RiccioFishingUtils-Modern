@@ -17,14 +17,6 @@ object SkillEvents : AbstractEventManager<(skill: SkillType, xp: Long) -> Unit, 
         }
     }
 
-    fun registerSkillXpUpdateEvent(
-        skill: SkillType? = null,
-        priority: Int = DEFAULT_EVENT_PRIORITY,
-        callback: (skill: SkillType, xp: Long) -> Unit
-    ): SkillXpUpdateEvent {
-        return SkillXpUpdateEvent(skill, priority, callback).register()
-    }
-
     @Defaults("skill = null")
     class SkillXpUpdateEvent(
         val skill: SkillType? = null,

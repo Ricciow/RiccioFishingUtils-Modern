@@ -15,10 +15,6 @@ object CollectionEvents : AbstractEventManager<(item: CollectionItem, amount: Lo
         }
     }
 
-    fun registerCollectionUpdateEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (item: CollectionItem, amount: Long, total: Long, isSync: Boolean) -> Unit): CollectionUpdateEvent {
-        return CollectionUpdateEvent(priority, callback).register()
-    }
-
     class CollectionUpdateEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (item: CollectionItem, amount: Long, total: Long, isSync: Boolean) -> Unit

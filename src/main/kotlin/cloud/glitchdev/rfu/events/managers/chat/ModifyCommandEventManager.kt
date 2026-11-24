@@ -15,10 +15,6 @@ object ModifyCommandEventManager : AbstractEventManager<(command: String) -> Str
         result
     }
 
-    fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (command: String) -> String): ModifyCommandEvent {
-        return ModifyCommandEvent(priority, callback).register()
-    }
-
     class ModifyCommandEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (command: String) -> String

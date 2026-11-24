@@ -1,13 +1,12 @@
 package cloud.glitchdev.rfu.events.managers.lifecycle
 
+import cloud.glitchdev.rfu.events.managers.connection.registerLocationEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.connection.registerDisconnectEvent
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.connection.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.lifecycle.SetTimeEvents.registerSetTimeEvent
-import cloud.glitchdev.rfu.events.managers.lifecycle.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.events.registration.Defaults
-import cloud.glitchdev.rfu.events.managers.connection.HypixelModApiEvents
 
 @EventManager
 object ServerTickEvents : AbstractEventManager<(serverTick: Long) -> Unit, ServerTickEvents.ServerTickEvent>(), RegisteredEvent {
@@ -20,8 +19,8 @@ object ServerTickEvents : AbstractEventManager<(serverTick: Long) -> Unit, Serve
     private var targetServerTick: Long = 0L
     private var lastPacketTimeMillis: Long = 0L
 
-    override fun register() {
-        registerTickEvent { client ->
+    override fun register(scope: EventScope) {
+        scope.registerTickEvent { client ->
             if (client.level == null || lastGameTime == -1L) return@registerTickEvent
 
             if (currentServerTick < targetServerTick + 20) {
@@ -30,7 +29,7 @@ object ServerTickEvents : AbstractEventManager<(serverTick: Long) -> Unit, Serve
             }
         }
 
-        registerSetTimeEvent { gameTime ->
+        scope.registerSetTimeEvent { gameTime ->
             val now = System.currentTimeMillis()
 
             if (lastGameTime != -1L && lastPacketTimeMillis != 0L) {
@@ -56,12 +55,12 @@ object ServerTickEvents : AbstractEventManager<(serverTick: Long) -> Unit, Serve
             lastPacketTimeMillis = now
         }
 
-        HypixelModApiEvents.registerLocationEvent {
+        scope.registerLocationEvent {
             lastGameTime = -1L
             lastPacketTimeMillis = 0L
         }
 
-        registerDisconnectEvent {
+        scope.registerDisconnectEvent {
             currentServerTick = 0L
             targetServerTick = 0L
             lastGameTime = -1L
@@ -77,14 +76,6 @@ object ServerTickEvents : AbstractEventManager<(serverTick: Long) -> Unit, Serve
                 }
             }
         }
-    }
-
-    fun registerServerTickEvent(
-        priority: Int = DEFAULT_EVENT_PRIORITY,
-        interval: Long = DEFAULT_INTERVAL,
-        callback: (serverTick: Long) -> Unit
-    ): ServerTickEvent {
-        return ServerTickEvent(priority, interval, callback).register()
     }
 
     @Defaults("interval = ${DEFAULT_INTERVAL}L")

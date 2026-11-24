@@ -7,7 +7,7 @@ import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.BaseAchievement
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.inventory.ArmorEvents
+import cloud.glitchdev.rfu.events.managers.inventory.ArmorChangeEventManager
 import cloud.glitchdev.rfu.events.managers.inventory.registerArmorChangeEvent
 import cloud.glitchdev.rfu.events.managers.fishing.HotSpotEvents
 import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
@@ -35,7 +35,7 @@ object ShameOnYouAchievement : BaseAchievement() {
         val userPos = player.position()
         HotSpotEvents.getHotspotAt(userPos) ?: return
 
-        if (ArmorEvents.currentArmorSet.isWearingBlazeArmorSet) {
+        if (ArmorChangeEventManager.currentArmorSet.isWearingBlazeArmorSet) {
             complete()
         }
     }

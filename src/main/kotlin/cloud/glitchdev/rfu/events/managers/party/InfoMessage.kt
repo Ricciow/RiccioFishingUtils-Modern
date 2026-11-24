@@ -11,10 +11,6 @@ object InfoMessage : AbstractEventManager<(String, Boolean) -> Unit, InfoMessage
         }
     }
 
-    fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (String, Boolean) -> Unit): InfoMessageEvent {
-        return InfoMessageEvent(priority, callback).register()
-    }
-
     class InfoMessageEvent(priority: Int, callback: (String, Boolean) -> Unit) : ManagedTask<(String, Boolean) -> Unit, InfoMessageEvent>(priority, callback) {
         override fun register() = submitTask(this)
         override fun unregister() = removeTask(this)

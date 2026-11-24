@@ -12,10 +12,6 @@ object MobDeathEventManager : AbstractEventManager<(Set<SkyblockEntity>) -> Unit
         }
     }
 
-    fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (Set<SkyblockEntity>) -> Unit): MobDeathEvent {
-        return MobDeathEvent(priority, callback).register()
-    }
-
     class MobDeathEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (Set<SkyblockEntity>) -> Unit

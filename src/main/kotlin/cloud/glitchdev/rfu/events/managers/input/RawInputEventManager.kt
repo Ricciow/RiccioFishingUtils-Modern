@@ -11,10 +11,6 @@ object RawInputEventManager : AbstractEventManager<(Int, Int, Int) -> Unit, RawI
         }
     }
 
-    fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (Int, Int, Int) -> Unit): RawInputEvent {
-        return RawInputEvent(priority, callback).register()
-    }
-
     class RawInputEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (Int, Int, Int) -> Unit

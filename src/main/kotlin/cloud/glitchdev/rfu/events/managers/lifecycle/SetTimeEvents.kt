@@ -11,13 +11,6 @@ object SetTimeEvents : AbstractEventManager<(gameTime: Long) -> Unit, SetTimeEve
         }
     }
 
-    fun registerSetTimeEvent(
-        priority: Int = DEFAULT_EVENT_PRIORITY,
-        callback: (gameTime: Long) -> Unit
-    ): SetTimeEvent {
-        return SetTimeEvent(priority, callback).register()
-    }
-
     class SetTimeEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (gameTime: Long) -> Unit

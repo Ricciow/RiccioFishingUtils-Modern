@@ -12,7 +12,7 @@ internal class EventScopes {
 
     private fun mount(initialize: (EventScope) -> Unit): EventScope {
         val scope = try {
-            root.child()
+            restartableScope.child()
         } catch (failure: Throwable) {
             owners.remove(this)
             throw failure
@@ -40,16 +40,19 @@ internal class EventScopes {
     }
 
     companion object {
-        private var root = EventScope()
+        private val clientScope = EventScope()
+        /** Owns startup listeners until the client shuts down. */
+        val startup = clientScope.child()
+        private var restartableScope = clientScope.child()
         private val owners = linkedMapOf<EventScopes, (EventScope) -> Unit>()
 
         fun restart() {
             val previousOwners = owners.keys.toList()
             val closeRoot: () -> Unit = {
                 try {
-                    root.close()
+                    restartableScope.close()
                 } finally {
-                    root = EventScope()
+                    restartableScope = clientScope.child()
                 }
             }
             val restoreOwners: List<() -> Unit> = previousOwners.map { owner ->
@@ -60,7 +63,7 @@ internal class EventScopes {
 
         fun shutdown() {
             owners.clear()
-            root.close()
+            clientScope.close()
         }
     }
 }

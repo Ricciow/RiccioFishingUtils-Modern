@@ -16,10 +16,6 @@ object AchievementUnlockedEvents : AbstractEventManager<(IAchievement) -> Unit, 
         }
     }
 
-    fun registerAchievementUnlockedEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (IAchievement) -> Unit): AchievementUnlockedEvent {
-        return AchievementUnlockedEvent(priority, callback).register()
-    }
-
     class AchievementUnlockedEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (IAchievement) -> Unit

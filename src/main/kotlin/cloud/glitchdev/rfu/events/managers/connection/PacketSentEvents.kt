@@ -16,13 +16,6 @@ object PacketSentEvents : AbstractEventManager<(packet: Packet<*>, cancelable: V
         }
     }
 
-    fun registerPacketSentEvent(
-        priority: Int = DEFAULT_EVENT_PRIORITY,
-        callback: (packet: Packet<*>, cancelable: VoidCancelable) -> Unit
-    ): PacketSentEvent {
-        return PacketSentEvent(priority, callback).register()
-    }
-
     class PacketSentEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (packet: Packet<*>, cancelable: VoidCancelable) -> Unit

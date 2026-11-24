@@ -1,10 +1,11 @@
 package cloud.glitchdev.rfu.events.managers.fishing
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.inventory.registerSetSlotEvent
 import cloud.glitchdev.rfu.constants.fishing.Bait
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.inventory.SetSlotEvents.registerSetSlotEvent
 import cloud.glitchdev.rfu.utils.ItemCountUtils
 
 @EventManager
@@ -15,8 +16,8 @@ object BaitEventManager : AbstractEventManager<(Bait?, Int) -> Unit, BaitEventMa
 
     private const val PLAYER_INVENTORY_ID = 0
 
-    override fun register() {
-        registerSetSlotEvent { id, slot, item ->
+    override fun register(scope: EventScope) {
+        scope.registerSetSlotEvent { id, slot, item ->
             if (id != PLAYER_INVENTORY_ID || item.isEmpty) return@registerSetSlotEvent
             if (slot != 44) return@registerSetSlotEvent
             val bait = Bait.fromName(item.hoverName.string)
@@ -50,10 +51,6 @@ object BaitEventManager : AbstractEventManager<(Bait?, Int) -> Unit, BaitEventMa
                 task.callback(bait, count)
             }
         }
-    }
-
-    fun registerBaitChangedEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (Bait?, Int) -> Unit): BaitChangedEvent {
-        return BaitChangedEvent(priority, callback).register()
     }
 
     class BaitChangedEvent(

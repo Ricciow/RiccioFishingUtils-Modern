@@ -12,9 +12,6 @@ object WaterVisionFluidEventManager : AbstractEventManager<(WaterVisionFluidEven
         }
     }
 
-    fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (WaterVisionFluidContext) -> Unit): WaterVisionFluidEvent =
-        WaterVisionFluidEvent(priority, callback).register()
-
     class WaterVisionFluidContext(val player: LocalPlayer, var submerged: Boolean)
 
     class WaterVisionFluidEvent(priority: Int, callback: (WaterVisionFluidContext) -> Unit) :

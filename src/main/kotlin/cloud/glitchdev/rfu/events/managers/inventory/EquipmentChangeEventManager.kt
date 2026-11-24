@@ -22,13 +22,6 @@ object EquipmentChangeEventManager : AbstractEventManager<(EquipmentSet) -> Unit
         }
     }
 
-    fun register(
-        priority: Int = DEFAULT_EVENT_PRIORITY,
-        callback: (EquipmentSet) -> Unit
-    ): EquipmentChangeEvent {
-        return EquipmentChangeEvent(priority, callback).register()
-    }
-
     class EquipmentChangeEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (EquipmentSet) -> Unit

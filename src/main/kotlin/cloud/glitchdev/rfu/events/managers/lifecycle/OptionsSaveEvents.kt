@@ -15,18 +15,14 @@ object OptionsSaveEvents : AbstractEventManager<(isPre: Boolean) -> Unit, Option
         }
     }
 
-    fun registerOptionsSaveEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (isPre: Boolean) -> Unit): OptionsSaveEvent {
-        return OptionsSaveEvent(priority, callback).register()
+    @ScopedRegistration
+    internal fun registerBeforeOptionsSave(priority: Int = DEFAULT_EVENT_PRIORITY, callback: () -> Unit): OptionsSaveEvent {
+        return OptionsSaveEvent(priority) { if (it) callback() }.register()
     }
 
     @ScopedRegistration
-    fun registerBeforeOptionsSave(priority: Int = DEFAULT_EVENT_PRIORITY, callback: () -> Unit): OptionsSaveEvent {
-        return registerOptionsSaveEvent(priority) { if (it) callback() }
-    }
-
-    @ScopedRegistration
-    fun registerAfterOptionsSave(priority: Int = DEFAULT_EVENT_PRIORITY, callback: () -> Unit): OptionsSaveEvent {
-        return registerOptionsSaveEvent(priority) { if (!it) callback() }
+    internal fun registerAfterOptionsSave(priority: Int = DEFAULT_EVENT_PRIORITY, callback: () -> Unit): OptionsSaveEvent {
+        return OptionsSaveEvent(priority) { if (!it) callback() }.register()
     }
 
     class OptionsSaveEvent(

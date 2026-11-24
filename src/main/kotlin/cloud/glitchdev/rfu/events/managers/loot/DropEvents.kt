@@ -1,10 +1,11 @@
 package cloud.glitchdev.rfu.events.managers.loot
 
+import cloud.glitchdev.rfu.events.managers.chat.registerGameEvent
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.constants.fishing.RareDrops
 import cloud.glitchdev.rfu.constants.skyblock.Dyes
 import cloud.glitchdev.rfu.data.drops.DeadMobTracker
-import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.utils.dsl.escapeForRegex
@@ -12,7 +13,6 @@ import cloud.glitchdev.rfu.utils.dsl.isUser
 import cloud.glitchdev.rfu.utils.dsl.removeFormatting
 import cloud.glitchdev.rfu.utils.dsl.removeRankTag
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
-import cloud.glitchdev.rfu.events.managers.chat.ChatEvents
 
 @AutoRegister
 object DropEvents : RegisteredEvent {
@@ -32,8 +32,8 @@ object DropEvents : RegisteredEvent {
     var currentDye : Dyes? = null
     var dyeTimestamp : Long = 0L
 
-    override fun register() {
-        ChatEvents.registerGameEvent { text, overlay, _ ->
+    override fun register(scope: EventScope) {
+        scope.registerGameEvent { text, overlay, _ ->
             if (overlay) return@registerGameEvent
             val string = text.string.removeFormatting()
 
@@ -80,35 +80,4 @@ object DropEvents : RegisteredEvent {
         }
     }
 
-    fun registerRareDropEvent(
-        priority: Int = DEFAULT_EVENT_PRIORITY,
-        callback: (rareDrop: RareDrops, magicFind: Int?) -> Boolean
-    ): RareDropEventManager.RareDropEvent {
-        return registerRareDropEvent(priority) { rareDrop, magicFind, _ ->
-            callback(rareDrop, magicFind)
-        }
-    }
-
-    fun registerRareDropEvent(
-        priority: Int = DEFAULT_EVENT_PRIORITY,
-        callback: (rareDrop: RareDrops, magicFind: Int?, mobName: String?) -> Boolean
-    ): RareDropEventManager.RareDropEvent {
-        return RareDropEventManager.register(priority, callback)
-    }
-
-    fun registerDyeDropEvent(
-        priority: Int = DEFAULT_EVENT_PRIORITY,
-        callback: (dyeDrop: Dyes, magicFind : Int?) -> Unit
-    ): DyeDropEventManager.DyeDropEvent {
-        return registerDyeDropEvent(priority) { dyeDrop, magicFind, _ ->
-            callback(dyeDrop, magicFind)
-        }
-    }
-
-    fun registerDyeDropEvent(
-        priority: Int = DEFAULT_EVENT_PRIORITY,
-        callback: (dyeDrop: Dyes, magicFind: Int?, mobName: String?) -> Unit
-    ): DyeDropEventManager.DyeDropEvent {
-        return DyeDropEventManager.register(priority, callback)
-    }
 }

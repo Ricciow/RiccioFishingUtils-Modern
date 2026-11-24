@@ -7,6 +7,7 @@ import net.minecraft.client.DeltaTracker
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.client.renderer.fog.FogData
 
+/** Runs after all fog settings are finalized, for every environment. */
 @EventManager(register = false)
 object FinalFogEventManager : AbstractEventManager<(FogData, Camera, ClientLevel, Float, DeltaTracker) -> Unit, FinalFogEventManager.FinalFogEvent>() {
     override val runTasks: (FogData, Camera, ClientLevel, Float, DeltaTracker) -> Unit = { fog, camera, level, renderDistance, deltaTracker ->
@@ -14,9 +15,6 @@ object FinalFogEventManager : AbstractEventManager<(FogData, Camera, ClientLevel
             tasks.forEach { it.callback(fog, camera, level, renderDistance, deltaTracker) }
         }
     }
-
-    fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (FogData, Camera, ClientLevel, Float, DeltaTracker) -> Unit): FinalFogEvent =
-        FinalFogEvent(priority, callback).register()
 
     class FinalFogEvent(
         priority: Int,

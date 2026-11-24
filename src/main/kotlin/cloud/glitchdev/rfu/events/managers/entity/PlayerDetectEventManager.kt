@@ -12,10 +12,6 @@ object PlayerDetectEventManager : AbstractEventManager<(Set<Player>) -> Unit, Pl
         }
     }
 
-    fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (Set<Player>) -> Unit): PlayerDetectEvent {
-        return PlayerDetectEvent(priority, callback).register()
-    }
-
     class PlayerDetectEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (Set<Player>) -> Unit

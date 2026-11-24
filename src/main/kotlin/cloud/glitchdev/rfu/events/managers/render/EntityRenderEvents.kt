@@ -13,13 +13,6 @@ object EntityRenderEvents : AbstractEventManager<(entity : Entity, isVisible: Bo
         }
     }
 
-    fun registerEntityRenderEvent(
-        priority: Int = DEFAULT_EVENT_PRIORITY,
-        callback: (entity : Entity, isVisible: Boolean, event : Cancelable<Boolean>) -> Unit
-    ): EntityRenderEvent {
-        return EntityRenderEvent(priority, callback).register()
-    }
-
     class EntityRenderEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (entity : Entity, isVisible: Boolean, event : Cancelable<Boolean>) -> Unit

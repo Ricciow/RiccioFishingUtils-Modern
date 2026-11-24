@@ -13,10 +13,6 @@ object CloseConfigEvents : AbstractEventManager<() -> Unit, CloseConfigEvents.Cl
         }
     }
 
-    fun registerCloseConfigEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: () -> Unit): CloseConfigEvent {
-        return CloseConfigEvent(priority, callback).register()
-    }
-
     class CloseConfigEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: () -> Unit
