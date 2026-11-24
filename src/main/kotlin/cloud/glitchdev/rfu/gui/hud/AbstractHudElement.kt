@@ -366,6 +366,7 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
         }
 
         onInitialize(scope)
+        updateState()
     }
 
     private fun currentColor() : ColorConstraint = if (isEditing) if(isDragging) holdColor else selectionColor else transparent

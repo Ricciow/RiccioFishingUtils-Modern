@@ -557,7 +557,6 @@ object HudWindow : BaseWindow(false) {
                 element.scale = 1f
             }
         }
-        element.updateState()
     }
 
     internal fun unregisterHudElement(element: AbstractHudElement) {
