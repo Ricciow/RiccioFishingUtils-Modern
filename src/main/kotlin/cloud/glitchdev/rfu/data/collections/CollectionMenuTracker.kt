@@ -1,41 +1,50 @@
 package cloud.glitchdev.rfu.data.collections
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
-import cloud.glitchdev.rfu.events.AutoRegister
-import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.inventory.ContainerEvents.registerContainerOpenEvent
-import cloud.glitchdev.rfu.events.managers.lifecycle.TickEvents
-import cloud.glitchdev.rfu.events.managers.lifecycle.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.connection.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.inventory.registerContainerOpenEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
+import cloud.glitchdev.rfu.feature.Feature
+import cloud.glitchdev.rfu.feature.RFUFeature
+import gg.essential.universal.UScreen
 import gg.essential.universal.utils.toUnformattedString
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.core.component.DataComponents
 
-//~ if >=26.2 'screen' -> 'gui.screen()' {
-@AutoRegister
-object CollectionMenuTracker : RegisteredEvent {
-    private var pollingTask: TickEvents.TickEvent? = null
-    private var pollStartTick = 0L
+@RFUFeature
+object CollectionMenuTracker : Feature {
+    private var pollingScope: EventScope? = null
 
-    override fun register() {
-        registerContainerOpenEvent { containerName, _, _ ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerContainerOpenEvent { containerName, containerId, _ ->
             if (containerName == "Collections") {
-                startPolling()
+                startPolling(scope, containerId)
             }
         }
+        scope.registerDisconnectEvent { stopPolling() }
+        scope.onClose { stopPolling() }
     }
 
-    private fun startPolling() {
-        pollingTask?.unregister()
-        pollStartTick = mc.level?.gameTime ?: 0L
-        pollingTask = registerTickEvent(interval = 20) { client ->
-            val gameTime = client.level?.gameTime ?: return@registerTickEvent
+    private fun startPolling(scope: EventScope, containerId: Int) {
+        val screen = UScreen.currentScreen as? AbstractContainerScreen<*> ?: return
+        val menu = screen.menu
+        if (menu.containerId != containerId) return
 
-            if (gameTime - pollStartTick > 400L || client.gui.screen() == null) {
+        val pollStartTick = mc.level?.gameTime ?: return
+        stopPolling()
+        val polling = scope.child()
+        pollingScope = polling
+        polling.registerTickEvent { client ->
+            val gameTime = client.level?.gameTime
+
+            if (gameTime == null || gameTime - pollStartTick > 400L || UScreen.currentScreen !== screen) {
                 stopPolling()
                 return@registerTickEvent
             }
+            if (gameTime % 20L != 0L) return@registerTickEvent
 
-            val slots = client.player?.containerMenu?.slots ?: return@registerTickEvent
-            for (slot in slots) {
+            for (slot in menu.slots) {
                 val lore = slot.item[DataComponents.LORE]?.lines?.map { it.toUnformattedString() } ?: continue
                 for (line in lore) {
                     for (item in CollectionItem.entries) {
@@ -50,8 +59,8 @@ object CollectionMenuTracker : RegisteredEvent {
     }
 
     private fun stopPolling() {
-        pollingTask?.unregister()
-        pollingTask = null
+        val scope = pollingScope
+        pollingScope = null
+        scope?.close()
     }
 }
-//~}

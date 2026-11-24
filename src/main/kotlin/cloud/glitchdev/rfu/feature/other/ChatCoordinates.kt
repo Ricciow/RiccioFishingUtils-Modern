@@ -6,6 +6,7 @@ import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.chat.registerAnyChatEvent
 import cloud.glitchdev.rfu.events.managers.connection.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerLocationEvent
 import cloud.glitchdev.rfu.events.managers.render.registerRenderEvent
 import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
@@ -18,7 +19,6 @@ import cloud.glitchdev.rfu.utils.rendering.Render3DBuilder.Companion.cube
 import cloud.glitchdev.rfu.utils.rendering.Render3DBuilder.Companion.playerHead
 import cloud.glitchdev.rfu.utils.rendering.Render3DBuilder.Companion.text
 import gg.essential.universal.utils.toUnformattedString
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents
 import net.minecraft.client.renderer.PlayerSkinRenderCache
 import net.minecraft.world.item.component.ResolvableProfile
 import net.minecraft.world.phys.Vec3
@@ -141,8 +141,9 @@ object ChatCoordinates : Feature {
             }
         }
 
-        ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register { _, _ -> markers.clear() }
+        scope.registerLocationEvent { markers.clear() }
         scope.registerDisconnectEvent { markers.clear() }
+        scope.onClose { markers.clear() }
     }
 
     /** Extracts coordinates from the message body, never from ranks or usernames. */

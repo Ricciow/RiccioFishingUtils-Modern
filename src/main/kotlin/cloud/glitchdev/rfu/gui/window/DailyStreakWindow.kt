@@ -3,8 +3,9 @@ package cloud.glitchdev.rfu.gui.window
 import cloud.glitchdev.rfu.RiccioFishingUtils
 import cloud.glitchdev.rfu.constants.text.Emoji
 import cloud.glitchdev.rfu.data.streak.DailyStreakManager
-import cloud.glitchdev.rfu.events.managers.progress.DailyStreakEvents.registerStreakUpdatedEvent
-import cloud.glitchdev.rfu.events.managers.lifecycle.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.progress.registerStreakUpdatedEvent
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.elementa.UIEmoji
 import cloud.glitchdev.rfu.gui.components.streak.UIDailyChallengeCard
@@ -48,8 +49,10 @@ object DailyStreakWindow : BaseWindow(false) {
 
     init {
         create()
+    }
 
-        registerTickEvent {
+    override fun initializeWindow(scope: EventScope) {
+        scope.registerTickEvent {
             //~ if >=26.2 'screen' -> 'gui.screen()' {
             if (RiccioFishingUtils.mc.gui.screen() == this) {
             //~}
@@ -62,7 +65,7 @@ object DailyStreakWindow : BaseWindow(false) {
             }
         }
 
-        registerStreakUpdatedEvent {
+        scope.registerStreakUpdatedEvent {
             needsRefresh = true
         }
     }
@@ -70,6 +73,7 @@ object DailyStreakWindow : BaseWindow(false) {
     override fun onOpenWindow() {
         DailyStreakManager.checkDailyReset()
         refreshWindow()
+        needsRefresh = false
     }
 
     private fun create() {

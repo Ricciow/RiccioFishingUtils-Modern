@@ -43,4 +43,3 @@
 - Added Detekt checks
 - Hotspot detection now reacts to entity updates, optimizing :dog:.
 - Added error chat messages when Developer Mode is enabled.
-- Reorganized event managers and grouped scoped registrations by package.

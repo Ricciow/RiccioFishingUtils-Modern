@@ -123,6 +123,15 @@ object PartyFinderWindow : BaseWindow(false), Feature {
         onUpdate()
     }
 
+    override fun initializeWindow(scope: EventScope) {
+        creationArea.initialize(scope)
+        scope.registerErrorMessageEvent { message, origin ->
+            if (origin == "/app/party/join" || origin == "/app/party/report" || origin == "/app/party/delete") {
+                popup.showWarning(message)
+            }
+        }
+    }
+
     override fun onInitialize(scope: EventScope) {
         scope.registerCloseConfigEvent {
             halloweenComponent.update()
@@ -146,14 +155,6 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             if (party.user == User.getUsername()) {
                 creationOpen = false
                 onUpdate()
-            }
-        }
-
-        scope.registerErrorMessageEvent { message, origin ->
-            //~ if >=26.2 'screen' -> 'gui.screen()' {
-            if (mc.gui.screen() == this && (origin == "/app/party/join" || origin == "/app/party/report" || origin == "/app/party/delete")) {
-            //~}
-                popup.showWarning(message)
             }
         }
 

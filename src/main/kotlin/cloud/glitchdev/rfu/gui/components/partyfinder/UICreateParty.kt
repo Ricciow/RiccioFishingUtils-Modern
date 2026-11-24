@@ -20,10 +20,12 @@ import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.dsl.compact
 import cloud.glitchdev.rfu.utils.network.PartyWebSocket
-import cloud.glitchdev.rfu.events.managers.ui.ErrorEvents.registerErrorMessageEvent
-import cloud.glitchdev.rfu.events.managers.connection.HypixelModApiEvents.registerLocationEvent
-import cloud.glitchdev.rfu.events.managers.party.PartyFinderEvents.registerMyPartyChangedEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.connection.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.party.registerMyPartyChangedEvent
+import cloud.glitchdev.rfu.events.managers.ui.registerErrorMessageEvent
 import cloud.glitchdev.rfu.utils.Coroutines
+import cloud.glitchdev.rfu.utils.World
 import kotlinx.coroutines.delay
 import kotlin.jvm.optionals.getOrNull
 import cloud.glitchdev.rfu.gui.UIScheme
@@ -57,6 +59,7 @@ import gg.essential.elementa.effects.ScissorEffect
 class UICreateParty : UIContainer() {
     private val popup: UIPopup get() = PartyFinderWindow.popup
     private var party: FishingParty = PartyWebSocket.myParty ?: loadInitialParty()
+    private var lastKnownIsland: FishingIslands? = null
 
     private fun loadInitialParty(): FishingParty {
         val blank = FishingParty.blankParty()
@@ -92,14 +95,27 @@ class UICreateParty : UIContainer() {
     private var lastSubmitTime = 0L
 
     init {
-        registerErrorMessageEvent { message, origin ->
+        create()
+    }
+
+    fun initialize(scope: EventScope) {
+        val currentParty = PartyWebSocket.myParty
+        if (currentParty != null && currentParty !== party) {
+            party = currentParty
+            updateFields()
+        } else {
+            updateButtonLabel()
+        }
+        if (World.island != lastKnownIsland) updateIsland(World.island)
+
+        scope.registerErrorMessageEvent { message, origin ->
             if (!this.isHidden() && (origin == "/app/party/publish" || origin == "/app/party/edit")) {
                 popup.showWarning(message)
                 submitButton.disabled = false
             }
         }
 
-        registerMyPartyChangedEvent { updatedParty ->
+        scope.registerMyPartyChangedEvent { updatedParty ->
             if (updatedParty != null) {
                 party = updatedParty
                 updateFields()
@@ -108,20 +124,20 @@ class UICreateParty : UIContainer() {
             }
         }
 
-        registerLocationEvent { event ->
-            if (PartyWebSocket.myParty != null) return@registerLocationEvent
-            val islandName = event.map.getOrNull() ?: return@registerLocationEvent
-            val newIsland = FishingIslands.findIslandObject(islandName)
-            if (newIsland != null && newIsland != FishingIslands.OTHER && newIsland != FishingIslands.NOT_SB && newIsland != FishingIslands.UNKNOWN) {
-                if (party.island != newIsland) {
-                    party.island = newIsland
-                    islandField.setSelected(newIsland.toDataOption())
-                    updatePartyTypeVisibility(newIsland)
-                }
-            }
+        scope.registerLocationEvent { event ->
+            updateIsland(event.map.getOrNull()?.let(FishingIslands::findIslandObject))
         }
+    }
 
-        create()
+    private fun updateIsland(island: FishingIslands?) {
+        lastKnownIsland = island
+        if (PartyWebSocket.myParty != null || island == null || island == FishingIslands.OTHER ||
+            island == FishingIslands.NOT_SB || island == FishingIslands.UNKNOWN || party.island == island
+        ) return
+
+        party.island = island
+        islandField.setSelected(island.toDataOption())
+        updatePartyTypeVisibility(island)
     }
 
     private fun create() {
