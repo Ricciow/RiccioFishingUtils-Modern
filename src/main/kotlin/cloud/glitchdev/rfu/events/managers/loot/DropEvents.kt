@@ -25,10 +25,10 @@ object DropEvents : RegisteredEvent {
     val DYE_REGEX = buildString {
         append("WOW! (.+) found (?:an? )?(")
         append(Dyes.entries.joinToString("|") { it.toString().escapeForRegex() })
-        append(")!")
+        append(""")!\s*""")
     }.toExactRegex()
 
-    val DYE_ODD_REGEX = """.+ [\d,]+\/[\d,]+(?:\.\d+)?\w? \(\d+(?:\.\d+)?%\) chance!(?: \(\+(\d+)%  Magic Find\))?""".toExactRegex()
+    val DYE_ODD_REGEX = """.+ [\d,]+\/[\d,]+(?:\.\d+)?\w? \(\d+(?:\.\d+)?%\) chance!(?: \(\+(\d+)%?(?: ?[✯\uE01A])? Magic Find\))?\s*""".toExactRegex()
     var currentDye : Dyes? = null
     var dyeTimestamp : Long = 0L
 

@@ -20,7 +20,7 @@ object JealousFisherAchievement : BaseAchievement() {
     override val difficulty: AchievementDifficulty = AchievementDifficulty.HARD
     override val category: AchievementCategory = AchievementCategory.SPECIAL
 
-    private val DYE_REGEX = """WOW! (.+) found (?:an? )?(Carmine|Aquamarine|Treasure|Midnight|Iceberg) Dye!""".toExactRegex()
+    private val DYE_REGEX = """WOW! (.+) found (?:an? )?(Carmine|Aquamarine|Treasure|Midnight|Iceberg) Dye!\s*""".toExactRegex()
 
     override fun setupListeners(scope: EventScope) {
         scope.registerGameEvent(filter = DYE_REGEX) { _, _, matches ->
