@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.feature.debug
 
+import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.events.EventScopes
 import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.utils.TextUtils
@@ -18,7 +19,7 @@ object RestartListeners : SimpleCommand("restartlisteners") {
             context.source.sendError(TextUtils.rfuLiteral("Some RFU listeners failed to restart. Check the log for details."))
             return 0
         }
-        context.source.sendFeedback(TextUtils.rfuLiteral("Restarted RFU listeners."))
+        context.source.sendFeedback(TextUtils.rfuLiteral("${TextColor.LIGHT_GREEN}Restarted RFU listeners."))
         return 1
     }
 }
