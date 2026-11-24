@@ -3,7 +3,8 @@ package cloud.glitchdev.rfu.achievement.types
 import cloud.glitchdev.rfu.achievement.AchievementProvider
 import cloud.glitchdev.rfu.achievement.BaseAchievement
 import cloud.glitchdev.rfu.data.achievements.AchievementHandler
-import cloud.glitchdev.rfu.events.managers.AchievementUnlockedEvents.registerAchievementUnlockedEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.progress.registerAchievementUnlockedEvent
 
 abstract class CompletionAchievement : BaseAchievement() {
     abstract val achievements: List<BaseAchievement>
@@ -17,14 +18,15 @@ abstract class CompletionAchievement : BaseAchievement() {
     override val targetProgress: Long
         get() = achievements.size.toLong()
 
-    override fun setupListeners() {
+    override fun setupListeners(scope: EventScope) {
         updateProgress()
+        if (isCompleted) return
 
-        activeListeners.add(registerAchievementUnlockedEvent { achievement ->
+        scope.registerAchievementUnlockedEvent { achievement ->
             if (achievements.any { it.id == achievement.id }) {
                 updateProgress()
             }
-        })
+        }
     }
 
     private fun updateProgress() {

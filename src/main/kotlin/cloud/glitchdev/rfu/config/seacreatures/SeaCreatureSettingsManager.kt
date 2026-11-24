@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.config.seacreatures
 
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.InstantRegister
 import cloud.glitchdev.rfu.events.InstantRegisteredEvent
@@ -286,7 +287,7 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
         }
     }
 
-    override fun register() {
+    override fun register(scope: EventScope) {
         if (BackendSettings.loadScConfigFromBackend) {
             updateFromBackend()
         }

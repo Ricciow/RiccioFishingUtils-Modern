@@ -2,10 +2,11 @@ package cloud.glitchdev.rfu.feature.mob
 
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
-import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDetectEvent
-import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDisposeEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.connection.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.entity.registerMobDetectEvent
+import cloud.glitchdev.rfu.events.managers.entity.registerMobDisposeEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.data.mob.SkyblockEntity
@@ -18,8 +19,8 @@ object RareAlert : Feature {
     private var scuttlersSeen = 0
     var lastEntities : Set<SkyblockEntity> = setOf()
 
-    override fun onInitialize() {
-        registerMobDetectEvent { entities ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerMobDetectEvent { entities ->
             if(!SeaCreatureConfig.rareSc.enabled) return@registerMobDetectEvent
             val entities = entities.filter { !it.isRemoved() && (!it.hasHealth || it.healthStr != "0") && SeaCreatures.get(it.sbName)?.rareSCAlert == true }.toSet()
             val alerts = (entities - lastEntities).filter(::shouldAlert)
@@ -35,15 +36,15 @@ object RareAlert : Feature {
             }
         }
 
-        registerMobDisposeEvent { removed ->
+        scope.registerMobDisposeEvent { removed ->
             if (lastEntities.isEmpty()) return@registerMobDisposeEvent
             lastEntities = lastEntities - removed
             if (lastEntities.none(::isFieryScuttler)) {
                 scuttlersSeen = 0
             }
         }
-        registerLocationEvent { reset() }
-        registerDisconnectEvent { reset() }
+        scope.registerLocationEvent { reset() }
+        scope.registerDisconnectEvent { reset() }
     }
 
     private fun isFieryScuttler(entity: SkyblockEntity): Boolean = entity.sbName == FIERY_SCUTTLER

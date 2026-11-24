@@ -2,9 +2,10 @@ package cloud.glitchdev.rfu.feature.fishing
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.data.ArmorSet
-import cloud.glitchdev.rfu.events.managers.ArmorEvents
-import cloud.glitchdev.rfu.events.managers.ArmorEvents.registerArmorChangeEvent
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.inventory.ArmorChangeEventManager
+import cloud.glitchdev.rfu.events.managers.inventory.registerArmorChangeEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.gui.hud.elements.BobbinTimeDisplay
@@ -25,19 +26,19 @@ object BobbinTime : Feature {
     val buffPercentage: Double
         get() = calculateBuffPercentage(bobberCount, totalRatePerBobber)
 
-    override fun onInitialize() {
-        registerTickEvent(interval = 20) {
+    override fun onInitialize(scope: EventScope) {
+        scope.registerTickEvent(interval = 20) {
             updateState()
         }
-        registerArmorChangeEvent {
+        scope.registerArmorChangeEvent {
             updateArmorRates()
         }
         updateArmorRates()
     }
 
     private fun updateArmorRates() {
-        totalRatePerBobber = ArmorEvents.currentArmorSet.bobbinTimeRate
-        hasBobbinTimeArmor = ArmorEvents.currentArmorSet.hasBobbinTimeArmor
+        totalRatePerBobber = ArmorChangeEventManager.currentArmorSet.bobbinTimeRate
+        hasBobbinTimeArmor = ArmorChangeEventManager.currentArmorSet.hasBobbinTimeArmor
         BobbinTimeDisplay.updateState()
     }
 

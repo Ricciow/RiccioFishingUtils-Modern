@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.feature.debug
 
-import cloud.glitchdev.rfu.events.managers.ChatEvents
+import cloud.glitchdev.rfu.events.managers.chat.ChatEventManager
+import cloud.glitchdev.rfu.events.managers.chat.GameEventManager
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.command.AbstractCommand
 import com.mojang.brigadier.arguments.StringArgumentType
@@ -38,8 +39,8 @@ object Chat : AbstractCommand("chat") {
         val decoded = decodeUnicodeEscapes(argument.removeSurrounding("\""))
         val text = Component.literal(decoded)
         Chat.sendMessage(text)
-        ChatEvents.ChatEventManager.runTasks(text)
-        ChatEvents.GameEventManager.runTasks(text, true)
-        ChatEvents.GameEventManager.runTasks(text, false)
+        ChatEventManager.runTasks(text)
+        GameEventManager.runTasks(text, true)
+        GameEventManager.runTasks(text, false)
     }
 }

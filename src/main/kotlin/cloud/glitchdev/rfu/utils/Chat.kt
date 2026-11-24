@@ -1,5 +1,8 @@
 package cloud.glitchdev.rfu.utils
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.chat.registerAnyChatEvent
+import cloud.glitchdev.rfu.events.managers.chat.registerSendCommandEvent
 import net.minecraft.network.chat.Component
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
@@ -7,8 +10,6 @@ import cloud.glitchdev.rfu.data.other.OtherManager
 import cloud.glitchdev.rfu.data.other.data.InstantEntry
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerAnyChatEvent
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerSendCommandEvent
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import kotlinx.coroutines.delay
 import kotlin.time.Clock
@@ -44,13 +45,13 @@ object Chat : RegisteredEvent {
             OtherManager.file.save()
         }
 
-    override fun register() {
-        registerSendCommandEvent { _ ->
+    override fun register(scope: EventScope) {
+        scope.registerSendCommandEvent { _ ->
             lastMessage = Clock.System.now()
             true
         }
 
-        registerAnyChatEvent(MUTE_REGEX) { _, matches ->
+        scope.registerAnyChatEvent(MUTE_REGEX) { _, matches ->
             val groups = matches?.groupValues ?: return@registerAnyChatEvent
             val days = groups.getOrNull(1)?.toLongOrNull() ?: 0L
             val hours = groups.getOrNull(2)?.toLongOrNull() ?: 0L

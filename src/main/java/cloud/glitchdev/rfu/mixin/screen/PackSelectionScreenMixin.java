@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.mixin.screen;
 
-import cloud.glitchdev.rfu.events.managers.PackSelectionScreenEvents;
+import cloud.glitchdev.rfu.events.managers.ui.PackSelectionScreenEvents;
 import net.minecraft.client.gui.screens.packs.PackSelectionScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

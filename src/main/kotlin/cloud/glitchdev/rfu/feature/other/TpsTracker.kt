@@ -1,7 +1,8 @@
 package cloud.glitchdev.rfu.feature.other
 
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.connection.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerLocationEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import java.util.ArrayDeque
@@ -17,12 +18,12 @@ object TpsTracker : Feature {
     private var lastPingNanos: Long? = null
     private val networkTimeSamples = ArrayDeque<NetworkTimeSample>()
 
-    override fun onInitialize() {
-        registerLocationEvent {
+    override fun onInitialize(scope: EventScope) {
+        scope.registerLocationEvent {
             reset()
         }
 
-        registerDisconnectEvent {
+        scope.registerDisconnectEvent {
             reset()
         }
     }

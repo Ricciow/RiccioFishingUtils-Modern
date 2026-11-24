@@ -1,5 +1,7 @@
 package cloud.glitchdev.rfu.party
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.inventory.registerContainerOpenEvent
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.skyblock.SkillType
 import cloud.glitchdev.rfu.constants.skyblock.Skills
@@ -7,8 +9,6 @@ import cloud.glitchdev.rfu.data.other.OtherManager
 import cloud.glitchdev.rfu.data.other.data.BooleanEntry
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.ContainerEvents.registerContainerOpenEvent
-import cloud.glitchdev.rfu.events.managers.PartyFinderEvents
 import cloud.glitchdev.rfu.model.party.FishingParty
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.core.component.DataComponents
@@ -49,14 +49,14 @@ object PartyRequirementsManager : RegisteredEvent {
         playerRequisites = result
         cachedProfileId = profileId
         lastRequisitesFetchTime = Clock.System.now()
-        PartyFinderEvents.refreshParties()
+        PartyFinderManager.refreshParties()
     }
 
     fun clearPlayerRequisites() {
         playerRequisites = null
         cachedProfileId = null
         lastRequisitesFetchTime = null
-        PartyFinderEvents.refreshParties()
+        PartyFinderManager.refreshParties()
     }
 
     fun hasEnderman9(): Boolean {
@@ -68,11 +68,11 @@ object PartyRequirementsManager : RegisteredEvent {
         set(value) {
             OtherManager.setField("brain_food", BooleanEntry(value))
             OtherManager.file.save()
-            PartyFinderEvents.refreshParties()
+            PartyFinderManager.refreshParties()
         }
 
-    override fun register() {
-        registerContainerOpenEvent { containerName, _, items ->
+    override fun register(scope: EventScope) {
+        scope.registerContainerOpenEvent { containerName, _, items ->
             if (containerName == "Tasks ➜ Consumables") {
                 val brainFoodItem = items.find { it.hoverName.toUnformattedString().contains("Brain Food", ignoreCase = true) }
                     ?: return@registerContainerOpenEvent

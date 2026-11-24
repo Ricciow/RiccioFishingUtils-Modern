@@ -1,9 +1,10 @@
 package cloud.glitchdev.rfu.feature.announcements
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.API_URL
-import cloud.glitchdev.rfu.events.managers.AnnouncementEvents.registerAnnouncementUpdateEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.ui.registerAnnouncementUpdateEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerJoinEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.feature.announcements.command.Open
@@ -34,8 +35,8 @@ object Announcements : Feature {
         .registerTypeAdapter(Instant::class.java, InstantTypeAdapter())
         .create()
 
-    override fun onInitialize() {
-        registerAnnouncementUpdateEvent { newAnnouncement ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerAnnouncementUpdateEvent { newAnnouncement ->
             val isNew = newAnnouncement != null && (announcement == null || announcement?.id != newAnnouncement.id)
             
             if (isNew) {
@@ -44,7 +45,7 @@ object Announcements : Feature {
             announcement = newAnnouncement
         }
 
-        registerJoinEvent(delayMillis = 1000) { _ ->
+        scope.registerJoinEvent(delayMillis = 1000) { _ ->
             if (!wasInSkyblock && World.isInSkyblock) {
                 if (!WebSocketClient.isConnected) {
                     fetchLatestAnnouncement { fetched ->
@@ -57,7 +58,7 @@ object Announcements : Feature {
             wasInSkyblock = World.isInSkyblock
         }
 
-        registerDisconnectEvent {
+        scope.registerDisconnectEvent {
             wasInSkyblock = false
         }
     }

@@ -2,9 +2,9 @@ package cloud.glitchdev.rfu.achievement
 
 import cloud.glitchdev.rfu.achievement.interfaces.IAchievement
 import cloud.glitchdev.rfu.achievement.interfaces.IStageAchievement
-import cloud.glitchdev.rfu.events.managers.AchievementUnlockedEvents
-import cloud.glitchdev.rfu.events.managers.AchievementStageUnlockedEvents
-import cloud.glitchdev.rfu.events.managers.AchievementUpdatedEvents
+import cloud.glitchdev.rfu.events.managers.progress.AchievementUnlockedEvents
+import cloud.glitchdev.rfu.events.managers.progress.AchievementStageUnlockedEvents
+import cloud.glitchdev.rfu.events.managers.progress.AchievementUpdatedEvents
 
 object AchievementProvider {
     fun isVisible(achievement: IAchievement): Boolean =

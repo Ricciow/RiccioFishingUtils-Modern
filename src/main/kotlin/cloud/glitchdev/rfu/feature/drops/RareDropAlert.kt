@@ -5,8 +5,11 @@ import cloud.glitchdev.rfu.constants.fishing.IRareDrop
 import cloud.glitchdev.rfu.constants.fishing.RareDrops
 import cloud.glitchdev.rfu.data.drops.DropManager
 import cloud.glitchdev.rfu.data.drops.DropRecord
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerAllowGameEvent
-import cloud.glitchdev.rfu.events.managers.DropEvents
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.loot.DropEvents
+import cloud.glitchdev.rfu.events.managers.chat.registerAllowGameEvent
+import cloud.glitchdev.rfu.events.managers.loot.registerDyeDropEvent
+import cloud.glitchdev.rfu.events.managers.loot.registerRareDropEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat.sendMessage
@@ -20,31 +23,37 @@ import net.minecraft.network.chat.Component
 
 @RFUFeature
 object RareDropAlert : Feature {
-    override fun onInitialize() {
-        registerAllowGameEvent(DropEvents.RARE_DROP_REGEX) { _, _, matches ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerAllowGameEvent(DropEvents.RARE_DROP_REGEX) { _, _, matches ->
             val dropName = matches?.groupValues?.getOrNull(1) ?: return@registerAllowGameEvent true
             val rareDrop = RareDrops.getRelatedDrop(dropName) ?: return@registerAllowGameEvent true
             !(DropsSettings.customRareDropMessage && rareDrop in DropsSettings.rareDrops)
         }
 
-        DropEvents.registerRareDropEvent { rareDrop, magicFind, mobName ->
+        scope.registerRareDropEvent { rareDrop, magicFind, mobName ->
             if (rareDrop !in DropsSettings.rareDrops) return@registerRareDropEvent true
             
             val history = DropManager.dropHistory.getOrAdd(rareDrop).history
-            handleAlert(rareDrop, history, magicFind, mobName)
+            handleAlert(scope, rareDrop, history, magicFind, mobName)
             
             true
         }
 
-        DropEvents.registerDyeDropEvent { dyeDrop, magicFind, mobName ->
+        scope.registerDyeDropEvent { dyeDrop, magicFind, mobName ->
             if (dyeDrop !in DropsSettings.dyeDrops) return@registerDyeDropEvent
             
             val history = DropManager.dropHistory.getOrAdd(dyeDrop).history
-            handleAlert(dyeDrop, history, magicFind, mobName)
+            handleAlert(scope, dyeDrop, history, magicFind, mobName)
         }
     }
 
-    private fun handleAlert(drop: IRareDrop, history: List<DropRecord>, magicFind: Int?, mobName: String? = null) {
+    private fun handleAlert(
+        scope: EventScope,
+        drop: IRareDrop,
+        history: List<DropRecord>,
+        magicFind: Int?,
+        mobName: String? = null,
+    ) {
         val currentDrop = history.lastOrNull() ?: return
         val previousDrop = if (history.lastIndex - 1 >= 0) history[history.lastIndex - 1] else null
 
@@ -76,7 +85,7 @@ object RareDropAlert : Feature {
             val messageString = DropsSettings.rareDropMessageFormat.formatTemplate(*placeholders)
             val message = Component.literal(messageString)
 
-            Coroutines.launch {
+            Coroutines.launch(scope) {
                 delay(100)
                 sendMessage(message)
             }

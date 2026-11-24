@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.gui.hud.elements
 
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.constants.text.TextColor.AQUAMARINE
@@ -9,7 +10,7 @@ import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 import cloud.glitchdev.rfu.data.mob.DeployableManager
 import cloud.glitchdev.rfu.data.mob.DeployableType
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.utils.dsl.toReadableString
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -26,10 +27,10 @@ object DeployablesDisplay : AbstractTextHudElement("deployablesDisplay") {
     override val isElementActive: Boolean
         get() = getActiveDeployables().any { (type, _) -> type.isDisplayEnabled() }
 
-    override fun onInitialize() {
-        super.onInitialize()
+    override fun onInitialize(scope: EventScope) {
+        super.onInitialize(scope)
 
-        registerTickEvent(interval = 5) {
+        scope.registerTickEvent(interval = 5) {
             val active = isElementActive
             if (isEditing || active || wasActive) {
                 updateState()

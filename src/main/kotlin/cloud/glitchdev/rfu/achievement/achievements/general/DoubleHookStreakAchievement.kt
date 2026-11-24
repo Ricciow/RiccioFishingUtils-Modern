@@ -5,7 +5,8 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericAchievement
-import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.fishing.registerSeaCreatureCatchEvent
 
 @Achievement
 object DoubleHookStreakAchievement : NumericAchievement() {
@@ -17,13 +18,13 @@ object DoubleHookStreakAchievement : NumericAchievement() {
     override val category: AchievementCategory = AchievementCategory.GENERAL
     override val targetCount: Long = 8L
 
-    override fun setupListeners() {
-        activeListeners.add(registerSeaCreatureCatchEvent { _, doubleHook, _, _, _ ->
+    override fun setupListeners(scope: EventScope) {
+        scope.registerSeaCreatureCatchEvent { _, doubleHook, _, _, _ ->
             if (doubleHook) {
                 addProgress()
             } else {
                 currentCount = 0L
             }
-        })
+        }
     }
 }

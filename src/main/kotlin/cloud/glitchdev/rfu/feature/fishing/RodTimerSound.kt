@@ -1,7 +1,8 @@
 package cloud.glitchdev.rfu.feature.fishing
 
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Sounds
@@ -11,8 +12,8 @@ import gg.essential.universal.utils.toUnformattedString
 object RodTimerSound : Feature {
     private var lastRodTime = -1f
 
-    override fun onInitialize() {
-        registerTickEvent(0, 2) { _ ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerTickEvent(0, 2) { _ ->
             val text = RodTimer.timer?.takeUnless { it.isRemoved }?.name?.toUnformattedString()
 
             val currentRodTime = if (text == "!!!") {

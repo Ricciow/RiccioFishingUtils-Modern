@@ -1,10 +1,11 @@
 package cloud.glitchdev.rfu.gui.hud.elements
 
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.data.mob.MobManager
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.gui.hud.AbstractFishingHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 import gg.essential.universal.utils.toUnformattedString
@@ -15,9 +16,9 @@ object ScCapDisplay : AbstractFishingHudElement("scCapDisplay") {
     override val requirement: Boolean
         get() = SeaCreatureConfig.scCapDisplay
 
-    override fun onInitialize() {
-        super.onInitialize()
-        registerTickEvent(interval = 20) {
+    override fun onInitialize(scope: EventScope) {
+        super.onInitialize(scope)
+        scope.registerTickEvent(interval = 20) {
             updateState()
         }
     }

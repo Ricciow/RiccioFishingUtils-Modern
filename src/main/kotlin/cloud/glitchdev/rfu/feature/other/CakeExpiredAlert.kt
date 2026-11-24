@@ -2,10 +2,11 @@ package cloud.glitchdev.rfu.feature.other
 
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.text.TextColor
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.chat.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerJoinEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.data.other.OtherManager
@@ -37,15 +38,15 @@ object CakeExpiredAlert : Feature {
     private var inactiveSince: TimeMark? = null
     private val lastOutdated : HashSet<CakesEntry.Cake> = hashSetOf()
 
-    override fun onInitialize() {
+    override fun onInitialize(scope: EventScope) {
         val cakes = OtherManager.getField("cakes") {
             CakesEntry()
         } as? CakesEntry ?: CakesEntry()
 
-        registerJoinEvent { inactiveSince = null }
-        registerDisconnectEvent { inactiveSince = null }
+        scope.registerJoinEvent { inactiveSince = null }
+        scope.registerDisconnectEvent { inactiveSince = null }
 
-        registerTickEvent(interval = 20) {
+        scope.registerTickEvent(interval = 20) {
             if (!OtherSettings.outdatedCake || !World.isInSkyblock) {
                 inactiveSince = null
                 return@registerTickEvent
@@ -54,7 +55,7 @@ object CakeExpiredAlert : Feature {
             checkTablist(cakes)
         }
 
-        registerTickEvent(interval = 300) {
+        scope.registerTickEvent(interval = 300) {
             if(!OtherSettings.outdatedCake) return@registerTickEvent
             if(!World.isInSkyblock) return@registerTickEvent
             val outdated = cakes.getOutdatedCakes().toHashSet()
@@ -75,7 +76,7 @@ object CakeExpiredAlert : Feature {
             lastOutdated.addAll(outdated)
         }
 
-        registerTickEvent(interval = 6000) {
+        scope.registerTickEvent(interval = 6000) {
             if(!OtherSettings.outdatedCake) return@registerTickEvent
             if(!World.isInSkyblock) return@registerTickEvent
             val outdated = cakes.getOutdatedCakes()
@@ -92,7 +93,7 @@ object CakeExpiredAlert : Feature {
             }
         }
 
-        registerGameEvent(CAKE_EATEN_REGEX) { _, _, match ->
+        scope.registerGameEvent(CAKE_EATEN_REGEX) { _, _, match ->
             val effect = match?.groupValues?.getOrNull(1) ?: return@registerGameEvent
             inactiveSince = null
             cakes.eatCake(effect)

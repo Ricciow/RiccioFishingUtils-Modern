@@ -1,18 +1,22 @@
 package cloud.glitchdev.rfu.data.mob
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.connection.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerJoinEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.entity.registerEntityAddedEvent
+import cloud.glitchdev.rfu.events.managers.entity.registerEntityDataEvent
+import cloud.glitchdev.rfu.events.managers.entity.registerEntityRemovedEvent
+import cloud.glitchdev.rfu.events.managers.entity.registerEntityStatusEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.entity.MobDeathEventManager
+import cloud.glitchdev.rfu.events.managers.entity.MobDetectEventManager
+import cloud.glitchdev.rfu.events.managers.entity.MobDisposeEventManager
+import cloud.glitchdev.rfu.events.managers.entity.MobUpdateEventManager
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
-import cloud.glitchdev.rfu.events.managers.EntityAddedEvents.registerEntityAddedEvent
-import cloud.glitchdev.rfu.events.managers.EntityDataEvents.registerEntityDataEvent
-import cloud.glitchdev.rfu.events.managers.EntityRemovedEvents.registerEntityRemovedEvent
-import cloud.glitchdev.rfu.events.managers.EntityStatusEvents.registerEntityStatusEvent
-import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
-import cloud.glitchdev.rfu.events.managers.MobEvents
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.world.entity.Entity
@@ -28,11 +32,11 @@ object MobManager : RegisteredEvent {
     private val uniqueSbEntities = HashSet<SkyblockEntity>()
     private val pendingNametags = HashSet<Int>()
 
-    override fun register() {
-        registerEntityAddedEvent { entity ->
+    override fun register(scope: EventScope) {
+        scope.registerEntityAddedEvent { entity ->
             val world = entity.level() as? ClientLevel ?: return@registerEntityAddedEvent
             if (entity is ArmorStand && checkSbEntity(entity, world)) {
-                MobEvents.MobDetectEventManager.runTasks(uniqueSbEntities.toSet())
+                MobDetectEventManager.runTasks(uniqueSbEntities.toSet())
                 return@registerEntityAddedEvent
             }
 
@@ -41,24 +45,24 @@ object MobManager : RegisteredEvent {
             }
         }
 
-        registerEntityDataEvent { entity ->
+        scope.registerEntityDataEvent { entity ->
             val world = entity.level() as? ClientLevel ?: return@registerEntityDataEvent
             val trackedEntity = sbEntities[entity.id]
             if (trackedEntity != null) {
                 if (entity.id == trackedEntity.nameTagEntity.id) {
                     trackedEntity.updateEntityData()
-                    MobEvents.MobUpdateEventManager.runTasks(trackedEntity)
+                    MobUpdateEventManager.runTasks(trackedEntity)
                 }
             } else {
                 if (entity is ArmorStand && checkSbEntity(entity, world)) {
-                    MobEvents.MobDetectEventManager.runTasks(uniqueSbEntities.toSet())
+                    MobDetectEventManager.runTasks(uniqueSbEntities.toSet())
                 } else if (entity is LivingEntity) {
                     checkPendingNametags(world)
                 }
             }
         }
 
-        registerEntityRemovedEvent { entityId ->
+        scope.registerEntityRemovedEvent { entityId ->
             pendingNametags.remove(entityId)
             val sbEntity = sbEntities[entityId] ?: return@registerEntityRemovedEvent
             if (entityId == sbEntity.nameTagEntity.id) {
@@ -66,7 +70,7 @@ object MobManager : RegisteredEvent {
                 val player = mc.player
                 if (player != null && player.distanceToSqr(sbEntity.position()) <= 400.0) {
                     removeEntity(sbEntity)
-                    MobEvents.MobDisposeEventManager.runTasks(setOf(sbEntity))
+                    MobDisposeEventManager.runTasks(setOf(sbEntity))
                 }
             } else if (sbEntity.modelEntities.any { it.id == entityId }) {
                 sbEntities.remove(entityId)
@@ -77,10 +81,10 @@ object MobManager : RegisteredEvent {
                 if (aliveModel != null) {
                     sbEntity.modelEntity = aliveModel
                     sbEntity.updateParts()
-                    MobEvents.MobUpdateEventManager.runTasks(sbEntity)
+                    MobUpdateEventManager.runTasks(sbEntity)
                 } else {
                     removeEntity(sbEntity)
-                    MobEvents.MobDisposeEventManager.runTasks(setOf(sbEntity))
+                    MobDisposeEventManager.runTasks(setOf(sbEntity))
                 }
             } else {
                 sbEntities.remove(entityId)
@@ -88,17 +92,17 @@ object MobManager : RegisteredEvent {
             }
         }
 
-        registerEntityStatusEvent { entity, status ->
+        scope.registerEntityStatusEvent { entity, status ->
             if (status == EntityEvent.DEATH) {
                 val sbEntity = sbEntities[entity.id] ?: return@registerEntityStatusEvent
                 if (!sbEntity.isDying && sbEntity.modelEntities.any { it.id == entity.id }) {
                     sbEntity.isDying = true
-                    MobEvents.MobDeathEventManager.runTasks(setOf(sbEntity))
+                    MobDeathEventManager.runTasks(setOf(sbEntity))
                 }
             }
         }
 
-        registerTickEvent(interval = 5) {
+        scope.registerTickEvent(interval = 5) {
             val world = mc.level ?: return@registerTickEvent
 
             checkPendingNametags(world)
@@ -109,19 +113,19 @@ object MobManager : RegisteredEvent {
             }
             if (toDispose.isNotEmpty()) {
                 toDispose.forEach { removeEntity(it) }
-                MobEvents.MobDisposeEventManager.runTasks(toDispose)
+                MobDisposeEventManager.runTasks(toDispose)
             }
         }
 
-        registerLocationEvent {
+        scope.registerLocationEvent {
             clearAll()
         }
 
-        registerJoinEvent {
+        scope.registerJoinEvent {
             clearAll()
         }
 
-        registerDisconnectEvent {
+        scope.registerDisconnectEvent {
             clearAll()
         }
     }
@@ -189,7 +193,7 @@ object MobManager : RegisteredEvent {
             }
         }
         if (detectedAny) {
-            MobEvents.MobDetectEventManager.runTasks(uniqueSbEntities.toSet())
+            MobDetectEventManager.runTasks(uniqueSbEntities.toSet())
         }
     }
 
@@ -307,7 +311,7 @@ object MobManager : RegisteredEvent {
                 for (part in existingLink.parts) {
                     sbEntities[part.id] = existingLink
                 }
-                MobEvents.MobUpdateEventManager.runTasks(existingLink)
+                MobUpdateEventManager.runTasks(existingLink)
                 return false
             } else if (isSerpentine && existingLink.nameTagEntity.id == entity.id) {
                 existingLink.modelEntities.addAll(validModels)
@@ -316,7 +320,7 @@ object MobManager : RegisteredEvent {
                 for (part in existingLink.parts) {
                     sbEntities[part.id] = existingLink
                 }
-                MobEvents.MobUpdateEventManager.runTasks(existingLink)
+                MobUpdateEventManager.runTasks(existingLink)
                 return false
             } else {
                 return false
@@ -376,7 +380,7 @@ object MobManager : RegisteredEvent {
                 sbEntity.updateNametag(currentTag)
                 sbEntity.updateEntityData()
                 sbEntities[currentTag.id] = sbEntity
-                MobEvents.MobUpdateEventManager.runTasks(sbEntity)
+                MobUpdateEventManager.runTasks(sbEntity)
             }
         }
 
@@ -384,7 +388,7 @@ object MobManager : RegisteredEvent {
             val oldHealth = sbEntity.healthStr
             sbEntity.updateEntityData()
             if (sbEntity.healthStr != oldHealth) {
-                MobEvents.MobUpdateEventManager.runTasks(sbEntity)
+                MobUpdateEventManager.runTasks(sbEntity)
             }
         }
     }
@@ -410,8 +414,8 @@ object MobManager : RegisteredEvent {
         }
         uniqueSbEntities.clear()
         if (oldEntities.isNotEmpty()) {
-            MobEvents.MobDisposeEventManager.runTasks(oldEntities)
+            MobDisposeEventManager.runTasks(oldEntities)
         }
-        MobEvents.MobDetectEventManager.runTasks(emptySet())
+        MobDetectEventManager.runTasks(emptySet())
     }
 }

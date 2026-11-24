@@ -3,7 +3,8 @@ package cloud.glitchdev.rfu.party.commands
 import cloud.glitchdev.rfu.config.categories.PartySettings
 import cloud.glitchdev.rfu.constants.chat.RegexConstants.PLAYER_REGEX
 import cloud.glitchdev.rfu.constants.chat.PartyCommandListMode
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.chat.registerGameEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.party.AbstractPartyCommand
@@ -31,8 +32,12 @@ object WarpCommand : AbstractPartyCommand(
         """From ($PLAYER_REGEX): Hey! I'm currently muted and am unable to message right now\.""".toExactRegex()
     private val recentlyTriggered = mutableSetOf<String>()
 
-    override fun onInitialize() {
-        registerGameEvent(MUTED_MESSAGE_REGEX) { _, _, match ->
+    override fun onInitialize(scope: EventScope) {
+        scope.onClose {
+            recentlyTriggered.clear()
+        }
+
+        scope.registerGameEvent(MUTED_MESSAGE_REGEX) { _, _, match ->
             if (!PartySettings.togglePartyCommands || !PartySettings.warpOnMutedMessage || !isEnabled()) {
                 return@registerGameEvent
             }
@@ -50,7 +55,7 @@ object WarpCommand : AbstractPartyCommand(
 
             if (!recentlyTriggered.add(member.lowercase())) return@registerGameEvent
             execute(member, emptyList())
-            Coroutines.launch {
+            Coroutines.launch(scope) {
                 delay((PartySettings.spamCooldown * 1000).toLong())
                 recentlyTriggered.remove(member.lowercase())
             }

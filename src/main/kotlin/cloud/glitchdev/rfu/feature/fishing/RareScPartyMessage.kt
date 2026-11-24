@@ -3,8 +3,9 @@ package cloud.glitchdev.rfu.feature.fishing
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig.RARE_SC_REGEX
-import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
-import cloud.glitchdev.rfu.events.managers.CocoonEvents.registerCocoonEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.fishing.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerCocoonEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.data.catches.CatchTracker
@@ -17,8 +18,8 @@ import kotlin.time.Clock
 
 @RFUFeature
 object RareScPartyMessage : Feature {
-    override fun onInitialize() {
-        registerSeaCreatureCatchEvent(-10) { seaCreature, isDoubleHook, _, _, _ ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerSeaCreatureCatchEvent(-10) { seaCreature, isDoubleHook, _, _, _ ->
             val inParty = Party.inParty
             if (inParty) {
                 if (!SeaCreatureConfig.rarePartyMessages) return@registerSeaCreatureCatchEvent
@@ -68,7 +69,7 @@ object RareScPartyMessage : Feature {
             }
         }
 
-        registerCocoonEvent { seaCreature ->
+        scope.registerCocoonEvent { seaCreature ->
             if (!SeaCreatureConfig.rareCocoonPartyMessages) return@registerCocoonEvent
 
             if (RARE_SC_REGEX.matches(seaCreature.scName)) {

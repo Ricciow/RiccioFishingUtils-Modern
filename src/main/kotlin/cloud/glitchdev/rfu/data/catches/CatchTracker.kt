@@ -1,12 +1,13 @@
 ﻿package cloud.glitchdev.rfu.data.catches
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.fishing.registerCocoonEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
-import cloud.glitchdev.rfu.events.managers.CocoonEvents.registerCocoonEvent
 import cloud.glitchdev.rfu.utils.command.Command
 import cloud.glitchdev.rfu.utils.JsonFile
 import cloud.glitchdev.rfu.utils.TextUtils
@@ -26,12 +27,12 @@ object CatchTracker : RegisteredEvent {
 
     val catchHistory get() = catchesFile.data
 
-    override fun register() {
-        registerSeaCreatureCatchEvent(0) { sc, doubleHook, hotspot, pos, bait ->
+    override fun register(scope: EventScope) {
+        scope.registerSeaCreatureCatchEvent(0) { sc, doubleHook, hotspot, pos, bait ->
             catchHistory.registerCatch(sc, doubleHook, hotspot, pos, bait)
         }
 
-        registerCocoonEvent { sc ->
+        scope.registerCocoonEvent { sc ->
             catchHistory.registerCocoon(sc)
         }
 

@@ -3,10 +3,11 @@ package cloud.glitchdev.rfu.feature.fishing
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.TrophyFishing
 import cloud.glitchdev.rfu.constants.text.TextColor
-import cloud.glitchdev.rfu.events.managers.PetEvents.registerPetUpdateEvent
-import cloud.glitchdev.rfu.events.managers.RenderEvents.registerRenderEvent
-import cloud.glitchdev.rfu.events.managers.ServerTickEvents
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.player.registerPetUpdateEvent
+import cloud.glitchdev.rfu.events.managers.render.registerRenderEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.ServerTickEvents
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.dsl.toReadableString
@@ -22,8 +23,8 @@ object SlugfishTimer : Feature {
     private var startServerTick = 0L
     private var wasFishing = false
 
-    override fun onInitialize() {
-        registerPetUpdateEvent { _, petName, petLevel ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerPetUpdateEvent { _, petName, petLevel ->
             if (petName == "Slug") {
                 val level = petLevel ?: 1
                 slugPetReduction = 1 - (1 + SLUG_PET_INCREMENT * (level - 1)) / 100
@@ -32,7 +33,7 @@ object SlugfishTimer : Feature {
             }
         }
 
-        registerTickEvent {
+        scope.registerTickEvent {
             if(!TrophyFishing.slugfishTimer) return@registerTickEvent
             if (!FishingSession.isTrophyFishing) return@registerTickEvent
             if (mc.player?.fishing != null) {
@@ -45,7 +46,7 @@ object SlugfishTimer : Feature {
 
         }
 
-        registerRenderEvent { renderContext ->
+        scope.registerRenderEvent { renderContext ->
             if(!TrophyFishing.slugfishTimer) return@registerRenderEvent
             if(!FishingSession.isTrophyFishing) return@registerRenderEvent
             val bobber = mc.player?.fishing ?: return@registerRenderEvent

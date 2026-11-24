@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.gui.hud.elements
 
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.config.categories.DailyStreakSettings
 import cloud.glitchdev.rfu.constants.text.Emoji
 import cloud.glitchdev.rfu.constants.text.TextColor.GOLD
@@ -9,9 +10,9 @@ import cloud.glitchdev.rfu.constants.text.TextColor.YELLOW
 import cloud.glitchdev.rfu.constants.text.TextEffects.BOLD
 import cloud.glitchdev.rfu.data.streak.DailyChallenge
 import cloud.glitchdev.rfu.data.streak.DailyStreakManager
-import cloud.glitchdev.rfu.events.managers.ArmorEvents
-import cloud.glitchdev.rfu.events.managers.ArmorEvents.registerArmorChangeEvent
-import cloud.glitchdev.rfu.events.managers.DailyStreakEvents.registerStreakUpdatedEvent
+import cloud.glitchdev.rfu.events.managers.inventory.ArmorChangeEventManager
+import cloud.glitchdev.rfu.events.managers.inventory.registerArmorChangeEvent
+import cloud.glitchdev.rfu.events.managers.progress.registerStreakUpdatedEvent
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.elementa.BoundingBoxConstraint
 import cloud.glitchdev.rfu.gui.components.elementa.UIEmoji
@@ -50,7 +51,7 @@ object DailyStreakHUD : AbstractTextHudElement("dailyStreakDisplay") {
             if (!DailyStreakSettings.dailyStreakEnabled) return false
             if (!DailyStreakSettings.dailyStreakHudEnabled) return false
             if (isEditing) return true
-            if (!ArmorEvents.currentArmorSet.isWearingFishingArmor) return false
+            if (!ArmorChangeEventManager.currentArmorSet.isWearingFishingArmor) return false
             if (DailyStreakSettings.autoHideCompletedHud) {
                 return DailyStreakManager.data.todayChallenges.any { !it.isCompleted }
             }
@@ -59,12 +60,12 @@ object DailyStreakHUD : AbstractTextHudElement("dailyStreakDisplay") {
 
     override val renderOnInventory: Boolean = true
 
-    override fun onInitialize() {
-        super.onInitialize()
-        registerStreakUpdatedEvent {
+    override fun onInitialize(scope: EventScope) {
+        super.onInitialize(scope)
+        scope.registerStreakUpdatedEvent {
             updateState()
         }
-        registerArmorChangeEvent {
+        scope.registerArmorChangeEvent {
             updateState()
         }
     }

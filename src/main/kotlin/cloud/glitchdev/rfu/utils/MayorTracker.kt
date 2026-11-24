@@ -1,10 +1,11 @@
 package cloud.glitchdev.rfu.utils
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.connection.registerJoinEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.constants.skyblock.Mayors
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.utils.network.Network
 import cloud.glitchdev.rfu.utils.command.Command
 import cloud.glitchdev.rfu.utils.command.AbstractCommand
@@ -39,12 +40,12 @@ object MayorTracker : RegisteredEvent {
     @Volatile
     private var isFetching = false
 
-    override fun register() {
-        registerJoinEvent {
+    override fun register(scope: EventScope) {
+        scope.registerJoinEvent {
             checkAndFetch()
         }
 
-        registerTickEvent(interval = 200L) {
+        scope.registerTickEvent(interval = 200L) {
             checkAndFetch()
         }
     }

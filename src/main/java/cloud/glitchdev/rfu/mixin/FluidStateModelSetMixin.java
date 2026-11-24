@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.mixin;
 
-import cloud.glitchdev.rfu.events.managers.FluidRenderEvents;
+import cloud.glitchdev.rfu.events.managers.render.FluidRenderEvents;
 import cloud.glitchdev.rfu.utils.rendering.FluidTintCache;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.client.renderer.block.FluidModel;

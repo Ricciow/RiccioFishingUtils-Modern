@@ -2,9 +2,10 @@ package cloud.glitchdev.rfu.feature.fishing
 
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerAllowGameEvent
-import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents
-import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.chat.registerAllowGameEvent
+import cloud.glitchdev.rfu.events.managers.fishing.SeaCreatureCatchEvents
+import cloud.glitchdev.rfu.events.managers.fishing.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat
@@ -14,16 +15,16 @@ import net.minecraft.network.chat.Component
 
 @RFUFeature
 object CatchMessageReplacer : Feature {
-    override fun onInitialize() {
-        registerAllowGameEvent { message, _, _ ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerAllowGameEvent { message, _, _ ->
             !SeaCreatureConfig.replaceCatchMessages || SeaCreatures.getByCatchMessage(message.toUnformattedString()) == null
         }
 
-        registerAllowGameEvent(SeaCreatureCatchEvents.DOUBLE_HOOK_REGEX) { _, _, _ ->
+        scope.registerAllowGameEvent(SeaCreatureCatchEvents.DOUBLE_HOOK_REGEX) { _, _, _ ->
             !SeaCreatureConfig.replaceCatchMessages
         }
 
-        registerSeaCreatureCatchEvent { sc, isDoubleHook, _, _, _ ->
+        scope.registerSeaCreatureCatchEvent { sc, isDoubleHook, _, _, _ ->
             if (SeaCreatureConfig.replaceCatchMessages) {
                 val formattedMessage = getTemplate(isDoubleHook).replaceTags(sc)
 

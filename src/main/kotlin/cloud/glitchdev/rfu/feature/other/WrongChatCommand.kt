@@ -1,8 +1,9 @@
 package cloud.glitchdev.rfu.feature.other
 
 import cloud.glitchdev.rfu.constants.text.TextColor
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerSendChatEvent
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerSendCommandEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.chat.registerSendChatEvent
+import cloud.glitchdev.rfu.events.managers.chat.registerSendCommandEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat
@@ -20,13 +21,13 @@ object WrongChatCommand : AbstractCommand("wc"), Feature {
     val chatTypes : List<String> = listOf("ac", "pc", "gc", "oc", "cc")
     var lastMessage : String? = null
 
-    override fun onInitialize() {
-        registerSendChatEvent { message ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerSendChatEvent { message ->
             lastMessage = message
             true
         }
 
-        registerSendCommandEvent { command ->
+        scope.registerSendCommandEvent { command ->
             val chatType = chatTypes.find { command.startsWith("$it ") }
 
             if(chatType != null) {

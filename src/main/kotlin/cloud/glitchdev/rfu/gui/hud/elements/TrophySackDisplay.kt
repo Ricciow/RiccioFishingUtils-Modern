@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.gui.hud.elements
 
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.TrophyFishing
 import cloud.glitchdev.rfu.constants.fishing.TrophyFish
@@ -13,8 +14,8 @@ import cloud.glitchdev.rfu.constants.text.TextEffects.BOLD
 import cloud.glitchdev.rfu.data.other.OtherManager
 import cloud.glitchdev.rfu.data.other.data.BooleanEntry
 import cloud.glitchdev.rfu.data.other.data.StringEntry
-import cloud.glitchdev.rfu.events.managers.ContainerEvents.registerContainerOpenEvent
-import cloud.glitchdev.rfu.events.managers.SetSlotEvents.registerSetSlotEvent
+import cloud.glitchdev.rfu.events.managers.inventory.registerContainerOpenEvent
+import cloud.glitchdev.rfu.events.managers.inventory.registerSetSlotEvent
 import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 import cloud.glitchdev.rfu.gui.window.HudWindow
@@ -102,16 +103,16 @@ object TrophySackDisplay : AbstractTextHudElement("trophySackDisplay") {
 
     private var currentSackData: SackData? = null
 
-    override fun onInitialize() {
-        super.onInitialize()
+    override fun onInitialize(scope: EventScope) {
+        super.onInitialize(scope)
 
-        registerContainerOpenEvent { _, _, _ ->
+        scope.registerContainerOpenEvent { _, _, _ ->
             if (isOnInventory) {
                 updateState()
             }
         }
 
-        registerSetSlotEvent { _, _, _ ->
+        scope.registerSetSlotEvent { _, _, _ ->
             if (isOnInventory) {
                 updateState()
             }

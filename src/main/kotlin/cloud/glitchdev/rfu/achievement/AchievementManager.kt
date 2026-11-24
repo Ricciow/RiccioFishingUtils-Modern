@@ -2,15 +2,9 @@ package cloud.glitchdev.rfu.achievement
 
 import cloud.glitchdev.rfu.data.achievements.AchievementHandler
 import cloud.glitchdev.rfu.data.achievements.AchievementsData
-import cloud.glitchdev.rfu.events.AutoRegister
-import cloud.glitchdev.rfu.events.RegisteredEvent
 
-@AutoRegister
-object AchievementManager : RegisteredEvent {
+object AchievementManager {
     private val registry = HashMap<String, BaseAchievement>()
-
-    override fun register() {
-    }
 
     fun register(achievement: BaseAchievement) {
         registry[achievement.id] = achievement

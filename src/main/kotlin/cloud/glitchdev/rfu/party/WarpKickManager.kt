@@ -1,11 +1,12 @@
 ﻿package cloud.glitchdev.rfu.party
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.chat.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.chat.registerSendCommandEvent
+import cloud.glitchdev.rfu.events.managers.party.registerOnPartyChangeEvent
 import cloud.glitchdev.rfu.constants.chat.RegexConstants.PLAYER_REGEX
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerSendCommandEvent
-import cloud.glitchdev.rfu.events.managers.PartyEvents.registerOnPartyChangeEvent
 import cloud.glitchdev.rfu.config.categories.PartySettings
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.Coroutines
@@ -78,14 +79,14 @@ object WarpKickManager : RegisteredEvent {
         }
     }
 
-    override fun register() {
-        registerGameEvent("""You have been kicked from the party by ($PLAYER_REGEX)\s*""".toExactRegex()) { _, _, matches ->
+    override fun register(scope: EventScope) {
+        scope.registerGameEvent("""You have been kicked from the party by ($PLAYER_REGEX)\s*""".toExactRegex()) { _, _, matches ->
             val kicker = matches?.groupValues?.getOrNull(1)?.removeRankTag() ?: return@registerGameEvent
             lastKicker = kicker
             lastKickTime = System.currentTimeMillis()
         }
 
-        registerGameEvent("""-----------------------------------------------------\n($PLAYER_REGEX) has invited you to join their party!\nYou have 60 seconds to accept\. Click here to join!\n-----------------------------------------------------""".toExactRegex()) { _, _, matches ->
+        scope.registerGameEvent("""-----------------------------------------------------\n($PLAYER_REGEX) has invited you to join their party!\nYou have 60 seconds to accept\. Click here to join!\n-----------------------------------------------------""".toExactRegex()) { _, _, matches ->
             val inviter = matches?.groupValues?.getOrNull(1)?.removeRankTag() ?: return@registerGameEvent
             val now = System.currentTimeMillis()
             if (inviter == lastKicker && now - lastKickTime < 30000) {
@@ -94,7 +95,7 @@ object WarpKickManager : RegisteredEvent {
             }
         }
 
-        registerOnPartyChangeEvent(priority = 10) { inParty, isLeader, _, members ->
+        scope.registerOnPartyChangeEvent(priority = 10) { inParty, isLeader, _, members ->
             if (inParty && isLeader) {
                 kickList.removeIf { it !in members.keys && it !in pendingRejoin }
                 pendingRejoin.removeIf { it in members.keys }
@@ -105,7 +106,7 @@ object WarpKickManager : RegisteredEvent {
             }
         }
 
-        registerSendCommandEvent { command ->
+        scope.registerSendCommandEvent { command ->
             val cmd = command.lowercase().trim()
             if (cmd == "p warp" || cmd == "party warp" || cmd == "p w" || cmd == "party w") {
                 if (Party.isLeader && PartySettings.toggleWarpCommand) {

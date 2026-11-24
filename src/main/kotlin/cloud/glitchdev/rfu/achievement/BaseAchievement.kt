@@ -2,10 +2,11 @@ package cloud.glitchdev.rfu.achievement
 
 import cloud.glitchdev.rfu.achievement.interfaces.IAchievement
 import cloud.glitchdev.rfu.data.achievements.AchievementHandler
-import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.EventScopes
 
 abstract class BaseAchievement : IAchievement {
-    protected val activeListeners = mutableListOf<AbstractEventManager.ManagedTask<*, *>>()
+    private val listenerScopes = EventScopes()
 
     private val isLegacy: Boolean
         get() = category == AchievementCategory.LEGACY
@@ -36,7 +37,7 @@ abstract class BaseAchievement : IAchievement {
         }
         
         if (!isCompleted && !isLegacy) {
-            setupListeners()
+            startListeners()
         }
     }
 
@@ -61,11 +62,15 @@ abstract class BaseAchievement : IAchievement {
 
     fun postReload() {
         if (!isCompleted && !isLegacy) {
-            setupListeners()
+            startListeners()
         }
     }
 
-    abstract fun setupListeners()
+    abstract fun setupListeners(scope: EventScope)
+
+    private fun startListeners() {
+        listenerScopes.load(::setupListeners)
+    }
 
     protected open fun complete() {
         if (_isCompleted || (isLegacy && !isApplyingDebugChange)) return
@@ -85,7 +90,7 @@ abstract class BaseAchievement : IAchievement {
         unregisterAllListeners()
         loadState(emptyMap())
         if (!isLegacy) {
-            setupListeners()
+            startListeners()
         }
         AchievementProvider.fireAchievementUpdated(this)
     }
@@ -102,10 +107,7 @@ abstract class BaseAchievement : IAchievement {
     }
 
     protected fun unregisterAllListeners() {
-        for (listener in activeListeners) {
-            listener.unregister()
-        }
-        activeListeners.clear()
+        listenerScopes.close()
     }
     
     open fun loadState(progressData: Map<String, Any>) {}

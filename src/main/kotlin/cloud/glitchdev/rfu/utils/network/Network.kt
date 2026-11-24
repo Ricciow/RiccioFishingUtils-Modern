@@ -1,5 +1,11 @@
 package cloud.glitchdev.rfu.utils.network
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.connection.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerJoinEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerShutdownEvent
+import cloud.glitchdev.rfu.events.managers.player.registerAfkStatusChangedEvent
 import cloud.glitchdev.rfu.RiccioFishingUtils
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.RiccioFishingUtils.API_URL
@@ -14,11 +20,6 @@ import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.Coroutines
 import cloud.glitchdev.rfu.config.categories.BackendSettings
 import cloud.glitchdev.rfu.utils.World
-import cloud.glitchdev.rfu.events.managers.AfkEvents.registerAfkStatusChangedEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
-import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
-import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.HoverEvent
 import net.minecraft.network.chat.Component
@@ -64,30 +65,30 @@ object Network : RegisteredEvent {
     var authenticationStatus: String? = null
         private set
 
-    override fun register() {
-        registerJoinEvent { _ ->
+    override fun register(scope: EventScope) {
+        scope.registerJoinEvent { _ ->
             if (World.isOnHypixel) {
                 cancelDisconnect()
                 authenticateUser()
             }
         }
 
-        registerDisconnectEvent {
+        scope.registerDisconnectEvent {
             scheduleDisconnect()
         }
 
-        registerLocationEvent {
+        scope.registerLocationEvent {
             if (!World.isOnHypixel) {
                 scheduleDisconnect()
             }
         }
 
-        registerShutdownEvent {
+        scope.registerShutdownEvent {
             cancelDisconnect()
             WebSocketClient.disconnect()
         }
 
-        registerAfkStatusChangedEvent { isAfk ->
+        scope.registerAfkStatusChangedEvent { isAfk ->
             if (isAfk) {
                 if (WebSocketClient.isConnected) {
                     WebSocketClient.disconnect("AFK")

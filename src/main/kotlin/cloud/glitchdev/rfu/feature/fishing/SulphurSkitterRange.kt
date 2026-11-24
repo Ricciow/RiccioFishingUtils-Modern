@@ -3,11 +3,12 @@ package cloud.glitchdev.rfu.feature.fishing
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.TrophyFishing
 import cloud.glitchdev.rfu.constants.fishing.FishingIslands
-import cloud.glitchdev.rfu.events.managers.BlockInteractEvents.registerBlockInteractEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
-import cloud.glitchdev.rfu.events.managers.RenderEvents.registerRenderEvent
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.input.registerBlockInteractEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.render.registerRenderEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.World
@@ -37,17 +38,17 @@ object SulphurSkitterRange : Feature {
         get() = TrophyFishing.sulphurSkitterRange && World.island == FishingIslands.ISLE &&
             FishingSession.isTrophyFishing
 
-    override fun onInitialize() {
-        registerLocationEvent { clear() }
-        registerDisconnectEvent { clear() }
+    override fun onInitialize(scope: EventScope) {
+        scope.registerLocationEvent { clear() }
+        scope.registerDisconnectEvent { clear() }
 
-        registerBlockInteractEvent { pos ->
+        scope.registerBlockInteractEvent { pos ->
             if (!enabled || TrophyFishing.sulphurSkitterMode != SulphurSkitterMode.MANUAL) return@registerBlockInteractEvent
             if (mc.level?.getBlockState(pos)?.`is`(Blocks.SPONGE) != true) return@registerBlockInteractEvent
             if (!selectedSponges.add(pos.immutable())) selectedSponges.remove(pos)
         }
 
-        registerTickEvent(interval = 20) {
+        scope.registerTickEvent(interval = 20) {
             if (!enabled) {
                 clear()
                 return@registerTickEvent
@@ -79,7 +80,7 @@ object SulphurSkitterRange : Feature {
             }
         }
 
-        registerRenderEvent { context ->
+        scope.registerRenderEvent { context ->
             if (!enabled) return@registerRenderEvent
             val world = mc.level ?: return@registerRenderEvent
             val playerPos = mc.player?.position() ?: return@registerRenderEvent

@@ -6,8 +6,9 @@ import cloud.glitchdev.rfu.constants.fishing.TrophyFrog
 import cloud.glitchdev.rfu.constants.fishing.TrophyTier
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.data.fishing.TrophyDataManager
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerAllowGameEvent
-import cloud.glitchdev.rfu.events.managers.TrophyCatchEvents
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.chat.registerAllowGameEvent
+import cloud.glitchdev.rfu.events.managers.fishing.TrophyCatchEvents
 import cloud.glitchdev.rfu.constants.fishing.Trophy
 import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.feature.Feature
@@ -18,12 +19,12 @@ import net.minecraft.network.chat.Component
 
 @RFUFeature
 object TrophyCatchMessageReplacer : Feature {
-    override fun onInitialize() {
-        registerAllowGameEvent(TrophyCatchEvents.TROPHY_FISH_REGEX, priority = 10) { _, overlay, matches ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerAllowGameEvent(TrophyCatchEvents.TROPHY_FISH_REGEX, priority = 10) { _, overlay, matches ->
             handleTrophyCatchMessage(overlay, matches, isFrog = false)
         }
 
-        registerAllowGameEvent(TrophyCatchEvents.TROPHY_FROG_REGEX, priority = 10) { _, overlay, matches ->
+        scope.registerAllowGameEvent(TrophyCatchEvents.TROPHY_FROG_REGEX, priority = 10) { _, overlay, matches ->
             handleTrophyCatchMessage(overlay, matches, isFrog = true)
         }
     }

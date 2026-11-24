@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.gui.hud.elements
 
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
 import cloud.glitchdev.rfu.constants.fishing.RareScDisplayDataType
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
@@ -11,14 +12,14 @@ import cloud.glitchdev.rfu.data.catches.CatchTracker
 import cloud.glitchdev.rfu.gui.hud.AbstractFishingHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 import cloud.glitchdev.rfu.utils.dsl.toReadableString
-import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerLocationEvent
 import net.minecraft.world.phys.Vec3
 import kotlin.math.ceil
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Clock
 import cloud.glitchdev.rfu.feature.fishing.FishingSession
-import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.utils.fishing.SeaCreatureAvailability
 
 @HudElement
@@ -36,9 +37,9 @@ object RareSCDisplay : AbstractFishingHudElement("rareSCDisplay") {
     override val isElementActive: Boolean
         get() = !requiresFishing || FishingSession.pausedDuration < 1.minutes
 
-    override fun onInitialize() {
-        super.onInitialize()
-        registerLocationEvent {
+    override fun onInitialize(scope: EventScope) {
+        super.onInitialize(scope)
+        scope.registerLocationEvent {
             CatchTracker.catchHistory.lastHotspot = null
             CatchTracker.catchHistory.lastPos = Vec3.ZERO
             CatchTracker.catchHistory.lastBait = null
@@ -46,11 +47,11 @@ object RareSCDisplay : AbstractFishingHudElement("rareSCDisplay") {
             updateState()
         }
 
-        registerSeaCreatureCatchEvent { _, _, _, _, _ ->
+        scope.registerSeaCreatureCatchEvent { _, _, _, _, _ ->
             updateState()
         }
 
-        registerTickEvent(interval = 20) {
+        scope.registerTickEvent(interval = 20) {
             updateState()
         }
     }

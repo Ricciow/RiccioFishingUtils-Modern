@@ -8,11 +8,12 @@ import cloud.glitchdev.rfu.constants.fishing.HotspotType
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.data.fishing.Hotspot
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.HotSpotEvents
-import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
-import cloud.glitchdev.rfu.events.managers.KeybindEvents.registerKeybind
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.connection.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.fishing.HotSpotEvents
+import cloud.glitchdev.rfu.events.managers.connection.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.input.registerKeybind
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat
@@ -29,8 +30,8 @@ import kotlin.math.floor
 object HotspotSharer : Feature {
     private val notifiedEntityIds = mutableSetOf<Int>()
 
-    override fun onInitialize() {
-        registerTickEvent(interval = 20) {
+    override fun onInitialize(scope: EventScope) {
+        scope.registerTickEvent(interval = 20) {
             if (!HotSpotSettings.shareHotspotAlert) return@registerTickEvent
 
             val player = mc.player ?: return@registerTickEvent
@@ -47,15 +48,15 @@ object HotspotSharer : Feature {
             }
         }
 
-        registerLocationEvent {
+        scope.registerLocationEvent {
             notifiedEntityIds.clear()
         }
 
-        registerDisconnectEvent {
+        scope.registerDisconnectEvent {
             notifiedEntityIds.clear()
         }
 
-        registerKeybind {
+        scope.registerKeybind {
             key = { HotSpotSettings.shareHotspotKey }
             onPress = { shareNearestHotspot() }
         }

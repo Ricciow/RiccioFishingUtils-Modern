@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.mixin;
 
-import cloud.glitchdev.rfu.events.managers.KeybindEvents;
+import cloud.glitchdev.rfu.events.managers.input.KeybindEvents;
 import cloud.glitchdev.rfu.gui.window.HudWindow;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;

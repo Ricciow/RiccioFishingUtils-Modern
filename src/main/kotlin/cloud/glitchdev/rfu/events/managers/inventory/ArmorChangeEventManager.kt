@@ -1,0 +1,61 @@
+package cloud.glitchdev.rfu.events.managers.inventory
+
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.RiccioFishingUtils.mc
+import cloud.glitchdev.rfu.data.ArmorSet
+import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.events.EventManager
+import cloud.glitchdev.rfu.events.RegisteredEvent
+import cloud.glitchdev.rfu.utils.Coroutines
+import kotlinx.coroutines.Job
+
+@EventManager
+object ArmorChangeEventManager : AbstractEventManager<(ArmorSet) -> Unit, ArmorChangeEventManager.ArmorChangeEvent>(), RegisteredEvent {
+    var currentArmorSet: ArmorSet = ArmorSet()
+        private set
+
+    private var debounceJob: Job? = null
+    private const val DEBOUNCE_DELAY_MS = 100L
+
+    override val runTasks: (ArmorSet) -> Unit = { armorSet ->
+        safeExecution {
+            tasks.forEach { task -> task.callback(armorSet) }
+        }
+    }
+
+    override fun register(scope: EventScope) {
+        scope.registerSetSlotEvent { containerId, slot, _ ->
+            if (debounceJob != null || !isArmorSlot(containerId, slot)) return@registerSetSlotEvent
+
+            debounceJob = Coroutines.setTimeout(DEBOUNCE_DELAY_MS) {
+                try {
+                    checkArmorUpdate()
+                } finally {
+                    debounceJob = null
+                }
+            }
+        }
+    }
+
+    private fun isArmorSlot(containerId: Int, slot: Int): Boolean {
+        return (containerId == 0 && slot in 5..8) || (containerId == -2 && slot in 36..39)
+    }
+
+    private fun checkArmorUpdate() {
+        val player = mc.player ?: return
+        val newSet = ArmorSet.fromPlayer(player)
+
+        if (currentArmorSet.hasChanged(newSet)) {
+            currentArmorSet = newSet
+            runTasks(newSet)
+        }
+    }
+
+    class ArmorChangeEvent(
+        priority: Int = DEFAULT_EVENT_PRIORITY,
+        callback: (ArmorSet) -> Unit
+    ) : ManagedTask<(ArmorSet) -> Unit, ArmorChangeEvent>(priority, callback) {
+        override fun register() = submitTask(this)
+        override fun unregister() = removeTask(this)
+    }
+}

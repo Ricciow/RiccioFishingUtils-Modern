@@ -1,7 +1,8 @@
 package cloud.glitchdev.rfu.feature.other
 
 import cloud.glitchdev.rfu.config.categories.DropsSettings
-import cloud.glitchdev.rfu.events.managers.LootshareEvents.registerLootshareEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.loot.registerLootshareEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat
@@ -12,8 +13,8 @@ import net.minecraft.world.item.ItemStackTemplate
 
 @RFUFeature
 object LootshareDetector : Feature {
-    override fun onInitialize() {
-        registerLootshareEvent { contributors, items ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerLootshareEvent { contributors, items ->
             if (!DropsSettings.lootshareMessage) return@registerLootshareEvent
 
             val contributorStr = contributors.joinToString("&r, ").toMcCodes()

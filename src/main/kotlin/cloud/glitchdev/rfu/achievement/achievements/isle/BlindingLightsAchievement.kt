@@ -9,10 +9,11 @@ import cloud.glitchdev.rfu.achievement.types.NumericAchievement
 import cloud.glitchdev.rfu.constants.fishing.RareDrops
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.data.mob.SkyblockEntity
-import cloud.glitchdev.rfu.events.managers.DropEvents.registerRareDropEvent
-import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDetectEvent
-import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDisposeEvent
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.loot.registerRareDropEvent
+import cloud.glitchdev.rfu.events.managers.entity.registerMobDetectEvent
+import cloud.glitchdev.rfu.events.managers.entity.registerMobDisposeEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import kotlin.math.abs
 
 @Achievement
@@ -32,16 +33,16 @@ object BlindingLightsAchievement : NumericAchievement() {
     private val unmatchedDisposals = mutableListOf<Long>()
     private val unmatchedDrops = mutableListOf<Long>()
 
-    override fun setupListeners() {
-        activeListeners.add(registerMobDetectEvent { entities ->
+    override fun setupListeners(scope: EventScope) {
+        scope.registerMobDetectEvent { entities ->
             entities.forEach { entity ->
                 if (entity.sbName == SEA_CREATURE?.scName) {
                     foundThunders.add(entity)
                 }
             }
-        })
+        }
 
-        activeListeners.add(registerMobDisposeEvent { entities ->
+        scope.registerMobDisposeEvent { entities ->
             entities.forEach { entity ->
                 if (foundThunders.remove(entity) &&
                     (mc.player?.distanceTo(entity.modelEntity) ?: Float.MAX_VALUE) <= 45.0
@@ -49,16 +50,16 @@ object BlindingLightsAchievement : NumericAchievement() {
                     unmatchedDisposals.add(System.currentTimeMillis())
                 }
             }
-        })
+        }
 
-        activeListeners.add(registerRareDropEvent { rareDrop, _ ->
+        scope.registerRareDropEvent { rareDrop, _, _ ->
             if (rareDrop == DROP) {
                 unmatchedDrops.add(System.currentTimeMillis())
             }
             true
-        })
+        }
 
-        activeListeners.add(registerTickEvent(interval = 20) {
+        scope.registerTickEvent(interval = 20) {
             val now = System.currentTimeMillis()
 
             val disposalIterator = unmatchedDisposals.iterator()
@@ -83,6 +84,6 @@ object BlindingLightsAchievement : NumericAchievement() {
             }
 
             unmatchedDrops.removeAll { now - it > 4000 }
-        })
+        }
     }
 }

@@ -6,7 +6,8 @@ import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.StageAchievement
 import cloud.glitchdev.rfu.data.catches.CatchTracker
-import cloud.glitchdev.rfu.events.managers.SeaCreaturePersonalBestEvents.registerSeaCreaturePersonalBestEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.fishing.registerSeaCreaturePersonalBestEvent
 
 @Achievement
 object ThunderPersonalBestAchievement : StageAchievement() {
@@ -28,16 +29,16 @@ object ThunderPersonalBestAchievement : StageAchievement() {
         addStageInfo(5, "Optimal", "Kill a Thunder you caught in under 1 second.", AchievementDifficulty.VERY_HARD)
     }
 
-    override fun setupListeners() {
+    override fun setupListeners(scope: EventScope) {
         val savedBest = CatchTracker.catchHistory.catches.find { it.name == "Thunder" }?.bestKillTimeMs
         checkPersonalBest(savedBest)
         if (isCompleted) return
 
-        activeListeners.add(registerSeaCreaturePersonalBestEvent { sc, durationMillis ->
+        scope.registerSeaCreaturePersonalBestEvent { sc, durationMillis ->
             if (sc.scName == "Thunder") {
                 checkPersonalBest(durationMillis)
             }
-        })
+        }
     }
 
     private fun checkPersonalBest(durationMillis: Long?) {

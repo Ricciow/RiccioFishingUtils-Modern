@@ -1,10 +1,11 @@
 package cloud.glitchdev.rfu.utils.network
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.inventory.registerContainerOpenEvent
 import cloud.glitchdev.rfu.config.categories.BackendSettings
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.ContainerEvents.registerContainerOpenEvent
-import cloud.glitchdev.rfu.events.managers.DyeEvents
+import cloud.glitchdev.rfu.events.managers.loot.DyeEvents
 import cloud.glitchdev.rfu.model.dye.Dyes
 import cloud.glitchdev.rfu.model.network.WebSocketEvent
 import cloud.glitchdev.rfu.model.network.WebSocketEventType
@@ -20,7 +21,7 @@ object DyeWebSocket : RegisteredEvent {
         private set
     private val dyeIndexes : Set<Int> = setOf(29, 31, 33)
 
-    override fun register() {
+    override fun register(scope: EventScope) {
         RFULogger.dev("Registering DyeWebSocket")
         val callback : (String) -> Unit = { msg ->
             try {
@@ -31,12 +32,12 @@ object DyeWebSocket : RegisteredEvent {
                     WebSocketEventType.SYNC, WebSocketEventType.CREATED, WebSocketEventType.UPDATED -> {
                         currentDyes = event.data
                         RFULogger.dev("Dyes updated via WebSocket: ${currentDyes?.dye1}, ${currentDyes?.dye2}, ${currentDyes?.dye3}")
-                        DyeEvents.trigger(currentDyes)
+                        DyeEvents.runTasks(currentDyes)
                     }
                     WebSocketEventType.DELETED -> {
                         currentDyes = null
                         RFULogger.dev("Dyes deleted via WebSocket")
-                        DyeEvents.trigger(null)
+                        DyeEvents.runTasks(null)
                     }
                 }
             } catch (e: Exception) {
@@ -48,7 +49,7 @@ object DyeWebSocket : RegisteredEvent {
         WebSocketClient.subscribe("/topic/dyes", callback)
         WebSocketClient.subscribe("/app/topic/dyes", callback)
 
-        registerContainerOpenEvent { containerName, _, items ->
+        scope.registerContainerOpenEvent { containerName, _, items ->
             if(!BackendSettings.shareDyeData) return@registerContainerOpenEvent
             if(!areDyesOutdated()) return@registerContainerOpenEvent
 

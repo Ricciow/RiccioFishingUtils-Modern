@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.mixin;
 
-import cloud.glitchdev.rfu.events.managers.SoundPlayEvents;
+import cloud.glitchdev.rfu.events.managers.ui.SoundPlayEvents;
 import cloud.glitchdev.rfu.events.wrappers.Cancelable;
 import cloud.glitchdev.rfu.utils.BoostedSoundInstance;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;

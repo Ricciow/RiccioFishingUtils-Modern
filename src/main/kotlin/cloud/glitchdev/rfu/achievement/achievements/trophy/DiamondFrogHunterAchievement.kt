@@ -6,7 +6,8 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.StageAchievement
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import gg.essential.universal.utils.toUnformattedString
 
 @Achievement
@@ -26,8 +27,8 @@ object DiamondFrogHunterAchievement : StageAchievement() {
         addStageInfo(4, "Diamond Frog Hunter", "Hold a PhD's Grimoire.", AchievementDifficulty.VERY_HARD)
     }
 
-    override fun setupListeners() {
-        activeListeners.add(registerTickEvent(interval = 40) {
+    override fun setupListeners(scope: EventScope) {
+        scope.registerTickEvent(interval = 40) {
             val player = mc.player ?: return@registerTickEvent
 
             val mainHandName = player.mainHandItem.customName?.toUnformattedString()
@@ -43,7 +44,7 @@ object DiamondFrogHunterAchievement : StageAchievement() {
                     advanceStage()
                 }
             }
-        })
+        }
     }
 
     private fun getFrogHunterItemTier(itemName: String): Int {

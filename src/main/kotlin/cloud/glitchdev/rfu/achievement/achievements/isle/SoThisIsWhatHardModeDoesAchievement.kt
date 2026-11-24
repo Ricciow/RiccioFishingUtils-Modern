@@ -6,7 +6,8 @@ import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.BaseAchievement
 import cloud.glitchdev.rfu.config.categories.LavaFishing
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.chat.registerGameEvent
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 
 @Achievement
@@ -20,11 +21,11 @@ object SoThisIsWhatHardModeDoesAchievement : BaseAchievement() {
 
     val DEATH_REGEX = """ ☠ You were killed by Lord Jawbus.""".toExactRegex()
 
-    override fun setupListeners() {
-        activeListeners.add(registerGameEvent(DEATH_REGEX) { _, _, _ ->
+    override fun setupListeners(scope: EventScope) {
+        scope.registerGameEvent(DEATH_REGEX) { _, _, _ ->
             if(LavaFishing.jawbus_hard_mode) {
                 complete()
             }
-        })
+        }
     }
 }

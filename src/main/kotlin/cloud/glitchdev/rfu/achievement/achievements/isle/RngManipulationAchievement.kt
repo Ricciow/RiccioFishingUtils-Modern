@@ -6,7 +6,8 @@ import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.BaseAchievement
 import cloud.glitchdev.rfu.constants.fishing.RareDrops
-import cloud.glitchdev.rfu.events.managers.DropEvents.registerRareDropEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.loot.registerRareDropEvent
 
 @Achievement
 object RngManipulationAchievement : BaseAchievement() {
@@ -19,12 +20,12 @@ object RngManipulationAchievement : BaseAchievement() {
 
     private val DROP = RareDrops.RADIOACTIVE_VIAL
 
-    override fun setupListeners() {
-        activeListeners.add(registerRareDropEvent { drop, mf ->
+    override fun setupListeners(scope: EventScope) {
+        scope.registerRareDropEvent { drop, mf, _ ->
             if(drop == DROP && (mf ?: 0) >= 200) {
                 complete()
             }
             true
-        })
+        }
     }
 }

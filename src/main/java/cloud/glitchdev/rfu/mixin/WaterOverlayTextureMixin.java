@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.mixin;
 
-import cloud.glitchdev.rfu.events.managers.ScreenEffectEvents;
+import cloud.glitchdev.rfu.events.managers.render.WaterOverlayAppearanceEventManager;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.Minecraft;
@@ -21,8 +21,8 @@ public class WaterOverlayTextureMixin {
     private static RenderType rfu$waterOverlayTexture(Identifier texture, Operation<RenderType> original) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return original.call(texture);
-        ScreenEffectEvents.WaterOverlayAppearanceContext context = new ScreenEffectEvents.WaterOverlayAppearanceContext(player);
-        ScreenEffectEvents.WaterOverlayAppearanceEventManager.INSTANCE.getRunTasks().invoke(context);
+        WaterOverlayAppearanceEventManager.WaterOverlayAppearanceContext context = new WaterOverlayAppearanceEventManager.WaterOverlayAppearanceContext(player);
+        WaterOverlayAppearanceEventManager.INSTANCE.getRunTasks().invoke(context);
         return original.call(context.getTexture() != null ? context.getTexture() : texture);
     }
 }

@@ -3,8 +3,9 @@ package cloud.glitchdev.rfu.feature.debug
 import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextStyle
-import cloud.glitchdev.rfu.events.managers.HotSpotEvents
-import cloud.glitchdev.rfu.events.managers.RenderEvents.registerRenderEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.fishing.HotSpotEvents
+import cloud.glitchdev.rfu.events.managers.render.registerRenderEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.TextUtils
@@ -19,8 +20,8 @@ import java.awt.Color
 object DebugHotspots : Feature {
     private var showSphere = false
 
-    override fun onInitialize() {
-        registerRenderEvent { context ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerRenderEvent { context ->
             if (!showSphere || !DevSettings.devMode) return@registerRenderEvent
 
             Render3D.draw(context) {

@@ -35,6 +35,7 @@
 - Fixed text shadows on Party Finder.
 - Fixed Party Finder temporarily lowering the party player count during a !tw warp and letting other players join.
 - Fixed Hypixel detection when the server address includes a port.
+- Fixed Party Finder failing to load the party list when many parties are listed.
 
 ### Backend
 - Isolated chat and skill event listeners so errors in one listener do not skip others.
@@ -43,3 +44,4 @@
 - Added Detekt checks
 - Hotspot detection now reacts to entity updates, optimizing :dog:.
 - Added error chat messages when Developer Mode is enabled.
+- Refactored event manager system

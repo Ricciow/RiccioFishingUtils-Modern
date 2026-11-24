@@ -1,5 +1,12 @@
 package cloud.glitchdev.rfu.utils.network
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.chat.registerAllowGameEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerConnectionStatusChangedEvent
+import cloud.glitchdev.rfu.events.managers.ui.registerErrorMessageEvent
+import cloud.glitchdev.rfu.events.managers.party.InfoMessageEventManager
+import cloud.glitchdev.rfu.events.managers.party.JoinRequestEventManager
+import cloud.glitchdev.rfu.events.managers.party.MyPartyChangedEventManager
 import cloud.glitchdev.rfu.config.categories.BackendSettings
 import cloud.glitchdev.rfu.RiccioFishingUtils.API_URL
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
@@ -7,7 +14,7 @@ import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.chat.RegexConstants.PLAYER_REGEX
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.PartyFinderEvents
+import cloud.glitchdev.rfu.party.PartyFinderManager
 import cloud.glitchdev.rfu.model.network.WebSocketEvent
 import cloud.glitchdev.rfu.model.network.WebSocketEventType
 import cloud.glitchdev.rfu.model.party.FishingParty
@@ -23,9 +30,6 @@ import cloud.glitchdev.rfu.utils.Coroutines
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.constants.text.TextStyle
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerAllowGameEvent
-import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
-import cloud.glitchdev.rfu.events.managers.WebSocketEvents.registerConnectionStatusChangedEvent
 import cloud.glitchdev.rfu.data.party.PartyPresetsManager
 import cloud.glitchdev.rfu.utils.dsl.isIgnored
 import cloud.glitchdev.rfu.utils.dsl.removeRankTag
@@ -60,7 +64,7 @@ object PartyWebSocket : RegisteredEvent {
             if (value != null) {
                 lastParty = value.deepCopy()
             }
-            PartyFinderEvents.MyPartyChanged.runTasks(value)
+            MyPartyChangedEventManager.runTasks(value)
         }
 
     private var lastJoinTarget: String? = null
@@ -68,17 +72,17 @@ object PartyWebSocket : RegisteredEvent {
     private var pendingJoinJob: Job? = null
     private var pendingJoinHasError = false
 
-    override fun register() {
+    override fun register(scope: EventScope) {
         RFULogger.dev("Registering PartyWebSocket")
 
-        registerConnectionStatusChangedEvent { connected ->
+        scope.registerConnectionStatusChangedEvent { connected ->
             if (!connected && myParty != null) {
                 PartyRequeueAlert.sendPartyDequeuedMessage("Connection lost")
                 myParty = null
             }
         }
 
-        registerErrorMessageEvent { _, origin ->
+        scope.registerErrorMessageEvent { _, origin ->
             if (origin == "/app/party/join" || origin.endsWith("/party/join")) {
                 pendingJoinHasError = true
                 pendingJoinJob?.cancel()
@@ -88,7 +92,7 @@ object PartyWebSocket : RegisteredEvent {
             }
         }
 
-        registerAllowGameEvent("""-----------------------------------------------------\n($PLAYER_REGEX) has invited you to join their party!\nYou have 60 seconds to accept\. Click here to join!\n-----------------------------------------------------""".toExactRegex()) { _, _, matches ->
+        scope.registerAllowGameEvent("""-----------------------------------------------------\n($PLAYER_REGEX) has invited you to join their party!\nYou have 60 seconds to accept\. Click here to join!\n-----------------------------------------------------""".toExactRegex()) { _, _, matches ->
             val inviter = matches?.groupValues?.getOrNull(1)?.removeRankTag() ?: return@registerAllowGameEvent true
             if (inviter.isIgnored()) return@registerAllowGameEvent false
             val now = Clock.System.now()
@@ -114,7 +118,7 @@ object PartyWebSocket : RegisteredEvent {
                     val newParties = event.data ?: emptyList()
                     newParties.forEach { it.normalizeListing() }
                     myParty = newParties.find { it.user == User.getUsername() }
-                    PartyFinderEvents.handleSync(newParties)
+                    PartyFinderManager.handleSync(newParties)
                 }
             } catch (e: Exception) {
                 RFULogger.error("Error parsing party list sync: ", e)
@@ -134,9 +138,9 @@ object PartyWebSocket : RegisteredEvent {
                                 myParty = updatedParty
                             }
                             if (event.type == WebSocketEventType.CREATED) {
-                                PartyFinderEvents.handleCreated(updatedParty)
+                                PartyFinderManager.handleCreated(updatedParty)
                             } else {
-                                PartyFinderEvents.handleUpdate(updatedParty)
+                                PartyFinderManager.handleUpdate(updatedParty)
                             }
                         }
                     }
@@ -149,7 +153,7 @@ object PartyWebSocket : RegisteredEvent {
                                 }
                                 myParty = null
                             }
-                            PartyFinderEvents.handleDelete(user)
+                            PartyFinderManager.handleDelete(user)
                         }
                     }
                     else -> {}
@@ -162,7 +166,7 @@ object PartyWebSocket : RegisteredEvent {
         val joinRequestCallback: (String) -> Unit = { msg ->
             try {
                 val notification = gson.fromJson(msg, JoinPartyNotification::class.java)
-                PartyFinderEvents.JoinRequest.runTasks(notification.applicant)
+                JoinRequestEventManager.runTasks(notification.applicant)
             } catch (e: Exception) {
                 RFULogger.error("Error parsing join request notification: ", e)
             }
@@ -193,7 +197,7 @@ object PartyWebSocket : RegisteredEvent {
                 if (message != null && message.isJsonPrimitive && message.asJsonPrimitive.isString &&
                     (isWarning == null || (isWarning.isJsonPrimitive && isWarning.asJsonPrimitive.isBoolean))) {
                     message.asString.takeIf { it.isNotBlank() }?.let {
-                        PartyFinderEvents.InfoMessage.runTasks(it, isWarning?.asBoolean ?: false)
+                        InfoMessageEventManager.runTasks(it, isWarning?.asBoolean ?: false)
                     }
                 }
             } catch (e: Exception) {

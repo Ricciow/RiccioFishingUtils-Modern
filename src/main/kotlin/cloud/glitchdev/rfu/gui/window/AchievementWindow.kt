@@ -7,10 +7,11 @@ import cloud.glitchdev.rfu.achievement.AchievementProvider
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.interfaces.IAchievement
 import cloud.glitchdev.rfu.achievement.interfaces.IStageAchievement
-import cloud.glitchdev.rfu.events.managers.AchievementStageUnlockedEvents.registerAchievementStageUnlockedEvent
-import cloud.glitchdev.rfu.events.managers.AchievementUnlockedEvents.registerAchievementUnlockedEvent
-import cloud.glitchdev.rfu.events.managers.AchievementUpdatedEvents.registerAchievementUpdatedEvent
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.progress.registerAchievementStageUnlockedEvent
+import cloud.glitchdev.rfu.events.managers.progress.registerAchievementUnlockedEvent
+import cloud.glitchdev.rfu.events.managers.progress.registerAchievementUpdatedEvent
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.achievement.Achievement
@@ -47,8 +48,10 @@ object AchievementWindow : BaseWindow() {
 
     init {
         create()
+    }
 
-        registerTickEvent {
+    override fun initializeWindow(scope: EventScope) {
+        scope.registerTickEvent {
             //~ if >=26.2 'screen' -> 'gui.screen()' {
             if (needsRefresh && RiccioFishingUtils.mc.gui.screen() == this) {
             //~}
@@ -57,15 +60,15 @@ object AchievementWindow : BaseWindow() {
             }
         }
 
-        registerAchievementUnlockedEvent { _ ->
+        scope.registerAchievementUnlockedEvent { _ ->
             needsRefresh = true
         }
 
-        registerAchievementStageUnlockedEvent { _ ->
+        scope.registerAchievementStageUnlockedEvent { _ ->
             needsRefresh = true
         }
 
-        registerAchievementUpdatedEvent { _ ->
+        scope.registerAchievementUpdatedEvent { _ ->
             needsRefresh = true
         }
     }

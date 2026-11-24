@@ -6,9 +6,11 @@ import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.config.migration.ConfigMigration
 import cloud.glitchdev.rfu.constants.text.BundledEmojiSprites
 import cloud.glitchdev.rfu.constants.text.EmojiPack
+import cloud.glitchdev.rfu.events.EventScopes
 import net.fabricmc.api.ClientModInitializer
 import net.minecraft.client.Minecraft
 import cloud.glitchdev.rfu.generated.RFULoader
+import cloud.glitchdev.rfu.utils.RFULogger
 import com.teamresourceful.resourcefulconfig.api.loader.Configurator
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents
 import net.fabricmc.loader.impl.FabricLoaderImpl
@@ -54,6 +56,14 @@ object RiccioFishingUtils : ClientModInitializer {
             RFULoader.registerCommands()
             RFULoader.registerPartyCommands()
             RFULoader.registerEvents()
+            // Must stay registered after registerEvents() so ShutdownEvents flushes state before scopes close.
+            ClientLifecycleEvents.CLIENT_STOPPING.register {
+                try {
+                    EventScopes.shutdown()
+                } catch (failure: Exception) {
+                    RFULogger.error("Failed to close RFU event scopes", failure)
+                }
+            }
             RFULoader.registerHud()
             RFULoader.registerAchievements()
             RFULoader.postInitializeEvents()

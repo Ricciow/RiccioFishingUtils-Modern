@@ -1,7 +1,7 @@
 package cloud.glitchdev.rfu.mixin;
 
-import cloud.glitchdev.rfu.events.managers.FovEvents;
-import cloud.glitchdev.rfu.events.managers.FogEvents;
+import cloud.glitchdev.rfu.events.managers.render.CameraFluidEventManager;
+import cloud.glitchdev.rfu.events.managers.render.FovEvents;
 import cloud.glitchdev.rfu.access.CameraFluidStateAccess;
 import cloud.glitchdev.rfu.events.wrappers.Cancelable;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
@@ -49,9 +49,9 @@ public class CameraMixin implements CameraFluidStateAccess {
 
     @WrapOperation(method = "getFluidInCamera", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/material/FluidState;is(Lnet/minecraft/tags/TagKey;)Z"))
     private boolean rfu$cameraFluid(FluidState state, TagKey<Fluid> tag, Operation<Boolean> original) {
-        FogEvents.CameraFluidEventManager.CameraFluidContext context = new FogEvents.CameraFluidEventManager.CameraFluidContext(
+        CameraFluidEventManager.CameraFluidContext context = new CameraFluidEventManager.CameraFluidContext(
                 (Camera) (Object) this, state, tag, original.call(state, tag));
-        FogEvents.CameraFluidEventManager.INSTANCE.getRunTasks().invoke(context);
+        CameraFluidEventManager.INSTANCE.getRunTasks().invoke(context);
         this.rfu$skipFluidFog = context.getDisableFog();
         return context.getMatches();
     }

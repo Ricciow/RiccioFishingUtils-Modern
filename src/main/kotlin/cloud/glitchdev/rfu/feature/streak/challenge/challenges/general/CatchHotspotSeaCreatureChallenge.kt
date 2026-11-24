@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.feature.streak.challenge.challenges.general
 
-import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.fishing.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.feature.streak.challenge.BaseChallenge
 import cloud.glitchdev.rfu.feature.streak.challenge.RFUChallenge
 
@@ -24,11 +25,11 @@ object CatchHotspotSeaCreatureChallenge : BaseChallenge() {
         return "Catch $target sea creatures in Hotspots."
     }
 
-    override fun setupListeners() {
-        activeListeners.add(registerSeaCreatureCatchEvent { _, doubleHook, hotspot, _, _ ->
+    override fun setupListeners(scope: EventScope) {
+        scope.registerSeaCreatureCatchEvent { _, doubleHook, hotspot, _, _ ->
             if (hotspot != null) {
                 addProgress(if (doubleHook) 2 else 1)
             }
-        })
+        }
     }
 }

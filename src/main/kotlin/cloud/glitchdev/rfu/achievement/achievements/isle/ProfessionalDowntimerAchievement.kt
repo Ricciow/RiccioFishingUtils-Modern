@@ -1,11 +1,12 @@
 package cloud.glitchdev.rfu.achievement.achievements.isle
 
+import cloud.glitchdev.rfu.events.managers.chat.registerGameEvent
 import cloud.glitchdev.rfu.achievement.Achievement
 import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.BaseAchievement
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 
 @Achievement
@@ -19,8 +20,8 @@ object ProfessionalDowntimerAchievement : BaseAchievement() {
 
     val DEATH_REGEX = """ ☠ You (burned to death|were killed by Vanquisher).""".toExactRegex()
 
-    override fun setupListeners() {
-        registerGameEvent(DEATH_REGEX) { _, _, _ ->
+    override fun setupListeners(scope: EventScope) {
+        scope.registerGameEvent(DEATH_REGEX) { _, _, _ ->
             complete()
         }
     }

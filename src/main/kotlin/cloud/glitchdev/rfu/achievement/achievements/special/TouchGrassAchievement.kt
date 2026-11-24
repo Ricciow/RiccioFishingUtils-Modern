@@ -5,6 +5,7 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.BaseAchievement
+import cloud.glitchdev.rfu.events.EventScope
 
 @Achievement
 object TouchGrassAchievement : BaseAchievement() {
@@ -15,7 +16,7 @@ object TouchGrassAchievement : BaseAchievement() {
     override val difficulty: AchievementDifficulty = AchievementDifficulty.EASY
     override val category: AchievementCategory = AchievementCategory.SPECIAL
 
-    override fun setupListeners() {
+    override fun setupListeners(scope: EventScope) {
         // Triggered directly by SinceCommand when '!since grass' is executed
     }
 

@@ -1,7 +1,8 @@
 package cloud.glitchdev.rfu.feature.streak.challenge.challenges.island
 
 import cloud.glitchdev.rfu.constants.fishing.FishingIslands
-import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.fishing.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.feature.streak.challenge.BaseChallenge
 import cloud.glitchdev.rfu.utils.World
 
@@ -27,11 +28,11 @@ abstract class BaseIslandCatchChallenge(
         return "Catch $target sea creatures on ${island.island}."
     }
 
-    override fun setupListeners() {
-        activeListeners.add(registerSeaCreatureCatchEvent { _, doubleHook, _, _, _ ->
+    override fun setupListeners(scope: EventScope) {
+        scope.registerSeaCreatureCatchEvent { _, doubleHook, _, _, _ ->
             if (World.island == island) {
                 addProgress(if (doubleHook) 2 else 1)
             }
-        })
+        }
     }
 }

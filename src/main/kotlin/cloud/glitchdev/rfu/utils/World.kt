@@ -1,5 +1,10 @@
 package cloud.glitchdev.rfu.utils
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.connection.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerJoinEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.fishing.FishingIslands
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatureCategory
@@ -7,12 +12,8 @@ import cloud.glitchdev.rfu.constants.skyblock.Mayors
 import cloud.glitchdev.rfu.data.fishing.HotspotCache
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.HotSpotEvents
-import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.fishing.HotSpotEvents
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
-import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import net.hypixel.data.type.GameType
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.dimension.BuiltinDimensionTypes
@@ -86,8 +87,8 @@ object  World : RegisteredEvent {
                 (level.dimensionType().hasCeiling && !level.dimensionType().hasSkyLight)
     }
 
-    override fun register() {
-        registerLocationEvent(-1) { event ->
+    override fun register(scope: EventScope) {
+        scope.registerLocationEvent(-1) { event ->
             isInSkyblock = event.serverType.getOrNull() == GameType.SKYBLOCK
             lobby = event.serverName
             val newIsland = event.map.getOrNull()?.let(FishingIslands::findIslandObject)
@@ -98,7 +99,7 @@ object  World : RegisteredEvent {
             }
         }
 
-        registerSeaCreatureCatchEvent(priority = -100) { sc, _, _, _, _ ->
+        scope.registerSeaCreatureCatchEvent(priority = -100) { sc, _, _, _, _ ->
             if (!isInSkyblock || isOnAlpha) return@registerSeaCreatureCatchEvent
             when (sc.category.id) {
                 SeaCreatureCategory.SPOOKY -> spookyFestivalDay = SBDayIndex
@@ -107,7 +108,7 @@ object  World : RegisteredEvent {
             }
         }
 
-        registerJoinEvent(priority = -100) { wasConnected ->
+        scope.registerJoinEvent(priority = -100) { wasConnected ->
             if (!wasConnected) {
                 val host = mc.currentServer?.ip?.substringBefore(':')?.lowercase()
                 val isAlpha = host != null && (host == "alpha.hypixel.net" || host.endsWith(".alpha.hypixel.net"))
@@ -128,7 +129,7 @@ object  World : RegisteredEvent {
             }
         }
 
-        registerDisconnectEvent(priority = -100) {
+        scope.registerDisconnectEvent(priority = -100) {
             spookyFestivalDay = -1L
             fishingFestivalDay = -1L
             if (isOnAlpha) {

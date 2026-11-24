@@ -5,7 +5,8 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
-import cloud.glitchdev.rfu.events.managers.DailyStreakEvents.registerStreakUpdatedEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.progress.registerStreakUpdatedEvent
 
 @Achievement
 object DailyOverachieverAchievement : NumericStageAchievement() {
@@ -32,10 +33,10 @@ object DailyOverachieverAchievement : NumericStageAchievement() {
         return STAGE_TARGET_CHALLENGES.getOrNull(stage - 1) ?: STAGE_TARGET_CHALLENGES.last()
     }
 
-    override fun setupListeners() {
-        activeListeners.add(registerStreakUpdatedEvent { data ->
+    override fun setupListeners(scope: EventScope) {
+        scope.registerStreakUpdatedEvent { data ->
             if (isCompleted) return@registerStreakUpdatedEvent
             currentCount = data.totalChallengesCompleted.toLong()
-        })
+        }
     }
 }

@@ -1,10 +1,11 @@
 package cloud.glitchdev.rfu.feature.ink
 
 import cloud.glitchdev.rfu.config.categories.InkFishing
-import cloud.glitchdev.rfu.events.managers.BobberLiquidEvents.registerBobberLiquidEvent
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.fishing.registerBobberLiquidEvent
+import cloud.glitchdev.rfu.events.managers.chat.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerJoinEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.World
@@ -18,20 +19,20 @@ object NoChumBucketAlert : Feature {
     private val bucketPickedUpRegex = "Automatically picked up the Chum(?:cap)? Bucket you left back there!".toExactRegex()
     private val bucketCollectedRegex = "You collected your filled Chum(?:cap)? Bucket!".toExactRegex()
 
-    override fun onInitialize() {
-        registerGameEvent(bucketPlacedRegex) { _, _, _ ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerGameEvent(bucketPlacedRegex) { _, _, _ ->
             if (World.isInSkyblock) hasChumBucket = true
         }
-        registerGameEvent(bucketPickedUpRegex) { _, _, _ ->
+        scope.registerGameEvent(bucketPickedUpRegex) { _, _, _ ->
             hasChumBucket = false
         }
-        registerGameEvent(bucketCollectedRegex) { _, _, _ ->
+        scope.registerGameEvent(bucketCollectedRegex) { _, _, _ ->
             hasChumBucket = false
         }
-        registerJoinEvent { hasChumBucket = false }
-        registerDisconnectEvent { hasChumBucket = false }
+        scope.registerJoinEvent { hasChumBucket = false }
+        scope.registerDisconnectEvent { hasChumBucket = false }
 
-        registerBobberLiquidEvent {
+        scope.registerBobberLiquidEvent {
             if (!InkFishing.noChumBucket.enabled) return@registerBobberLiquidEvent
             if (!World.isInSkyblock) return@registerBobberLiquidEvent
 

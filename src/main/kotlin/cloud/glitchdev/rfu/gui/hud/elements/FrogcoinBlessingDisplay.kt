@@ -1,10 +1,11 @@
 package cloud.glitchdev.rfu.gui.hud.elements
 
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.config.categories.LotusAtollSettings
 import cloud.glitchdev.rfu.constants.fishing.FishingIslands
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 import cloud.glitchdev.rfu.utils.World
@@ -20,10 +21,10 @@ object FrogcoinBlessingDisplay : AbstractTextHudElement("frogcoinBlessing") {
     override val isElementActive: Boolean
         get() = World.island == FishingIslands.ATOLL && FrogcoinBlessingFeature.activeBlessings.isNotEmpty()
 
-    override fun onInitialize() {
-        super.onInitialize()
+    override fun onInitialize(scope: EventScope) {
+        super.onInitialize(scope)
 
-        registerTickEvent(interval = 20) {
+        scope.registerTickEvent(interval = 20) {
             updateState()
         }
     }

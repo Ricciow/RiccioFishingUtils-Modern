@@ -1,12 +1,14 @@
 package cloud.glitchdev.rfu.data.drops
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.fishing.registerCocoonEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.managers.loot.registerDyeDropEvent
+import cloud.glitchdev.rfu.events.managers.loot.registerRareDropEvent
 import cloud.glitchdev.rfu.constants.fishing.RareDrops
 import cloud.glitchdev.rfu.constants.skyblock.Dyes
 import cloud.glitchdev.rfu.data.catches.CatchTracker
 import cloud.glitchdev.rfu.data.drops.migration.DropMigration
-import cloud.glitchdev.rfu.events.managers.DropEvents
-import cloud.glitchdev.rfu.events.managers.CocoonEvents.registerCocoonEvent
-import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.utils.JsonFile
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
@@ -86,21 +88,21 @@ object DropManager : RegisteredEvent {
 
     val dropHistory: DropHistory get() = dropsFile.data
 
-    override fun register() {
-        registerSeaCreatureCatchEvent(0) { sc, doubleHook, _, _, _ ->
+    override fun register(scope: EventScope) {
+        scope.registerSeaCreatureCatchEvent(0) { sc, doubleHook, _, _, _ ->
             dropHistory.registerCatch(sc, if (doubleHook) 2 else 1)
         }
-        registerCocoonEvent(0) { sc ->
+        scope.registerCocoonEvent(0) { sc ->
             dropHistory.registerCatch(sc)
         }
 
-        DropEvents.registerRareDropEvent(0) { rareDrop, magicFind, mobName ->
+        scope.registerRareDropEvent(0) { rareDrop, magicFind, mobName ->
             dropHistory.registerDrop(rareDrop, magicFind, mobName)
             dropsFile.save()
             true
         }
 
-        DropEvents.registerDyeDropEvent(0) { dyeDrop, magicFind, mobName ->
+        scope.registerDyeDropEvent(0) { dyeDrop, magicFind, mobName ->
             dropHistory.registerDrop(dyeDrop, magicFind, mobName)
             dropsFile.save()
         }
