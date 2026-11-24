@@ -2,7 +2,8 @@ package cloud.glitchdev.rfu.feature.streak.challenge.challenges.trophy.frog
 
 import cloud.glitchdev.rfu.constants.fishing.TrophyFrog
 import cloud.glitchdev.rfu.constants.skyblock.Rarity
-import cloud.glitchdev.rfu.events.managers.TrophyCatchEvents.registerTrophyFrogCatchEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerTrophyFrogCatchEvent
 import cloud.glitchdev.rfu.feature.streak.challenge.BaseChallenge
 
 abstract class BaseTrophyFrogChallenge(
@@ -73,11 +74,11 @@ abstract class BaseTrophyFrogChallenge(
         }
     }
 
-    override fun setupListeners() {
-        activeListeners.add(registerTrophyFrogCatchEvent { frog, _, amount ->
+    override fun setupListeners(scope: EventScope) {
+        scope.registerTrophyFrogCatchEvent { frog, _, amount ->
             if (frog == trophyFrog) {
                 addProgress(amount)
             }
-        })
+        }
     }
 }

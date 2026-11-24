@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.feature.streak.challenge.challenges.general
 
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerGameEvent
 import cloud.glitchdev.rfu.feature.streak.challenge.BaseChallenge
 import cloud.glitchdev.rfu.feature.streak.challenge.RFUChallenge
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
@@ -27,10 +28,10 @@ object BuyVanessaRainChallenge : BaseChallenge() {
         return "Buy $target minutes of rain at Vanessa."
     }
 
-    override fun setupListeners() {
-        activeListeners.add(registerGameEvent(RAIN_REGEX, isOverlay = false) { _, _, matches ->
+    override fun setupListeners(scope: EventScope) {
+        scope.registerGameEvent(RAIN_REGEX, isOverlay = false) { _, _, matches ->
             val minutes = matches?.groupValues?.getOrNull(1)?.toIntOrNull() ?: 1
             addProgress(minutes)
-        })
+        }
     }
 }

@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.feature.streak.challenge.challenges.general
 
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerTickEvent
 import cloud.glitchdev.rfu.feature.fishing.FishingSession
 import cloud.glitchdev.rfu.feature.streak.challenge.BaseChallenge
 import cloud.glitchdev.rfu.feature.streak.challenge.RFUChallenge
@@ -35,14 +36,11 @@ object DailyAnglerChallenge : BaseChallenge() {
         return "Fish for $target minutes."
     }
 
-    private var lastCheckTimestamp = 0L
-    private var accumulatedMs = 0L
+    override fun setupListeners(scope: EventScope) {
+        var lastCheckTimestamp = 0L
+        var accumulatedMs = 0L
 
-    override fun setupListeners() {
-        lastCheckTimestamp = 0L
-        accumulatedMs = 0L
-
-        activeListeners.add(registerTickEvent(interval = 20) {
+        scope.registerTickEvent(interval = 20) {
             if (FishingSession.isFishing && !FishingSession.isPaused) {
                 val now = System.currentTimeMillis()
                 if (lastCheckTimestamp > 0L) {
@@ -60,6 +58,6 @@ object DailyAnglerChallenge : BaseChallenge() {
             } else {
                 lastCheckTimestamp = 0L
             }
-        })
+        }
     }
 }

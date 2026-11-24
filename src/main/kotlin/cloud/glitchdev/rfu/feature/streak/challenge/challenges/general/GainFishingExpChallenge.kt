@@ -1,7 +1,8 @@
 package cloud.glitchdev.rfu.feature.streak.challenge.challenges.general
 
 import cloud.glitchdev.rfu.constants.skyblock.SkillType
-import cloud.glitchdev.rfu.events.managers.SkillEvents.registerSkillXpUpdateEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerSkillXpUpdateEvent
 import cloud.glitchdev.rfu.feature.streak.challenge.BaseChallenge
 import cloud.glitchdev.rfu.feature.streak.challenge.RFUChallenge
 import cloud.glitchdev.rfu.utils.SkillTracker
@@ -39,12 +40,10 @@ object GainFishingExpChallenge : BaseChallenge() {
         return "Gain $formatted Fishing EXP."
     }
 
-    private var lastKnownXp: Long = 0L
+    override fun setupListeners(scope: EventScope) {
+        var lastKnownXp = SkillTracker.getSkillXp(SkillType.FISHING)
 
-    override fun setupListeners() {
-        lastKnownXp = SkillTracker.getSkillXp(SkillType.FISHING)
-
-        activeListeners.add(registerSkillXpUpdateEvent(SkillType.FISHING) { _, xp ->
+        scope.registerSkillXpUpdateEvent(SkillType.FISHING) { _, xp ->
             if (lastKnownXp in 1..<xp) {
                 val diff = xp - lastKnownXp
                 if (diff in 1..2_000_000L) {
@@ -52,6 +51,6 @@ object GainFishingExpChallenge : BaseChallenge() {
                 }
             }
             lastKnownXp = xp
-        })
+        }
     }
 }

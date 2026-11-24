@@ -1,8 +1,9 @@
 package cloud.glitchdev.rfu.feature.streak.challenge.challenges.trophy
 
 import cloud.glitchdev.rfu.constants.fishing.TrophyTier
-import cloud.glitchdev.rfu.events.managers.TrophyCatchEvents.registerTrophyFishCatchEvent
-import cloud.glitchdev.rfu.events.managers.TrophyCatchEvents.registerTrophyFrogCatchEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerTrophyFishCatchEvent
+import cloud.glitchdev.rfu.events.managers.registerTrophyFrogCatchEvent
 import cloud.glitchdev.rfu.feature.streak.challenge.BaseChallenge
 import cloud.glitchdev.rfu.feature.streak.challenge.RFUChallenge
 
@@ -38,16 +39,16 @@ object PreciousTrophy : BaseChallenge() {
         }
     }
 
-    override fun setupListeners() {
-        activeListeners.add(registerTrophyFishCatchEvent { _, tier, amount ->
+    override fun setupListeners(scope: EventScope) {
+        scope.registerTrophyFishCatchEvent { _, tier, amount ->
             if (tier == TrophyTier.GOLD || tier == TrophyTier.DIAMOND) {
                 addProgress(amount)
             }
-        })
-        activeListeners.add(registerTrophyFrogCatchEvent { _, tier, amount ->
+        }
+        scope.registerTrophyFrogCatchEvent { _, tier, amount ->
             if (tier == TrophyTier.GOLD || tier == TrophyTier.DIAMOND) {
                 addProgress(amount)
             }
-        })
+        }
     }
 }

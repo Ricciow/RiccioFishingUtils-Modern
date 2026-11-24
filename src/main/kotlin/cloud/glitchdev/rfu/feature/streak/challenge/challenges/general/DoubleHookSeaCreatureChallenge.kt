@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.feature.streak.challenge.challenges.general
 
-import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.feature.streak.challenge.BaseChallenge
 import cloud.glitchdev.rfu.feature.streak.challenge.RFUChallenge
 
@@ -24,11 +25,11 @@ object DoubleHookSeaCreatureChallenge : BaseChallenge() {
         return "Double hook $target sea creatures."
     }
 
-    override fun setupListeners() {
-        activeListeners.add(registerSeaCreatureCatchEvent { _, isDoubleHook, _, _, _ ->
+    override fun setupListeners(scope: EventScope) {
+        scope.registerSeaCreatureCatchEvent { _, isDoubleHook, _, _, _ ->
             if (isDoubleHook) {
                 addProgress(1)
             }
-        })
+        }
     }
 }

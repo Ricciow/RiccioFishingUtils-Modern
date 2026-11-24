@@ -1,6 +1,7 @@
 package cloud.glitchdev.rfu.feature.streak.challenge.challenges.general
 
-import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.feature.streak.challenge.BaseChallenge
 import cloud.glitchdev.rfu.feature.streak.challenge.RFUChallenge
 
@@ -23,17 +24,15 @@ object AnyB2BSeaCreatureChallenge : BaseChallenge() {
         return "Catch any sea creature back to back $target times."
     }
 
-    private var lastSc: String? = null
-
-    override fun setupListeners() {
-        lastSc = null
-        activeListeners.add(registerSeaCreatureCatchEvent { sc, _, _, _, _ ->
+    override fun setupListeners(scope: EventScope) {
+        var lastSc: String? = null
+        scope.registerSeaCreatureCatchEvent { sc, _, _, _, _ ->
             if (lastSc == sc.scName) {
                 addProgress(1)
                 lastSc = null
             } else {
                 lastSc = sc.scName
             }
-        })
+        }
     }
 }

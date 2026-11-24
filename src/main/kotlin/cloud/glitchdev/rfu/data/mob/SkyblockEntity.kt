@@ -5,8 +5,8 @@ import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig.RARE_SC_REGEX
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
-import cloud.glitchdev.rfu.events.managers.RenderEvents
-import cloud.glitchdev.rfu.events.managers.RenderEvents.registerRenderEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerRenderEvent
 import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.utils.rendering.Render3D
 import cloud.glitchdev.rfu.utils.rendering.Render3DBuilder.Companion.sphere
@@ -27,7 +27,7 @@ import kotlin.time.Instant
 import cloud.glitchdev.rfu.data.fishing.BobberInfo
 import cloud.glitchdev.rfu.events.managers.BobberManager
 import cloud.glitchdev.rfu.events.managers.ServerCountdownEvents.ServerCountdownEvent
-import cloud.glitchdev.rfu.events.managers.ServerCountdownEvents.registerServerCountdownEvent
+import cloud.glitchdev.rfu.events.managers.registerServerCountdownEvent
 import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.dsl.parseHealthValue
 
@@ -72,12 +72,15 @@ class SkyblockEntity(
     private var isGlowing: Boolean = false
     private var glowColor: Color = Color.WHITE
 
+    private var eventScope: EventScope? = null
+    private var countdownScope: EventScope? = null
+    private var disposed = false
     private val renderers = mutableListOf<(LevelRenderContext, LivingEntity) -> Unit>()
-    var renderEvent: RenderEvents.RenderEvent? = null
     private var hasLsRange = false
     private var hasTimer = false
     private var timerCondition: () -> Boolean = { true }
     var countdownEvent: ServerCountdownEvent? = null
+        private set
 
     init {
         updateEntityData()
@@ -249,14 +252,15 @@ class SkyblockEntity(
     }
 
     fun registerRenderer(renderer: (LevelRenderContext, LivingEntity) -> Unit) {
-        renderers.add(renderer)
-        if (renderEvent == null) {
-            renderEvent = registerRenderEvent { context ->
+        if (disposed) return
+        if (renderers.isEmpty()) {
+            listeners().registerRenderEvent { context ->
                 for (r in renderers) {
                     r(context, this.modelEntity)
                 }
             }
         }
+        renderers.add(renderer)
     }
 
     fun registerLsRange() {
@@ -296,8 +300,11 @@ class SkyblockEntity(
         label: String? = null,
         condition: () -> Boolean = { true }
     ) {
-        countdownEvent?.unregister()
-        countdownEvent = registerServerCountdownEvent(totalTicks)
+        if (disposed) return
+        countdownScope?.close()
+        val scope = listeners().child()
+        countdownScope = scope
+        countdownEvent = scope.registerServerCountdownEvent(totalTicks)
         timerCondition = condition
 
         if (hasTimer) return
@@ -334,17 +341,25 @@ class SkyblockEntity(
     }
 
     fun dispose() {
-        if (isGlowing) {
-            applyGlowToParts(false, Color.WHITE)
+        if (disposed) return
+        disposed = true
+        try {
+            if (isGlowing) {
+                applyGlowToParts(false, Color.WHITE)
+            }
+        } finally {
+            val scope = eventScope
+            eventScope = null
+            countdownScope = null
+            countdownEvent = null
+            renderers.clear()
+            hasTimer = false
+            timerCondition = { true }
+            scope?.close()
         }
-        renderEvent?.unregister()
-        renderEvent = null
-        renderers.clear()
-        countdownEvent?.unregister()
-        countdownEvent = null
-        hasTimer = false
-        timerCondition = { true }
     }
+
+    private fun listeners(): EventScope = eventScope ?: EventScope().also { eventScope = it }
 
     data class NameTagData(
         val sbName: String,

@@ -1,7 +1,8 @@
 package cloud.glitchdev.rfu.feature.streak.challenge.challenges.legendary
 
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
-import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.feature.streak.challenge.BaseChallenge
 
 abstract class LegendarySeaCreatureChallenge(
@@ -34,12 +35,12 @@ abstract class LegendarySeaCreatureChallenge(
         }
     }
 
-    override fun setupListeners() {
-        activeListeners.add(registerSeaCreatureCatchEvent { sc, doubleHook, _, _, _ ->
+    override fun setupListeners(scope: EventScope) {
+        scope.registerSeaCreatureCatchEvent { sc, doubleHook, _, _, _ ->
             val target = creature ?: return@registerSeaCreatureCatchEvent
             if (sc == target) {
                 addProgress(if (doubleHook) 2 else 1)
             }
-        })
+        }
     }
 }

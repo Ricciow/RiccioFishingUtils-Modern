@@ -18,6 +18,11 @@ object DailyStreakFeature : Feature {
     var wasInSkyblock = false
 
     override fun onInitialize(scope: EventScope) {
+        scope.onClose {
+            wasInSkyblock = false
+            DailyStreakManager.unregisterAllListeners()
+        }
+
         scope.registerJoinEvent(delayMillis = 1000) { _ ->
             if (!DailyStreakSettings.dailyStreakEnabled || !World.isOnHypixel || !World.isInSkyblock) return@registerJoinEvent
 

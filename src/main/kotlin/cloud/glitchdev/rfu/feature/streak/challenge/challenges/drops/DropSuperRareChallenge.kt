@@ -1,7 +1,8 @@
 package cloud.glitchdev.rfu.feature.streak.challenge.challenges.drops
 
 import cloud.glitchdev.rfu.constants.fishing.RareDrops
-import cloud.glitchdev.rfu.events.managers.DropEvents.registerRareDropEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerRareDropEvent
 import cloud.glitchdev.rfu.feature.streak.challenge.BaseChallenge
 import cloud.glitchdev.rfu.feature.streak.challenge.RFUChallenge
 
@@ -25,12 +26,12 @@ object DropSuperRareChallenge : BaseChallenge() {
 
     override fun getTargetProgress(streakDays: Int): Int = 1
 
-    override fun setupListeners() {
-        activeListeners.add(registerRareDropEvent { drop, _ ->
+    override fun setupListeners(scope: EventScope) {
+        scope.registerRareDropEvent { drop, _, _ ->
             if (drop in SUPER_RARE_DROPS) {
                 addProgress(1)
             }
             true
-        })
+        }
     }
 }
