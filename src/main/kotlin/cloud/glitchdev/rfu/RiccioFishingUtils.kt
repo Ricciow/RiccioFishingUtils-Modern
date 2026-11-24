@@ -56,6 +56,7 @@ object RiccioFishingUtils : ClientModInitializer {
             RFULoader.registerCommands()
             RFULoader.registerPartyCommands()
             RFULoader.registerEvents()
+            // Must stay registered after registerEvents() so ShutdownEvents flushes state before scopes close.
             ClientLifecycleEvents.CLIENT_STOPPING.register {
                 try {
                     EventScopes.shutdown()

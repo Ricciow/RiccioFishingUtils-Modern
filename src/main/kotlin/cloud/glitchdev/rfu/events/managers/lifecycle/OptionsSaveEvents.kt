@@ -1,7 +1,6 @@
 package cloud.glitchdev.rfu.events.managers.lifecycle
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
-import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
 import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.registration.ScopedRegistration
 
@@ -16,12 +15,12 @@ object OptionsSaveEvents : AbstractEventManager<(isPre: Boolean) -> Unit, Option
     }
 
     @ScopedRegistration
-    internal fun registerBeforeOptionsSave(priority: Int = DEFAULT_EVENT_PRIORITY, callback: () -> Unit): OptionsSaveEvent {
+    internal fun registerBeforeOptionsSaveEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: () -> Unit): OptionsSaveEvent {
         return OptionsSaveEvent(priority) { if (it) callback() }.register()
     }
 
     @ScopedRegistration
-    internal fun registerAfterOptionsSave(priority: Int = DEFAULT_EVENT_PRIORITY, callback: () -> Unit): OptionsSaveEvent {
+    internal fun registerAfterOptionsSaveEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: () -> Unit): OptionsSaveEvent {
         return OptionsSaveEvent(priority) { if (!it) callback() }.register()
     }
 

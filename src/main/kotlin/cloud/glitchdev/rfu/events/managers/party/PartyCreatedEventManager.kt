@@ -6,7 +6,7 @@ import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.utils.dsl.isIgnored
 
 @EventManager(register = false)
-object PartyCreated : AbstractEventManager<(FishingParty) -> Unit, PartyCreated.PartyCreatedEvent>() {
+object PartyCreatedEventManager : AbstractEventManager<(FishingParty) -> Unit, PartyCreatedEventManager.PartyCreatedEvent>() {
     override val runTasks: (FishingParty) -> Unit = { party ->
         if (!party.user.isIgnored()) {
             safeExecution {

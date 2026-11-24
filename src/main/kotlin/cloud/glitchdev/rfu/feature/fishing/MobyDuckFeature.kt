@@ -8,6 +8,7 @@ import cloud.glitchdev.rfu.events.managers.connection.registerDisconnectEvent
 import cloud.glitchdev.rfu.events.managers.connection.registerLocationEvent
 import cloud.glitchdev.rfu.events.managers.lifecycle.ServerCountdownEvents.ServerCountdownEvent
 import cloud.glitchdev.rfu.events.managers.lifecycle.registerServerCountdownEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerShutdownEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.World
@@ -42,6 +43,10 @@ object MobyDuckFeature : Feature {
         scope.onClose {
             serverCountdownTask?.let { entry.remainingTicks = it.remainingTicks }
             closeCountdown()
+        }
+
+        scope.registerShutdownEvent(priority = 0) {
+            serverCountdownTask?.let { entry.remainingTicks = it.remainingTicks }
         }
 
         scope.registerAnyChatEvent(mobyDuckRegex) { _, match ->

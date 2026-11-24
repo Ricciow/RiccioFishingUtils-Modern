@@ -89,13 +89,13 @@ object HudWindow : BaseWindow(false) {
 
     private var multiPassRenderer: HudMultiPassRenderer? = null
 
-    override fun uCreateRenderer(): UScreen.Renderer {
+    override fun uCreateRenderer(): Renderer {
         val renderer = HudMultiPassRenderer()
         multiPassRenderer = renderer
         return renderer
     }
 
-    override fun uExtractRenderState(mouseX: Int, mouseY: Int, partialTicks: Float): UScreen.RenderState {
+    override fun uExtractRenderState(mouseX: Int, mouseY: Int, partialTicks: Float): RenderState {
         window.prepareFrame()
         return HudMultiPassRenderState(window.extractRenderState())
     }
@@ -109,11 +109,20 @@ object HudWindow : BaseWindow(false) {
 
     internal fun initialize(scope: EventScope) {
         scope.onClose {
+            val wasEditing = isEditingOpen
             hudLoaded = false
             currentContainerScreen = null
             isInteractingWithHud = false
             isExportMode = false
             stopEditing()
+            //~ if >=26.2 'mc.screen' -> 'mc.gui.screen()' {
+            val isCurrentScreen = mc.gui.screen() === this
+            //~}
+            if (wasEditing && isCurrentScreen) {
+                //~ if >=26.2 'setScreen' -> 'gui.setScreen' {
+                mc.gui.setScreen(null)
+                //~}
+            }
         }
         hudLoaded = true
         //~ if >=26.2 'mc.screen' -> 'mc.gui.screen()' {

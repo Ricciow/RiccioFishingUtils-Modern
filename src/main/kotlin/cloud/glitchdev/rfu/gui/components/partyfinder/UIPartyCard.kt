@@ -4,7 +4,6 @@ import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
 import cloud.glitchdev.rfu.constants.chat.PartyTypes
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
-import cloud.glitchdev.rfu.events.managers.party.PartyFinderEvents
 import cloud.glitchdev.rfu.feature.other.ignore.IgnoreUtils
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.UIButton
@@ -19,6 +18,7 @@ import cloud.glitchdev.rfu.gui.components.elementa.RFUWrappedText
 import cloud.glitchdev.rfu.gui.components.elementa.RFUFitText
 import cloud.glitchdev.rfu.gui.components.elementa.UIVanillaTooltip
 import cloud.glitchdev.rfu.model.data.DataOption
+import cloud.glitchdev.rfu.party.PartyFinderManager
 import cloud.glitchdev.rfu.party.PartyRequirementsManager
 import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.dsl.isUser
@@ -400,7 +400,7 @@ class UIPartyCard(
         ) {
             val entry = IgnoreUtils.getIgnoredEntry()
             if (entry.add(party.user)) IgnoreUtils.saveIgnoredEntry(entry)
-            PartyFinderEvents.refreshParties()
+            PartyFinderManager.refreshParties()
         }
     }
 

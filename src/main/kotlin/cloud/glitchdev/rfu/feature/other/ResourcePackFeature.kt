@@ -18,17 +18,21 @@ import java.nio.file.attribute.FileTime
 
 @RFUFeature
 object ResourcePackFeature : Feature {
+    private var initializedPack = false
     private var lastUpdate: FileTime? = null
     private val soundsDir by lazy { mc.gameDirectory.toPath().resolve("resourcepacks/RFU Custom Sounds/assets/$MOD_ID/sounds") }
 
     override fun onInitialize(scope: EventScope) {
-        generate(Sounds.registeredSounds)
-        try {
-            if (Files.exists(soundsDir)) {
-                lastUpdate = Files.getLastModifiedTime(soundsDir)
+        if (!initializedPack) {
+            generate(Sounds.registeredSounds)
+            try {
+                if (Files.exists(soundsDir)) {
+                    lastUpdate = Files.getLastModifiedTime(soundsDir)
+                }
+            } catch (e: Exception) {
+                RFULogger.error("Error while loading sounds", e)
             }
-        } catch (e: Exception) {
-            RFULogger.error("Error while loading sounds", e)
+            initializedPack = true
         }
 
         scope.registerPackSelectionScreenTickEvent {

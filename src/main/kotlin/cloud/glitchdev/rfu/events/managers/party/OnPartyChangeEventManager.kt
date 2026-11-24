@@ -5,7 +5,7 @@ import cloud.glitchdev.rfu.events.EventManager
 import net.hypixel.modapi.packet.impl.clientbound.ClientboundPartyInfoPacket
 
 @EventManager(register = false)
-object OnPartyChange : AbstractEventManager<(Boolean, Boolean, Boolean, Map<String, ClientboundPartyInfoPacket.PartyRole>) -> Unit, OnPartyChange.OnPartyChangeEvent>() {
+object OnPartyChangeEventManager : AbstractEventManager<(Boolean, Boolean, Boolean, Map<String, ClientboundPartyInfoPacket.PartyRole>) -> Unit, OnPartyChangeEventManager.OnPartyChangeEvent>() {
     override val runTasks: (Boolean, Boolean, Boolean, Map<String, ClientboundPartyInfoPacket.PartyRole>) -> Unit = { inParty, isLeader, isAllInvite, members ->
         safeExecution {
             tasks.forEach { it.callback(inParty, isLeader, isAllInvite, members) }

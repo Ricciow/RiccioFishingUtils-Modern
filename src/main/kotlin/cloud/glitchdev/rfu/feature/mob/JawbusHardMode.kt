@@ -23,9 +23,14 @@ object JawbusHardMode : Feature {
     private const val SC_NAME = "Lord Jawbus"
 
     override fun onInitialize(scope: EventScope) {
+        scope.onClose {
+            jawbusses.clear()
+            updateHearts()
+        }
+
         scope.registerGameEvent(" ☠ You were killed by Lord Jawbus.".toExactRegex()) { _, _, _ ->
             if(LavaFishing.jawbus_hard_mode) {
-                Coroutines.launch {
+                Coroutines.launch(scope) {
                     DeadWindow.open()
 
                     delay(2000)

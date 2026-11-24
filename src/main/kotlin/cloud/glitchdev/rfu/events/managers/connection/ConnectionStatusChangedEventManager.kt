@@ -2,10 +2,10 @@ package cloud.glitchdev.rfu.events.managers.connection
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.EventManager
-import cloud.glitchdev.rfu.events.managers.connection.ConnectionStatusChanged.ConnectionStatusEvent
+import cloud.glitchdev.rfu.events.managers.connection.ConnectionStatusChangedEventManager.ConnectionStatusEvent
 
 @EventManager(register = false, name = "registerConnectionStatusChangedEvent")
-object ConnectionStatusChanged : AbstractEventManager<(Boolean) -> Unit, ConnectionStatusEvent>() {
+object ConnectionStatusChangedEventManager : AbstractEventManager<(Boolean) -> Unit, ConnectionStatusEvent>() {
     override val runTasks: (Boolean) -> Unit = { connected ->
         safeExecution {
             tasks.forEach { it.callback(connected) }

@@ -9,7 +9,7 @@ client-side mod built using Fabric and Kotlin.
 
 * **Language:** Kotlin (primary), Java.
 * **Loader:** Fabric Loader.
-* **Multi-version Support:** Uses `Stonecutter` to manage multiple Minecraft versions (e.g., 26.1, 26.2).
+* **Multi-version Support:** Uses `Stonecutter` to manage multiple Minecraft versions (e.g., 26.1, 26.2, 26.3).
 * **Libraries:**
     * **UniversalCraft / Elementa:** For UI/rendering (EssentialGG libs).
     * **ResourcefulConfig:** For configuration management.
@@ -32,18 +32,24 @@ The `processor` module scans for specific annotations and generates `cloud.glitc
 | `@EventManager(register = true)` | `AbstractEventManager`, `RegisteredEvent` | `registerEvents()` |
 | `@AutoRegister` | `RegisteredEvent` | `registerEvents()` |
 | `@InstantRegister` | `InstantRegisteredEvent` | `registerInstantEvents()` |
+| `@PartyCommand` | `IPartyCommand` | `registerPartyCommands()` |
+| `@RFUChallenge` | `BaseChallenge` | `registerChallenges()` |
 
 ### Initialization Flow
 
-1.  **Static Init**: `ConfigMigration` runs.
+1.  **Static Init**: `ConfigMigration` and `AchievementMigration` run.
 2.  **`onInitializeClient`**:
     - `RFULoader.registerInstantEvents()`
     - `CLIENT_STARTED` event registers the rest:
+        - `registerChallenges()`
         - `loadFeatures()`
         - `registerCommands()`
+        - `registerPartyCommands()`
         - `registerEvents()`
+        - `CLIENT_STOPPING` hook to call `EventScopes.shutdown()` (registered after `registerEvents()` so `ShutdownEvents` flushes state first)
         - `registerHud()`
         - `registerAchievements()`
+        - `postInitializeEvents()`
 
 ## Project Structure
 
@@ -65,7 +71,7 @@ To create a new achievement, create a Kotlin `object` and annotate it with `@Ach
 1.  **`BaseAchievement`**: For simple, one-time tasks or custom logic.
 2.  **`NumericAchievement`**: For counting tasks (e.g., "Catch 100 fish"). Call `addProgress(amount)`.
 3.  **`StageAchievement`**: For multi-step tasks (e.g., "Catch Fish A, then Fish B, then Fish C"). Call `advanceStage()`.
-4.  **`NumericStageAchievement`**: For multi-step tasks that require a specific count per stage. Implement `getTargetCountForStage(stage: Int): Int`.
+4.  **`NumericStageAchievement`**: For multi-step tasks that require a specific count per stage. Implement `getTargetCountForStage(stage: Int): Long`.
 
 ### Required Fields
 
@@ -83,8 +89,8 @@ Each achievement MUST define:
 *   **`StageAchievement`**: Automatically uses `currentStage` (starts at 1) and `targetStage`. Use `addStageInfo()` to add metadata per stage.
 *   **`BaseAchievement`**: To show numerical progress (e.g., "2/5"), override:
     ```kotlin
-    override val currentProgress: Int get() = myValue
-    override val targetProgress: Int get() = myGoal
+    override val currentProgress: Long get() = myValue
+    override val targetProgress: Long get() = myGoal
     ```
     Also update `_progress = currentProgress.toFloat() / targetProgress.toFloat()` to drive the progress bar.
 
@@ -170,6 +176,8 @@ Event managers live in domain packages such as `chat`, `fishing`, and `lifecycle
 KSP generates one `ScopedRegistrations.kt` per package with the `EventScope.registerXEvent` extensions for that package. Use `@ScopedRegistration` on a method when registration needs a custom signature or filtering and `@Defaults` to declare defaults copied into the generated extension.
 
 `RegisteredEvent.register(scope)` and `postInitialize(scope)` receive the client startup scope. Use the generated `scope.registerXEvent` functions for managed listeners. The startup scope closes at client shutdown and stays active during a listener restart.
+
+`EventScopes.restart()` (also exposed via `/rfudebug restartlisteners`) closes and remounts all restartable scopes (features, HUD elements, achievements, daily challenges, and active windows). Keep `onInitialize(scope)` and `setupListeners(scope)` idempotent across restarts, register cleanup in `scope.onClose`, and bind delayed coroutines with `Coroutines.launch(scope)` / `Coroutines.setTimeout(scope, ...)`.
 
 Common managers:
 - `lifecycle.TickEvents`: `registerTickEvent(priority, interval) { ... }`

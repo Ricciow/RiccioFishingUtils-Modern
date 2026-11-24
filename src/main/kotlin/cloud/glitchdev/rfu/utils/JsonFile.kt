@@ -11,6 +11,7 @@ import cloud.glitchdev.rfu.constants.text.TextColor
 import com.google.gson.*
 import java.io.File
 import java.io.FileReader
+import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.time.Instant
 
 /**
@@ -48,20 +49,22 @@ class JsonFile<T : Any>(
         instances.add(this)
         load(triggerOnReload = false)
 
-        EventScopes.startup.registerJoinEvent {
-            save()
-        }
+        EventScopes.withStartupScope { scope ->
+            scope.registerJoinEvent {
+                save()
+            }
 
-        EventScopes.startup.registerDisconnectEvent {
-            save()
-        }
+            scope.registerDisconnectEvent {
+                save()
+            }
 
-        EventScopes.startup.registerShutdownEvent {
-            save()
-        }
+            scope.registerShutdownEvent {
+                save()
+            }
 
-        EventScopes.startup.registerTickEvent(interval = 30 * 60 * 20L) {
-            save()
+            scope.registerTickEvent(interval = 30 * 60 * 20L) {
+                save()
+            }
         }
     }
 
@@ -142,7 +145,7 @@ class JsonFile<T : Any>(
     }
 
     companion object {
-        private val instances = mutableListOf<JsonFile<*>>()
+        private val instances = CopyOnWriteArrayList<JsonFile<*>>()
 
         fun reloadAll() {
             instances.filter { it.revertOnAlpha }.forEach {

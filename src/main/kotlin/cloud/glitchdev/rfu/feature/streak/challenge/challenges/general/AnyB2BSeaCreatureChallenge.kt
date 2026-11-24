@@ -24,8 +24,13 @@ object AnyB2BSeaCreatureChallenge : BaseChallenge() {
         return "Catch any sea creature back to back $target times."
     }
 
+    private var lastSc: String? = null
+
+    override fun resetTransientState() {
+        lastSc = null
+    }
+
     override fun setupListeners(scope: EventScope) {
-        var lastSc: String? = null
         scope.registerSeaCreatureCatchEvent { sc, _, _, _, _ ->
             if (lastSc == sc.scName) {
                 addProgress(1)

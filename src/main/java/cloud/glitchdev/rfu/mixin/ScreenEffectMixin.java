@@ -1,9 +1,9 @@
 package cloud.glitchdev.rfu.mixin;
 
 import cloud.glitchdev.rfu.events.managers.render.FireOverlayEventManager;
+import cloud.glitchdev.rfu.events.managers.render.OverlayContext;
 import cloud.glitchdev.rfu.events.managers.render.WaterOverlayAppearanceEventManager;
 import cloud.glitchdev.rfu.events.managers.render.WaterOverlayEventManager;
-import cloud.glitchdev.rfu.events.managers.render.ScreenEffectEvents;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.Minecraft;
@@ -38,7 +38,7 @@ public class ScreenEffectMixin {
         int color = original.call(alpha, red, green, blue);
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return color;
-        ScreenEffectEvents.WaterOverlayAppearanceContext context = new ScreenEffectEvents.WaterOverlayAppearanceContext(player);
+        WaterOverlayAppearanceEventManager.WaterOverlayAppearanceContext context = new WaterOverlayAppearanceEventManager.WaterOverlayAppearanceContext(player);
         WaterOverlayAppearanceEventManager.INSTANCE.getRunTasks().invoke(context);
         return context.getColor() != null ? ARGB.multiply(color, context.getColor().getRGB()) : color;
     }
@@ -51,7 +51,7 @@ public class ScreenEffectMixin {
     /*@WrapOperation(method = "renderScreenEffect", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;isEyeInFluid(Lnet/minecraft/tags/TagKey;)Z"))
     *///?}
     private boolean rfu$waterOverlay(LocalPlayer player, TagKey<Fluid> fluid, Operation<Boolean> original) {
-        ScreenEffectEvents.OverlayContext context = new ScreenEffectEvents.OverlayContext(player, original.call(player, fluid));
+        OverlayContext context = new OverlayContext(player, original.call(player, fluid));
         WaterOverlayEventManager.INSTANCE.getRunTasks().invoke(context);
         return context.getVisible();
     }
@@ -64,7 +64,7 @@ public class ScreenEffectMixin {
     /*@WrapOperation(method = "renderScreenEffect", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;isOnFire()Z"))
     *///?}
     private boolean rfu$fireOverlay(LocalPlayer player, Operation<Boolean> original) {
-        ScreenEffectEvents.OverlayContext context = new ScreenEffectEvents.OverlayContext(player, original.call(player));
+        OverlayContext context = new OverlayContext(player, original.call(player));
         FireOverlayEventManager.INSTANCE.getRunTasks().invoke(context);
         return context.getVisible();
     }

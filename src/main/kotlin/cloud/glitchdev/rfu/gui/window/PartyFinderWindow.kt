@@ -14,7 +14,6 @@ import cloud.glitchdev.rfu.events.managers.party.registerPartyCreatedEvent
 import cloud.glitchdev.rfu.events.managers.party.registerPartyUpdatedEvent
 import cloud.glitchdev.rfu.events.managers.party.registerInfoMessageEvent
 import cloud.glitchdev.rfu.events.managers.ui.registerErrorMessageEvent
-import cloud.glitchdev.rfu.events.managers.party.PartyFinderEvents
 import cloud.glitchdev.rfu.events.managers.progress.registerSkillXpUpdateEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
@@ -28,6 +27,7 @@ import cloud.glitchdev.rfu.gui.components.partyfinder.UIFilterArea
 import cloud.glitchdev.rfu.gui.components.partyfinder.UIPartyCard
 import cloud.glitchdev.rfu.gui.components.partyfinder.UIPartyPresetsModal
 import cloud.glitchdev.rfu.model.party.FishingParty
+import cloud.glitchdev.rfu.party.PartyFinderManager
 import cloud.glitchdev.rfu.utils.Coroutines
 import cloud.glitchdev.rfu.utils.World
 import cloud.glitchdev.rfu.utils.User
@@ -72,7 +72,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
     private var wasFilterOpen = false
     private var creationOpen = false
     private var reloadOnCooldown = false
-    private var parties : List<FishingParty> = PartyFinderEvents.parties
+    private var parties : List<FishingParty> = PartyFinderManager.parties
     private var partyCards : MutableList<UIPartyCard> = mutableListOf()
     private var isPeeking = false
     private var pendingInfoMessage: Pair<String, Boolean>? = null

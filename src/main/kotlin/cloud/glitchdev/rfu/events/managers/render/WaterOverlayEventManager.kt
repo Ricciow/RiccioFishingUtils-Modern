@@ -2,7 +2,6 @@ package cloud.glitchdev.rfu.events.managers.render
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.EventManager
-import cloud.glitchdev.rfu.events.managers.render.ScreenEffectEvents.OverlayContext
 
 @EventManager(register = false)
 object WaterOverlayEventManager : AbstractEventManager<(OverlayContext) -> Unit, WaterOverlayEventManager.WaterOverlayEvent>() {

@@ -36,10 +36,15 @@ object DailyAnglerChallenge : BaseChallenge() {
         return "Fish for $target minutes."
     }
 
-    override fun setupListeners(scope: EventScope) {
-        var lastCheckTimestamp = 0L
-        var accumulatedMs = 0L
+    private var lastCheckTimestamp = 0L
+    private var accumulatedMs = 0L
 
+    override fun resetTransientState() {
+        lastCheckTimestamp = 0L
+        accumulatedMs = 0L
+    }
+
+    override fun setupListeners(scope: EventScope) {
         scope.registerTickEvent(interval = 20) {
             if (FishingSession.isFishing && !FishingSession.isPaused) {
                 val now = System.currentTimeMillis()

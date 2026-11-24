@@ -21,6 +21,8 @@ abstract class BaseChallenge {
 
     open fun setupListeners(scope: EventScope) {}
 
+    open fun resetTransientState() {}
+
     protected fun addProgress(amount: Int = 1) {
         DailyStreakManager.addProgressForChallenge(id, amount)
     }

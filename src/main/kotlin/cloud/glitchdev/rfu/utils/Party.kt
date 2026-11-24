@@ -8,7 +8,7 @@ import cloud.glitchdev.rfu.events.managers.lifecycle.registerShutdownEvent
 import cloud.glitchdev.rfu.events.managers.party.registerJoinRequestEvent
 import cloud.glitchdev.rfu.events.managers.party.registerOnPartyChangeEvent
 import cloud.glitchdev.rfu.events.managers.party.registerMyPartyChangedEvent
-import cloud.glitchdev.rfu.events.managers.party.OnPartyChange
+import cloud.glitchdev.rfu.events.managers.party.OnPartyChangeEventManager
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.chat.RegexConstants.PLAYER_REGEX
@@ -18,7 +18,7 @@ import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.connection.HypixelModApiEvents.hypixelModAPI
-import cloud.glitchdev.rfu.events.managers.party.PartyJoined
+import cloud.glitchdev.rfu.events.managers.party.PartyJoinedEventManager
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.party.WarpKickManager
 import cloud.glitchdev.rfu.utils.command.AbstractCommand
@@ -108,7 +108,7 @@ object Party : RegisteredEvent {
                 val lastJoin = joinedCooldowns[username] ?: 0L
                 val now = System.currentTimeMillis()
                 if (now - lastJoin > 15 * 60 * 1000) {
-                    PartyJoined.runTasks()
+                    PartyJoinedEventManager.runTasks()
                     joinedCooldowns[username] = now
                 }
             }
@@ -124,7 +124,7 @@ object Party : RegisteredEvent {
                 val lastJoin = joinedCooldowns[player] ?: 0L
                 val now = System.currentTimeMillis()
                 if (now - lastJoin > 15 * 60 * 1000) {
-                    PartyJoined.runTasks()
+                    PartyJoinedEventManager.runTasks()
                     joinedCooldowns[player] = now
                 }
                 pendingPFInvites.remove(player)
@@ -320,7 +320,7 @@ object Party : RegisteredEvent {
             wasMemberCount != memberCount ||
             oldMembers != members
         ) {
-            OnPartyChange.runTasks(inParty, isLeader, isAllInvite, members)
+            OnPartyChangeEventManager.runTasks(inParty, isLeader, isAllInvite, members)
         }
 
         wasInParty = inParty

@@ -1,7 +1,7 @@
 package cloud.glitchdev.rfu.feature.other.ignore
 
 import cloud.glitchdev.rfu.constants.text.TextColor
-import cloud.glitchdev.rfu.events.managers.party.PartyFinderEvents
+import cloud.glitchdev.rfu.party.PartyFinderManager
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.command.AbstractCommand
 import com.mojang.brigadier.arguments.StringArgumentType
@@ -18,7 +18,7 @@ object RemoveIgnoreSubCommand : AbstractCommand("remove") {
                 val entry = IgnoreUtils.getIgnoredEntry()
                 if (entry.remove(username)) {
                     IgnoreUtils.saveIgnoredEntry(entry)
-                    PartyFinderEvents.refreshParties()
+                    PartyFinderManager.refreshParties()
                     context.source.sendFeedback(TextUtils.rfuLiteral("Removed ${TextColor.GOLD}$username${TextColor.LIGHT_GREEN} from the ignore list.", TextColor.LIGHT_GREEN))
                 } else {
                     context.source.sendFeedback(TextUtils.rfuLiteral("${TextColor.GOLD}$username${TextColor.YELLOW} is not in the ignore list.", TextColor.YELLOW))

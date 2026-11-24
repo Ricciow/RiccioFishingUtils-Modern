@@ -4,7 +4,7 @@ import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.EventManager
 
 @EventManager(register = false)
-object PartyJoined : AbstractEventManager<() -> Unit, PartyJoined.PartyJoinedEvent>() {
+object PartyJoinedEventManager : AbstractEventManager<() -> Unit, PartyJoinedEventManager.PartyJoinedEvent>() {
     override val runTasks: () -> Unit = {
         safeExecution {
             tasks.forEach { task ->

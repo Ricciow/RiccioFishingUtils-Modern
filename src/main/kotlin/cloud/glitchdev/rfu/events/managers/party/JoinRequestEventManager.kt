@@ -5,7 +5,7 @@ import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.utils.dsl.isIgnored
 
 @EventManager(register = false)
-object JoinRequest : AbstractEventManager<(String) -> Unit, JoinRequest.JoinRequestEvent>() {
+object JoinRequestEventManager : AbstractEventManager<(String) -> Unit, JoinRequestEventManager.JoinRequestEvent>() {
     override val runTasks: (String) -> Unit = { applicant ->
         if (!applicant.isIgnored()) {
             safeExecution {

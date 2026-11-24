@@ -11,8 +11,8 @@ import cloud.glitchdev.rfu.events.keybind.KeyContext
 import cloud.glitchdev.rfu.events.managers.connection.registerDisconnectEvent
 import cloud.glitchdev.rfu.events.managers.inventory.registerItemUsedEvent
 import cloud.glitchdev.rfu.events.managers.input.registerKeybind
-import cloud.glitchdev.rfu.events.managers.lifecycle.registerAfterOptionsSave
-import cloud.glitchdev.rfu.events.managers.lifecycle.registerBeforeOptionsSave
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerAfterOptionsSaveEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerBeforeOptionsSaveEvent
 import cloud.glitchdev.rfu.events.managers.fishing.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.events.managers.lifecycle.registerShutdownEvent
 import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
@@ -76,14 +76,14 @@ object FishingKeybindsHandler : Feature {
             revertKeybinds()
         }
 
-        scope.registerBeforeOptionsSave {
+        scope.registerBeforeOptionsSaveEvent {
             if (isApplied) {
                 wasSavedWhileApplied = true
                 revertKeybinds()
             }
         }
 
-        scope.registerAfterOptionsSave {
+        scope.registerAfterOptionsSaveEvent {
             if (wasSavedWhileApplied) {
                 wasSavedWhileApplied = false
                 updateState()

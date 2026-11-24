@@ -1,7 +1,6 @@
 package cloud.glitchdev.rfu.events.managers.inventory
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
-import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
 import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.registration.ScopedRegistration
 import gg.essential.universal.utils.toUnformattedString
@@ -19,7 +18,7 @@ object SlotClickedEvents : AbstractEventManager<(slot: Slot, screen: AbstractCon
     }
 
     @ScopedRegistration
-    internal fun registerSlotClicked(
+    internal fun registerSlotClickedTitleEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (slot: Slot, title: String) -> Unit
     ): SlotClickedEvent {

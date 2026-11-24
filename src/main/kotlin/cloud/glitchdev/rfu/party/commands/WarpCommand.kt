@@ -33,6 +33,10 @@ object WarpCommand : AbstractPartyCommand(
     private val recentlyTriggered = mutableSetOf<String>()
 
     override fun onInitialize(scope: EventScope) {
+        scope.onClose {
+            recentlyTriggered.clear()
+        }
+
         scope.registerGameEvent(MUTED_MESSAGE_REGEX) { _, _, match ->
             if (!PartySettings.togglePartyCommands || !PartySettings.warpOnMutedMessage || !isEnabled()) {
                 return@registerGameEvent
@@ -51,7 +55,7 @@ object WarpCommand : AbstractPartyCommand(
 
             if (!recentlyTriggered.add(member.lowercase())) return@registerGameEvent
             execute(member, emptyList())
-            Coroutines.launch {
+            Coroutines.launch(scope) {
                 delay((PartySettings.spamCooldown * 1000).toLong())
                 recentlyTriggered.remove(member.lowercase())
             }

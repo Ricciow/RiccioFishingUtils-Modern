@@ -34,7 +34,7 @@ object RareDropAlert : Feature {
             if (rareDrop !in DropsSettings.rareDrops) return@registerRareDropEvent true
             
             val history = DropManager.dropHistory.getOrAdd(rareDrop).history
-            handleAlert(rareDrop, history, magicFind, mobName)
+            handleAlert(scope, rareDrop, history, magicFind, mobName)
             
             true
         }
@@ -43,11 +43,17 @@ object RareDropAlert : Feature {
             if (dyeDrop !in DropsSettings.dyeDrops) return@registerDyeDropEvent
             
             val history = DropManager.dropHistory.getOrAdd(dyeDrop).history
-            handleAlert(dyeDrop, history, magicFind, mobName)
+            handleAlert(scope, dyeDrop, history, magicFind, mobName)
         }
     }
 
-    private fun handleAlert(drop: IRareDrop, history: List<DropRecord>, magicFind: Int?, mobName: String? = null) {
+    private fun handleAlert(
+        scope: EventScope,
+        drop: IRareDrop,
+        history: List<DropRecord>,
+        magicFind: Int?,
+        mobName: String? = null,
+    ) {
         val currentDrop = history.lastOrNull() ?: return
         val previousDrop = if (history.lastIndex - 1 >= 0) history[history.lastIndex - 1] else null
 
@@ -79,7 +85,7 @@ object RareDropAlert : Feature {
             val messageString = DropsSettings.rareDropMessageFormat.formatTemplate(*placeholders)
             val message = Component.literal(messageString)
 
-            Coroutines.launch {
+            Coroutines.launch(scope) {
                 delay(100)
                 sendMessage(message)
             }

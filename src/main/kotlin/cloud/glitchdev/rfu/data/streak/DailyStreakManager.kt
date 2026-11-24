@@ -62,6 +62,7 @@ object DailyStreakManager {
         val seed = "$today:$username".hashCode().toLong()
         val poolChallenges = ChallengeRegistry.getSeededPoolChallenges(seed, 3)
 
+        data.todayChallenges.forEach { it.baseDef?.resetTransientState() }
         unregisterAllListeners()
         data.todayChallenges = poolChallenges.map { DailyChallenge(it.id) }
 
@@ -131,6 +132,7 @@ object DailyStreakManager {
                     data.totalChallengesCompleted++
                     if (data.todayChallenges.none { it.id == challengeId && !it.isCompleted }) {
                         closeChallengeScope(challengeId)
+                        challenge.baseDef?.resetTransientState()
                     }
 
                     val title = challenge.getTitle(streak)
@@ -198,6 +200,7 @@ object DailyStreakManager {
         val newChallengeData = DailyChallenge(newBase.id)
 
         val updatedList = data.todayChallenges.toMutableList()
+        targetChallenge.baseDef?.resetTransientState()
         updatedList[targetIndex] = newChallengeData
         data.todayChallenges = updatedList
         data.hasRerolledToday = true
@@ -217,6 +220,7 @@ object DailyStreakManager {
         val targetBase = ChallengeRegistry.getChallenge(challengeId) ?: return false
 
         val updatedList = data.todayChallenges.toMutableList()
+        updatedList.getOrNull(index)?.baseDef?.resetTransientState()
         if (updatedList.getOrNull(index)?.id == targetBase.id) {
             closeChallengeScope(targetBase.id)
         }

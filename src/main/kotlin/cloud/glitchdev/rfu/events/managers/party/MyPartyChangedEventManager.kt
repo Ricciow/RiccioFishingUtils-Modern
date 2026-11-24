@@ -5,7 +5,7 @@ import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.model.party.FishingParty
 
 @EventManager(register = false)
-object MyPartyChanged : AbstractEventManager<(FishingParty?) -> Unit, MyPartyChanged.MyPartyChangedEvent>() {
+object MyPartyChangedEventManager : AbstractEventManager<(FishingParty?) -> Unit, MyPartyChangedEventManager.MyPartyChangedEvent>() {
     override val runTasks: (FishingParty?) -> Unit = { party ->
         safeExecution {
             tasks.forEach { it.callback(party) }

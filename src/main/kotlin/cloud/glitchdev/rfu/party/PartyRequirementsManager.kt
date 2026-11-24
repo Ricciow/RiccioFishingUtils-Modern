@@ -9,7 +9,6 @@ import cloud.glitchdev.rfu.data.other.OtherManager
 import cloud.glitchdev.rfu.data.other.data.BooleanEntry
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.party.PartyFinderEvents
 import cloud.glitchdev.rfu.model.party.FishingParty
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.core.component.DataComponents
@@ -50,14 +49,14 @@ object PartyRequirementsManager : RegisteredEvent {
         playerRequisites = result
         cachedProfileId = profileId
         lastRequisitesFetchTime = Clock.System.now()
-        PartyFinderEvents.refreshParties()
+        PartyFinderManager.refreshParties()
     }
 
     fun clearPlayerRequisites() {
         playerRequisites = null
         cachedProfileId = null
         lastRequisitesFetchTime = null
-        PartyFinderEvents.refreshParties()
+        PartyFinderManager.refreshParties()
     }
 
     fun hasEnderman9(): Boolean {
@@ -69,7 +68,7 @@ object PartyRequirementsManager : RegisteredEvent {
         set(value) {
             OtherManager.setField("brain_food", BooleanEntry(value))
             OtherManager.file.save()
-            PartyFinderEvents.refreshParties()
+            PartyFinderManager.refreshParties()
         }
 
     override fun register(scope: EventScope) {

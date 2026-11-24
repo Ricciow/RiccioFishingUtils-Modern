@@ -4,7 +4,7 @@ import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.EventManager
 
 @EventManager(register = false)
-object InfoMessage : AbstractEventManager<(String, Boolean) -> Unit, InfoMessage.InfoMessageEvent>() {
+object InfoMessageEventManager : AbstractEventManager<(String, Boolean) -> Unit, InfoMessageEventManager.InfoMessageEvent>() {
     override val runTasks: (String, Boolean) -> Unit = { message, isWarning ->
         safeExecution {
             tasks.forEach { it.callback(message, isWarning) }

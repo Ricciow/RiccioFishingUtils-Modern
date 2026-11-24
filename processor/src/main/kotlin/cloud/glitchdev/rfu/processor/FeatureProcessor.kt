@@ -105,9 +105,13 @@ class FeatureProcessor(
             if (spec.annotation == AUTO_REGISTER) {
                 (symbols + autoRegisteredManagers)
                     .distinctBy { it.qualifiedName?.asString() }
-                    .sortedWith(compareBy<KSClassDeclaration, String>(String.CASE_INSENSITIVE_ORDER) {
-                        registrationPath(it)
-                    }.thenBy { (it.location as? FileLocation)?.lineNumber ?: 0 })
+                    .sortedWith(
+                        compareBy<KSClassDeclaration, String>(String.CASE_INSENSITIVE_ORDER) {
+                            registrationPath(it)
+                        }
+                            .thenBy { (it.location as? FileLocation)?.lineNumber ?: 0 }
+                            .thenBy { it.qualifiedName?.asString().orEmpty() }
+                    )
             } else {
                 symbols
             }
@@ -148,7 +152,7 @@ class FeatureProcessor(
         file.bufferedWriter().use { writer ->
             writer.write("package $packageName\n\n")
 
-            val allSymbols = symbolsMap.values.flatten()
+            val allSymbols = symbolsMap.values.flatten().distinctBy { it.qualifiedName?.asString() }
             writer.write("import cloud.glitchdev.rfu.events.EventScopes\n")
             writer.write("import cloud.glitchdev.rfu.gui.window.HudWindow\n")
 
@@ -175,9 +179,9 @@ class FeatureProcessor(
                 val scope = spec.scope
 
                 writer.write("\n    fun ${spec.loaderFuncName}() {\n")
-                if (scope != null) writer.write("        ${scope.fieldName}.load { scope ->\n")
+                if (scope != null) writer.write("        ${scope.fieldName}.loadIsolated {\n")
                 val indent = if (scope != null) "            " else "        "
-                if (spec.annotation == HUD_ELEMENT) writer.write("${indent}HudWindow.initialize(scope.child())\n")
+                if (spec.annotation == HUD_ELEMENT) writer.write("${indent}mount(\"HudWindow\") { HudWindow.initialize(it) }\n")
                 if (symbols.isEmpty()) writer.write("$indent// No entries found\n")
 
                 symbols.forEach { symbol ->
@@ -189,12 +193,12 @@ class FeatureProcessor(
                         simpleName
                     }
                     val instance = if (symbol.classKind == ClassKind.OBJECT) ref else "$ref()"
-                    val arguments = when {
-                        scope != null -> "scope.child()"
-                        spec.annotation == AUTO_REGISTER -> "EventScopes.startup"
-                        else -> ""
+                    if (scope != null) {
+                        writer.write("${indent}mount(\"$simpleName\") { $instance.${spec.methodToCall}(it) }\n")
+                    } else {
+                        val arguments = if (spec.annotation == AUTO_REGISTER) "EventScopes.startup" else ""
+                        writer.write("$indent$instance.${spec.methodToCall}($arguments)\n")
                     }
-                    writer.write("$indent$instance.${spec.methodToCall}($arguments)\n")
                 }
                 if (scope != null) writer.write("        }\n")
                 writer.write("    }\n")

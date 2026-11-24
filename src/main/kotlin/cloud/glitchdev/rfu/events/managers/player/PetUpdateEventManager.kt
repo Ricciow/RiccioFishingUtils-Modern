@@ -2,7 +2,7 @@ package cloud.glitchdev.rfu.events.managers.player
 
 import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.chat.registerGameEvent
-import cloud.glitchdev.rfu.events.managers.inventory.registerSlotClicked
+import cloud.glitchdev.rfu.events.managers.inventory.registerSlotClickedTitleEvent
 import cloud.glitchdev.rfu.data.other.OtherManager
 import cloud.glitchdev.rfu.data.other.data.StringEntry
 import cloud.glitchdev.rfu.events.AbstractEventManager
@@ -47,17 +47,17 @@ object PetUpdateEventManager : AbstractEventManager<(pet: String?, petName: Stri
 
         currentPet = entry.value
 
-        scope.registerSlotClicked { slot, title ->
+        scope.registerSlotClickedTitleEvent { slot, title ->
             val screenTitle = title.trim()
             if (PETS_SCREEN_REGEX.matches(screenTitle)) {
                 val pet = slot.item.hoverName.toFormattedString()
-                if (!PET_REGEX.toRegex().matches(pet.removeFormatting())) return@registerSlotClicked
+                if (!PET_REGEX.toRegex().matches(pet.removeFormatting())) return@registerSlotClickedTitleEvent
                 updatePet(pet)
             } else if (LOADOUTS_SCREEN_REGEX.matches(screenTitle)) {
-                if (slot.item.isEmpty) return@registerSlotClicked
+                if (slot.item.isEmpty) return@registerSlotClickedTitleEvent
                 val itemName = slot.item.hoverName.toUnformattedString().trim()
-                if (!itemName.startsWith("Loadout")) return@registerSlotClicked
-                val lore = slot.item[DataComponents.LORE] ?: return@registerSlotClicked
+                if (!itemName.startsWith("Loadout")) return@registerSlotClickedTitleEvent
+                val lore = slot.item[DataComponents.LORE] ?: return@registerSlotClickedTitleEvent
                 var petLineFormatted: String? = null
                 for (line in lore.lines) {
                     val plain = line.toUnformattedString()

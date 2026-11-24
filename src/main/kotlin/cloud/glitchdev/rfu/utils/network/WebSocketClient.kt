@@ -6,7 +6,7 @@ import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.events.managers.ui.ErrorEvents
 import cloud.glitchdev.rfu.events.managers.player.AfkEvents
-import cloud.glitchdev.rfu.events.managers.connection.ConnectionStatusChanged
+import cloud.glitchdev.rfu.events.managers.connection.ConnectionStatusChangedEventManager
 import cloud.glitchdev.rfu.utils.Coroutines
 import com.google.gson.Gson
 import java.net.URI
@@ -68,7 +68,7 @@ object WebSocketClient {
         private set(value) {
             if (field != value) {
                 field = value
-                ConnectionStatusChanged.runTasks(value)
+                ConnectionStatusChangedEventManager.runTasks(value)
             }
         }
 

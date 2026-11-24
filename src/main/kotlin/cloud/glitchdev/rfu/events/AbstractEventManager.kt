@@ -18,16 +18,21 @@ abstract class AbstractEventManager<CB, T : AbstractEventManager.ManagedTask<CB,
         internal const val DEFAULT_EVENT_PRIORITY = 20
     }
 
+    private val tasksLock = Any()
     protected val tasks = CopyOnWriteArrayList<T>()
 
     fun submitTask(task: T): T {
-        tasks.add(task)
-        tasks.sortBy { it.priority }
+        synchronized(tasksLock) {
+            tasks.add(task)
+            tasks.sortBy { it.priority }
+        }
         return task
     }
 
     fun removeTask(task: T): T {
-        tasks.remove(task)
+        synchronized(tasksLock) {
+            tasks.remove(task)
+        }
         return task
     }
 

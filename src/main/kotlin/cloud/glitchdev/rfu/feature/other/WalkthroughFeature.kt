@@ -34,7 +34,7 @@ object WalkthroughFeature : Feature {
             val inSkyblock = event.serverType.getOrNull() == GameType.SKYBLOCK || World.isInSkyblock
             if (!wasInSkyblock && inSkyblock) {
                 if (!OtherSettings.walkthroughAcknowledged) {
-                    Coroutines.launch {
+                    Coroutines.launch(scope) {
                         delay(3000)
                         if (!OtherSettings.walkthroughAcknowledged && World.isInSkyblock) {
                             sendWalkthrough()

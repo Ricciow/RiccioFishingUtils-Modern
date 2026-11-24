@@ -22,14 +22,19 @@ object EquipmentTracker : RegisteredEvent {
     private const val DEBOUNCE_DELAY_MS = 100L
 
     override fun register(scope: EventScope) {
+        scope.onClose {
+            debounceJob?.cancel()
+            debounceJob = null
+        }
+
         loadInitialEquipment()
 
         scope.registerContainerOpenEvent { containerName, _, items ->
-            scheduleDebouncedCheck { handleContainerUpdate(containerName, items) }
+            scheduleDebouncedCheck(scope) { handleContainerUpdate(containerName, items) }
         }
 
         scope.registerSetSlotEvent { _, _, _ ->
-            scheduleDebouncedCheck {
+            scheduleDebouncedCheck(scope) {
                 //~ if >=26.2 'mc.screen' -> 'mc.gui.screen()' {
                 val screen = mc.gui.screen() ?: return@scheduleDebouncedCheck
                 //~}
@@ -40,7 +45,7 @@ object EquipmentTracker : RegisteredEvent {
             }
         }
 
-        scope.registerSlotClicked { slot, title ->
+        scope.registerSlotClickedTitleEvent { slot, title ->
             if (title.contains("Equipment Sets")) {
                 if (slot.index in 36..44) {
                     val name = slot.item.hoverName.toUnformattedString()
@@ -56,9 +61,9 @@ object EquipmentTracker : RegisteredEvent {
         }
     }
 
-    private fun scheduleDebouncedCheck(block: () -> Unit) {
+    private fun scheduleDebouncedCheck(scope: EventScope, block: () -> Unit) {
         if (debounceJob != null) return
-        debounceJob = Coroutines.setTimeout(DEBOUNCE_DELAY_MS) {
+        debounceJob = Coroutines.setTimeout(scope, DEBOUNCE_DELAY_MS) {
             try {
                 block()
             } finally {
@@ -165,7 +170,6 @@ object EquipmentTracker : RegisteredEvent {
             OtherManager.setField("equipment_belt", StringEntry(newSet.belt))
             OtherManager.setField("equipment_gloves", StringEntry(newSet.gloves))
             OtherManager.file.save()
-            println("Changed ${newSet.necklace} | ${newSet.cloak} | ${newSet.belt} | ${newSet.gloves}")
             EquipmentChangeEventManager.updateEquipmentSet(newSet)
         }
     }

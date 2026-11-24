@@ -47,18 +47,18 @@ object PartyInviteMsg : Feature {
 
             if (isMeMessage && !isPrivateChat) return@registerGameEvent
 
-            sendInviteMessage(playerName)
+            sendInviteMessage(scope, playerName)
         }
 
         scope.registerGameEvent(BOOP_REGEX) { _, _, matches ->
             if (!OtherSettings.partyInviteMsgs) return@registerGameEvent
             val player = matches?.groupValues?.getOrNull(1) ?: return@registerGameEvent
             if (player.isUser()) return@registerGameEvent
-            sendInviteMessage(player)
+            sendInviteMessage(scope, player)
         }
     }
 
-    private fun sendInviteMessage(playerName : String) {
+    private fun sendInviteMessage(scope: EventScope, playerName : String) {
         val message = TextUtils.rfuLiteral("[Party $playerName]", TextColor.LIGHT_GREEN, TextEffects.BOLD)
             .withStyle(
                 Style.EMPTY
@@ -66,7 +66,7 @@ object PartyInviteMsg : Feature {
                     .withClickEvent(ClickEvent.RunCommand("/p $playerName"))
             )
 
-        Coroutines.launch {
+        Coroutines.launch(scope) {
             delay(10)
             mc.execute {
                 Chat.sendMessage(message)

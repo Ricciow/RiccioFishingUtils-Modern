@@ -20,7 +20,9 @@ object Settings : SimpleCommand("rfu") {
     private var onClose: () -> Unit = {}
 
     init {
-        EventScopes.startup.registerCloseConfigEvent { onClose() }
+        EventScopes.withStartupScope { scope ->
+            scope.registerCloseConfigEvent { onClose() }
+        }
     }
 
     override fun build(builder: LiteralArgumentBuilder<FabricClientCommandSource>) {

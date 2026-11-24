@@ -1,12 +1,15 @@
-package cloud.glitchdev.rfu.events.managers.party
+package cloud.glitchdev.rfu.party
 
+import cloud.glitchdev.rfu.events.managers.party.PartyCreatedEventManager
+import cloud.glitchdev.rfu.events.managers.party.PartyListChangedEventManager
+import cloud.glitchdev.rfu.events.managers.party.PartyUpdatedEventManager
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.utils.dsl.isIgnored
 import cloud.glitchdev.rfu.utils.dsl.isUser
 import cloud.glitchdev.rfu.utils.network.PartyWebSocket
 import java.util.concurrent.CopyOnWriteArrayList
 
-object PartyFinderEvents {
+object PartyFinderManager {
     private val _parties = CopyOnWriteArrayList<FishingParty>()
     val parties: List<FishingParty> get() = _parties
         .filter { !it.user.isIgnored() }
@@ -26,7 +29,7 @@ object PartyFinderEvents {
             _parties.add(0, party)
         }
         refreshParties()
-        PartyUpdated.runTasks(party)
+        PartyUpdatedEventManager.runTasks(party)
     }
 
     fun handleDelete(user: String) {
@@ -42,11 +45,11 @@ object PartyFinderEvents {
         _parties.add(0, party)
         refreshParties()
         if (party.user.isUser()) {
-            PartyCreated.runTasks(party)
+            PartyCreatedEventManager.runTasks(party)
         }
     }
 
     fun refreshParties() {
-        PartyListChanged.runTasks(parties)
+        PartyListChangedEventManager.runTasks(parties)
     }
 }

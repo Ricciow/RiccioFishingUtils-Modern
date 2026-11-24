@@ -2,10 +2,14 @@ package cloud.glitchdev.rfu.events
 
 import cloud.glitchdev.rfu.events.AbstractEventManager.ManagedTask
 
-/** Owns listeners and cleanup for a client-thread lifecycle. */
+/** Owns listeners and cleanup for a scoped lifecycle. */
 class EventScope : AutoCloseable {
+    private val lock = Any()
     private val cleanup = mutableListOf<() -> Unit>()
     private var closed = false
+
+    val isClosed: Boolean
+        get() = synchronized(lock) { closed }
 
     internal fun <T : ManagedTask<*, *>> registerTask(register: () -> T): T =
         register(register) { it.unregister() }
@@ -17,34 +21,60 @@ class EventScope : AutoCloseable {
     }
 
     private fun <T> register(register: () -> T, unregister: (T) -> Unit): T {
-        check(!closed) { "Cannot register an event in a closed scope." }
+        synchronized(lock) {
+            check(!closed) { "Cannot register an event in a closed scope." }
+        }
         val result = register()
-        if (closed) {
+        val closedDuringRegistration = synchronized(lock) {
+            if (closed) {
+                true
+            } else {
+                cleanup.add { unregister(result) }
+                false
+            }
+        }
+        if (closedDuringRegistration) {
             unregister(result)
             error("The scope closed during event registration.")
         }
-        cleanup.add { unregister(result) }
         return result
     }
 
     fun onClose(action: () -> Unit) {
-        check(!closed) { "Cannot add cleanup to a closed scope." }
+        synchronized(lock) {
+            check(!closed) { "Cannot add cleanup to a closed scope." }
+            cleanup.add(action)
+        }
+    }
+
+    internal fun addCleanupIfOpen(action: () -> Unit): Boolean = synchronized(lock) {
+        if (closed) return@synchronized false
         cleanup.add(action)
+        true
+    }
+
+    internal fun removeCleanup(action: () -> Unit) {
+        synchronized(lock) {
+            cleanup.remove(action)
+        }
     }
 
     fun child(): EventScope {
         val child = EventScope()
         val closeChild: () -> Unit = child::close
+        child.onClose { removeCleanup(closeChild) }
         onClose(closeChild)
-        child.onClose { cleanup.remove(closeChild) }
         return child
     }
 
     override fun close() {
-        if (closed) return
-        closed = true
-        val actions = cleanup.toList()
-        cleanup.clear()
+        val actions = synchronized(lock) {
+            if (closed) return
+            closed = true
+            val snapshot = cleanup.toList()
+            cleanup.clear()
+            snapshot
+        }
         runScopeActions(actions.asReversed())
     }
 }

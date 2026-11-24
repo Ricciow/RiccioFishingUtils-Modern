@@ -34,10 +34,12 @@ object BackupManager {
             backupDir.mkdirs()
         }
 
-        EventScopes.startup.registerJoinEvent(delayMillis = 2000) {
-            val notifications = flushNotifications()
-            notifications.forEach { msg ->
-                Chat.sendMessage(TextUtils.rfuLiteral(msg))
+        EventScopes.withStartupScope { scope ->
+            scope.registerJoinEvent(delayMillis = 2000) {
+                val notifications = flushNotifications()
+                notifications.forEach { msg ->
+                    Chat.sendMessage(TextUtils.rfuLiteral(msg))
+                }
             }
         }
     }
