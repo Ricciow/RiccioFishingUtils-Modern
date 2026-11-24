@@ -6,7 +6,7 @@ import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyJoinedEvent
+import cloud.glitchdev.rfu.events.managers.registerPartyJoinedEvent
 
 @Achievement
 object PartyExplorerAchievement : NumericStageAchievement() {
@@ -34,9 +34,9 @@ object PartyExplorerAchievement : NumericStageAchievement() {
     }
 
     override fun setupListeners(scope: EventScope) {
-        activeListeners.add(registerPartyJoinedEvent {
+        scope.registerPartyJoinedEvent {
             addProgress(1)
-        })
+        }
     }
 
     override fun getTargetCountForStage(stage: Int): Long {

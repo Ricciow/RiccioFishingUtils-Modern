@@ -6,7 +6,7 @@ import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.registerTickEvent
 import cloud.glitchdev.rfu.feature.fishing.FishingSession
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
@@ -35,7 +35,7 @@ object EfficiencyKingAchievement : NumericStageAchievement() {
     var minSch : Int = Int.MAX_VALUE
 
     override fun setupListeners(scope: EventScope) {
-        activeListeners.add(registerTickEvent(interval = 20) {
+        scope.registerTickEvent(interval = 20) {
             if (FishingSession.isPaused) {
                 startSessionDuration = null
                 currentCount = 0L
@@ -78,7 +78,7 @@ object EfficiencyKingAchievement : NumericStageAchievement() {
                 currentCount = 0L
                 minSch = Int.MAX_VALUE
             }
-        })
+        }
     }
 
     private fun getTargetSchForStage(stage: Int): Int {

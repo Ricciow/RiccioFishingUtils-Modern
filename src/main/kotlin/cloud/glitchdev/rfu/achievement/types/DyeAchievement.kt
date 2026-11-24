@@ -1,13 +1,14 @@
 package cloud.glitchdev.rfu.achievement.types
 
+import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.achievement.BaseAchievement
 import cloud.glitchdev.rfu.constants.skyblock.Dyes
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.ContainerEvents
-import cloud.glitchdev.rfu.events.managers.DropEvents
+import cloud.glitchdev.rfu.events.managers.registerContainerOpenEvent
+import cloud.glitchdev.rfu.events.managers.registerDyeDropEvent
 import cloud.glitchdev.rfu.utils.Coroutines
 import gg.essential.universal.utils.toUnformattedString
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.Job
 import net.minecraft.core.component.DataComponents
 
 abstract class DyeAchievement(val dye: Dyes) : BaseAchievement() {
@@ -15,16 +16,23 @@ abstract class DyeAchievement(val dye: Dyes) : BaseAchievement() {
     private val DYE_GUIDE_REGEX = """\(\d+/\d+\) Dye Guide""".toRegex()
 
     override fun setupListeners(scope: EventScope) {
-        activeListeners.add(DropEvents.registerDyeDropEvent { dyeDrop, _ ->
-            if (dyeDrop == dye) {
-                Coroutines.launch {
-                    delay(100)
-                    complete()
+        var pendingCompletion: Job? = null
+        scope.onClose {
+            pendingCompletion?.cancel()
+            pendingCompletion = null
+        }
+
+        scope.registerDyeDropEvent { dyeDrop, _, _ ->
+            if (dyeDrop == dye && pendingCompletion == null) {
+                pendingCompletion = Coroutines.setTimeout(100) {
+                    mc.execute {
+                        if (pendingCompletion != null) complete()
+                    }
                 }
             }
-        })
+        }
 
-        activeListeners.add(ContainerEvents.registerContainerOpenEvent { containerName, _, items ->
+        scope.registerContainerOpenEvent { containerName, _, items ->
             if (DYE_GUIDE_REGEX.matches(containerName)) {
                 val item = items.find { it.hoverName.toUnformattedString() == dye.dyeName }
                     ?: return@registerContainerOpenEvent
@@ -40,6 +48,6 @@ abstract class DyeAchievement(val dye: Dyes) : BaseAchievement() {
                     }
                 }
             }
-        })
+        }
     }
 }

@@ -6,7 +6,7 @@ import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.BaseAchievement
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.LootshareEvents.registerLootshareEvent
+import cloud.glitchdev.rfu.events.managers.registerLootshareEvent
 import gg.essential.universal.utils.toUnformattedString
 
 @Achievement
@@ -19,10 +19,10 @@ object FlaskThiefAchievement : BaseAchievement() {
     override val category: AchievementCategory = AchievementCategory.ISLE
 
     override fun setupListeners(scope: EventScope) {
-        activeListeners.add(registerLootshareEvent { _, itens ->
+        scope.registerLootshareEvent { _, itens ->
             if(itens.any { it.itemStack.customName?.toUnformattedString()?.equals("Radioactive Vial") ?: false}) {
                 complete()
             }
-        })
+        }
     }
 }

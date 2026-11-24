@@ -6,7 +6,7 @@ import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.DailyStreakEvents.registerStreakUpdatedEvent
+import cloud.glitchdev.rfu.events.managers.registerStreakUpdatedEvent
 
 @Achievement
 object DailyStreakAchievement : NumericStageAchievement() {
@@ -38,9 +38,9 @@ object DailyStreakAchievement : NumericStageAchievement() {
     }
 
     override fun setupListeners(scope: EventScope) {
-        activeListeners.add(registerStreakUpdatedEvent { data ->
+        scope.registerStreakUpdatedEvent { data ->
             if (isCompleted) return@registerStreakUpdatedEvent
             currentCount = data.currentStreak.toLong()
-        })
+        }
     }
 }

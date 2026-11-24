@@ -3,9 +3,9 @@ package cloud.glitchdev.rfu.events.managers
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
 import cloud.glitchdev.rfu.events.EventManager
-import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.registration.Defaults
+import cloud.glitchdev.rfu.events.registration.ScopedRegistration
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.ServerCountdownEvents.ServerCountdownEvent
 import cloud.glitchdev.rfu.events.managers.ServerTickEvents.registerServerTickEvent
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -26,6 +26,12 @@ object ServerCountdownEvents : AbstractEventManager<() -> Unit, ServerCountdownE
         }
     }
 
+    @ScopedRegistration
+    @Defaults(
+        "interval = 1L",
+        "onTick = null",
+        "onComplete = null",
+    )
     fun registerServerCountdownEvent(
         durationTicks: Long,
         interval: Long = 1L,
@@ -36,6 +42,7 @@ object ServerCountdownEvents : AbstractEventManager<() -> Unit, ServerCountdownE
         return ServerCountdownEvent(priority, durationTicks, interval, onTick, onComplete).register()
     }
 
+    @ScopedRegistration
     fun registerServerCountdownEvent(
         durationTicks: Long,
         priority: Int = DEFAULT_EVENT_PRIORITY,
@@ -50,6 +57,7 @@ object ServerCountdownEvents : AbstractEventManager<() -> Unit, ServerCountdownE
         )
     }
 
+    @ScopedRegistration
     fun registerServerCountdownEvent(
         durationTicks: Long,
         interval: Long,
@@ -65,6 +73,7 @@ object ServerCountdownEvents : AbstractEventManager<() -> Unit, ServerCountdownE
         )
     }
 
+    @ScopedRegistration
     fun registerServerCountdownEvent(
         durationTicks: Long,
         interval: Long,
@@ -155,40 +164,4 @@ object ServerCountdownEvents : AbstractEventManager<() -> Unit, ServerCountdownE
         override fun register() = submitTask(this)
         override fun unregister() = removeTask(this)
     }
-}
-
-fun EventScope.registerServerCountdownEvent(
-    durationTicks: Long,
-    interval: Long = 1L,
-    priority: Int = DEFAULT_EVENT_PRIORITY,
-    onTick: ((event: ServerCountdownEvent) -> Unit)? = null,
-    onComplete: (() -> Unit)? = null,
-): ServerCountdownEvent = registerTask {
-    ServerCountdownEvents.registerServerCountdownEvent(durationTicks, interval, priority, onTick, onComplete)
-}
-
-fun EventScope.registerServerCountdownEvent(
-    durationTicks: Long,
-    priority: Int = DEFAULT_EVENT_PRIORITY,
-    onComplete: () -> Unit,
-): ServerCountdownEvent = registerTask {
-    ServerCountdownEvents.registerServerCountdownEvent(durationTicks, priority, onComplete)
-}
-
-fun EventScope.registerServerCountdownEvent(
-    durationTicks: Long,
-    interval: Long,
-    priority: Int = DEFAULT_EVENT_PRIORITY,
-    onTick: (event: ServerCountdownEvent) -> Unit,
-): ServerCountdownEvent = registerTask {
-    ServerCountdownEvents.registerServerCountdownEvent(durationTicks, interval, priority, onTick)
-}
-
-fun EventScope.registerServerCountdownEvent(
-    durationTicks: Long,
-    interval: Long,
-    onTick: (event: ServerCountdownEvent) -> Unit,
-    onComplete: () -> Unit,
-): ServerCountdownEvent = registerTask {
-    ServerCountdownEvents.registerServerCountdownEvent(durationTicks, interval, onTick, onComplete)
 }

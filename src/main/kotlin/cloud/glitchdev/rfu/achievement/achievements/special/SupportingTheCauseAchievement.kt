@@ -6,7 +6,7 @@ import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.BaseAchievement
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.registerGameEvent
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 
 @Achievement
@@ -21,8 +21,8 @@ object SupportingTheCauseAchievement : BaseAchievement() {
     private val VOTE_MARINA_REGEX = """You cast \d+ votes for Marina in the Year \d+ Elections!""".toExactRegex()
 
     override fun setupListeners(scope: EventScope) {
-        activeListeners.add(registerGameEvent(VOTE_MARINA_REGEX) { _, _, _ ->
+        scope.registerGameEvent(VOTE_MARINA_REGEX) { _, _, _ ->
             complete()
-        })
+        }
     }
 }

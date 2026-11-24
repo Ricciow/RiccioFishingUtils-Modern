@@ -3,8 +3,7 @@ package cloud.glitchdev.rfu.events.managers
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
 import cloud.glitchdev.rfu.events.EventManager
-import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.OptionsSaveEvents.OptionsSaveEvent
+import cloud.glitchdev.rfu.events.registration.ScopedRegistration
 
 @EventManager(register = false)
 object OptionsSaveEvents : AbstractEventManager<(isPre: Boolean) -> Unit, OptionsSaveEvents.OptionsSaveEvent>() {
@@ -20,10 +19,12 @@ object OptionsSaveEvents : AbstractEventManager<(isPre: Boolean) -> Unit, Option
         return OptionsSaveEvent(priority, callback).register()
     }
 
+    @ScopedRegistration
     fun registerBeforeOptionsSave(priority: Int = DEFAULT_EVENT_PRIORITY, callback: () -> Unit): OptionsSaveEvent {
         return registerOptionsSaveEvent(priority) { if (it) callback() }
     }
 
+    @ScopedRegistration
     fun registerAfterOptionsSave(priority: Int = DEFAULT_EVENT_PRIORITY, callback: () -> Unit): OptionsSaveEvent {
         return registerOptionsSaveEvent(priority) { if (!it) callback() }
     }
@@ -36,13 +37,3 @@ object OptionsSaveEvents : AbstractEventManager<(isPre: Boolean) -> Unit, Option
         override fun unregister() = removeTask(this)
     }
 }
-
-fun EventScope.registerBeforeOptionsSave(
-    priority: Int = DEFAULT_EVENT_PRIORITY,
-    callback: () -> Unit,
-): OptionsSaveEvent = registerTask { OptionsSaveEvents.registerBeforeOptionsSave(priority, callback) }
-
-fun EventScope.registerAfterOptionsSave(
-    priority: Int = DEFAULT_EVENT_PRIORITY,
-    callback: () -> Unit,
-): OptionsSaveEvent = registerTask { OptionsSaveEvents.registerAfterOptionsSave(priority, callback) }

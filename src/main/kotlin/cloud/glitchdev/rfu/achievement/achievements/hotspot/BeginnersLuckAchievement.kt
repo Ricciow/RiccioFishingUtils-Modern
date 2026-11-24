@@ -7,8 +7,8 @@ import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.BaseAchievement
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.ItemUsedEvents.registerItemUsedEvent
-import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.managers.registerItemUsedEvent
+import cloud.glitchdev.rfu.events.managers.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.utils.dsl.isFishingRod
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.core.component.DataComponents
@@ -25,12 +25,12 @@ object BeginnersLuckAchievement : BaseAchievement() {
     private var lastCastRod: ItemStack? = null
 
     override fun setupListeners(scope: EventScope) {
-        activeListeners.add(registerItemUsedEvent { item ->
+        scope.registerItemUsedEvent { item ->
             if (!item.isFishingRod() || mc.player?.fishing != null) return@registerItemUsedEvent
             lastCastRod = item.copy()
-        })
+        }
 
-        activeListeners.add(registerSeaCreatureCatchEvent { sc, _, _, _, bait ->
+        scope.registerSeaCreatureCatchEvent { sc, _, _, _, bait ->
             if (sc.scName == "Wiki Tiki" && bait == null) {
                 val item = lastCastRod ?: return@registerSeaCreatureCatchEvent
 
@@ -38,7 +38,7 @@ object BeginnersLuckAchievement : BaseAchievement() {
                     complete()
                 }
             }
-        })
+        }
     }
 
     private fun isUnenchanted(item: ItemStack): Boolean {

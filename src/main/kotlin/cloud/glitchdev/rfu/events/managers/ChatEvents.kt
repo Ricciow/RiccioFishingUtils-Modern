@@ -4,10 +4,9 @@ import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.EventManager
-import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.registration.Defaults
+import cloud.glitchdev.rfu.events.registration.ScopedRegistration
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.ChatEvents.ChatEventManager.ChatEvent
-import cloud.glitchdev.rfu.events.managers.ChatEvents.GameEventManager.GameEvent
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.RFULogger
 import gg.essential.universal.utils.toFormattedString
@@ -121,6 +120,8 @@ object ChatEvents : RegisteredEvent {
         return ModifyCommandEventManager.register(priority, callback)
     }
 
+    @ScopedRegistration
+    @Defaults("filter = null")
     fun registerAnyChatEvent(
         filter: Regex? = null,
         priority: Int = DEFAULT_EVENT_PRIORITY,
@@ -133,6 +134,8 @@ object ChatEvents : RegisteredEvent {
         return Pair(chatEvent, gameEvent)
     }
 
+    @ScopedRegistration
+    @Defaults("filter = null")
     fun registerChatEvent(
         filter: Regex? = null,
         priority: Int = DEFAULT_EVENT_PRIORITY,
@@ -144,6 +147,8 @@ object ChatEvents : RegisteredEvent {
         }
     }
 
+    @ScopedRegistration
+    @Defaults("filter = null", "isOverlay = false")
     fun registerGameEvent(
         filter: Regex? = null,
         priority: Int = DEFAULT_EVENT_PRIORITY,
@@ -158,6 +163,8 @@ object ChatEvents : RegisteredEvent {
         }
     }
 
+    @ScopedRegistration
+    @Defaults("filter = null")
     fun registerAllowChatEvent(
         filter: Regex? = null,
         priority: Int = DEFAULT_EVENT_PRIORITY,
@@ -173,6 +180,8 @@ object ChatEvents : RegisteredEvent {
         }
     }
 
+    @ScopedRegistration
+    @Defaults("filter = null")
     fun registerAllowGameEvent(
         filter: Regex? = null,
         priority: Int = DEFAULT_EVENT_PRIORITY,
@@ -337,41 +346,4 @@ object ChatEvents : RegisteredEvent {
             override fun unregister() = removeTask(this)
         }
     }
-}
-
-fun EventScope.registerChatEvent(
-    filter: Regex? = null,
-    priority: Int = DEFAULT_EVENT_PRIORITY,
-    callback: (text: Component, matches: MatchResult?) -> Unit,
-): ChatEvent = registerTask { ChatEvents.registerChatEvent(filter, priority, callback) }
-
-fun EventScope.registerGameEvent(
-    filter: Regex? = null,
-    priority: Int = DEFAULT_EVENT_PRIORITY,
-    isOverlay: Boolean = false,
-    callback: (text: Component, overlay: Boolean, matches: MatchResult?) -> Unit,
-): GameEvent = registerTask { ChatEvents.registerGameEvent(filter, priority, isOverlay, callback) }
-
-fun EventScope.registerAllowChatEvent(
-    filter: Regex? = null,
-    priority: Int = DEFAULT_EVENT_PRIORITY,
-    callback: (text: Component, matches: MatchResult?) -> Boolean,
-): ChatEvent = registerTask { ChatEvents.registerAllowChatEvent(filter, priority, callback) }
-
-fun EventScope.registerAllowGameEvent(
-    filter: Regex? = null,
-    priority: Int = DEFAULT_EVENT_PRIORITY,
-    callback: (text: Component, overlay: Boolean, matches: MatchResult?) -> Boolean,
-): GameEvent = registerTask { ChatEvents.registerAllowGameEvent(filter, priority, callback) }
-
-fun EventScope.registerAnyChatEvent(
-    filter: Regex? = null,
-    priority: Int = DEFAULT_EVENT_PRIORITY,
-    callback: (text: Component, matches: MatchResult?) -> Unit,
-): Pair<ChatEvent, GameEvent> {
-    val chatEvent = registerChatEvent(filter, priority, callback)
-    val gameEvent = registerGameEvent(filter, priority) { text, _, matches ->
-        callback(text, matches)
-    }
-    return chatEvent to gameEvent
 }

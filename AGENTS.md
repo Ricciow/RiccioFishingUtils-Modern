@@ -89,13 +89,16 @@ Each achievement MUST define:
 
 ### Implementation Workflow
 
-1.  **Listeners**: Register event listeners in `setupListeners()`. The system automatically unregisters these when the achievement is completed.
+1.  Register listeners with `scope.registerXEvent` in `setupListeners(scope: EventScope)`. The achievement closes the scope on completion, reset, or reload.
 2.  **Completion**: Call `complete()` to finish the achievement immediately.
 3.  **Persistence**: For complex state, override `saveState()` and `loadState(progressData: Map<String, Any>)`.
 
 **Example:**
 
 ```kotlin
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerSeaCreatureCatchEvent
+
 @Achievement
 object SeaCreatureExpert : BaseAchievement() {
     override val id = "sc_expert"
@@ -103,21 +106,21 @@ object SeaCreatureExpert : BaseAchievement() {
     override val description = "Catch 5 unique sea creatures."
     override val type = AchievementType.NORMAL
     override val difficulty = AchievementDifficulty.MEDIUM
-    override val category = AchievementCategory.COLLECTION
+    override val category = AchievementCategory.GENERAL
 
     private val caughtIds = mutableSetOf<String>()
     private val goal = 5
 
-    override val currentProgress: Int get() = caughtIds.size
-    override val targetProgress: Int get() = goal
+    override val currentProgress: Long get() = caughtIds.size.toLong()
+    override val targetProgress: Long get() = goal.toLong()
 
-    override fun setupListeners() {
-        activeListeners.add(registerSeaCreatureCatchEvent { sc, _ ->
-            if (caughtIds.add(sc.id)) {
+    override fun setupListeners(scope: EventScope) {
+        scope.registerSeaCreatureCatchEvent { sc, _, _, _, _ ->
+            if (caughtIds.add(sc.scName)) {
                 _progress = currentProgress.toFloat() / targetProgress.toFloat()
                 if (caughtIds.size >= goal) complete()
             }
-        })
+        }
     }
 
     override fun loadState(progressData: Map<String, Any>) {
@@ -170,7 +173,7 @@ Common managers:
 
 ### Managed Tasks
 
-Registration returns a `ManagedTask`. Call `.unregister()` to stop updates. Achievement base classes track these in `activeListeners` for auto-unregistration.
+Registration returns a `ManagedTask`. Scoped registrations unregister automatically when their `EventScope` closes. Call `.unregister()` to stop an individual task.
 
 ## Features
 

@@ -8,7 +8,7 @@ import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.data.catches.CatchTracker.catchHistory
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.managers.registerSeaCreatureCatchEvent
 
 @Achievement
 object WikiTikiDryStreakAchievement : NumericStageAchievement() {
@@ -40,7 +40,7 @@ object WikiTikiDryStreakAchievement : NumericStageAchievement() {
             0L
         }
 
-        activeListeners.add(registerSeaCreatureCatchEvent { _, _, _, _, _ ->
+        scope.registerSeaCreatureCatchEvent { _, _, _, _, _ ->
             val history = catchHistory.getOrAdd(creature)
 
             currentCount = if(history.total > 0) {
@@ -48,7 +48,7 @@ object WikiTikiDryStreakAchievement : NumericStageAchievement() {
             } else {
                 0L
             }
-        })
+        }
     }
 
     override fun getTargetCountForStage(stage: Int): Long {

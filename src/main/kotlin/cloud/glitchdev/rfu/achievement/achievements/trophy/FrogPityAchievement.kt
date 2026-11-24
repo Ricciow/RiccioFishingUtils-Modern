@@ -8,7 +8,7 @@ import cloud.glitchdev.rfu.achievement.BaseAchievement
 import cloud.glitchdev.rfu.constants.fishing.TrophyTier
 import cloud.glitchdev.rfu.data.fishing.TrophyDataManager
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.TrophyCatchEvents.registerTrophyFrogCatchEvent
+import cloud.glitchdev.rfu.events.managers.registerTrophyFrogCatchEvent
 
 @Achievement
 object FrogPityAchievement : BaseAchievement() {
@@ -20,13 +20,13 @@ object FrogPityAchievement : BaseAchievement() {
     override val category: AchievementCategory = AchievementCategory.TROPHY_FISHING
 
     override fun setupListeners(scope: EventScope) {
-        activeListeners.add(registerTrophyFrogCatchEvent(priority = 10) { frog, tier, _ ->
+        scope.registerTrophyFrogCatchEvent(priority = 10) { frog, tier, _ ->
             if (tier == TrophyTier.DIAMOND) {
                 val existing = TrophyDataManager.data.pity.frogPity[frog.name]
                 if (existing != null && existing.diamondProgress >= frog.diamondPity) {
                     complete()
                 }
             }
-        })
+        }
     }
 }

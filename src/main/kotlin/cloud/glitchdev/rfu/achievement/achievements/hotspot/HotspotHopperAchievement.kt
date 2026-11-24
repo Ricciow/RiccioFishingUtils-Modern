@@ -4,8 +4,8 @@ import cloud.glitchdev.rfu.achievement.*
 import cloud.glitchdev.rfu.achievement.types.NumericAchievement
 import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.managers.registerTickEvent
 import kotlin.time.Duration.Companion.minutes
 
 @Achievement
@@ -23,14 +23,14 @@ object HotspotHopperAchievement : NumericAchievement() {
     private var lastHotspotTime: Long = 0L
 
     override fun setupListeners(scope: EventScope) {
-        activeListeners.add(registerTickEvent(interval = 20) {
+        scope.registerTickEvent(interval = 20) {
             if (currentCount == 1L && System.currentTimeMillis() - lastHotspotTime > 1.minutes.inWholeMilliseconds) {
                 currentCount = 0L
                 lastHotspotType = null
             }
-        })
+        }
 
-        activeListeners.add(registerSeaCreatureCatchEvent { sc, _, hotspot, _, _ ->
+        scope.registerSeaCreatureCatchEvent { sc, _, hotspot, _, _ ->
             if (hotspot != null) {
                 val now = System.currentTimeMillis()
                 val currentType = sc.liquidType
@@ -46,7 +46,7 @@ object HotspotHopperAchievement : NumericAchievement() {
                 lastHotspotTime = now
                 currentCount = 1L
             }
-        })
+        }
     }
 
     override fun loadState(progressData: Map<String, Any>) {

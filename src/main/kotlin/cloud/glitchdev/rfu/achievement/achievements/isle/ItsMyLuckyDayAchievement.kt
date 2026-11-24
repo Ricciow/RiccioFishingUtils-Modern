@@ -6,7 +6,7 @@ import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.BaseAchievement
 import cloud.glitchdev.rfu.constants.fishing.RareDrops
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.DropEvents.registerRareDropEvent
+import cloud.glitchdev.rfu.events.managers.registerRareDropEvent
 
 object ItsMyLuckyDayAchievement : BaseAchievement() {
     override val id: String = "its_my_lucky_day"
@@ -17,11 +17,11 @@ object ItsMyLuckyDayAchievement : BaseAchievement() {
     override val category: AchievementCategory = AchievementCategory.ISLE
 
     override fun setupListeners(scope: EventScope) {
-        activeListeners.add(registerRareDropEvent { drop, _ ->
+        scope.registerRareDropEvent { drop, _, _ ->
             if(drop == RareDrops.RADIOACTIVE_VIAL) {
                 complete()
             }
             true
-        })
+        }
     }
 }

@@ -3,7 +3,7 @@ package cloud.glitchdev.rfu.events.managers
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.registration.DefaultLong
+import cloud.glitchdev.rfu.events.registration.Defaults
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.minecraft.client.Minecraft
 
@@ -31,9 +31,9 @@ object TickEvents : AbstractEventManager<(Minecraft) -> Unit, TickEvents.TickEve
         return TickEvent(priority, interval, callback).register()
     }
 
+    @Defaults("interval = ${DEFAULT_INTERVAL}L")
     class TickEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
-        @DefaultLong(DEFAULT_INTERVAL)
         var interval: Long = DEFAULT_INTERVAL,
         callback: (Minecraft) -> Unit
     ) : ManagedTask<(Minecraft) -> Unit, TickEvent>(priority, callback) {

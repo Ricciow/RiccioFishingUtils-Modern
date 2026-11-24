@@ -8,7 +8,7 @@ import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
 import cloud.glitchdev.rfu.data.collections.CollectionItem
 import cloud.glitchdev.rfu.data.collections.CollectionsHandler
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.CollectionEvents.registerCollectionUpdateEvent
+import cloud.glitchdev.rfu.events.managers.registerCollectionUpdateEvent
 import cloud.glitchdev.rfu.utils.dsl.compact
 
 
@@ -58,15 +58,16 @@ object ProSquisherAchievement: NumericStageAchievement() {
         while (!isCompleted && currentCount >= targetCount) {
             advanceStage()
         }
+        if (isCompleted) return
 
-        activeListeners.add(registerCollectionUpdateEvent { item, _, total, _ ->
+        scope.registerCollectionUpdateEvent { item, _, total, _ ->
             if (item == CollectionItem.INK_SAC) {
                 currentCount = total
                 while (!isCompleted && currentCount >= targetCount) {
                     advanceStage()
                 }
             }
-        })
+        }
     }
 
 

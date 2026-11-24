@@ -7,15 +7,24 @@ class EventScope : AutoCloseable {
     private val cleanup = mutableListOf<() -> Unit>()
     private var closed = false
 
-    internal fun <T : ManagedTask<*, *>> registerTask(register: () -> T): T {
+    internal fun <T : ManagedTask<*, *>> registerTask(register: () -> T): T =
+        register(register) { it.unregister() }
+
+    internal fun <F : ManagedTask<*, *>, S : ManagedTask<*, *>> registerTaskPair(
+        register: () -> Pair<F, S>,
+    ): Pair<F, S> = register(register) { (first, second) ->
+        runCleanup(listOf({ second.unregister() }, { first.unregister() }))
+    }
+
+    private fun <T> register(register: () -> T, unregister: (T) -> Unit): T {
         check(!closed) { "Cannot register an event in a closed scope." }
-        val task = register()
+        val result = register()
         if (closed) {
-            task.unregister()
+            unregister(result)
             error("The scope closed during event registration.")
         }
-        cleanup.add { task.unregister() }
-        return task
+        cleanup.add { unregister(result) }
+        return result
     }
 
     fun onClose(action: () -> Unit) {
@@ -36,9 +45,12 @@ class EventScope : AutoCloseable {
         closed = true
         val actions = cleanup.toList()
         cleanup.clear()
+        runCleanup(actions.asReversed())
+    }
 
+    private fun runCleanup(actions: List<() -> Unit>) {
         var failure: Throwable? = null
-        actions.asReversed().forEach { action ->
+        actions.forEach { action ->
             try {
                 action()
             } catch (error: Throwable) {

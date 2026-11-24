@@ -7,7 +7,7 @@ import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.CocoonEvents.registerCocoonEvent
+import cloud.glitchdev.rfu.events.managers.registerCocoonEvent
 
 @Achievement
 object OrderingTakeOutAchievement : NumericStageAchievement() {
@@ -33,9 +33,9 @@ object OrderingTakeOutAchievement : NumericStageAchievement() {
     }
 
     override fun setupListeners(scope: EventScope) {
-        activeListeners.add(registerCocoonEvent { _ ->
+        scope.registerCocoonEvent { _ ->
             addProgress(1L)
-        })
+        }
     }
 
     override fun getTargetCountForStage(stage: Int): Long {

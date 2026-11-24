@@ -6,7 +6,7 @@ import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.StageAchievement
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.TrophyCatchEvents.registerTrophyFrogCatchEvent
+import cloud.glitchdev.rfu.events.managers.registerTrophyFrogCatchEvent
 import cloud.glitchdev.rfu.constants.fishing.TrophyTier
 
 @Achievement
@@ -29,7 +29,7 @@ object AmphibianTwinsAchievement : StageAchievement() {
     }
 
     override fun setupListeners(scope: EventScope) {
-        activeListeners.add(registerTrophyFrogCatchEvent { _, tier, amount ->
+        scope.registerTrophyFrogCatchEvent { _, tier, amount ->
             val requiredTier = when (currentStage) {
                 1 -> TrophyTier.BRONZE
                 2 -> TrophyTier.SILVER
@@ -53,7 +53,7 @@ object AmphibianTwinsAchievement : StageAchievement() {
             } else {
                 lastTrophyTier = tierStr
             }
-        })
+        }
     }
 
     override fun onStageChanged(oldStage: Int, newStage: Int) {

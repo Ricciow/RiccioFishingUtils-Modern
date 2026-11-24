@@ -4,9 +4,7 @@ import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.EventManager
-import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.TrophyCatchEvents.TrophyFishCatchEventManager.TrophyFishCatchEvent
-import cloud.glitchdev.rfu.events.managers.TrophyCatchEvents.TrophyFrogCatchEventManager.TrophyFrogCatchEvent
+import cloud.glitchdev.rfu.events.registration.ScopedRegistration
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.constants.fishing.TrophyTier
@@ -55,6 +53,7 @@ object TrophyCatchEvents : RegisteredEvent {
         return TrophyFishCatchEventManager.register(priority, callback)
     }
 
+    @ScopedRegistration
     fun registerTrophyCatchEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (trophy: Trophy, tier: TrophyTier, type: TrophyType, amount: Int) -> Unit
@@ -109,17 +108,4 @@ object TrophyCatchEvents : RegisteredEvent {
             override fun unregister() = removeTask(this)
         }
     }
-}
-
-fun EventScope.registerTrophyCatchEvent(
-    priority: Int = DEFAULT_EVENT_PRIORITY,
-    callback: (trophy: Trophy, tier: TrophyTier, type: TrophyType, amount: Int) -> Unit,
-): Pair<TrophyFrogCatchEvent, TrophyFishCatchEvent> {
-    val frogEvent = registerTrophyFrogCatchEvent(priority) { frog, tier, amount ->
-        callback(frog, tier, TrophyType.FROG, amount)
-    }
-    val fishEvent = registerTrophyFishCatchEvent(priority) { fish, tier, amount ->
-        callback(fish, tier, TrophyType.FISH, amount)
-    }
-    return frogEvent to fishEvent
 }

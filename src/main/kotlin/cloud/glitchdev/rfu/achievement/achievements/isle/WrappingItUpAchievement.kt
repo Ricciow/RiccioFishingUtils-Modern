@@ -6,7 +6,7 @@ import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.CocoonEvents.registerCocoonEvent
+import cloud.glitchdev.rfu.events.managers.registerCocoonEvent
 
 @Achievement
 object WrappingItUpAchievement : NumericStageAchievement() {
@@ -33,12 +33,12 @@ object WrappingItUpAchievement : NumericStageAchievement() {
     }
 
     override fun setupListeners(scope: EventScope) {
-        activeListeners.add(registerCocoonEvent { sc ->
+        scope.registerCocoonEvent { sc ->
             val lookingFor = getCurrentSc() ?: return@registerCocoonEvent
             if (sc.scName == lookingFor) {
                 addProgress(1L)
             }
-        })
+        }
     }
 
     override fun getTargetCountForStage(stage: Int): Long = 1L

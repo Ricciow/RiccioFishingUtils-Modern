@@ -4,9 +4,9 @@ import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
 import cloud.glitchdev.rfu.events.EventManager
-import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.registration.Defaults
+import cloud.glitchdev.rfu.events.registration.ScopedRegistration
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.EntityInteractEvents.EntityInteractEvent
 import net.fabricmc.fabric.api.event.player.UseEntityCallback
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
@@ -41,6 +41,8 @@ object EntityInteractEvents : AbstractEventManager<(player: Player, world: Level
         return EntityInteractEvent(priority, callback).register()
     }
 
+    @ScopedRegistration
+    @Defaults("mainHandOnly = true")
     fun registerEntityInteractEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         mainHandOnly: Boolean = true,
@@ -61,9 +63,3 @@ object EntityInteractEvents : AbstractEventManager<(player: Player, world: Level
         override fun unregister() = removeTask(this)
     }
 }
-
-fun EventScope.registerEntityInteractEvent(
-    priority: Int = DEFAULT_EVENT_PRIORITY,
-    mainHandOnly: Boolean = true,
-    callback: (entity: Entity) -> Unit,
-): EntityInteractEvent = registerTask { EntityInteractEvents.registerEntityInteractEvent(priority, mainHandOnly, callback) }

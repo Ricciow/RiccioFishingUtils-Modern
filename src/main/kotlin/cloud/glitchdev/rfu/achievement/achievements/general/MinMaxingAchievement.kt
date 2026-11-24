@@ -8,8 +8,8 @@ import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.BaseAchievement
 import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.ArmorEvents
-import cloud.glitchdev.rfu.events.managers.ArmorEvents.registerArmorChangeEvent
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.registerArmorChangeEvent
+import cloud.glitchdev.rfu.events.managers.registerTickEvent
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.contents.PlainTextContents
@@ -24,12 +24,12 @@ object MinMaxingAchievement : BaseAchievement() {
     override val category: AchievementCategory = AchievementCategory.GENERAL
 
     override fun setupListeners(scope: EventScope) {
-        activeListeners.add(registerArmorChangeEvent {
+        scope.registerArmorChangeEvent {
             checkCompletion()
-        })
-        activeListeners.add(registerTickEvent(interval = 40) {
+        }
+        scope.registerTickEvent(interval = 40) {
             checkCompletion()
-        })
+        }
     }
 
     private fun checkCompletion() {

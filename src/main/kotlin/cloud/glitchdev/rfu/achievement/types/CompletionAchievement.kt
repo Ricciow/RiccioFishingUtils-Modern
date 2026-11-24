@@ -4,7 +4,7 @@ import cloud.glitchdev.rfu.achievement.AchievementProvider
 import cloud.glitchdev.rfu.achievement.BaseAchievement
 import cloud.glitchdev.rfu.data.achievements.AchievementHandler
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.AchievementUnlockedEvents.registerAchievementUnlockedEvent
+import cloud.glitchdev.rfu.events.managers.registerAchievementUnlockedEvent
 
 abstract class CompletionAchievement : BaseAchievement() {
     abstract val achievements: List<BaseAchievement>
@@ -20,12 +20,13 @@ abstract class CompletionAchievement : BaseAchievement() {
 
     override fun setupListeners(scope: EventScope) {
         updateProgress()
+        if (isCompleted) return
 
-        activeListeners.add(registerAchievementUnlockedEvent { achievement ->
+        scope.registerAchievementUnlockedEvent { achievement ->
             if (achievements.any { it.id == achievement.id }) {
                 updateProgress()
             }
-        })
+        }
     }
 
     private fun updateProgress() {

@@ -8,9 +8,9 @@ import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.BaseAchievement
 import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.ArmorEvents
-import cloud.glitchdev.rfu.events.managers.ArmorEvents.registerArmorChangeEvent
+import cloud.glitchdev.rfu.events.managers.registerArmorChangeEvent
 import cloud.glitchdev.rfu.events.managers.HotSpotEvents
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.registerTickEvent
 
 @Achievement
 object ShameOnYouAchievement : BaseAchievement() {
@@ -22,12 +22,12 @@ object ShameOnYouAchievement : BaseAchievement() {
     override val category: AchievementCategory = AchievementCategory.GENERAL
 
     override fun setupListeners(scope: EventScope) {
-        activeListeners.add(registerArmorChangeEvent {
+        scope.registerArmorChangeEvent {
             checkCondition()
-        })
-        activeListeners.add(registerTickEvent(interval = 40) {
+        }
+        scope.registerTickEvent(interval = 40) {
             checkCondition()
-        })
+        }
     }
 
     private fun checkCondition() {

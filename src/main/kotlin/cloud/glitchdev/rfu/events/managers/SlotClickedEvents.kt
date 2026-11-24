@@ -3,8 +3,7 @@ package cloud.glitchdev.rfu.events.managers
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
 import cloud.glitchdev.rfu.events.EventManager
-import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.SlotClickedEvents.SlotClickedEvent
+import cloud.glitchdev.rfu.events.registration.ScopedRegistration
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.world.inventory.Slot
@@ -26,6 +25,7 @@ object SlotClickedEvents : AbstractEventManager<(slot: Slot, screen: AbstractCon
         return SlotClickedEvent(priority, callback).register()
     }
 
+    @ScopedRegistration
     fun registerSlotClicked(
         priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (slot: Slot, title: String) -> Unit
@@ -43,8 +43,3 @@ object SlotClickedEvents : AbstractEventManager<(slot: Slot, screen: AbstractCon
         override fun unregister() = removeTask(this)
     }
 }
-
-fun EventScope.registerSlotClicked(
-    priority: Int = DEFAULT_EVENT_PRIORITY,
-    callback: (slot: Slot, title: String) -> Unit,
-): SlotClickedEvent = registerTask { SlotClickedEvents.registerSlotClicked(priority, callback) }

@@ -6,7 +6,7 @@ import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.managers.registerSeaCreatureCatchEvent
 
 @Achievement
 object LuckyHookAchievement : NumericStageAchievement() {
@@ -33,7 +33,7 @@ object LuckyHookAchievement : NumericStageAchievement() {
     }
 
     override fun setupListeners(scope: EventScope) {
-        activeListeners.add(registerSeaCreatureCatchEvent { sc, _, _, _, _ ->
+        scope.registerSeaCreatureCatchEvent { sc, _, _, _, _ ->
             val lookingFor = getCurrentSc() ?: return@registerSeaCreatureCatchEvent
 
             if (lookingFor == sc.scName) {
@@ -41,7 +41,7 @@ object LuckyHookAchievement : NumericStageAchievement() {
             } else {
                 currentCount = 0L
             }
-        })
+        }
     }
 
     override fun getTargetCountForStage(stage: Int): Long = 2L

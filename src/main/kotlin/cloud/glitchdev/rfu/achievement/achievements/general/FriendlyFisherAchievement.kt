@@ -7,7 +7,7 @@ import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
 import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.ArmorEvents
-import cloud.glitchdev.rfu.events.managers.ArmorEvents.registerArmorChangeEvent
+import cloud.glitchdev.rfu.events.managers.registerArmorChangeEvent
 
 @Achievement
 object FriendlyFisherAchievement : NumericStageAchievement() {
@@ -26,9 +26,9 @@ object FriendlyFisherAchievement : NumericStageAchievement() {
     }
 
     override fun setupListeners(scope: EventScope) {
-        activeListeners.add(registerArmorChangeEvent {
+        scope.registerArmorChangeEvent {
             checkAll()
-        })
+        }
         checkAll()
     }
 

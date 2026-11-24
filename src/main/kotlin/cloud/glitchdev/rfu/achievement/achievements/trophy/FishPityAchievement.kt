@@ -8,7 +8,7 @@ import cloud.glitchdev.rfu.achievement.BaseAchievement
 import cloud.glitchdev.rfu.constants.fishing.TrophyTier
 import cloud.glitchdev.rfu.data.fishing.TrophyDataManager
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.TrophyCatchEvents.registerTrophyFishCatchEvent
+import cloud.glitchdev.rfu.events.managers.registerTrophyFishCatchEvent
 
 @Achievement
 object FishPityAchievement : BaseAchievement() {
@@ -20,13 +20,13 @@ object FishPityAchievement : BaseAchievement() {
     override val category: AchievementCategory = AchievementCategory.TROPHY_FISHING
 
     override fun setupListeners(scope: EventScope) {
-        activeListeners.add(registerTrophyFishCatchEvent(priority = 10) { fish, tier, _ ->
+        scope.registerTrophyFishCatchEvent(priority = 10) { fish, tier, _ ->
             if (tier == TrophyTier.DIAMOND) {
                 val existing = TrophyDataManager.data.pity.fishPity[fish.name]
                 if (existing != null && existing.diamondProgress >= fish.diamondPity) {
                     complete()
                 }
             }
-        })
+        }
     }
 }

@@ -7,7 +7,7 @@ import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.StageAchievement
 import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.ArmorEvents
-import cloud.glitchdev.rfu.events.managers.ArmorEvents.registerArmorChangeEvent
+import cloud.glitchdev.rfu.events.managers.registerArmorChangeEvent
 
 @Achievement
 object DiamondTrophyHunterAchievement : StageAchievement() {
@@ -27,9 +27,9 @@ object DiamondTrophyHunterAchievement : StageAchievement() {
     }
 
     override fun setupListeners(scope: EventScope) {
-        activeListeners.add(registerArmorChangeEvent {
+        scope.registerArmorChangeEvent {
             checkArmor()
-        })
+        }
         checkArmor()
     }
 

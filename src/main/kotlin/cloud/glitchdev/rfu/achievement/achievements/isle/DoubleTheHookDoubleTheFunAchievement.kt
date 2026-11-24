@@ -6,7 +6,7 @@ import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.managers.registerSeaCreatureCatchEvent
 
 @Achievement
 object DoubleTheHookDoubleTheFunAchievement : NumericStageAchievement() {
@@ -33,14 +33,14 @@ object DoubleTheHookDoubleTheFunAchievement : NumericStageAchievement() {
     }
 
     override fun setupListeners(scope: EventScope) {
-        activeListeners.add(registerSeaCreatureCatchEvent { sc, doubleHook, _, _, _ ->
+        scope.registerSeaCreatureCatchEvent { sc, doubleHook, _, _, _ ->
             if (doubleHook) {
                 val lookingFor = getCurrentSc() ?: return@registerSeaCreatureCatchEvent
                 if (sc.scName == lookingFor) {
                     addProgress(1L)
                 }
             }
-        })
+        }
     }
 
     override fun getTargetCountForStage(stage: Int): Long = 1L

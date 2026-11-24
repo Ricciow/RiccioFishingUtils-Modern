@@ -2,11 +2,9 @@ package cloud.glitchdev.rfu.achievement
 
 import cloud.glitchdev.rfu.achievement.interfaces.IAchievement
 import cloud.glitchdev.rfu.data.achievements.AchievementHandler
-import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.EventScope
 
 abstract class BaseAchievement : IAchievement {
-    protected val activeListeners = mutableListOf<AbstractEventManager.ManagedTask<*, *>>()
     private var listenerScope: EventScope? = null
 
     private val isLegacy: Boolean
@@ -122,14 +120,7 @@ abstract class BaseAchievement : IAchievement {
     protected fun unregisterAllListeners() {
         val scope = listenerScope
         listenerScope = null
-        try {
-            scope?.close()
-        } finally {
-            for (listener in activeListeners) {
-                listener.unregister()
-            }
-            activeListeners.clear()
-        }
+        scope?.close()
     }
     
     open fun loadState(progressData: Map<String, Any>) {}

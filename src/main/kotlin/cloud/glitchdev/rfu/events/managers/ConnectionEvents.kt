@@ -5,7 +5,7 @@ import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_P
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.registration.DefaultLong
+import cloud.glitchdev.rfu.events.registration.Defaults
 import cloud.glitchdev.rfu.utils.Coroutines
 import kotlinx.coroutines.delay
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
@@ -64,9 +64,9 @@ object ConnectionEvents : RegisteredEvent {
             return JoinEvent(priority, delayMillis, callback).register()
         }
 
+        @Defaults("delayMillis = ${DEFAULT_JOIN_DELAY_MILLIS}L")
         class JoinEvent(
             priority: Int = DEFAULT_EVENT_PRIORITY,
-            @DefaultLong(DEFAULT_JOIN_DELAY_MILLIS)
             val delayMillis: Long = DEFAULT_JOIN_DELAY_MILLIS,
             callback: (wasConnected: Boolean) -> Unit,
         ) : ManagedTask<(wasConnected: Boolean) -> Unit, JoinEvent>(priority, callback) {

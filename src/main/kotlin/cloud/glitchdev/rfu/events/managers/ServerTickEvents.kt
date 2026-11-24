@@ -3,7 +3,7 @@ package cloud.glitchdev.rfu.events.managers
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.registration.DefaultLong
+import cloud.glitchdev.rfu.events.registration.Defaults
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
 import cloud.glitchdev.rfu.events.managers.SetTimeEvents.registerSetTimeEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
@@ -86,9 +86,9 @@ object ServerTickEvents : AbstractEventManager<(serverTick: Long) -> Unit, Serve
         return ServerTickEvent(priority, interval, callback).register()
     }
 
+    @Defaults("interval = ${DEFAULT_INTERVAL}L")
     class ServerTickEvent(
         priority: Int = DEFAULT_EVENT_PRIORITY,
-        @DefaultLong(DEFAULT_INTERVAL)
         var interval: Long = DEFAULT_INTERVAL,
         callback: (serverTick: Long) -> Unit
     ) : ManagedTask<(Long) -> Unit, ServerTickEvent>(priority, callback) {

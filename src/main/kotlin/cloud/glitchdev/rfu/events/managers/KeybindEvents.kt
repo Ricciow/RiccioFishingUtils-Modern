@@ -4,7 +4,8 @@ import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
 import cloud.glitchdev.rfu.events.EventManager
-import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.registration.Defaults
+import cloud.glitchdev.rfu.events.registration.ScopedRegistration
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.keybind.KeyContext
 import cloud.glitchdev.rfu.events.keybind.KeyModifier
@@ -158,6 +159,20 @@ object KeybindEvents : AbstractEventManager<() -> Unit, KeybindTask>(), Register
         return if (task.matchModifiersStrict) task.modifiers == currentMods else currentMods.containsAll(task.modifiers)
     }
 
+    @ScopedRegistration
+    @Defaults(
+        "context = KeyContext.IN_GAME",
+        "modifiers = emptySet()",
+        "matchModifiersStrict = false",
+        "consume = false",
+        "ignoreInTextFields = true",
+        "condition = null",
+        "onPress = null",
+        "onRelease = null",
+        "onHeld = null",
+        "onRepeat = null",
+        "name = null",
+    )
     fun registerKeybind(
         key: () -> Int,
         priority: Int = DEFAULT_EVENT_PRIORITY,
@@ -190,6 +205,20 @@ object KeybindEvents : AbstractEventManager<() -> Unit, KeybindTask>(), Register
         ).register()
     }
 
+    @ScopedRegistration
+    @Defaults(
+        "context = KeyContext.IN_GAME",
+        "modifiers = emptySet()",
+        "matchModifiersStrict = false",
+        "consume = false",
+        "ignoreInTextFields = true",
+        "condition = null",
+        "onPress = null",
+        "onRelease = null",
+        "onHeld = null",
+        "onRepeat = null",
+        "name = null",
+    )
     fun registerKeybind(
         key: Int,
         priority: Int = DEFAULT_EVENT_PRIORITY,
@@ -220,6 +249,7 @@ object KeybindEvents : AbstractEventManager<() -> Unit, KeybindTask>(), Register
         name = name
     )
 
+    @ScopedRegistration
     fun registerKeybind(builder: KeybindBuilder.() -> Unit): KeybindTask =
         KeybindBuilder().apply(builder).build().register()
 
@@ -251,70 +281,3 @@ object KeybindEvents : AbstractEventManager<() -> Unit, KeybindTask>(), Register
         }
     }
 }
-
-fun EventScope.registerKeybind(
-    key: () -> Int,
-    priority: Int = DEFAULT_EVENT_PRIORITY,
-    context: KeyContext = KeyContext.IN_GAME,
-    modifiers: Set<KeyModifier> = emptySet(),
-    matchModifiersStrict: Boolean = false,
-    consume: Boolean = false,
-    ignoreInTextFields: Boolean = true,
-    condition: (() -> Boolean)? = null,
-    onPress: (() -> Unit)? = null,
-    onRelease: (() -> Unit)? = null,
-    onHeld: (() -> Unit)? = null,
-    onRepeat: (() -> Unit)? = null,
-    name: String? = null,
-): KeybindTask = registerTask {
-    KeybindEvents.registerKeybind(
-        key = key,
-        priority = priority,
-        context = context,
-        modifiers = modifiers,
-        matchModifiersStrict = matchModifiersStrict,
-        consume = consume,
-        ignoreInTextFields = ignoreInTextFields,
-        condition = condition,
-        onPress = onPress,
-        onRelease = onRelease,
-        onHeld = onHeld,
-        onRepeat = onRepeat,
-        name = name,
-    )
-}
-
-fun EventScope.registerKeybind(
-    key: Int,
-    priority: Int = DEFAULT_EVENT_PRIORITY,
-    context: KeyContext = KeyContext.IN_GAME,
-    modifiers: Set<KeyModifier> = emptySet(),
-    matchModifiersStrict: Boolean = false,
-    consume: Boolean = false,
-    ignoreInTextFields: Boolean = true,
-    condition: (() -> Boolean)? = null,
-    onPress: (() -> Unit)? = null,
-    onRelease: (() -> Unit)? = null,
-    onHeld: (() -> Unit)? = null,
-    onRepeat: (() -> Unit)? = null,
-    name: String? = null,
-): KeybindTask = registerTask {
-    KeybindEvents.registerKeybind(
-        key = key,
-        priority = priority,
-        context = context,
-        modifiers = modifiers,
-        matchModifiersStrict = matchModifiersStrict,
-        consume = consume,
-        ignoreInTextFields = ignoreInTextFields,
-        condition = condition,
-        onPress = onPress,
-        onRelease = onRelease,
-        onHeld = onHeld,
-        onRepeat = onRepeat,
-        name = name,
-    )
-}
-
-fun EventScope.registerKeybind(builder: KeybindBuilder.() -> Unit): KeybindTask =
-    registerTask { KeybindEvents.registerKeybind(builder) }

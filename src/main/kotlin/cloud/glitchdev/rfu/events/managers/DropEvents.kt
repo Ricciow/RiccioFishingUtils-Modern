@@ -8,9 +8,6 @@ import cloud.glitchdev.rfu.events.AbstractEventManager
 import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.EventManager
-import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.DropEvents.DyeDropEventManager.DyeDropEvent
-import cloud.glitchdev.rfu.events.managers.DropEvents.RareDropEventManager.RareDropEvent
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.utils.dsl.escapeForRegex
 import cloud.glitchdev.rfu.utils.dsl.isUser
@@ -166,13 +163,3 @@ object DropEvents : RegisteredEvent {
         }
     }
 }
-
-fun EventScope.registerRareDropEvent(
-    priority: Int = DEFAULT_EVENT_PRIORITY,
-    callback: (rareDrop: RareDrops, magicFind: Int?) -> Boolean,
-): RareDropEvent = registerTask { DropEvents.registerRareDropEvent(priority, callback) }
-
-fun EventScope.registerDyeDropEvent(
-    priority: Int = DEFAULT_EVENT_PRIORITY,
-    callback: (dyeDrop: Dyes, magicFind: Int?) -> Unit,
-): DyeDropEvent = registerTask { DropEvents.registerDyeDropEvent(priority, callback) }

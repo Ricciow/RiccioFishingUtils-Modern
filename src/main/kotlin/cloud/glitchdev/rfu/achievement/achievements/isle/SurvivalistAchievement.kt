@@ -8,12 +8,12 @@ import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.data.mob.SkyblockEntity
 import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.ArmorEvents
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
-import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDeathEvent
-import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDetectEvent
-import cloud.glitchdev.rfu.events.managers.PlayerEvents.registerPlayerDetectEvent
-import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.registerMobDeathEvent
+import cloud.glitchdev.rfu.events.managers.registerMobDetectEvent
+import cloud.glitchdev.rfu.events.managers.registerPlayerDetectEvent
+import cloud.glitchdev.rfu.events.managers.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.managers.registerTickEvent
 import net.minecraft.world.level.levelgen.Heightmap
 
 @Achievement
@@ -50,7 +50,7 @@ object SurvivalistAchievement : StageAchievement() {
     }
 
     override fun setupListeners(scope: EventScope) {
-        activeListeners.add(registerSeaCreatureCatchEvent { sc, doubleHook, _, _, _ ->
+        scope.registerSeaCreatureCatchEvent { sc, doubleHook, _, _, _ ->
             if (sc == SEA_CREATURE) {
                 waitingForJawbus = true
                 wasAssisted = false
@@ -61,9 +61,9 @@ object SurvivalistAchievement : StageAchievement() {
                 jawbusSpawnTime = System.currentTimeMillis()
                 trackingJawbus = null
             }
-        })
+        }
 
-        activeListeners.add(registerTickEvent(interval = 5) {
+        scope.registerTickEvent(interval = 5) {
             val jawbus = trackingJawbus
             if (jawbus != null) {
                 val currentHealth = jawbus.health
@@ -91,9 +91,9 @@ object SurvivalistAchievement : StageAchievement() {
                     }
                 }
             }
-        })
+        }
 
-        activeListeners.add(registerMobDetectEvent { entities ->
+        scope.registerMobDetectEvent { entities ->
             if (waitingForJawbus) {
                 val jawbus = entities.find { it.sbName == SEA_CREATURE.scName }
                 if (jawbus != null) {
@@ -104,9 +104,9 @@ object SurvivalistAchievement : StageAchievement() {
                     }
                 }
             }
-        })
+        }
 
-        activeListeners.add(registerPlayerDetectEvent { players ->
+        scope.registerPlayerDetectEvent { players ->
             val jawbus = trackingJawbus ?: return@registerPlayerDetectEvent
             if (wasAssisted) return@registerPlayerDetectEvent
 
@@ -117,14 +117,14 @@ object SurvivalistAchievement : StageAchievement() {
             if (assisted) {
                 wasAssisted = true
             }
-        })
+        }
 
-        activeListeners.add(registerGameEvent(DEATH_REGEX) { _, _, _ ->
+        scope.registerGameEvent(DEATH_REGEX) { _, _, _ ->
             trackingJawbus = null
             waitingForJawbus = false
-        })
+        }
 
-        activeListeners.add(registerMobDeathEvent { entities ->
+        scope.registerMobDeathEvent { entities ->
             val jawbus = trackingJawbus ?: return@registerMobDeathEvent
             if (entities.contains(jawbus)) {
                 val world = mc.level
@@ -151,6 +151,6 @@ object SurvivalistAchievement : StageAchievement() {
 
                 trackingJawbus = null
             }
-        })
+        }
     }
 }
