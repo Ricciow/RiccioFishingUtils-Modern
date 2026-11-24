@@ -1,6 +1,8 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
+import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.utils.dsl.isIgnored
 import cloud.glitchdev.rfu.utils.dsl.isUser
@@ -13,6 +15,7 @@ object PartyFinderEvents {
         .filter { !it.user.isIgnored() }
         .sortedBy { it.players.current >= it.players.max }
 
+    @EventManager(register = false)
     object PartyCreated : AbstractEventManager<(FishingParty) -> Unit, PartyCreated.PartyCreatedEvent>() {
         override val runTasks: (FishingParty) -> Unit = { party ->
             if (!party.user.isIgnored()) {
@@ -24,12 +27,12 @@ object PartyFinderEvents {
             }
         }
 
-        fun register(priority: Int = 20, callback: (FishingParty) -> Unit): PartyCreatedEvent {
+        fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (FishingParty) -> Unit): PartyCreatedEvent {
             return PartyCreatedEvent(priority, callback).register()
         }
 
         class PartyCreatedEvent(
-            priority: Int = 20,
+            priority: Int = DEFAULT_EVENT_PRIORITY,
             callback: (FishingParty) -> Unit
         ) : ManagedTask<(FishingParty) -> Unit, PartyCreatedEvent>(priority, callback) {
             override fun register() = submitTask(this)
@@ -37,6 +40,7 @@ object PartyFinderEvents {
         }
     }
 
+    @EventManager(register = false)
     object PartyUpdated : AbstractEventManager<(FishingParty) -> Unit, PartyUpdated.PartyUpdatedEvent>() {
         override val runTasks: (FishingParty) -> Unit = { party ->
             if (!party.user.isIgnored()) {
@@ -48,12 +52,12 @@ object PartyFinderEvents {
             }
         }
 
-        fun register(priority: Int = 20, callback: (FishingParty) -> Unit): PartyUpdatedEvent {
+        fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (FishingParty) -> Unit): PartyUpdatedEvent {
             return PartyUpdatedEvent(priority, callback).register()
         }
 
         class PartyUpdatedEvent(
-            priority: Int = 20,
+            priority: Int = DEFAULT_EVENT_PRIORITY,
             callback: (FishingParty) -> Unit
         ) : ManagedTask<(FishingParty) -> Unit, PartyUpdatedEvent>(priority, callback) {
             override fun register() = submitTask(this)
@@ -61,6 +65,7 @@ object PartyFinderEvents {
         }
     }
 
+    @EventManager(register = false)
     object PartyJoined : AbstractEventManager<() -> Unit, PartyJoined.PartyJoinedEvent>() {
         override val runTasks: () -> Unit = {
             safeExecution {
@@ -70,12 +75,12 @@ object PartyFinderEvents {
             }
         }
 
-        fun register(priority: Int = 20, callback: () -> Unit): PartyJoinedEvent {
+        fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: () -> Unit): PartyJoinedEvent {
             return PartyJoinedEvent(priority, callback).register()
         }
 
         class PartyJoinedEvent(
-            priority: Int = 20,
+            priority: Int = DEFAULT_EVENT_PRIORITY,
             callback: () -> Unit
         ) : ManagedTask<() -> Unit, PartyJoinedEvent>(priority, callback) {
             override fun register() = submitTask(this)
@@ -83,6 +88,7 @@ object PartyFinderEvents {
         }
     }
 
+    @EventManager(register = false)
     object PartyListChanged : AbstractEventManager<(List<FishingParty>) -> Unit, PartyListChanged.PartyListChangedEvent>() {
         override val runTasks: (List<FishingParty>) -> Unit = { parties ->
             safeExecution {
@@ -90,7 +96,7 @@ object PartyFinderEvents {
             }
         }
 
-        fun register(priority: Int = 20, callback: (List<FishingParty>) -> Unit): PartyListChangedEvent {
+        fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (List<FishingParty>) -> Unit): PartyListChangedEvent {
             return PartyListChangedEvent(priority, callback).register()
         }
 
@@ -100,6 +106,7 @@ object PartyFinderEvents {
         }
     }
 
+    @EventManager(register = false)
     object JoinRequest : AbstractEventManager<(String) -> Unit, JoinRequest.JoinRequestEvent>() {
         override val runTasks: (String) -> Unit = { applicant ->
             if (!applicant.isIgnored()) {
@@ -109,7 +116,7 @@ object PartyFinderEvents {
             }
         }
 
-        fun register(priority: Int = 20, callback: (String) -> Unit): JoinRequestEvent {
+        fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (String) -> Unit): JoinRequestEvent {
             return JoinRequestEvent(priority, callback).register()
         }
 
@@ -119,6 +126,7 @@ object PartyFinderEvents {
         }
     }
 
+    @EventManager(register = false)
     object InfoMessage : AbstractEventManager<(String, Boolean) -> Unit, InfoMessage.InfoMessageEvent>() {
         override val runTasks: (String, Boolean) -> Unit = { message, isWarning ->
             safeExecution {
@@ -126,7 +134,7 @@ object PartyFinderEvents {
             }
         }
 
-        fun register(priority: Int = 20, callback: (String, Boolean) -> Unit): InfoMessageEvent {
+        fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (String, Boolean) -> Unit): InfoMessageEvent {
             return InfoMessageEvent(priority, callback).register()
         }
 
@@ -136,6 +144,7 @@ object PartyFinderEvents {
         }
     }
 
+    @EventManager(register = false)
     object MyPartyChanged : AbstractEventManager<(FishingParty?) -> Unit, MyPartyChanged.MyPartyChangedEvent>() {
         override val runTasks: (FishingParty?) -> Unit = { party ->
             safeExecution {
@@ -143,7 +152,7 @@ object PartyFinderEvents {
             }
         }
 
-        fun register(priority: Int = 20, callback: (FishingParty?) -> Unit): MyPartyChangedEvent {
+        fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (FishingParty?) -> Unit): MyPartyChangedEvent {
             return MyPartyChangedEvent(priority, callback).register()
         }
 
@@ -191,22 +200,22 @@ object PartyFinderEvents {
         PartyListChanged.runTasks(parties)
     }
 
-    fun registerPartyCreatedEvent(priority: Int = 20, callback: (FishingParty) -> Unit): PartyCreated.PartyCreatedEvent {
+    fun registerPartyCreatedEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (FishingParty) -> Unit): PartyCreated.PartyCreatedEvent {
         return PartyCreated.register(priority, callback)
     }
 
-    fun registerPartyUpdatedEvent(priority: Int = 20, callback: (FishingParty) -> Unit): PartyUpdated.PartyUpdatedEvent {
+    fun registerPartyUpdatedEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (FishingParty) -> Unit): PartyUpdated.PartyUpdatedEvent {
         return PartyUpdated.register(priority, callback)
     }
 
-    fun registerPartyJoinedEvent(priority: Int = 20, callback: () -> Unit): PartyJoined.PartyJoinedEvent {
+    fun registerPartyJoinedEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: () -> Unit): PartyJoined.PartyJoinedEvent {
         return PartyJoined.register(priority, callback)
     }
 
-    fun registerPartyListChangedEvent(priority: Int = 20, callback: (List<FishingParty>) -> Unit) = PartyListChanged.register(priority, callback)
-    fun registerJoinRequestEvent(priority: Int = 20, callback: (String) -> Unit) = JoinRequest.register(priority, callback)
-    fun registerInfoMessageEvent(priority: Int = 20, callback: (String, Boolean) -> Unit) = InfoMessage.register(priority, callback)
-    fun registerMyPartyChangedEvent(priority: Int = 20, callback: (FishingParty?) -> Unit) = MyPartyChanged.register(priority, callback)
+    fun registerPartyListChangedEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (List<FishingParty>) -> Unit) = PartyListChanged.register(priority, callback)
+    fun registerJoinRequestEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (String) -> Unit) = JoinRequest.register(priority, callback)
+    fun registerInfoMessageEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (String, Boolean) -> Unit) = InfoMessage.register(priority, callback)
+    fun registerMyPartyChangedEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (FishingParty?) -> Unit) = MyPartyChanged.register(priority, callback)
 
     fun runPartyJoinedTasks() {
         PartyJoined.runTasks()

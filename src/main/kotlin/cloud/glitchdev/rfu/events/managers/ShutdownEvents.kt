@@ -1,12 +1,12 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
-import cloud.glitchdev.rfu.events.AutoRegister
+import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents
 import net.minecraft.client.Minecraft
 
-@AutoRegister
+@EventManager
 object ShutdownEvents : AbstractEventManager<(Minecraft) -> Unit, ShutdownEvents.ShutdownEvent>(), RegisteredEvent {
     override fun register() {
         ClientLifecycleEvents.CLIENT_STOPPING.register { client ->
@@ -22,12 +22,12 @@ object ShutdownEvents : AbstractEventManager<(Minecraft) -> Unit, ShutdownEvents
         }
     }
 
-    fun registerShutdownEvent(priority: Int = 20, callback: (Minecraft) -> Unit): ShutdownEvent {
+    fun registerShutdownEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (Minecraft) -> Unit): ShutdownEvent {
         return ShutdownEvent(priority, callback).register()
     }
 
     class ShutdownEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (Minecraft) -> Unit
     ) : ManagedTask<(Minecraft) -> Unit, ShutdownEvent>(priority, callback) {
         override fun register() = submitTask(this)

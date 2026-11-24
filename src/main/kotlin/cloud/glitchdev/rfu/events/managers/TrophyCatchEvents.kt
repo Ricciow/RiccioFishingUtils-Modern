@@ -1,7 +1,12 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
 import cloud.glitchdev.rfu.events.AutoRegister
+import cloud.glitchdev.rfu.events.EventManager
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.TrophyCatchEvents.TrophyFishCatchEventManager.TrophyFishCatchEvent
+import cloud.glitchdev.rfu.events.managers.TrophyCatchEvents.TrophyFrogCatchEventManager.TrophyFrogCatchEvent
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.constants.fishing.TrophyTier
@@ -37,21 +42,21 @@ object TrophyCatchEvents : RegisteredEvent {
     }
 
     fun registerTrophyFrogCatchEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (frog: TrophyFrog, tier: TrophyTier, amount: Int) -> Unit
     ): TrophyFrogCatchEventManager.TrophyFrogCatchEvent {
         return TrophyFrogCatchEventManager.register(priority, callback)
     }
 
     fun registerTrophyFishCatchEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (fish: TrophyFish, tier: TrophyTier, amount: Int) -> Unit
     ): TrophyFishCatchEventManager.TrophyFishCatchEvent {
         return TrophyFishCatchEventManager.register(priority, callback)
     }
 
     fun registerTrophyCatchEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (trophy: Trophy, tier: TrophyTier, type: TrophyType, amount: Int) -> Unit
     ): Pair<TrophyFrogCatchEventManager.TrophyFrogCatchEvent, TrophyFishCatchEventManager.TrophyFishCatchEvent> {
         val frogEvent = registerTrophyFrogCatchEvent(priority) { frog, tier, amount ->
@@ -63,6 +68,7 @@ object TrophyCatchEvents : RegisteredEvent {
         return Pair(frogEvent, fishEvent)
     }
 
+    @EventManager(register = false)
     object TrophyFrogCatchEventManager : AbstractEventManager<(frog: TrophyFrog, tier: TrophyTier, amount: Int) -> Unit, TrophyFrogCatchEventManager.TrophyFrogCatchEvent>() {
         override val runTasks: (frog: TrophyFrog, tier: TrophyTier, amount: Int) -> Unit = { frog, tier, amount ->
             safeExecution {
@@ -70,12 +76,12 @@ object TrophyCatchEvents : RegisteredEvent {
             }
         }
 
-        fun register(priority: Int = 20, callback: (frog: TrophyFrog, tier: TrophyTier, amount: Int) -> Unit): TrophyFrogCatchEvent {
+        fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (frog: TrophyFrog, tier: TrophyTier, amount: Int) -> Unit): TrophyFrogCatchEvent {
             return TrophyFrogCatchEvent(priority, callback).register()
         }
 
         class TrophyFrogCatchEvent(
-            priority: Int = 20,
+            priority: Int = DEFAULT_EVENT_PRIORITY,
             callback: (frog: TrophyFrog, tier: TrophyTier, amount: Int) -> Unit
         ) : ManagedTask<(frog: TrophyFrog, tier: TrophyTier, amount: Int) -> Unit, TrophyFrogCatchEvent>(priority, callback) {
             override fun register() = submitTask(this)
@@ -83,6 +89,7 @@ object TrophyCatchEvents : RegisteredEvent {
         }
     }
 
+    @EventManager(register = false)
     object TrophyFishCatchEventManager : AbstractEventManager<(fish: TrophyFish, tier: TrophyTier, amount: Int) -> Unit, TrophyFishCatchEventManager.TrophyFishCatchEvent>() {
         override val runTasks: (fish: TrophyFish, tier: TrophyTier, amount: Int) -> Unit = { fish, tier, amount ->
             safeExecution {
@@ -90,16 +97,29 @@ object TrophyCatchEvents : RegisteredEvent {
             }
         }
 
-        fun register(priority: Int = 20, callback: (fish: TrophyFish, tier: TrophyTier, amount: Int) -> Unit): TrophyFishCatchEvent {
+        fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (fish: TrophyFish, tier: TrophyTier, amount: Int) -> Unit): TrophyFishCatchEvent {
             return TrophyFishCatchEvent(priority, callback).register()
         }
 
         class TrophyFishCatchEvent(
-            priority: Int = 20,
+            priority: Int = DEFAULT_EVENT_PRIORITY,
             callback: (fish: TrophyFish, tier: TrophyTier, amount: Int) -> Unit
         ) : ManagedTask<(fish: TrophyFish, tier: TrophyTier, amount: Int) -> Unit, TrophyFishCatchEvent>(priority, callback) {
             override fun register() = submitTask(this)
             override fun unregister() = removeTask(this)
         }
     }
+}
+
+fun EventScope.registerTrophyCatchEvent(
+    priority: Int = DEFAULT_EVENT_PRIORITY,
+    callback: (trophy: Trophy, tier: TrophyTier, type: TrophyType, amount: Int) -> Unit,
+): Pair<TrophyFrogCatchEvent, TrophyFishCatchEvent> {
+    val frogEvent = registerTrophyFrogCatchEvent(priority) { frog, tier, amount ->
+        callback(frog, tier, TrophyType.FROG, amount)
+    }
+    val fishEvent = registerTrophyFishCatchEvent(priority) { fish, tier, amount ->
+        callback(fish, tier, TrophyType.FISH, amount)
+    }
+    return frogEvent to fishEvent
 }

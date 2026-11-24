@@ -1,7 +1,7 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
-import cloud.glitchdev.rfu.events.AutoRegister
+import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.events.managers.SetSlotEvents.registerSetSlotEvent
@@ -14,7 +14,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.world.item.ItemStack
 import kotlin.math.abs
 
-@AutoRegister
+@EventManager
 object LootshareEvents : AbstractEventManager<(contributors: List<String>, items: List<LootshareEvents.LootshareItem>) -> Unit, LootshareEvents.LootshareEvent>(), RegisteredEvent {
 
     private const val CORRELATION_WINDOW_MS = 100L
@@ -100,7 +100,7 @@ object LootshareEvents : AbstractEventManager<(contributors: List<String>, items
     }
 
     fun registerLootshareEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (contributors: List<String>, items: List<LootshareItem>) -> Unit
     ): LootshareEvent {
         return LootshareEvent(priority, callback).register()
@@ -111,7 +111,7 @@ object LootshareEvents : AbstractEventManager<(contributors: List<String>, items
     private data class PendingSlot(val timeMs: Long, val slot: Int, val itemStack: ItemStack, val diffCount: Int)
 
     class LootshareEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (contributors: List<String>, items: List<LootshareItem>) -> Unit
     ) : ManagedTask<(contributors: List<String>, items: List<LootshareItem>) -> Unit, LootshareEvent>(priority, callback) {
         override fun register() = submitTask(this)

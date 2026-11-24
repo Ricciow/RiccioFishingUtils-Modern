@@ -7,9 +7,13 @@ class EventScope : AutoCloseable {
     private val cleanup = mutableListOf<() -> Unit>()
     private var closed = false
 
-    internal fun <T : ManagedTask<*, *>> registerTask(task: T): T {
+    internal fun <T : ManagedTask<*, *>> registerTask(register: () -> T): T {
         check(!closed) { "Cannot register an event in a closed scope." }
-        task.register()
+        val task = register()
+        if (closed) {
+            task.unregister()
+            error("The scope closed during event registration.")
+        }
         cleanup.add { task.unregister() }
         return task
     }

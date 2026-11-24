@@ -1,9 +1,12 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
+import cloud.glitchdev.rfu.events.EventManager
 import net.hypixel.modapi.packet.impl.clientbound.ClientboundPartyInfoPacket
 
 object PartyEvents {
+    @EventManager(register = false)
     object OnPartyChange : AbstractEventManager<(Boolean, Boolean, Boolean, Map<String, ClientboundPartyInfoPacket.PartyRole>) -> Unit, OnPartyChange.OnPartyChangeEvent>() {
         override val runTasks: (Boolean, Boolean, Boolean, Map<String, ClientboundPartyInfoPacket.PartyRole>) -> Unit = { inParty, isLeader, isAllInvite, members ->
             safeExecution {
@@ -11,7 +14,7 @@ object PartyEvents {
             }
         }
 
-        fun register(priority: Int = 20, callback: (Boolean, Boolean, Boolean, Map<String, ClientboundPartyInfoPacket.PartyRole>) -> Unit): OnPartyChangeEvent {
+        fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (Boolean, Boolean, Boolean, Map<String, ClientboundPartyInfoPacket.PartyRole>) -> Unit): OnPartyChangeEvent {
             return OnPartyChangeEvent(priority, callback).register()
         }
 
@@ -21,5 +24,5 @@ object PartyEvents {
         }
     }
 
-    fun registerOnPartyChangeEvent(priority: Int = 20, callback: (Boolean, Boolean, Boolean, Map<String, ClientboundPartyInfoPacket.PartyRole>) -> Unit) = OnPartyChange.register(priority, callback)
+    fun registerOnPartyChangeEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (Boolean, Boolean, Boolean, Map<String, ClientboundPartyInfoPacket.PartyRole>) -> Unit) = OnPartyChange.register(priority, callback)
 }

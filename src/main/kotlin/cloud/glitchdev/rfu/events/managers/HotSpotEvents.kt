@@ -8,7 +8,9 @@ import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
 import cloud.glitchdev.rfu.data.fishing.Hotspot
 import cloud.glitchdev.rfu.data.fishing.HotspotCache
 import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
 import cloud.glitchdev.rfu.events.AutoRegister
+import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
 import cloud.glitchdev.rfu.events.managers.EntityAddedEvents.registerEntityAddedEvent
@@ -193,15 +195,15 @@ object HotSpotEvents : RegisteredEvent {
         }
     }
 
-    fun registerHotSpotDetectedEvent(priority: Int = 20, callback: (Hotspot) -> Unit): HotSpotDetectedEventManager.HotSpotDetectedEvent {
+    fun registerHotSpotDetectedEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (Hotspot) -> Unit): HotSpotDetectedEventManager.HotSpotDetectedEvent {
         return HotSpotDetectedEventManager.register(priority, callback)
     }
 
-    fun registerHotSpotDisposeEvent(priority: Int = 20, callback: (Hotspot) -> Unit): HotSpotDisposedEventManager.HotSpotDisposedEvent {
+    fun registerHotSpotDisposeEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (Hotspot) -> Unit): HotSpotDisposedEventManager.HotSpotDisposedEvent {
         return HotSpotDisposedEventManager.register(priority, callback)
     }
 
-    fun registerHotSpotChangedEvent(priority: Int = 20, callback: (List<Hotspot>) -> Unit): HotSpotChangedEvent {
+    fun registerHotSpotChangedEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (List<Hotspot>) -> Unit): HotSpotChangedEvent {
         return HotSpotChangedEventManager.register(priority, callback)
     }
 
@@ -244,6 +246,7 @@ object HotSpotEvents : RegisteredEvent {
         return true
     }
 
+    @EventManager(register = false)
     object HotSpotDetectedEventManager : AbstractEventManager<(Hotspot) -> Unit, HotSpotDetectedEventManager.HotSpotDetectedEvent>() {
         override val runTasks: (Hotspot) -> Unit = { hotspot ->
             safeExecution {
@@ -251,12 +254,12 @@ object HotSpotEvents : RegisteredEvent {
             }
         }
 
-        fun register(priority: Int = 20, callback: (Hotspot) -> Unit): HotSpotDetectedEvent {
+        fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (Hotspot) -> Unit): HotSpotDetectedEvent {
             return HotSpotDetectedEvent(priority, callback).register()
         }
 
         class HotSpotDetectedEvent(
-            priority: Int = 20,
+            priority: Int = DEFAULT_EVENT_PRIORITY,
             callback: (Hotspot) -> Unit
         ) : ManagedTask<(Hotspot) -> Unit, HotSpotDetectedEvent>(priority, callback) {
             override fun register() = submitTask(this)
@@ -264,6 +267,7 @@ object HotSpotEvents : RegisteredEvent {
         }
     }
 
+    @EventManager(register = false, name = "registerHotSpotDisposeEvent")
     object HotSpotDisposedEventManager : AbstractEventManager<(Hotspot) -> Unit, HotSpotDisposedEventManager.HotSpotDisposedEvent>() {
         override val runTasks: (Hotspot) -> Unit = { hotspot ->
             safeExecution {
@@ -271,12 +275,12 @@ object HotSpotEvents : RegisteredEvent {
             }
         }
 
-        fun register(priority: Int = 20, callback: (Hotspot) -> Unit): HotSpotDisposedEvent {
+        fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (Hotspot) -> Unit): HotSpotDisposedEvent {
             return HotSpotDisposedEvent(priority, callback).register()
         }
 
         class HotSpotDisposedEvent(
-            priority: Int = 20,
+            priority: Int = DEFAULT_EVENT_PRIORITY,
             callback: (Hotspot) -> Unit
         ) : ManagedTask<(Hotspot) -> Unit, HotSpotDisposedEvent>(priority, callback) {
             override fun register() = submitTask(this)
@@ -284,6 +288,7 @@ object HotSpotEvents : RegisteredEvent {
         }
     }
 
+    @EventManager(register = false)
     object HotSpotChangedEventManager : AbstractEventManager<(List<Hotspot>) -> Unit, HotSpotChangedEvent>() {
         override val runTasks: (List<Hotspot>) -> Unit = { hotspots ->
             safeExecution {
@@ -291,12 +296,12 @@ object HotSpotEvents : RegisteredEvent {
             }
         }
 
-        fun register(priority: Int = 20, callback: (List<Hotspot>) -> Unit): HotSpotChangedEvent {
+        fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (List<Hotspot>) -> Unit): HotSpotChangedEvent {
             return HotSpotChangedEvent(priority, callback).register()
         }
 
         class HotSpotChangedEvent(
-            priority: Int = 20,
+            priority: Int = DEFAULT_EVENT_PRIORITY,
             callback: (List<Hotspot>) -> Unit
         ) : ManagedTask<(List<Hotspot>) -> Unit, HotSpotChangedEvent>(priority, callback) {
             override fun register() = submitTask(this)

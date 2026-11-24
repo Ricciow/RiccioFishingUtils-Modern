@@ -2,7 +2,9 @@ package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
 import cloud.glitchdev.rfu.events.AutoRegister
+import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.utils.Tablist
@@ -23,12 +25,13 @@ object PlayerEvents : RegisteredEvent {
     }
 
     fun registerPlayerDetectEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (Set<Player>) -> Unit
     ): PlayerDetectEventManager.PlayerDetectEvent {
         return PlayerDetectEventManager.register(priority, callback)
     }
 
+    @EventManager(register = false)
     object PlayerDetectEventManager : AbstractEventManager<(Set<Player>) -> Unit, PlayerDetectEventManager.PlayerDetectEvent>() {
         override val runTasks: (Set<Player>) -> Unit = { players ->
             safeExecution {
@@ -36,12 +39,12 @@ object PlayerEvents : RegisteredEvent {
             }
         }
 
-        fun register(priority: Int = 20, callback: (Set<Player>) -> Unit): PlayerDetectEvent {
+        fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (Set<Player>) -> Unit): PlayerDetectEvent {
             return PlayerDetectEvent(priority, callback).register()
         }
 
         class PlayerDetectEvent(
-            priority: Int = 20,
+            priority: Int = DEFAULT_EVENT_PRIORITY,
             callback: (Set<Player>) -> Unit
         ) : ManagedTask<(Set<Player>) -> Unit, PlayerDetectEvent>(priority, callback) {
             override fun register() = submitTask(this)

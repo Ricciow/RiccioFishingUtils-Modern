@@ -1,7 +1,7 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
-import cloud.glitchdev.rfu.events.AutoRegister
+import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.utils.dsl.getResource
 import cloud.glitchdev.rfu.utils.RFULogger
@@ -14,7 +14,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor
  *
  * Callback Signature: (DrawContext, tickDelta: Float) -> Unit
  */
-@AutoRegister
+@EventManager
 object HudRenderEvents : AbstractEventManager<(GuiGraphicsExtractor, Float) -> Unit, HudRenderEvents.HudRenderEvent>(), RegisteredEvent {
     private val HUD_ID = getResource("hud_renderer")
 
@@ -41,7 +41,7 @@ object HudRenderEvents : AbstractEventManager<(GuiGraphicsExtractor, Float) -> U
         }
     }
 
-    fun registerHudRenderEvent(priority: Int = 20, callback: (GuiGraphicsExtractor, Float) -> Unit): HudRenderEvent {
+    fun registerHudRenderEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (GuiGraphicsExtractor, Float) -> Unit): HudRenderEvent {
         return HudRenderEvent(priority, callback).register()
     }
 

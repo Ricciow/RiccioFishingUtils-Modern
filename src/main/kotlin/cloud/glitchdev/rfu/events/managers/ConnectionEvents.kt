@@ -1,14 +1,19 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
 import cloud.glitchdev.rfu.events.AutoRegister
+import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.RegisteredEvent
+import cloud.glitchdev.rfu.events.registration.DefaultLong
 import cloud.glitchdev.rfu.utils.Coroutines
 import kotlinx.coroutines.delay
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
 
 @AutoRegister
 object ConnectionEvents : RegisteredEvent {
+    private const val DEFAULT_JOIN_DELAY_MILLIS = 0L
+
     var wasConnected = false
 
     override fun register() {
@@ -24,20 +29,21 @@ object ConnectionEvents : RegisteredEvent {
     }
 
     fun registerJoinEvent(
-        priority: Int = 20,
-        delayMillis: Long = 0L,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
+        delayMillis: Long = DEFAULT_JOIN_DELAY_MILLIS,
         callback: (wasConnected: Boolean) -> Unit
     ): JoinEventManager.JoinEvent {
         return JoinEventManager.register(priority, delayMillis, callback)
     }
 
     fun registerDisconnectEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: () -> Unit
     ): DisconnectEventManager.DisconnectEvent {
         return DisconnectEventManager.register(priority, callback)
     }
 
+    @EventManager(register = false)
     object JoinEventManager : AbstractEventManager<(wasConnected : Boolean) -> Unit, JoinEventManager.JoinEvent>() {
         override val runTasks: (Boolean) -> Unit = { wasConnected ->
             tasks.forEach { task ->
@@ -46,19 +52,22 @@ object ConnectionEvents : RegisteredEvent {
                 } else {
                     Coroutines.launch {
                         delay(task.delayMillis)
-                        safeExecution { task.callback(wasConnected) }
+                        safeExecution {
+                            if (task in tasks) task.callback(wasConnected)
+                        }
                     }
                 }
             }
         }
 
-        fun register(priority: Int = 20, delayMillis: Long = 0L, callback: (wasConnected: Boolean) -> Unit): JoinEvent {
+        fun register(priority: Int = DEFAULT_EVENT_PRIORITY, delayMillis: Long = DEFAULT_JOIN_DELAY_MILLIS, callback: (wasConnected: Boolean) -> Unit): JoinEvent {
             return JoinEvent(priority, delayMillis, callback).register()
         }
 
         class JoinEvent(
-            priority: Int = 20,
-            val delayMillis: Long = 0L,
+            priority: Int = DEFAULT_EVENT_PRIORITY,
+            @DefaultLong(DEFAULT_JOIN_DELAY_MILLIS)
+            val delayMillis: Long = DEFAULT_JOIN_DELAY_MILLIS,
             callback: (wasConnected: Boolean) -> Unit,
         ) : ManagedTask<(wasConnected: Boolean) -> Unit, JoinEvent>(priority, callback) {
             override fun register() = submitTask(this)
@@ -66,6 +75,7 @@ object ConnectionEvents : RegisteredEvent {
         }
     }
 
+    @EventManager(register = false)
     object DisconnectEventManager : AbstractEventManager<() -> Unit, DisconnectEventManager.DisconnectEvent>() {
         override val runTasks: () -> Unit = {
             safeExecution {
@@ -73,12 +83,12 @@ object ConnectionEvents : RegisteredEvent {
             }
         }
 
-        fun register(priority: Int = 20, callback: () -> Unit) : DisconnectEvent {
+        fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: () -> Unit) : DisconnectEvent {
             return DisconnectEvent(priority, callback).register()
         }
 
         class DisconnectEvent(
-            priority: Int = 20,
+            priority: Int = DEFAULT_EVENT_PRIORITY,
             callback: () -> Unit,
         ) : ManagedTask<() -> Unit, DisconnectEvent>(priority, callback) {
             override fun register() = submitTask(this)

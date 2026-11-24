@@ -1,7 +1,9 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.events.EventManager
 
+@EventManager(register = false)
 object CloseConfigEvents : AbstractEventManager<() -> Unit, CloseConfigEvents.CloseConfigEvent>() {
     override val runTasks: () -> Unit = {
         safeExecution {
@@ -11,12 +13,12 @@ object CloseConfigEvents : AbstractEventManager<() -> Unit, CloseConfigEvents.Cl
         }
     }
 
-    fun registerCloseConfigEvent(priority: Int = 20, callback: () -> Unit): CloseConfigEvent {
+    fun registerCloseConfigEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: () -> Unit): CloseConfigEvent {
         return CloseConfigEvent(priority, callback).register()
     }
 
     class CloseConfigEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: () -> Unit
     ) : ManagedTask<() -> Unit, CloseConfigEvent>(priority, callback) {
         override fun register() = submitTask(this)

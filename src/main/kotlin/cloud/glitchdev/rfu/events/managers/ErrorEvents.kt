@@ -1,7 +1,9 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.events.EventManager
 
+@EventManager(register = false)
 object ErrorEvents : AbstractEventManager<(String, String) -> Unit, ErrorEvents.ErrorMessageEvent>() {
     override val runTasks: (String, String) -> Unit = { message, origin ->
         safeExecution {
@@ -9,7 +11,7 @@ object ErrorEvents : AbstractEventManager<(String, String) -> Unit, ErrorEvents.
         }
     }
 
-    fun registerErrorMessageEvent(priority: Int = 20, callback: (String, String) -> Unit): ErrorMessageEvent {
+    fun registerErrorMessageEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (String, String) -> Unit): ErrorMessageEvent {
         return ErrorMessageEvent(priority, callback).register()
     }
 

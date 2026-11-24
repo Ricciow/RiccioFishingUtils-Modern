@@ -3,7 +3,8 @@ package cloud.glitchdev.rfu.events.managers
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.data.ArmorSet
 import cloud.glitchdev.rfu.events.AbstractEventManager
-import cloud.glitchdev.rfu.events.AutoRegister
+import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
+import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.SetSlotEvents.registerSetSlotEvent
 import cloud.glitchdev.rfu.utils.Coroutines
@@ -14,13 +15,13 @@ object ArmorEvents {
         get() = ArmorChangeEventManager.currentArmorSet
 
     fun registerArmorChangeEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (armorSet: ArmorSet) -> Unit
     ): ArmorChangeEventManager.ArmorChangeEvent {
         return ArmorChangeEventManager.register(priority, callback)
     }
 
-    @AutoRegister
+    @EventManager
     object ArmorChangeEventManager : AbstractEventManager<(ArmorSet) -> Unit, ArmorChangeEventManager.ArmorChangeEvent>(), RegisteredEvent {
         var currentArmorSet: ArmorSet = ArmorSet()
             private set
@@ -63,14 +64,14 @@ object ArmorEvents {
         }
 
         fun register(
-            priority: Int = 20,
+            priority: Int = DEFAULT_EVENT_PRIORITY,
             callback: (ArmorSet) -> Unit
         ): ArmorChangeEvent {
             return ArmorChangeEvent(priority, callback).register()
         }
 
         class ArmorChangeEvent(
-            priority: Int = 20,
+            priority: Int = DEFAULT_EVENT_PRIORITY,
             callback: (ArmorSet) -> Unit
         ) : ManagedTask<(ArmorSet) -> Unit, ArmorChangeEvent>(priority, callback) {
             override fun register() = submitTask(this)

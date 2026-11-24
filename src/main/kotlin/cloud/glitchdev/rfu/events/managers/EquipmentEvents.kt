@@ -2,18 +2,21 @@ package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.data.EquipmentSet
 import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
+import cloud.glitchdev.rfu.events.EventManager
 
 object EquipmentEvents {
     val currentEquipmentSet: EquipmentSet
         get() = EquipmentChangeEventManager.currentEquipmentSet
 
     fun registerEquipmentChangeEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (equipmentSet: EquipmentSet) -> Unit
     ): EquipmentChangeEventManager.EquipmentChangeEvent {
         return EquipmentChangeEventManager.register(priority, callback)
     }
 
+    @EventManager(register = false)
     object EquipmentChangeEventManager : AbstractEventManager<(EquipmentSet) -> Unit, EquipmentChangeEventManager.EquipmentChangeEvent>() {
         var currentEquipmentSet: EquipmentSet = EquipmentSet()
             private set
@@ -32,14 +35,14 @@ object EquipmentEvents {
         }
 
         fun register(
-            priority: Int = 20,
+            priority: Int = DEFAULT_EVENT_PRIORITY,
             callback: (EquipmentSet) -> Unit
         ): EquipmentChangeEvent {
             return EquipmentChangeEvent(priority, callback).register()
         }
 
         class EquipmentChangeEvent(
-            priority: Int = 20,
+            priority: Int = DEFAULT_EVENT_PRIORITY,
             callback: (EquipmentSet) -> Unit
         ) : ManagedTask<(EquipmentSet) -> Unit, EquipmentChangeEvent>(priority, callback) {
             override fun register() = submitTask(this)

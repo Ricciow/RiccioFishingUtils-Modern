@@ -1,10 +1,15 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
+import cloud.glitchdev.rfu.events.EventManager
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.SlotClickedEvents.SlotClickedEvent
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.world.inventory.Slot
 
+@EventManager(register = false)
 object SlotClickedEvents : AbstractEventManager<(slot: Slot, screen: AbstractContainerScreen<*>) -> Unit, SlotClickedEvents.SlotClickedEvent>() {
     override val runTasks: (Slot, AbstractContainerScreen<*>) -> Unit = { slot, screen ->
         safeExecution {
@@ -15,14 +20,14 @@ object SlotClickedEvents : AbstractEventManager<(slot: Slot, screen: AbstractCon
     }
 
     fun registerSlotClickedEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (slot: Slot, screen: AbstractContainerScreen<*>) -> Unit
     ): SlotClickedEvent {
         return SlotClickedEvent(priority, callback).register()
     }
 
     fun registerSlotClicked(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (slot: Slot, title: String) -> Unit
     ): SlotClickedEvent {
         return registerSlotClickedEvent(priority) { slot, screen ->
@@ -31,10 +36,15 @@ object SlotClickedEvents : AbstractEventManager<(slot: Slot, screen: AbstractCon
     }
 
     class SlotClickedEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (slot: Slot, screen: AbstractContainerScreen<*>) -> Unit
     ) : ManagedTask<(slot: Slot, screen: AbstractContainerScreen<*>) -> Unit, SlotClickedEvent>(priority, callback) {
         override fun register() = submitTask(this)
         override fun unregister() = removeTask(this)
     }
 }
+
+fun EventScope.registerSlotClicked(
+    priority: Int = DEFAULT_EVENT_PRIORITY,
+    callback: (slot: Slot, title: String) -> Unit,
+): SlotClickedEvent = registerTask { SlotClickedEvents.registerSlotClicked(priority, callback) }

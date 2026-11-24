@@ -1,14 +1,17 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
-import cloud.glitchdev.rfu.events.AutoRegister
+import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.RegisteredEvent
+import cloud.glitchdev.rfu.events.registration.DefaultLong
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
 import cloud.glitchdev.rfu.events.managers.SetTimeEvents.registerSetTimeEvent
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 
-@AutoRegister
+@EventManager
 object ServerTickEvents : AbstractEventManager<(serverTick: Long) -> Unit, ServerTickEvents.ServerTickEvent>(), RegisteredEvent {
+    private const val DEFAULT_INTERVAL = 1L
+
     var currentServerTick: Long = 0L
         private set
 
@@ -76,16 +79,17 @@ object ServerTickEvents : AbstractEventManager<(serverTick: Long) -> Unit, Serve
     }
 
     fun registerServerTickEvent(
-        priority: Int = 20,
-        interval: Long = 1L,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
+        interval: Long = DEFAULT_INTERVAL,
         callback: (serverTick: Long) -> Unit
     ): ServerTickEvent {
         return ServerTickEvent(priority, interval, callback).register()
     }
 
     class ServerTickEvent(
-        priority: Int = 20,
-        var interval: Long = 1L,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
+        @DefaultLong(DEFAULT_INTERVAL)
+        var interval: Long = DEFAULT_INTERVAL,
         callback: (serverTick: Long) -> Unit
     ) : ManagedTask<(Long) -> Unit, ServerTickEvent>(priority, callback) {
         override fun register() = submitTask(this)

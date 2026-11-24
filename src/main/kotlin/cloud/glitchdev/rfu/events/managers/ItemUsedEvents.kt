@@ -1,13 +1,13 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
-import cloud.glitchdev.rfu.events.AutoRegister
+import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import net.fabricmc.fabric.api.event.player.UseItemCallback
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.item.ItemStack
 
-@AutoRegister
+@EventManager
 object ItemUsedEvents : AbstractEventManager<(item: ItemStack) -> Unit, ItemUsedEvents.ItemUsedEvent>(), RegisteredEvent {
     override fun register() {
         UseItemCallback.EVENT.register { player, _, hand ->
@@ -26,14 +26,14 @@ object ItemUsedEvents : AbstractEventManager<(item: ItemStack) -> Unit, ItemUsed
     }
 
     fun registerItemUsedEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (item: ItemStack) -> Unit
     ): ItemUsedEvent {
         return ItemUsedEvent(priority, callback).register()
     }
 
     class ItemUsedEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (item: ItemStack) -> Unit
     ) : ManagedTask<(item: ItemStack) -> Unit, ItemUsedEvent>(priority, callback) {
         override fun register() = submitTask(this)

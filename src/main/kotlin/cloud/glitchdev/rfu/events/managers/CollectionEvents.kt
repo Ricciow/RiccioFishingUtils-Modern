@@ -2,7 +2,9 @@ package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.data.collections.CollectionItem
 import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.events.EventManager
 
+@EventManager(register = false)
 object CollectionEvents : AbstractEventManager<(item: CollectionItem, amount: Long, total: Long, isSync: Boolean) -> Unit, CollectionEvents.CollectionUpdateEvent>() {
     
     override val runTasks: (CollectionItem, Long, Long, Boolean) -> Unit = { item, amount, total, isSync ->
@@ -13,12 +15,12 @@ object CollectionEvents : AbstractEventManager<(item: CollectionItem, amount: Lo
         }
     }
 
-    fun registerCollectionUpdateEvent(priority: Int = 20, callback: (item: CollectionItem, amount: Long, total: Long, isSync: Boolean) -> Unit): CollectionUpdateEvent {
+    fun registerCollectionUpdateEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (item: CollectionItem, amount: Long, total: Long, isSync: Boolean) -> Unit): CollectionUpdateEvent {
         return CollectionUpdateEvent(priority, callback).register()
     }
 
     class CollectionUpdateEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (item: CollectionItem, amount: Long, total: Long, isSync: Boolean) -> Unit
     ) : ManagedTask<(item: CollectionItem, amount: Long, total: Long, isSync: Boolean) -> Unit, CollectionUpdateEvent>(priority, callback) {
         override fun register() = submitTask(this)

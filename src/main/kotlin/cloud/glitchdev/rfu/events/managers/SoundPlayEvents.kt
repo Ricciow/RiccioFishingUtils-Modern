@@ -1,10 +1,12 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.wrappers.Cancelable
 import net.minecraft.client.resources.sounds.SoundInstance
 import net.minecraft.client.sounds.SoundEngine
 
+@EventManager(register = false)
 object SoundPlayEvents : AbstractEventManager<(SoundInstance, Cancelable<SoundEngine.PlayResult>) -> Unit, SoundPlayEvents.SoundPlayEvent>() {
     override val runTasks: (SoundInstance, Cancelable<SoundEngine.PlayResult>) -> Unit = { sound, cancelable ->
         // Cancellation must finish before the sound engine continues playback.
@@ -14,14 +16,14 @@ object SoundPlayEvents : AbstractEventManager<(SoundInstance, Cancelable<SoundEn
     }
 
     fun registerSoundPlayEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (SoundInstance, Cancelable<SoundEngine.PlayResult>) -> Unit
     ): SoundPlayEvent {
         return SoundPlayEvent(priority, callback).register()
     }
 
     class SoundPlayEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (SoundInstance, Cancelable<SoundEngine.PlayResult>) -> Unit
     ) : ManagedTask<(SoundInstance, Cancelable<SoundEngine.PlayResult>) -> Unit, SoundPlayEvent>(priority, callback) {
         override fun register() = submitTask(this)

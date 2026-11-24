@@ -2,14 +2,14 @@ package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.events.AbstractEventManager
-import cloud.glitchdev.rfu.events.AutoRegister
+import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import net.fabricmc.fabric.api.event.player.UseBlockCallback
 import net.minecraft.core.BlockPos
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
 
-@AutoRegister
+@EventManager
 object BlockInteractEvents : AbstractEventManager<(BlockPos) -> Unit, BlockInteractEvents.BlockInteractEvent>(), RegisteredEvent {
     override fun register() {
         UseBlockCallback.EVENT.register { player, world, hand, hitResult ->
@@ -26,11 +26,11 @@ object BlockInteractEvents : AbstractEventManager<(BlockPos) -> Unit, BlockInter
         }
     }
 
-    fun registerBlockInteractEvent(priority: Int = 20, callback: (BlockPos) -> Unit): BlockInteractEvent {
+    fun registerBlockInteractEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (BlockPos) -> Unit): BlockInteractEvent {
         return BlockInteractEvent(priority, callback).register()
     }
 
-    class BlockInteractEvent(priority: Int = 20, callback: (BlockPos) -> Unit) :
+    class BlockInteractEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (BlockPos) -> Unit) :
         ManagedTask<(BlockPos) -> Unit, BlockInteractEvent>(priority, callback) {
         override fun register() = submitTask(this)
         override fun unregister() = removeTask(this)

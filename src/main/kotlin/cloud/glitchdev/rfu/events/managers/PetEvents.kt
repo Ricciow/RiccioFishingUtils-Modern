@@ -3,7 +3,8 @@ package cloud.glitchdev.rfu.events.managers
 import cloud.glitchdev.rfu.data.other.OtherManager
 import cloud.glitchdev.rfu.data.other.data.StringEntry
 import cloud.glitchdev.rfu.events.AbstractEventManager
-import cloud.glitchdev.rfu.events.AutoRegister
+import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
+import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.events.managers.SlotClickedEvents.registerSlotClicked
@@ -14,13 +15,13 @@ import net.minecraft.core.component.DataComponents
 
 object PetEvents {
     fun registerPetUpdateEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (pet: String?, petName: String?, petLevel: Int?) -> Unit
     ): PetUpdateEventManager.PetUpdateEvent {
         return PetUpdateEventManager.register(priority, callback)
     }
 
-    @AutoRegister
+    @EventManager
     object PetUpdateEventManager : AbstractEventManager<(pet: String?, petName: String?, petLevel: Int?) -> Unit, PetUpdateEventManager.PetUpdateEvent>(), RegisteredEvent {
         const val SAVE_FIELD = "current_pet"
         val PETS_SCREEN_REGEX = """(\(\d+\/\d+\) )?Pets""".toRegex()
@@ -118,14 +119,14 @@ object PetEvents {
         }
 
         fun register(
-            priority: Int = 20,
+            priority: Int = DEFAULT_EVENT_PRIORITY,
             callback: (pet: String?, petName: String?, petLevel: Int?) -> Unit
         ): PetUpdateEvent {
             return PetUpdateEvent(priority, callback).register()
         }
 
         class PetUpdateEvent(
-            priority: Int = 20,
+            priority: Int = DEFAULT_EVENT_PRIORITY,
             callback: (pet: String?, petName: String?, petLevel: Int?) -> Unit
         ) : ManagedTask<(pet: String?, petName: String?, petLevel: Int?) -> Unit, PetUpdateEvent>(priority, callback) {
             override fun register() = submitTask(this)

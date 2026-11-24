@@ -1,13 +1,16 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
+import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.managers.WebSocketEvents.ConnectionStatusChanged.ConnectionStatusEvent
 
 object WebSocketEvents {
-    fun registerConnectionStatusChangedEvent(priority: Int = 20, callback: (Boolean) -> Unit): ConnectionStatusEvent {
+    fun registerConnectionStatusChangedEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (Boolean) -> Unit): ConnectionStatusEvent {
         return ConnectionStatusChanged.register(priority, callback)
     }
 
+    @EventManager(register = false, name = "registerConnectionStatusChangedEvent")
     object ConnectionStatusChanged : AbstractEventManager<(Boolean) -> Unit, ConnectionStatusEvent>() {
         override val runTasks: (Boolean) -> Unit = { connected ->
             safeExecution {
@@ -15,7 +18,7 @@ object WebSocketEvents {
             }
         }
 
-        fun register(priority: Int = 20, callback: (Boolean) -> Unit): ConnectionStatusEvent {
+        fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (Boolean) -> Unit): ConnectionStatusEvent {
             return ConnectionStatusEvent(priority, callback).register()
         }
 

@@ -5,7 +5,12 @@ import cloud.glitchdev.rfu.constants.fishing.RareDrops
 import cloud.glitchdev.rfu.constants.skyblock.Dyes
 import cloud.glitchdev.rfu.data.drops.DeadMobTracker
 import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
 import cloud.glitchdev.rfu.events.AutoRegister
+import cloud.glitchdev.rfu.events.EventManager
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.DropEvents.DyeDropEventManager.DyeDropEvent
+import cloud.glitchdev.rfu.events.managers.DropEvents.RareDropEventManager.RareDropEvent
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.utils.dsl.escapeForRegex
 import cloud.glitchdev.rfu.utils.dsl.isUser
@@ -80,7 +85,7 @@ object DropEvents : RegisteredEvent {
     }
 
     fun registerRareDropEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (rareDrop: RareDrops, magicFind: Int?) -> Boolean
     ): RareDropEventManager.RareDropEvent {
         return registerRareDropEvent(priority) { rareDrop, magicFind, _ ->
@@ -89,14 +94,14 @@ object DropEvents : RegisteredEvent {
     }
 
     fun registerRareDropEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (rareDrop: RareDrops, magicFind: Int?, mobName: String?) -> Boolean
     ): RareDropEventManager.RareDropEvent {
         return RareDropEventManager.register(priority, callback)
     }
 
     fun registerDyeDropEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (dyeDrop: Dyes, magicFind : Int?) -> Unit
     ): DyeDropEventManager.DyeDropEvent {
         return registerDyeDropEvent(priority) { dyeDrop, magicFind, _ ->
@@ -105,12 +110,13 @@ object DropEvents : RegisteredEvent {
     }
 
     fun registerDyeDropEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (dyeDrop: Dyes, magicFind: Int?, mobName: String?) -> Unit
     ): DyeDropEventManager.DyeDropEvent {
         return DyeDropEventManager.register(priority, callback)
     }
 
+    @EventManager(register = false)
     object RareDropEventManager : AbstractEventManager<(rareDrop: RareDrops, magicFind: Int?, mobName: String?) -> Boolean, RareDropEventManager.RareDropEvent>() {
         override val runTasks: (RareDrops, Int?, String?) -> Boolean = { rareDrop, magicFind, mobName ->
             var result = true
@@ -121,14 +127,14 @@ object DropEvents : RegisteredEvent {
         }
 
         fun register(
-            priority: Int = 20,
+            priority: Int = DEFAULT_EVENT_PRIORITY,
             callback: (rareDrop: RareDrops, magicFind: Int?, mobName: String?) -> Boolean
         ): RareDropEvent {
             return RareDropEvent(priority, callback).register()
         }
 
         class RareDropEvent(
-            priority: Int = 20,
+            priority: Int = DEFAULT_EVENT_PRIORITY,
             callback: (rareDrop: RareDrops, magicFind: Int?, mobName: String?) -> Boolean
         ) : ManagedTask<(rareDrop: RareDrops, magicFind: Int?, mobName: String?) -> Boolean, RareDropEvent>(priority, callback) {
             override fun register() = submitTask(this)
@@ -136,6 +142,7 @@ object DropEvents : RegisteredEvent {
         }
     }
 
+    @EventManager(register = false)
     object DyeDropEventManager : AbstractEventManager<(dyeDrop: Dyes, magicFind : Int?, mobName: String?) -> Unit, DyeDropEventManager.DyeDropEvent>() {
         override val runTasks: (Dyes, Int?, String?) -> Unit = { dyeDrop, magicFind, mobName ->
             safeExecution(mainThread = false) {
@@ -144,14 +151,14 @@ object DropEvents : RegisteredEvent {
         }
 
         fun register(
-            priority: Int = 20,
+            priority: Int = DEFAULT_EVENT_PRIORITY,
             callback: (dyeDrop: Dyes, magicFind : Int?, mobName: String?) -> Unit
         ): DyeDropEvent {
             return DyeDropEvent(priority, callback).register()
         }
 
         class DyeDropEvent(
-            priority: Int = 20,
+            priority: Int = DEFAULT_EVENT_PRIORITY,
             callback: (dyeDrop: Dyes, magicFind : Int?, mobName: String?) -> Unit
         ) : ManagedTask<(dyeDrop: Dyes, magicFind : Int?, mobName: String?) -> Unit, DyeDropEvent>(priority, callback) {
             override fun register() = submitTask(this)
@@ -159,3 +166,13 @@ object DropEvents : RegisteredEvent {
         }
     }
 }
+
+fun EventScope.registerRareDropEvent(
+    priority: Int = DEFAULT_EVENT_PRIORITY,
+    callback: (rareDrop: RareDrops, magicFind: Int?) -> Boolean,
+): RareDropEvent = registerTask { DropEvents.registerRareDropEvent(priority, callback) }
+
+fun EventScope.registerDyeDropEvent(
+    priority: Int = DEFAULT_EVENT_PRIORITY,
+    callback: (dyeDrop: Dyes, magicFind: Int?) -> Unit,
+): DyeDropEvent = registerTask { DropEvents.registerDyeDropEvent(priority, callback) }

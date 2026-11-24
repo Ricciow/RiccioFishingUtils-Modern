@@ -2,7 +2,9 @@ package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.events.EventManager
 
+@EventManager(register = false)
 object SeaCreaturePersonalBestEvents : AbstractEventManager<(SeaCreatures, Long) -> Unit, SeaCreaturePersonalBestEvents.SeaCreaturePersonalBestEvent>() {
     override val runTasks: (SeaCreatures, Long) -> Unit = { sc, durationMillis ->
         safeExecution {
@@ -13,14 +15,14 @@ object SeaCreaturePersonalBestEvents : AbstractEventManager<(SeaCreatures, Long)
     }
 
     fun registerSeaCreaturePersonalBestEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (SeaCreatures, durationMillis: Long) -> Unit
     ): SeaCreaturePersonalBestEvent {
         return SeaCreaturePersonalBestEvent(priority, callback).register()
     }
 
     class SeaCreaturePersonalBestEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (SeaCreatures, Long) -> Unit
     ) : ManagedTask<(SeaCreatures, Long) -> Unit, SeaCreaturePersonalBestEvent>(priority, callback) {
         override fun register() = submitTask(this)

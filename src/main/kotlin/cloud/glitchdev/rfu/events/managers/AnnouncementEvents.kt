@@ -1,8 +1,10 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.model.announcement.Announcement
 
+@EventManager(register = false)
 object AnnouncementEvents : AbstractEventManager<(announcement: Announcement?) -> Unit, AnnouncementEvents.AnnouncementUpdateEvent>() {
     override val runTasks: (Announcement?) -> Unit = { announcement ->
         safeExecution {
@@ -12,12 +14,12 @@ object AnnouncementEvents : AbstractEventManager<(announcement: Announcement?) -
         }
     }
 
-    fun registerAnnouncementUpdateEvent(priority: Int = 20, callback: (Announcement?) -> Unit): AnnouncementUpdateEvent {
+    fun registerAnnouncementUpdateEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (Announcement?) -> Unit): AnnouncementUpdateEvent {
         return AnnouncementUpdateEvent(priority, callback).register()
     }
 
     class AnnouncementUpdateEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (Announcement?) -> Unit
     ) : ManagedTask<(Announcement?) -> Unit, AnnouncementUpdateEvent>(priority, callback) {
         override fun register() = submitTask(this)

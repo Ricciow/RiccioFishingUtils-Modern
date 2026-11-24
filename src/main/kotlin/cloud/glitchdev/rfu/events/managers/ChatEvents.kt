@@ -1,8 +1,13 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
 import cloud.glitchdev.rfu.events.AutoRegister
+import cloud.glitchdev.rfu.events.EventManager
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.RegisteredEvent
+import cloud.glitchdev.rfu.events.managers.ChatEvents.ChatEventManager.ChatEvent
+import cloud.glitchdev.rfu.events.managers.ChatEvents.GameEventManager.GameEvent
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.RFULogger
 import gg.essential.universal.utils.toFormattedString
@@ -89,28 +94,28 @@ object ChatEvents : RegisteredEvent {
     }
 
     fun registerSendChatEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (message: String) -> Boolean
     ) : SendChatEventManager.SendChatEvent {
         return SendChatEventManager.register(priority, callback)
     }
 
     fun registerSendCommandEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (message: String) -> Boolean
     ) : SendCommandEventManager.SendCommandEvent {
         return SendCommandEventManager.register(priority, callback)
     }
 
     fun registerModifyChatEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (message: String) -> String
     ): ModifyChatEventManager.ModifyChatEvent {
         return ModifyChatEventManager.register(priority, callback)
     }
 
     fun registerModifyCommandEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (command: String) -> String
     ): ModifyCommandEventManager.ModifyCommandEvent {
         return ModifyCommandEventManager.register(priority, callback)
@@ -118,7 +123,7 @@ object ChatEvents : RegisteredEvent {
 
     fun registerAnyChatEvent(
         filter: Regex? = null,
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (text: Component, matches: MatchResult?) -> Unit
     ): Pair<ChatEventManager.ChatEvent, GameEventManager.GameEvent> {
         val chatEvent = registerChatEvent(filter, priority, callback)
@@ -130,7 +135,7 @@ object ChatEvents : RegisteredEvent {
 
     fun registerChatEvent(
         filter: Regex? = null,
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (text: Component, matches: MatchResult?) -> Unit
     ): ChatEventManager.ChatEvent {
         return registerAllowChatEvent(filter, priority) { text, matches ->
@@ -141,7 +146,7 @@ object ChatEvents : RegisteredEvent {
 
     fun registerGameEvent(
         filter: Regex? = null,
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         isOverlay: Boolean = false,
         callback: (text: Component, overlay: Boolean, matches: MatchResult?) -> Unit
     ): GameEventManager.GameEvent {
@@ -155,7 +160,7 @@ object ChatEvents : RegisteredEvent {
 
     fun registerAllowChatEvent(
         filter: Regex? = null,
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (text: Component, matches: MatchResult?) -> Boolean
     ): ChatEventManager.ChatEvent {
         return ChatEventManager.register(priority) { text ->
@@ -170,7 +175,7 @@ object ChatEvents : RegisteredEvent {
 
     fun registerAllowGameEvent(
         filter: Regex? = null,
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (text: Component, overlay: Boolean, matches: MatchResult?) -> Boolean
     ): GameEventManager.GameEvent {
         return GameEventManager.register(priority) { text, overlay ->
@@ -183,6 +188,7 @@ object ChatEvents : RegisteredEvent {
         }
     }
 
+    @EventManager(register = false, generateRegistration = false)
     object ChatEventManager : AbstractEventManager<(text: Component) -> Boolean, ChatEventManager.ChatEvent>() {
         override val runTasks: (text: Component) -> Boolean = { text ->
             var result = true
@@ -194,12 +200,12 @@ object ChatEvents : RegisteredEvent {
             result
         }
 
-        fun register(priority: Int = 20, callback: (text: Component) -> Boolean): ChatEvent {
+        fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (text: Component) -> Boolean): ChatEvent {
             return ChatEvent(priority, callback).register()
         }
 
         class ChatEvent(
-            priority: Int = 20,
+            priority: Int = DEFAULT_EVENT_PRIORITY,
             callback: (text: Component) -> Boolean
         ) : ManagedTask<(text: Component) -> Boolean, ChatEvent>(priority, callback) {
             override fun register() = submitTask(this)
@@ -207,6 +213,7 @@ object ChatEvents : RegisteredEvent {
         }
     }
 
+    @EventManager(register = false, generateRegistration = false)
     object GameEventManager : AbstractEventManager<(text: Component, overlay: Boolean) -> Boolean, GameEventManager.GameEvent>() {
         override val runTasks: (text: Component, overlay: Boolean) -> Boolean = { text, overlay ->
             var result = true
@@ -218,12 +225,12 @@ object ChatEvents : RegisteredEvent {
             result
         }
 
-        fun register(priority: Int = 20, callback: (text: Component, overlay: Boolean) -> Boolean): GameEvent {
+        fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (text: Component, overlay: Boolean) -> Boolean): GameEvent {
             return GameEvent(priority, callback).register()
         }
 
         class GameEvent(
-            priority: Int = 20,
+            priority: Int = DEFAULT_EVENT_PRIORITY,
             callback: (text: Component, overlay: Boolean) -> Boolean
         ) : ManagedTask<(text: Component, overlay: Boolean) -> Boolean, GameEvent>(priority, callback) {
             override fun register() = submitTask(this)
@@ -231,6 +238,7 @@ object ChatEvents : RegisteredEvent {
         }
     }
 
+    @EventManager(register = false)
     object SendChatEventManager : AbstractEventManager<(message: String) -> Boolean, SendChatEventManager.SendChatEvent>() {
         override val runTasks: (message: String) -> Boolean = { message ->
             var result = true
@@ -242,12 +250,12 @@ object ChatEvents : RegisteredEvent {
             result
         }
 
-        fun register(priority: Int = 20, callback: (message: String) -> Boolean): SendChatEvent {
+        fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (message: String) -> Boolean): SendChatEvent {
             return SendChatEvent(priority, callback).register()
         }
 
         class SendChatEvent(
-            priority: Int = 20,
+            priority: Int = DEFAULT_EVENT_PRIORITY,
             callback: (message: String) -> Boolean
         ) : ManagedTask<(message: String) -> Boolean, SendChatEvent>(priority, callback) {
             override fun register() = submitTask(this)
@@ -255,6 +263,7 @@ object ChatEvents : RegisteredEvent {
         }
     }
 
+    @EventManager(register = false)
     object ModifyChatEventManager : AbstractEventManager<(message: String) -> String, ModifyChatEventManager.ModifyChatEvent>() {
         override val runTasks: (message: String) -> String = { message ->
             var result = message
@@ -266,12 +275,12 @@ object ChatEvents : RegisteredEvent {
             result
         }
 
-        fun register(priority: Int = 20, callback: (message: String) -> String): ModifyChatEvent {
+        fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (message: String) -> String): ModifyChatEvent {
             return ModifyChatEvent(priority, callback).register()
         }
 
         class ModifyChatEvent(
-            priority: Int = 20,
+            priority: Int = DEFAULT_EVENT_PRIORITY,
             callback: (message: String) -> String
         ) : ManagedTask<(message: String) -> String, ModifyChatEvent>(priority, callback) {
             override fun register() = submitTask(this)
@@ -279,6 +288,7 @@ object ChatEvents : RegisteredEvent {
         }
     }
 
+    @EventManager(register = false)
     object SendCommandEventManager : AbstractEventManager<(command: String) -> Boolean, SendCommandEventManager.SendCommandEvent>() {
         override val runTasks: (command: String) -> Boolean = { command ->
             var result = true
@@ -290,12 +300,12 @@ object ChatEvents : RegisteredEvent {
             result
         }
 
-        fun register(priority: Int = 20, callback: (command: String) -> Boolean): SendCommandEvent {
+        fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (command: String) -> Boolean): SendCommandEvent {
             return SendCommandEvent(priority, callback).register()
         }
 
         class SendCommandEvent(
-            priority: Int = 20,
+            priority: Int = DEFAULT_EVENT_PRIORITY,
             callback: (command: String) -> Boolean
         ) : ManagedTask<(command: String) -> Boolean, SendCommandEvent>(priority, callback) {
             override fun register() = submitTask(this)
@@ -303,6 +313,7 @@ object ChatEvents : RegisteredEvent {
         }
     }
 
+    @EventManager(register = false)
     object ModifyCommandEventManager : AbstractEventManager<(command: String) -> String, ModifyCommandEventManager.ModifyCommandEvent>() {
         override val runTasks: (command: String) -> String = { command ->
             var result = command
@@ -314,16 +325,53 @@ object ChatEvents : RegisteredEvent {
             result
         }
 
-        fun register(priority: Int = 20, callback: (command: String) -> String): ModifyCommandEvent {
+        fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (command: String) -> String): ModifyCommandEvent {
             return ModifyCommandEvent(priority, callback).register()
         }
 
         class ModifyCommandEvent(
-            priority: Int = 20,
+            priority: Int = DEFAULT_EVENT_PRIORITY,
             callback: (command: String) -> String
         ) : ManagedTask<(command: String) -> String, ModifyCommandEvent>(priority, callback) {
             override fun register() = submitTask(this)
             override fun unregister() = removeTask(this)
         }
     }
+}
+
+fun EventScope.registerChatEvent(
+    filter: Regex? = null,
+    priority: Int = DEFAULT_EVENT_PRIORITY,
+    callback: (text: Component, matches: MatchResult?) -> Unit,
+): ChatEvent = registerTask { ChatEvents.registerChatEvent(filter, priority, callback) }
+
+fun EventScope.registerGameEvent(
+    filter: Regex? = null,
+    priority: Int = DEFAULT_EVENT_PRIORITY,
+    isOverlay: Boolean = false,
+    callback: (text: Component, overlay: Boolean, matches: MatchResult?) -> Unit,
+): GameEvent = registerTask { ChatEvents.registerGameEvent(filter, priority, isOverlay, callback) }
+
+fun EventScope.registerAllowChatEvent(
+    filter: Regex? = null,
+    priority: Int = DEFAULT_EVENT_PRIORITY,
+    callback: (text: Component, matches: MatchResult?) -> Boolean,
+): ChatEvent = registerTask { ChatEvents.registerAllowChatEvent(filter, priority, callback) }
+
+fun EventScope.registerAllowGameEvent(
+    filter: Regex? = null,
+    priority: Int = DEFAULT_EVENT_PRIORITY,
+    callback: (text: Component, overlay: Boolean, matches: MatchResult?) -> Boolean,
+): GameEvent = registerTask { ChatEvents.registerAllowGameEvent(filter, priority, callback) }
+
+fun EventScope.registerAnyChatEvent(
+    filter: Regex? = null,
+    priority: Int = DEFAULT_EVENT_PRIORITY,
+    callback: (text: Component, matches: MatchResult?) -> Unit,
+): Pair<ChatEvent, GameEvent> {
+    val chatEvent = registerChatEvent(filter, priority, callback)
+    val gameEvent = registerGameEvent(filter, priority) { text, _, matches ->
+        callback(text, matches)
+    }
+    return chatEvent to gameEvent
 }

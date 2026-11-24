@@ -1,13 +1,16 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
-import cloud.glitchdev.rfu.events.AutoRegister
+import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
+import cloud.glitchdev.rfu.events.EventManager
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.RegisteredEvent
+import cloud.glitchdev.rfu.events.managers.ServerCountdownEvents.ServerCountdownEvent
 import cloud.glitchdev.rfu.events.managers.ServerTickEvents.registerServerTickEvent
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
-@AutoRegister
+@EventManager(generateRegistration = false)
 object ServerCountdownEvents : AbstractEventManager<() -> Unit, ServerCountdownEvents.ServerCountdownEvent>(), RegisteredEvent {
     override fun register() {
         registerServerTickEvent(0) {
@@ -26,7 +29,7 @@ object ServerCountdownEvents : AbstractEventManager<() -> Unit, ServerCountdownE
     fun registerServerCountdownEvent(
         durationTicks: Long,
         interval: Long = 1L,
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         onTick: ((event: ServerCountdownEvent) -> Unit)? = null,
         onComplete: (() -> Unit)? = null
     ): ServerCountdownEvent {
@@ -35,7 +38,7 @@ object ServerCountdownEvents : AbstractEventManager<() -> Unit, ServerCountdownE
 
     fun registerServerCountdownEvent(
         durationTicks: Long,
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         onComplete: () -> Unit
     ): ServerCountdownEvent {
         return registerServerCountdownEvent(
@@ -50,7 +53,7 @@ object ServerCountdownEvents : AbstractEventManager<() -> Unit, ServerCountdownE
     fun registerServerCountdownEvent(
         durationTicks: Long,
         interval: Long,
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         onTick: (event: ServerCountdownEvent) -> Unit
     ): ServerCountdownEvent {
         return registerServerCountdownEvent(
@@ -71,14 +74,14 @@ object ServerCountdownEvents : AbstractEventManager<() -> Unit, ServerCountdownE
         return registerServerCountdownEvent(
             durationTicks = durationTicks,
             interval = interval,
-            priority = 20,
+            priority = DEFAULT_EVENT_PRIORITY,
             onTick = onTick,
             onComplete = onComplete
         )
     }
 
     class ServerCountdownEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         val durationTicks: Long,
         var interval: Long = 1L,
         val onTick: ((event: ServerCountdownEvent) -> Unit)? = null,
@@ -152,4 +155,40 @@ object ServerCountdownEvents : AbstractEventManager<() -> Unit, ServerCountdownE
         override fun register() = submitTask(this)
         override fun unregister() = removeTask(this)
     }
+}
+
+fun EventScope.registerServerCountdownEvent(
+    durationTicks: Long,
+    interval: Long = 1L,
+    priority: Int = DEFAULT_EVENT_PRIORITY,
+    onTick: ((event: ServerCountdownEvent) -> Unit)? = null,
+    onComplete: (() -> Unit)? = null,
+): ServerCountdownEvent = registerTask {
+    ServerCountdownEvents.registerServerCountdownEvent(durationTicks, interval, priority, onTick, onComplete)
+}
+
+fun EventScope.registerServerCountdownEvent(
+    durationTicks: Long,
+    priority: Int = DEFAULT_EVENT_PRIORITY,
+    onComplete: () -> Unit,
+): ServerCountdownEvent = registerTask {
+    ServerCountdownEvents.registerServerCountdownEvent(durationTicks, priority, onComplete)
+}
+
+fun EventScope.registerServerCountdownEvent(
+    durationTicks: Long,
+    interval: Long,
+    priority: Int = DEFAULT_EVENT_PRIORITY,
+    onTick: (event: ServerCountdownEvent) -> Unit,
+): ServerCountdownEvent = registerTask {
+    ServerCountdownEvents.registerServerCountdownEvent(durationTicks, interval, priority, onTick)
+}
+
+fun EventScope.registerServerCountdownEvent(
+    durationTicks: Long,
+    interval: Long,
+    onTick: (event: ServerCountdownEvent) -> Unit,
+    onComplete: () -> Unit,
+): ServerCountdownEvent = registerTask {
+    ServerCountdownEvents.registerServerCountdownEvent(durationTicks, interval, onTick, onComplete)
 }

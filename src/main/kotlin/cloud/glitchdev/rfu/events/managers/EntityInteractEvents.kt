@@ -2,8 +2,11 @@ package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.events.AbstractEventManager
-import cloud.glitchdev.rfu.events.AutoRegister
+import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
+import cloud.glitchdev.rfu.events.EventManager
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.RegisteredEvent
+import cloud.glitchdev.rfu.events.managers.EntityInteractEvents.EntityInteractEvent
 import net.fabricmc.fabric.api.event.player.UseEntityCallback
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
@@ -12,7 +15,7 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.EntityHitResult
 
-@AutoRegister
+@EventManager
 object EntityInteractEvents : AbstractEventManager<(player: Player, world: Level, hand: InteractionHand, entity: Entity, hitResult: EntityHitResult?) -> Unit, EntityInteractEvents.EntityInteractEvent>(), RegisteredEvent {
 
     override fun register() {
@@ -32,14 +35,14 @@ object EntityInteractEvents : AbstractEventManager<(player: Player, world: Level
     }
 
     fun registerEntityInteractEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (player: Player, world: Level, hand: InteractionHand, entity: Entity, hitResult: EntityHitResult?) -> Unit
     ): EntityInteractEvent {
         return EntityInteractEvent(priority, callback).register()
     }
 
     fun registerEntityInteractEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         mainHandOnly: Boolean = true,
         callback: (entity: Entity) -> Unit
     ): EntityInteractEvent {
@@ -51,10 +54,16 @@ object EntityInteractEvents : AbstractEventManager<(player: Player, world: Level
     }
 
     class EntityInteractEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (player: Player, world: Level, hand: InteractionHand, entity: Entity, hitResult: EntityHitResult?) -> Unit
     ) : ManagedTask<(player: Player, world: Level, hand: InteractionHand, entity: Entity, hitResult: EntityHitResult?) -> Unit, EntityInteractEvent>(priority, callback) {
         override fun register() = submitTask(this)
         override fun unregister() = removeTask(this)
     }
 }
+
+fun EventScope.registerEntityInteractEvent(
+    priority: Int = DEFAULT_EVENT_PRIORITY,
+    mainHandOnly: Boolean = true,
+    callback: (entity: Entity) -> Unit,
+): EntityInteractEvent = registerTask { EntityInteractEvents.registerEntityInteractEvent(priority, mainHandOnly, callback) }

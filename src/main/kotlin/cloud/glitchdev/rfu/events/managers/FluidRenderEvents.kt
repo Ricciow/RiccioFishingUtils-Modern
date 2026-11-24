@@ -1,10 +1,12 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.events.EventManager
 import net.minecraft.client.renderer.block.FluidModel
 import net.minecraft.world.level.material.FluidState
 import java.awt.Color
 
+@EventManager(register = false)
 object FluidRenderEvents : AbstractEventManager<(FluidRenderEvents.FluidRenderContext) -> Unit, FluidRenderEvents.FluidRenderEvent>() {
     override val runTasks: (FluidRenderContext) -> Unit = { context ->
         safeExecution(mainThread = false) {
@@ -12,7 +14,7 @@ object FluidRenderEvents : AbstractEventManager<(FluidRenderEvents.FluidRenderCo
         }
     }
 
-    fun registerFluidRenderEvent(priority: Int = 20, callback: (FluidRenderContext) -> Unit): FluidRenderEvent =
+    fun registerFluidRenderEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (FluidRenderContext) -> Unit): FluidRenderEvent =
         FluidRenderEvent(priority, callback).register()
 
     class FluidRenderContext(

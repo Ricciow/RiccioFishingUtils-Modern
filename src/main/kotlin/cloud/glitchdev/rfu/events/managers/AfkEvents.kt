@@ -2,7 +2,9 @@ package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
 import cloud.glitchdev.rfu.events.AutoRegister
+import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
 import cloud.glitchdev.rfu.events.managers.KeybindEvents.registerRawInputEvent
@@ -83,12 +85,13 @@ object AfkEvents : RegisteredEvent {
     }
 
     fun registerAfkStatusChangedEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (isAfk: Boolean) -> Unit
     ): AfkStatusEventManager.AfkStatusEvent {
         return AfkStatusEventManager.register(priority, callback)
     }
 
+    @EventManager(register = false, name = "registerAfkStatusChangedEvent")
     object AfkStatusEventManager : AbstractEventManager<(Boolean) -> Unit, AfkStatusEventManager.AfkStatusEvent>() {
         override val runTasks: (Boolean) -> Unit = { isAfk ->
             safeExecution {
@@ -96,12 +99,12 @@ object AfkEvents : RegisteredEvent {
             }
         }
 
-        fun register(priority: Int = 20, callback: (Boolean) -> Unit): AfkStatusEvent {
+        fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (Boolean) -> Unit): AfkStatusEvent {
             return AfkStatusEvent(priority, callback).register()
         }
 
         class AfkStatusEvent(
-            priority: Int = 20,
+            priority: Int = DEFAULT_EVENT_PRIORITY,
             callback: (Boolean) -> Unit
         ) : ManagedTask<(Boolean) -> Unit, AfkStatusEvent>(priority, callback) {
             override fun register() = submitTask(this)

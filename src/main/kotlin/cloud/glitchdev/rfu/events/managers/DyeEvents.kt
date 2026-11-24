@@ -1,8 +1,10 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.model.dye.Dyes
 
+@EventManager(register = false)
 object DyeEvents : AbstractEventManager<(dyes: Dyes?) -> Unit, DyeEvents.DyeUpdateEvent>() {
     override val runTasks: (Dyes?) -> Unit = { dyes ->
         safeExecution {
@@ -12,12 +14,12 @@ object DyeEvents : AbstractEventManager<(dyes: Dyes?) -> Unit, DyeEvents.DyeUpda
         }
     }
 
-    fun registerDyeUpdateEvent(priority: Int = 20, callback: (Dyes?) -> Unit): DyeUpdateEvent {
+    fun registerDyeUpdateEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (Dyes?) -> Unit): DyeUpdateEvent {
         return DyeUpdateEvent(priority, callback).register()
     }
 
     class DyeUpdateEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (Dyes?) -> Unit
     ) : ManagedTask<(Dyes?) -> Unit, DyeUpdateEvent>(priority, callback) {
         override fun register() = submitTask(this)

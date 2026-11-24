@@ -2,7 +2,9 @@ package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.events.AbstractEventManager
-import cloud.glitchdev.rfu.events.AutoRegister
+import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
+import cloud.glitchdev.rfu.events.EventManager
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.keybind.KeyContext
 import cloud.glitchdev.rfu.events.keybind.KeyModifier
@@ -19,7 +21,7 @@ import gg.essential.elementa.WindowScreen
 import gg.essential.elementa.components.input.AbstractTextInput
 import java.util.concurrent.ConcurrentHashMap
 
-@AutoRegister
+@EventManager(generateRegistration = false)
 object KeybindEvents : AbstractEventManager<() -> Unit, KeybindTask>(), RegisteredEvent {
     override val runTasks: () -> Unit = {}
     val pressedKeys: MutableSet<Int> = ConcurrentHashMap.newKeySet()
@@ -158,7 +160,7 @@ object KeybindEvents : AbstractEventManager<() -> Unit, KeybindTask>(), Register
 
     fun registerKeybind(
         key: () -> Int,
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         context: KeyContext = KeyContext.IN_GAME,
         modifiers: Set<KeyModifier> = emptySet(),
         matchModifiersStrict: Boolean = false,
@@ -190,7 +192,7 @@ object KeybindEvents : AbstractEventManager<() -> Unit, KeybindTask>(), Register
 
     fun registerKeybind(
         key: Int,
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         context: KeyContext = KeyContext.IN_GAME,
         modifiers: Set<KeyModifier> = emptySet(),
         matchModifiersStrict: Boolean = false,
@@ -222,12 +224,13 @@ object KeybindEvents : AbstractEventManager<() -> Unit, KeybindTask>(), Register
         KeybindBuilder().apply(builder).build().register()
 
     fun registerRawInputEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (code: Int, action: Int, modifiers: Int) -> Unit
     ): RawInputEventManager.RawInputEvent {
         return RawInputEventManager.register(priority, callback)
     }
 
+    @EventManager(register = false)
     object RawInputEventManager : AbstractEventManager<(Int, Int, Int) -> Unit, RawInputEventManager.RawInputEvent>() {
         override val runTasks: (Int, Int, Int) -> Unit = { code, action, modifiers ->
             safeExecution {
@@ -235,12 +238,12 @@ object KeybindEvents : AbstractEventManager<() -> Unit, KeybindTask>(), Register
             }
         }
 
-        fun register(priority: Int = 20, callback: (Int, Int, Int) -> Unit): RawInputEvent {
+        fun register(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (Int, Int, Int) -> Unit): RawInputEvent {
             return RawInputEvent(priority, callback).register()
         }
 
         class RawInputEvent(
-            priority: Int = 20,
+            priority: Int = DEFAULT_EVENT_PRIORITY,
             callback: (Int, Int, Int) -> Unit
         ) : ManagedTask<(Int, Int, Int) -> Unit, RawInputEvent>(priority, callback) {
             override fun register() = submitTask(this)
@@ -248,3 +251,70 @@ object KeybindEvents : AbstractEventManager<() -> Unit, KeybindTask>(), Register
         }
     }
 }
+
+fun EventScope.registerKeybind(
+    key: () -> Int,
+    priority: Int = DEFAULT_EVENT_PRIORITY,
+    context: KeyContext = KeyContext.IN_GAME,
+    modifiers: Set<KeyModifier> = emptySet(),
+    matchModifiersStrict: Boolean = false,
+    consume: Boolean = false,
+    ignoreInTextFields: Boolean = true,
+    condition: (() -> Boolean)? = null,
+    onPress: (() -> Unit)? = null,
+    onRelease: (() -> Unit)? = null,
+    onHeld: (() -> Unit)? = null,
+    onRepeat: (() -> Unit)? = null,
+    name: String? = null,
+): KeybindTask = registerTask {
+    KeybindEvents.registerKeybind(
+        key = key,
+        priority = priority,
+        context = context,
+        modifiers = modifiers,
+        matchModifiersStrict = matchModifiersStrict,
+        consume = consume,
+        ignoreInTextFields = ignoreInTextFields,
+        condition = condition,
+        onPress = onPress,
+        onRelease = onRelease,
+        onHeld = onHeld,
+        onRepeat = onRepeat,
+        name = name,
+    )
+}
+
+fun EventScope.registerKeybind(
+    key: Int,
+    priority: Int = DEFAULT_EVENT_PRIORITY,
+    context: KeyContext = KeyContext.IN_GAME,
+    modifiers: Set<KeyModifier> = emptySet(),
+    matchModifiersStrict: Boolean = false,
+    consume: Boolean = false,
+    ignoreInTextFields: Boolean = true,
+    condition: (() -> Boolean)? = null,
+    onPress: (() -> Unit)? = null,
+    onRelease: (() -> Unit)? = null,
+    onHeld: (() -> Unit)? = null,
+    onRepeat: (() -> Unit)? = null,
+    name: String? = null,
+): KeybindTask = registerTask {
+    KeybindEvents.registerKeybind(
+        key = key,
+        priority = priority,
+        context = context,
+        modifiers = modifiers,
+        matchModifiersStrict = matchModifiersStrict,
+        consume = consume,
+        ignoreInTextFields = ignoreInTextFields,
+        condition = condition,
+        onPress = onPress,
+        onRelease = onRelease,
+        onHeld = onHeld,
+        onRepeat = onRepeat,
+        name = name,
+    )
+}
+
+fun EventScope.registerKeybind(builder: KeybindBuilder.() -> Unit): KeybindTask =
+    registerTask { KeybindEvents.registerKeybind(builder) }

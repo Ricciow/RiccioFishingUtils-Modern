@@ -1,8 +1,10 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.events.EventManager
 import net.minecraft.world.entity.Entity
 
+@EventManager(register = false)
 object EntityAddedEvents : AbstractEventManager<(entity : Entity) -> Unit, EntityAddedEvents.EntityAddedEvent>() {
     override val runTasks: (Entity) -> Unit = { entity ->
         safeExecution {
@@ -11,14 +13,14 @@ object EntityAddedEvents : AbstractEventManager<(entity : Entity) -> Unit, Entit
     }
 
     fun registerEntityAddedEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (entity : Entity) -> Unit
     ): EntityAddedEvent {
         return EntityAddedEvent(priority, callback).register()
     }
 
     class EntityAddedEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (entity : Entity) -> Unit
     ) : ManagedTask<(entity : Entity) -> Unit, EntityAddedEvent>(priority, callback) {
         override fun register() = submitTask(this)

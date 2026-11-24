@@ -1,9 +1,11 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.events.EventManager
 import net.minecraft.client.renderer.entity.state.AvatarRenderState
 import net.minecraft.world.entity.Avatar
 
+@EventManager(register = false)
 object PlayerRenderStateEvents : AbstractEventManager<(Avatar, AvatarRenderState) -> Unit, PlayerRenderStateEvents.PlayerRenderStateEvent>() {
     override val runTasks: (Avatar, AvatarRenderState) -> Unit = { player, state ->
         safeExecution(mainThread = false) {
@@ -12,7 +14,7 @@ object PlayerRenderStateEvents : AbstractEventManager<(Avatar, AvatarRenderState
     }
 
     fun registerPlayerRenderStateEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (Avatar, AvatarRenderState) -> Unit
     ): PlayerRenderStateEvent = PlayerRenderStateEvent(priority, callback).register()
 

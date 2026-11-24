@@ -1,10 +1,12 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.events.EventManager
 import net.minecraft.client.renderer.state.level.WorldBorderRenderState
 import net.minecraft.world.level.border.WorldBorder
 import net.minecraft.world.phys.Vec3
 
+@EventManager(register = false)
 object WorldBorderRenderEvents : AbstractEventManager<(WorldBorderRenderEvents.WorldBorderRenderContext) -> Unit, WorldBorderRenderEvents.WorldBorderRenderEvent>() {
     override val runTasks: (WorldBorderRenderContext) -> Unit = { context ->
         safeExecution(mainThread = false) {
@@ -12,7 +14,7 @@ object WorldBorderRenderEvents : AbstractEventManager<(WorldBorderRenderEvents.W
         }
     }
 
-    fun registerWorldBorderRenderEvent(priority: Int = 20, callback: (WorldBorderRenderContext) -> Unit): WorldBorderRenderEvent =
+    fun registerWorldBorderRenderEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (WorldBorderRenderContext) -> Unit): WorldBorderRenderEvent =
         WorldBorderRenderEvent(priority, callback).register()
 
     class WorldBorderRenderContext(

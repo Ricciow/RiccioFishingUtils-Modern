@@ -24,7 +24,7 @@ internal class EventRegistrationGenerator(
             if (arguments.getValue("register") == true) add(manager)
 
             val managerName = requireNotNull(manager.qualifiedName).asString()
-            if (generated.add(managerName)) {
+            if (arguments.getValue("generateRegistration") == true && generated.add(managerName)) {
                 generateRegistration(manager, arguments)
             }
         }
@@ -48,11 +48,11 @@ internal class EventRegistrationGenerator(
         val parameters = constructor.parameters.map { parameter ->
             val parameterName = requireNotNull(parameter.name).asString()
             val type = renderType(parameter.type.resolve(), imports)
-            val longDefault = parameter.annotations.firstOrNull {
-                it.annotationType.resolve().declaration.qualifiedName?.asString() == DEFAULT_LONG
-            }?.arguments?.single()?.value as? Long
+            val defaults = parameter.annotations.associateBy { it.annotationType.resolve().declaration.qualifiedName?.asString() }
+            val longDefault = defaults[DEFAULT_LONG]?.arguments?.single()?.value as? Long
             val default = when {
                 longDefault != null -> " = ${longDefault}L"
+                DEFAULT_NULL in defaults -> " = null"
                 parameterName == "priority" && type == "Int" -> " = ${arguments.getValue("defaultPriority")}"
                 else -> ""
             }
@@ -70,7 +70,7 @@ internal class EventRegistrationGenerator(
                 writer.appendLine()
                 writer.appendLine("fun EventScope.$name(")
                 parameters.forEach { writer.appendLine("    $it,") }
-                writer.appendLine("): $simpleName = registerTask($simpleName($values))")
+                writer.appendLine("): $simpleName = registerTask { $simpleName($values).register() }")
             }
     }
 
@@ -94,6 +94,7 @@ internal class EventRegistrationGenerator(
         const val ANNOTATION = "cloud.glitchdev.rfu.events.EventManager"
         const val ABSTRACT_EVENT_MANAGER = "cloud.glitchdev.rfu.events.AbstractEventManager"
         const val DEFAULT_LONG = "cloud.glitchdev.rfu.events.registration.DefaultLong"
+        const val DEFAULT_NULL = "cloud.glitchdev.rfu.events.registration.DefaultNull"
         const val SCOPE = "cloud.glitchdev.rfu.events.EventScope"
     }
 }

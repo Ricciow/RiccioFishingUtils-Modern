@@ -2,12 +2,12 @@ package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.constants.fishing.Bait
 import cloud.glitchdev.rfu.events.AbstractEventManager
-import cloud.glitchdev.rfu.events.AutoRegister
+import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.SetSlotEvents.registerSetSlotEvent
 import cloud.glitchdev.rfu.utils.ItemCountUtils
 
-@AutoRegister
+@EventManager
 object BaitEventManager : AbstractEventManager<(Bait?, Int) -> Unit, BaitEventManager.BaitChangedEvent>(), RegisteredEvent {
     var lastBait: Bait? = null
     var lastCount: Int = 0
@@ -52,12 +52,12 @@ object BaitEventManager : AbstractEventManager<(Bait?, Int) -> Unit, BaitEventMa
         }
     }
 
-    fun registerBaitChangedEvent(priority: Int = 20, callback: (Bait?, Int) -> Unit): BaitChangedEvent {
+    fun registerBaitChangedEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (Bait?, Int) -> Unit): BaitChangedEvent {
         return BaitChangedEvent(priority, callback).register()
     }
 
     class BaitChangedEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (Bait?, Int) -> Unit
     ) : ManagedTask<(Bait?, Int) -> Unit, BaitChangedEvent>(priority, callback) {
         override fun register() = submitTask(this)

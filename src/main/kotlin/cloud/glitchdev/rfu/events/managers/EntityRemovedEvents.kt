@@ -1,7 +1,9 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.events.EventManager
 
+@EventManager(register = false)
 object EntityRemovedEvents : AbstractEventManager<(entityId : Int) -> Unit, EntityRemovedEvents.EntityRemovedEvent>() {
     override val runTasks: (Int) -> Unit = { entityId ->
         safeExecution {
@@ -10,14 +12,14 @@ object EntityRemovedEvents : AbstractEventManager<(entityId : Int) -> Unit, Enti
     }
 
     fun registerEntityRemovedEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (entityId : Int) -> Unit
     ): EntityRemovedEvent {
         return EntityRemovedEvent(priority, callback).register()
     }
 
     class EntityRemovedEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (entityId : Int) -> Unit
     ) : ManagedTask<(entityId : Int) -> Unit, EntityRemovedEvent>(priority, callback) {
         override fun register() = submitTask(this)
