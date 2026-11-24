@@ -1,8 +1,9 @@
 package cloud.glitchdev.rfu.gui.hud.elements
 
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.text.TextColor
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.registerTickEvent
 import cloud.glitchdev.rfu.feature.other.TpsTracker
 import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
@@ -16,9 +17,9 @@ object TpsDisplay : AbstractTextHudElement("tpsDisplay") {
     override val isElementActive: Boolean
         get() = TpsTracker.getTps() != null
 
-    override fun onInitialize() {
-        super.onInitialize()
-        registerTickEvent(interval = 10) {
+    override fun onInitialize(scope: EventScope) {
+        super.onInitialize(scope)
+        scope.registerTickEvent(interval = 10) {
             if (isEditing || requirement) {
                 updateState()
             }

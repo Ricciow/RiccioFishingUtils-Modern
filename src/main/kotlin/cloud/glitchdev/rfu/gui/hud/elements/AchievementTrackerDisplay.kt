@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.gui.hud.elements
 
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementManager
 import cloud.glitchdev.rfu.achievement.AchievementProvider
@@ -8,9 +9,9 @@ import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.text.TextColor.GRAY
 import cloud.glitchdev.rfu.constants.text.TextColor.YELLOW
 import cloud.glitchdev.rfu.data.achievements.AchievementHandler
-import cloud.glitchdev.rfu.events.managers.AchievementStageUnlockedEvents.registerAchievementStageUnlockedEvent
-import cloud.glitchdev.rfu.events.managers.AchievementUnlockedEvents.registerAchievementUnlockedEvent
-import cloud.glitchdev.rfu.events.managers.AchievementUpdatedEvents.registerAchievementUpdatedEvent
+import cloud.glitchdev.rfu.events.managers.registerAchievementStageUnlockedEvent
+import cloud.glitchdev.rfu.events.managers.registerAchievementUnlockedEvent
+import cloud.glitchdev.rfu.events.managers.registerAchievementUpdatedEvent
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.hud.AbstractHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
@@ -44,15 +45,15 @@ object AchievementTrackerDisplay : AbstractHudElement("achievementTrackerDisplay
 
     private var achievementLines: List<UIText> = emptyList()
 
-    override fun onInitialize() {
-        super.onInitialize()
-        registerAchievementUpdatedEvent { _ ->
+    override fun onInitialize(scope: EventScope) {
+        super.onInitialize(scope)
+        scope.registerAchievementUpdatedEvent { _ ->
             updateState()
         }
-        registerAchievementUnlockedEvent { _ ->
+        scope.registerAchievementUnlockedEvent { _ ->
             updateState()
         }
-        registerAchievementStageUnlockedEvent { _ ->
+        scope.registerAchievementStageUnlockedEvent { _ ->
             updateState()
         }
     }

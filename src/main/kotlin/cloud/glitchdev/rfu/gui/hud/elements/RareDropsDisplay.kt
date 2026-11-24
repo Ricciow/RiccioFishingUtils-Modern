@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.gui.hud.elements
 
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.config.categories.DropsSettings
 import cloud.glitchdev.rfu.constants.fishing.IRareDrop
 import cloud.glitchdev.rfu.constants.fishing.RareDropDisplayDataType
@@ -13,10 +14,11 @@ import cloud.glitchdev.rfu.constants.text.TextEffects.RESET
 import cloud.glitchdev.rfu.data.catches.CatchTracker
 import cloud.glitchdev.rfu.data.drops.DropHistory
 import cloud.glitchdev.rfu.data.drops.DropManager
-import cloud.glitchdev.rfu.events.managers.DropEvents
-import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
-import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.registerDyeDropEvent
+import cloud.glitchdev.rfu.events.managers.registerRareDropEvent
+import cloud.glitchdev.rfu.events.managers.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.managers.registerTickEvent
 import cloud.glitchdev.rfu.feature.fishing.FishingSession
 import cloud.glitchdev.rfu.gui.components.elementa.MultilineHudText
 import cloud.glitchdev.rfu.gui.hud.AbstractFishingHudElement
@@ -44,9 +46,9 @@ object RareDropsDisplay : AbstractFishingHudElement("rareDropsDisplay") {
     override val isElementActive: Boolean
         get() = !requiresFishing || FishingSession.pausedDuration < 1.minutes
 
-    override fun onInitialize() {
-        super.onInitialize()
-        registerLocationEvent {
+    override fun onInitialize(scope: EventScope) {
+        super.onInitialize(scope)
+        scope.registerLocationEvent {
             CatchTracker.catchHistory.lastHotspot = null
             CatchTracker.catchHistory.lastPos = Vec3.ZERO
             CatchTracker.catchHistory.lastBait = null
@@ -54,20 +56,20 @@ object RareDropsDisplay : AbstractFishingHudElement("rareDropsDisplay") {
             updateState()
         }
 
-        registerSeaCreatureCatchEvent { _, _, _, _, _ ->
+        scope.registerSeaCreatureCatchEvent { _, _, _, _, _ ->
             updateState()
         }
 
-        DropEvents.registerRareDropEvent { _, _, _ ->
+        scope.registerRareDropEvent { _, _, _ ->
             updateState()
             true
         }
 
-        DropEvents.registerDyeDropEvent { _, _, _ ->
+        scope.registerDyeDropEvent { _, _, _ ->
             updateState()
         }
 
-        registerTickEvent(interval = 20) {
+        scope.registerTickEvent(interval = 20) {
             updateState()
         }
     }

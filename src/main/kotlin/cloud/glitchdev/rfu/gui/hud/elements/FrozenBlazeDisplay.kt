@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.gui.hud.elements
 
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.constants.text.TextColor.AQUAMARINE
 import cloud.glitchdev.rfu.constants.text.TextColor.GRAY
@@ -7,7 +8,7 @@ import cloud.glitchdev.rfu.constants.text.TextColor.LIGHT_GREEN
 import cloud.glitchdev.rfu.constants.text.TextColor.LIGHT_RED
 import cloud.glitchdev.rfu.constants.text.TextColor.YELLOW
 import cloud.glitchdev.rfu.constants.text.TextEffects.BOLD
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.registerTickEvent
 import cloud.glitchdev.rfu.feature.fishing.FrozenBlazeAura
 import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
@@ -24,10 +25,10 @@ object FrozenBlazeDisplay : AbstractTextHudElement("frozenBlazeAura") {
     override val isElementActive: Boolean
         get() = FrozenBlazeAura.hasFrozenBlazeArmor
 
-    override fun onInitialize() {
-        super.onInitialize()
+    override fun onInitialize(scope: EventScope) {
+        super.onInitialize(scope)
 
-        registerTickEvent(interval = 5) {
+        scope.registerTickEvent(interval = 5) {
             val active = isElementActive
             if (isEditing || active || wasActive) {
                 updateState()

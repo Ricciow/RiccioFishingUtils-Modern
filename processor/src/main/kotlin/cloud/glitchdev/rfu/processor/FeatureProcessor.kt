@@ -10,12 +10,16 @@ import java.io.OutputStream
 
 private const val AUTO_REGISTER = "cloud.glitchdev.rfu.events.AutoRegister"
 private const val RFU_FEATURE = "cloud.glitchdev.rfu.feature.RFUFeature"
+private const val HUD_ELEMENT = "cloud.glitchdev.rfu.gui.hud.HudElement"
+
+private data class LoaderScope(val fieldName: String, val unloadFuncName: String)
 
 private data class GeneratorSpec(
     val annotation: String,
     val loaderFuncName: String,
     val methodToCall: String,
-    val requiredSuperType: String? = null
+    val requiredSuperType: String? = null,
+    val scope: LoaderScope? = null,
 )
 
 class FeatureProcessor(
@@ -37,7 +41,8 @@ class FeatureProcessor(
                 annotation = RFU_FEATURE,
                 loaderFuncName = "loadFeatures",
                 methodToCall = "onInitialize",
-                requiredSuperType = "cloud.glitchdev.rfu.feature.Feature"
+                requiredSuperType = "cloud.glitchdev.rfu.feature.Feature",
+                scope = LoaderScope("featureScopes", "unloadFeatures"),
             ),
             GeneratorSpec(
                 annotation = AUTO_REGISTER,
@@ -52,10 +57,11 @@ class FeatureProcessor(
                 requiredSuperType = "cloud.glitchdev.rfu.events.RegisteredEvent"
             ),
             GeneratorSpec(
-                annotation = "cloud.glitchdev.rfu.gui.hud.HudElement",
+                annotation = HUD_ELEMENT,
                 loaderFuncName = "registerHud",
                 methodToCall = "initialize",
-                requiredSuperType = "cloud.glitchdev.rfu.gui.hud.AbstractHudElement"
+                requiredSuperType = "cloud.glitchdev.rfu.gui.hud.AbstractHudElement",
+                scope = LoaderScope("hudScopes", "unloadHud"),
             ),
             GeneratorSpec(
                 annotation = "cloud.glitchdev.rfu.utils.command.Command",
@@ -134,7 +140,8 @@ class FeatureProcessor(
             writer.write("package $packageName\n\n")
 
             val allSymbols = symbolsMap.values.flatten()
-            writer.write("import cloud.glitchdev.rfu.feature.FeatureScopes\n")
+            writer.write("import cloud.glitchdev.rfu.events.EventScopes\n")
+            writer.write("import cloud.glitchdev.rfu.gui.window.HudWindow\n")
 
             // Detect duplicate simple names so we can use fully-qualified references for them
             val simpleNameCounts = allSymbols
@@ -150,15 +157,18 @@ class FeatureProcessor(
                 .forEach { writer.write("import $it\n") }
 
             writer.write("\nobject $fileName {\n")
-            writer.write("    private val featureScopes = FeatureScopes()\n")
+            specs.mapNotNull { it.scope }.forEach {
+                writer.write("    private val ${it.fieldName} = EventScopes()\n")
+            }
 
             specs.forEach { spec ->
                 val symbols = symbolsMap[spec] ?: emptyList()
-                val scoped = spec.annotation == RFU_FEATURE
+                val scope = spec.scope
 
                 writer.write("\n    fun ${spec.loaderFuncName}() {\n")
-                if (scoped) writer.write("        featureScopes.load { scope ->\n")
-                val indent = if (scoped) "            " else "        "
+                if (scope != null) writer.write("        ${scope.fieldName}.load { scope ->\n")
+                val indent = if (scope != null) "            " else "        "
+                if (spec.annotation == HUD_ELEMENT) writer.write("${indent}HudWindow.initialize(scope.child())\n")
                 if (symbols.isEmpty()) writer.write("$indent// No entries found\n")
 
                 symbols.forEach { symbol ->
@@ -170,12 +180,12 @@ class FeatureProcessor(
                         simpleName
                     }
                     val instance = if (symbol.classKind == ClassKind.OBJECT) ref else "$ref()"
-                    val arguments = if (scoped) "scope.child()" else ""
+                    val arguments = if (scope != null) "scope.child()" else ""
                     writer.write("$indent$instance.${spec.methodToCall}($arguments)\n")
                 }
-                if (scoped) writer.write("        }\n")
+                if (scope != null) writer.write("        }\n")
                 writer.write("    }\n")
-                if (scoped) writer.write("\n    fun unloadFeatures() = featureScopes.close()\n")
+                if (scope != null) writer.write("\n    fun ${scope.unloadFuncName}() = ${scope.fieldName}.close()\n")
             }
             writer.write("}")
         }

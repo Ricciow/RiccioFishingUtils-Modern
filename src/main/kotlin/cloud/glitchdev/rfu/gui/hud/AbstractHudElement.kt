@@ -1,7 +1,8 @@
 package cloud.glitchdev.rfu.gui.hud
 
-import cloud.glitchdev.rfu.events.managers.CloseConfigEvents.registerCloseConfigEvent
-import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerCloseConfigEvent
+import cloud.glitchdev.rfu.events.managers.registerLocationEvent
 import cloud.glitchdev.rfu.feature.settings.Settings
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.hud.UIFakeInventory
@@ -342,24 +343,35 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
         return Pair(bestPos, bestSnapLine)
     }
 
-    fun initialize() {
+    private var isRegistered = false
+
+    internal fun initialize(scope: EventScope) {
+        scope.onClose {
+            isRegistered = false
+            try {
+                if (isEditing) closeEdit()
+            } finally {
+                HudWindow.unregisterHudElement(this)
+            }
+        }
+        isRegistered = true
         HudWindow.registerHudElement(this)
 
-        registerCloseConfigEvent {
+        scope.registerCloseConfigEvent {
             updateState()
         }
 
-        registerLocationEvent {
+        scope.registerLocationEvent {
             updateState()
         }
 
-        onInitialize()
+        onInitialize(scope)
     }
 
     private fun currentColor() : ColorConstraint = if (isEditing) if(isDragging) holdColor else selectionColor else transparent
 
     fun updateState() {
-        if(hasParent) {
+        if (isRegistered && hasParent) {
             this.isFloating = isEditing || (isOnInventory && renderOnInventory)
 
             scaleText.setHidden(!scaleTextEnabled)
@@ -413,7 +425,7 @@ abstract class AbstractHudElement(val id: String) : UIBlock() {
     }
 
     //Methods that can be used to hook on children classes
-    open fun onInitialize() {}
+    open fun onInitialize(scope: EventScope) {}
     open fun onUpdateState() {}
     open fun onOpenEdit() {}
     open fun onCloseEdit() {}

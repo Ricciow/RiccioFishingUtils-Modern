@@ -1,10 +1,11 @@
 package cloud.glitchdev.rfu.gui.hud
 
-import cloud.glitchdev.rfu.events.managers.FishingSessionEvents.registerFishingSessionEndEvent
-import cloud.glitchdev.rfu.events.managers.FishingSessionEvents.registerFishingSessionPauseEvent
-import cloud.glitchdev.rfu.events.managers.FishingSessionEvents.registerFishingSessionResumeEvent
-import cloud.glitchdev.rfu.events.managers.FishingSessionEvents.registerFishingSessionStartEvent
-import cloud.glitchdev.rfu.events.managers.FishingSessionEvents.registerFishingSessionUpdatedEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerFishingSessionEndEvent
+import cloud.glitchdev.rfu.events.managers.registerFishingSessionPauseEvent
+import cloud.glitchdev.rfu.events.managers.registerFishingSessionResumeEvent
+import cloud.glitchdev.rfu.events.managers.registerFishingSessionStartEvent
+import cloud.glitchdev.rfu.events.managers.registerFishingSessionUpdatedEvent
 import cloud.glitchdev.rfu.feature.fishing.FishingSession
 
 abstract class AbstractFishingHudElement(id: String) : AbstractTextHudElement(id) {
@@ -30,21 +31,21 @@ abstract class AbstractFishingHudElement(id: String) : AbstractTextHudElement(id
             )
         )
 
-    override fun onInitialize() {
-        super.onInitialize()
-        registerFishingSessionStartEvent {
+    override fun onInitialize(scope: EventScope) {
+        super.onInitialize(scope)
+        scope.registerFishingSessionStartEvent {
             updateState()
         }
-        registerFishingSessionUpdatedEvent {
+        scope.registerFishingSessionUpdatedEvent {
             updateState()
         }
-        registerFishingSessionEndEvent {
+        scope.registerFishingSessionEndEvent {
             updateState()
         }
-        registerFishingSessionPauseEvent {
+        scope.registerFishingSessionPauseEvent {
             updateState()
         }
-        registerFishingSessionResumeEvent {
+        scope.registerFishingSessionResumeEvent {
             updateState()
         }
     }

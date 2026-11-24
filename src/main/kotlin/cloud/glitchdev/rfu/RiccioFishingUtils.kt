@@ -57,6 +57,11 @@ object RiccioFishingUtils : ClientModInitializer {
             RFULoader.registerEvents()
             ClientLifecycleEvents.CLIENT_STOPPING.register {
                 try {
+                    RFULoader.unloadHud()
+                } catch (failure: Exception) {
+                    RFULogger.error("Failed to unload the RFU HUD", failure)
+                }
+                try {
                     RFULoader.unloadFeatures()
                 } catch (failure: Exception) {
                     RFULogger.error("Failed to unload RFU features", failure)

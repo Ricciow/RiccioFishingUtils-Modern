@@ -215,6 +215,7 @@ Preferred method is the `JsonFile` utility (`cloud.glitchdev.rfu.utils.JsonFile`
 ## UI & HUD
 
 *   **HUD Elements:** Annotate with `@HudElement` and extend `AbstractHudElement` for positioning/scaling.
+*   Register HUD listeners in `onInitialize(scope: EventScope)`. The loader closes each element's scope and removes the element from the HUD window on unload.
 *   **Framework:** Uses `Elementa` and `UIScheme` for styling.
 *   **Logic vs View:** Render in `HudElement`, logic in `Feature` or manager.
 

@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.gui.hud.elements
 
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.config.categories.TrophyFishing
 import cloud.glitchdev.rfu.constants.fishing.FishingIslands
 import cloud.glitchdev.rfu.constants.fishing.TrophyFish
@@ -11,10 +12,10 @@ import cloud.glitchdev.rfu.data.fishing.TrophyDataManager
 import cloud.glitchdev.rfu.data.fishing.TrophyPityEntry
 import cloud.glitchdev.rfu.feature.fishing.FishingSession
 import cloud.glitchdev.rfu.feature.fishing.TrophyPityTracker
-import cloud.glitchdev.rfu.events.managers.ContainerEvents.registerContainerOpenEvent
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
-import cloud.glitchdev.rfu.events.managers.TrophyCatchEvents.registerTrophyFishCatchEvent
-import cloud.glitchdev.rfu.events.managers.TrophyCatchEvents.registerTrophyFrogCatchEvent
+import cloud.glitchdev.rfu.events.managers.registerContainerOpenEvent
+import cloud.glitchdev.rfu.events.managers.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.registerTrophyFishCatchEvent
+import cloud.glitchdev.rfu.events.managers.registerTrophyFrogCatchEvent
 import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 import cloud.glitchdev.rfu.utils.World
@@ -30,12 +31,12 @@ object TrophyPityDisplay : AbstractTextHudElement("trophyPity") {
     override val isElementActive: Boolean
         get() = getActivePities().isNotEmpty()
 
-    override fun onInitialize() {
-        super.onInitialize()
-        registerTrophyFrogCatchEvent { _, _, _ -> updateState() }
-        registerTrophyFishCatchEvent { _, _, _ -> updateState() }
-        registerContainerOpenEvent { _, _, _ -> updateState() }
-        registerTickEvent(interval = 20) {
+    override fun onInitialize(scope: EventScope) {
+        super.onInitialize(scope)
+        scope.registerTrophyFrogCatchEvent { _, _, _ -> updateState() }
+        scope.registerTrophyFishCatchEvent { _, _, _ -> updateState() }
+        scope.registerContainerOpenEvent { _, _, _ -> updateState() }
+        scope.registerTickEvent(interval = 20) {
             updateState()
         }
     }

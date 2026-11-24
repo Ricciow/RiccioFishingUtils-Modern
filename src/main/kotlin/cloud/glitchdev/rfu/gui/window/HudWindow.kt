@@ -1,14 +1,16 @@
 package cloud.glitchdev.rfu.gui.window
 
+import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.RFUSettings
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.events.keybind.KeyContext
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
-import cloud.glitchdev.rfu.events.managers.HudRenderEvents.registerHudRenderEvent
-import cloud.glitchdev.rfu.events.managers.KeybindEvents.registerKeybind
-import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.registerJoinEvent
+import cloud.glitchdev.rfu.events.managers.registerHudRenderEvent
+import cloud.glitchdev.rfu.events.managers.registerKeybind
+import cloud.glitchdev.rfu.events.managers.registerShutdownEvent
+import cloud.glitchdev.rfu.events.managers.registerTickEvent
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.hud.UIFakeInventory
@@ -66,6 +68,7 @@ object HudWindow : BaseWindow(false) {
 
     private var resetClickTimestamp = 0L
     private var isConfirmingReset = false
+    private var hudLoaded = false
 
     enum class RenderPass {
         NONE,
@@ -102,21 +105,34 @@ object HudWindow : BaseWindow(false) {
 
     init {
         create()
+    }
 
-        registerKeybind {
+    internal fun initialize(scope: EventScope) {
+        scope.onClose {
+            hudLoaded = false
+            currentContainerScreen = null
+            isInteractingWithHud = false
+            isExportMode = false
+            stopEditing()
+        }
+        hudLoaded = true
+        //~ if >=26.2 'mc.screen' -> 'mc.gui.screen()' {
+        currentContainerScreen = mc.gui.screen() as? AbstractContainerScreen<*>
+        //~}
+        scope.registerKeybind {
             key = { RFUSettings.moveHudKeybind }
             context = KeyContext.IN_GAME
             onPress = { openEditingGui(EditTarget.HUD) }
         }
 
-        registerKeybind {
+        scope.registerKeybind {
             key = { RFUSettings.moveHudKeybind }
             context = KeyContext.CONTAINER_ONLY
             consume = true
             onPress = { openEditingGui(EditTarget.INVENTORY) }
         }
 
-        registerHudRenderEvent { context, ticks ->
+        scope.registerHudRenderEvent { context, ticks ->
             if (!isEditingOpen) {
                 currentRenderPass = RenderPass.HUD
                 try {
@@ -127,7 +143,7 @@ object HudWindow : BaseWindow(false) {
             }
         }
 
-        registerShutdownEvent(0) {
+        scope.registerShutdownEvent(0) {
             if (window.getWidth() > 0f && window.getHeight() > 0f) {
                 HudManager.saveResolution(window.getWidth(), window.getHeight())
             }
@@ -136,13 +152,13 @@ object HudWindow : BaseWindow(false) {
             }
         }
 
-        registerTickEvent {
+        scope.registerTickEvent {
             if (isConfirmingReset && System.currentTimeMillis() - resetClickTimestamp > 10000L) {
                 revertResetButton()
             }
         }
 
-        registerJoinEvent(delayMillis = 500L) {
+        scope.registerJoinEvent(delayMillis = 500L) {
             resolvePositionsOnWorldJoin()
         }
     }
@@ -182,6 +198,7 @@ object HudWindow : BaseWindow(false) {
     }
 
     fun onInventoryOpened(screen: AbstractContainerScreen<*>) {
+        if (!hudLoaded) return
         currentContainerScreen = screen
         isInteractingWithHud = false
         for (element in hudElements) {
@@ -190,6 +207,7 @@ object HudWindow : BaseWindow(false) {
     }
 
     fun onInventoryClosed() {
+        if (!hudLoaded) return
         currentContainerScreen = null
         isInteractingWithHud = false
         if (OtherSettings.patchElementaMemoryLeaks) {
@@ -201,7 +219,7 @@ object HudWindow : BaseWindow(false) {
     }
 
     fun renderOnInventory(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, deltaTicks: Float) {
-        if (isEditingOpen) return
+        if (!hudLoaded || isEditingOpen) return
         currentRenderPass = RenderPass.INVENTORY
         try {
             extractRenderState(context, mouseX, mouseY, deltaTicks)
@@ -267,6 +285,7 @@ object HudWindow : BaseWindow(false) {
     }
 
     private fun openGuiInternal(target: EditTarget, exportMode: Boolean) {
+        if (!hudLoaded) return
         resolvePositionsOnWorldJoin()
         isExportMode = exportMode
         isEditingOpen = true
@@ -311,12 +330,16 @@ object HudWindow : BaseWindow(false) {
         modeToggleButton.updateText(getModeButtonText())
     }
 
-    override fun onWindowClose() {
+    private fun stopEditing() {
         isEditingOpen = false
         showSnapLines(null, null)
         revertResetButton()
         updateState()
+    }
 
+    override fun onWindowClose() {
+        if (!hudLoaded) return
+        stopEditing()
         if (isExportMode) {
             val elementsToExport = hudElements.filter {
                 when (currentEditTarget) {
@@ -526,5 +549,10 @@ object HudWindow : BaseWindow(false) {
             }
         }
         element.updateState()
+    }
+
+    internal fun unregisterHudElement(element: AbstractHudElement) {
+        hudElements.remove(element)
+        window.removeChild(element)
     }
 }

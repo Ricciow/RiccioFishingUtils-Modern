@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.gui.hud
 
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.gui.components.elementa.BoundingBoxConstraint
 import cloud.glitchdev.rfu.gui.components.elementa.MultilineHudText
 import gg.essential.elementa.components.UIContainer
@@ -24,7 +25,7 @@ abstract class AbstractTextHudElement(id : String) : AbstractHudElement(id) {
         y = SiblingConstraint()
     } childOf container
 
-    override fun onInitialize() {
+    override fun onInitialize(scope: EventScope) {
         text.setText(id)
     }
 

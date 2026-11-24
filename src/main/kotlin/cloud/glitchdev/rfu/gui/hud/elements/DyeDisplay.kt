@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.gui.hud.elements
 
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.config.categories.BackendSettings
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.skyblock.Dyes as ConstDyes
@@ -10,7 +11,7 @@ import cloud.glitchdev.rfu.gui.hud.AbstractHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 import cloud.glitchdev.rfu.model.dye.Dyes
 import cloud.glitchdev.rfu.utils.network.DyeWebSocket
-import cloud.glitchdev.rfu.events.managers.DyeEvents.registerDyeUpdateEvent
+import cloud.glitchdev.rfu.events.managers.registerDyeUpdateEvent
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIText
 import gg.essential.elementa.constraints.ChildBasedMaxSizeConstraint
@@ -31,9 +32,9 @@ object DyeDisplay : AbstractHudElement("dyeDisplay") {
     override val isElementActive: Boolean
         get() = !currentDyes.isOutdated()
 
-    override fun onInitialize() {
-        super.onInitialize()
-        registerDyeUpdateEvent {
+    override fun onInitialize(scope: EventScope) {
+        super.onInitialize(scope)
+        scope.registerDyeUpdateEvent {
             updateState()
         }
     }
