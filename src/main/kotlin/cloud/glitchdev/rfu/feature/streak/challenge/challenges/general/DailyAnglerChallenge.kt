@@ -1,7 +1,7 @@
 package cloud.glitchdev.rfu.feature.streak.challenge.challenges.general
 
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.feature.fishing.FishingSession
 import cloud.glitchdev.rfu.feature.streak.challenge.BaseChallenge
 import cloud.glitchdev.rfu.feature.streak.challenge.RFUChallenge

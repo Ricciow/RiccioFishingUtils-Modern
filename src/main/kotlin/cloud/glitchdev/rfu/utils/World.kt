@@ -7,12 +7,12 @@ import cloud.glitchdev.rfu.constants.skyblock.Mayors
 import cloud.glitchdev.rfu.data.fishing.HotspotCache
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.HotSpotEvents
-import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.fishing.HotSpotEvents
+import cloud.glitchdev.rfu.events.managers.connection.HypixelModApiEvents.registerLocationEvent
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
-import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.managers.connection.ConnectionEvents.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.connection.ConnectionEvents.registerJoinEvent
+import cloud.glitchdev.rfu.events.managers.fishing.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import net.hypixel.data.type.GameType
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.dimension.BuiltinDimensionTypes

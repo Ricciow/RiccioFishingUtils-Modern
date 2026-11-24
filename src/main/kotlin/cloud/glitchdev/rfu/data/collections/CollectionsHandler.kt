@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.data.collections
 
-import cloud.glitchdev.rfu.events.managers.CollectionEvents
+import cloud.glitchdev.rfu.events.managers.progress.CollectionEvents
 import cloud.glitchdev.rfu.utils.JsonFile
 
 object CollectionsHandler {

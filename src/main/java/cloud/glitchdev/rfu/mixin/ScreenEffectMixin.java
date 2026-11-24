@@ -1,6 +1,9 @@
 package cloud.glitchdev.rfu.mixin;
 
-import cloud.glitchdev.rfu.events.managers.ScreenEffectEvents;
+import cloud.glitchdev.rfu.events.managers.render.FireOverlayEventManager;
+import cloud.glitchdev.rfu.events.managers.render.WaterOverlayAppearanceEventManager;
+import cloud.glitchdev.rfu.events.managers.render.WaterOverlayEventManager;
+import cloud.glitchdev.rfu.events.managers.render.ScreenEffectEvents;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.Minecraft;
@@ -36,7 +39,7 @@ public class ScreenEffectMixin {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return color;
         ScreenEffectEvents.WaterOverlayAppearanceContext context = new ScreenEffectEvents.WaterOverlayAppearanceContext(player);
-        ScreenEffectEvents.WaterOverlayAppearanceEventManager.INSTANCE.getRunTasks().invoke(context);
+        WaterOverlayAppearanceEventManager.INSTANCE.getRunTasks().invoke(context);
         return context.getColor() != null ? ARGB.multiply(color, context.getColor().getRGB()) : color;
     }
 
@@ -49,7 +52,7 @@ public class ScreenEffectMixin {
     *///?}
     private boolean rfu$waterOverlay(LocalPlayer player, TagKey<Fluid> fluid, Operation<Boolean> original) {
         ScreenEffectEvents.OverlayContext context = new ScreenEffectEvents.OverlayContext(player, original.call(player, fluid));
-        ScreenEffectEvents.WaterOverlayEventManager.INSTANCE.getRunTasks().invoke(context);
+        WaterOverlayEventManager.INSTANCE.getRunTasks().invoke(context);
         return context.getVisible();
     }
 
@@ -62,7 +65,7 @@ public class ScreenEffectMixin {
     *///?}
     private boolean rfu$fireOverlay(LocalPlayer player, Operation<Boolean> original) {
         ScreenEffectEvents.OverlayContext context = new ScreenEffectEvents.OverlayContext(player, original.call(player));
-        ScreenEffectEvents.FireOverlayEventManager.INSTANCE.getRunTasks().invoke(context);
+        FireOverlayEventManager.INSTANCE.getRunTasks().invoke(context);
         return context.getVisible();
     }
 }

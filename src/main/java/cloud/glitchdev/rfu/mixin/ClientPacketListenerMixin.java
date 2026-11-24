@@ -1,6 +1,13 @@
 package cloud.glitchdev.rfu.mixin;
 
-import cloud.glitchdev.rfu.events.managers.*;
+import cloud.glitchdev.rfu.events.managers.entity.EntityAddedEvents;
+import cloud.glitchdev.rfu.events.managers.entity.EntityDataEvents;
+import cloud.glitchdev.rfu.events.managers.entity.EntityRemovedEvents;
+import cloud.glitchdev.rfu.events.managers.entity.EntityStatusEvents;
+import cloud.glitchdev.rfu.events.managers.inventory.ContainerEvents;
+import cloud.glitchdev.rfu.events.managers.inventory.SetSlotEvents;
+import cloud.glitchdev.rfu.events.managers.lifecycle.SetTimeEvents;
+import cloud.glitchdev.rfu.events.managers.render.ParticleRenderEvents;
 import cloud.glitchdev.rfu.events.wrappers.VoidCancelable;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -54,7 +61,7 @@ public class ClientPacketListenerMixin {
     @Inject(method = "handleParticleEvent", at = @At("HEAD"), cancellable = true)
     private void handleLevelParticles(ClientboundLevelParticlesPacket packet, CallbackInfo ci) {
         VoidCancelable cancelable = new VoidCancelable(ci);
-        ParticleEvents.ParticleRenderEvents.INSTANCE.getRunTasks().invoke(packet, cancelable);
+        ParticleRenderEvents.INSTANCE.getRunTasks().invoke(packet, cancelable);
     }
 
     @Inject(method = "handleEntityEvent", at = @At("TAIL"))

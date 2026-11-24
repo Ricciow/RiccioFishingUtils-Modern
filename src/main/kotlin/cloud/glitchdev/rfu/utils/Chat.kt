@@ -7,8 +7,8 @@ import cloud.glitchdev.rfu.data.other.OtherManager
 import cloud.glitchdev.rfu.data.other.data.InstantEntry
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerAnyChatEvent
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerSendCommandEvent
+import cloud.glitchdev.rfu.events.managers.chat.ChatEvents.registerAnyChatEvent
+import cloud.glitchdev.rfu.events.managers.chat.ChatEvents.registerSendCommandEvent
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 import kotlinx.coroutines.delay
 import kotlin.time.Clock

@@ -7,8 +7,8 @@ import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerAchievementStageUnlockedEvent
-import cloud.glitchdev.rfu.events.managers.registerAchievementUnlockedEvent
+import cloud.glitchdev.rfu.events.managers.progress.registerAchievementStageUnlockedEvent
+import cloud.glitchdev.rfu.events.managers.progress.registerAchievementUnlockedEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat

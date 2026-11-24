@@ -2,7 +2,7 @@ package cloud.glitchdev.rfu.utils.network
 
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.AnnouncementEvents
+import cloud.glitchdev.rfu.events.managers.ui.AnnouncementEvents
 import cloud.glitchdev.rfu.feature.announcements.Announcements
 import cloud.glitchdev.rfu.model.announcement.Announcement
 import cloud.glitchdev.rfu.model.network.WebSocketEvent

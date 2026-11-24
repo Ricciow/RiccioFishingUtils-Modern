@@ -2,7 +2,7 @@ package cloud.glitchdev.rfu.party
 
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerAllowGameEvent
+import cloud.glitchdev.rfu.events.managers.chat.ChatEvents.registerAllowGameEvent
 import cloud.glitchdev.rfu.utils.dsl.removeRankTag
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 

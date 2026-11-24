@@ -2,7 +2,7 @@ package cloud.glitchdev.rfu.feature.fishing
 
 import cloud.glitchdev.rfu.config.categories.JerryFishing
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.chat.registerGameEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 

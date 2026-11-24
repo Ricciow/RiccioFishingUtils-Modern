@@ -12,10 +12,10 @@ import cloud.glitchdev.rfu.data.fishing.TrophyDataManager
 import cloud.glitchdev.rfu.data.fishing.TrophyPityEntry
 import cloud.glitchdev.rfu.feature.fishing.FishingSession
 import cloud.glitchdev.rfu.feature.fishing.TrophyPityTracker
-import cloud.glitchdev.rfu.events.managers.registerContainerOpenEvent
-import cloud.glitchdev.rfu.events.managers.registerTickEvent
-import cloud.glitchdev.rfu.events.managers.registerTrophyFishCatchEvent
-import cloud.glitchdev.rfu.events.managers.registerTrophyFrogCatchEvent
+import cloud.glitchdev.rfu.events.managers.inventory.registerContainerOpenEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerTrophyFishCatchEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerTrophyFrogCatchEvent
 import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 import cloud.glitchdev.rfu.utils.World

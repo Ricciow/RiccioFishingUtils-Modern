@@ -4,8 +4,8 @@ import cloud.glitchdev.rfu.achievement.*
 import cloud.glitchdev.rfu.achievement.types.NumericAchievement
 import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerSeaCreatureCatchEvent
-import cloud.glitchdev.rfu.events.managers.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import kotlin.time.Duration.Companion.minutes
 
 @Achievement

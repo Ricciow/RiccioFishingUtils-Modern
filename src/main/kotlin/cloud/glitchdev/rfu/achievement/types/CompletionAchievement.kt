@@ -4,7 +4,7 @@ import cloud.glitchdev.rfu.achievement.AchievementProvider
 import cloud.glitchdev.rfu.achievement.BaseAchievement
 import cloud.glitchdev.rfu.data.achievements.AchievementHandler
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerAchievementUnlockedEvent
+import cloud.glitchdev.rfu.events.managers.progress.registerAchievementUnlockedEvent
 
 abstract class CompletionAchievement : BaseAchievement() {
     abstract val achievements: List<BaseAchievement>

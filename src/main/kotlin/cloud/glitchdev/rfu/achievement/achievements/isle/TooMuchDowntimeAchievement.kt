@@ -7,7 +7,7 @@ import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.BaseAchievement
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerMobDisposeEvent
+import cloud.glitchdev.rfu.events.managers.entity.registerMobDisposeEvent
 import net.minecraft.world.level.levelgen.Heightmap
 
 @Achievement

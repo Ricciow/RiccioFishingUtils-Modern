@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.mixin;
 
-import cloud.glitchdev.rfu.events.managers.EntityFireRenderEvents;
+import cloud.glitchdev.rfu.events.managers.render.EntityFireRenderEvents;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.renderer.entity.EntityRenderer;

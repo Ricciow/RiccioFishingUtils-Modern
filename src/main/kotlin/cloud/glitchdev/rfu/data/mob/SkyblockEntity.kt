@@ -6,7 +6,7 @@ import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig.RARE_SC_REGEX
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerRenderEvent
+import cloud.glitchdev.rfu.events.managers.render.registerRenderEvent
 import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.utils.rendering.Render3D
 import cloud.glitchdev.rfu.utils.rendering.Render3DBuilder.Companion.sphere
@@ -25,9 +25,9 @@ import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.phys.Vec3
 import kotlin.time.Instant
 import cloud.glitchdev.rfu.data.fishing.BobberInfo
-import cloud.glitchdev.rfu.events.managers.BobberManager
-import cloud.glitchdev.rfu.events.managers.ServerCountdownEvents.ServerCountdownEvent
-import cloud.glitchdev.rfu.events.managers.registerServerCountdownEvent
+import cloud.glitchdev.rfu.events.managers.fishing.BobberManager
+import cloud.glitchdev.rfu.events.managers.lifecycle.ServerCountdownEvents.ServerCountdownEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerServerCountdownEvent
 import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.dsl.parseHealthValue
 

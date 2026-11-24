@@ -4,9 +4,9 @@ import cloud.glitchdev.rfu.RiccioFishingUtils.WS_URL
 import cloud.glitchdev.rfu.RiccioFishingUtils.RFU_VERSION
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.utils.RFULogger
-import cloud.glitchdev.rfu.events.managers.ErrorEvents
-import cloud.glitchdev.rfu.events.managers.AfkEvents
-import cloud.glitchdev.rfu.events.managers.WebSocketEvents
+import cloud.glitchdev.rfu.events.managers.ui.ErrorEvents
+import cloud.glitchdev.rfu.events.managers.player.AfkEvents
+import cloud.glitchdev.rfu.events.managers.connection.WebSocketEvents
 import cloud.glitchdev.rfu.utils.Coroutines
 import com.google.gson.Gson
 import java.net.URI

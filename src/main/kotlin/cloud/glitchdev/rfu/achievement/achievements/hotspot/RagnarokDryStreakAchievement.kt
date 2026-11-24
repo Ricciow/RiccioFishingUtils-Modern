@@ -8,7 +8,7 @@ import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.data.catches.CatchTracker.catchHistory
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerSeaCreatureCatchEvent
 
 @Achievement
 object RagnarokDryStreakAchievement : NumericStageAchievement() {

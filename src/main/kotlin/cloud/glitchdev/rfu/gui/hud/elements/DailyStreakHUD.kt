@@ -10,9 +10,9 @@ import cloud.glitchdev.rfu.constants.text.TextColor.YELLOW
 import cloud.glitchdev.rfu.constants.text.TextEffects.BOLD
 import cloud.glitchdev.rfu.data.streak.DailyChallenge
 import cloud.glitchdev.rfu.data.streak.DailyStreakManager
-import cloud.glitchdev.rfu.events.managers.ArmorEvents
-import cloud.glitchdev.rfu.events.managers.registerArmorChangeEvent
-import cloud.glitchdev.rfu.events.managers.registerStreakUpdatedEvent
+import cloud.glitchdev.rfu.events.managers.inventory.ArmorEvents
+import cloud.glitchdev.rfu.events.managers.inventory.registerArmorChangeEvent
+import cloud.glitchdev.rfu.events.managers.progress.registerStreakUpdatedEvent
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.elementa.BoundingBoxConstraint
 import cloud.glitchdev.rfu.gui.components.elementa.UIEmoji

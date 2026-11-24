@@ -9,11 +9,11 @@ import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.data.fishing.Hotspot
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.HotSpotEvents
-import cloud.glitchdev.rfu.events.managers.registerLocationEvent
-import cloud.glitchdev.rfu.events.managers.registerKeybind
-import cloud.glitchdev.rfu.events.managers.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.fishing.HotSpotEvents
+import cloud.glitchdev.rfu.events.managers.connection.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.input.registerKeybind
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat

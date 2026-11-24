@@ -4,7 +4,7 @@ import cloud.glitchdev.rfu.RiccioFishingUtils.RFU_VERSION
 import cloud.glitchdev.rfu.constants.text.TextColor.*
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
+import cloud.glitchdev.rfu.events.managers.connection.ConnectionEvents.registerJoinEvent
 import cloud.glitchdev.rfu.model.version.ModVersion
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.RFULogger

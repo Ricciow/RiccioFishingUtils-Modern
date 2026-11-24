@@ -6,7 +6,7 @@ import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericAchievement
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerSeaCreatureCatchEvent
 
 @Achievement
 object DoubleHookStreakAchievement : NumericAchievement() {

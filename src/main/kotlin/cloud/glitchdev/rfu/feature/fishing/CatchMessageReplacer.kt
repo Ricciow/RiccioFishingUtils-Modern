@@ -3,9 +3,9 @@ package cloud.glitchdev.rfu.feature.fishing
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerAllowGameEvent
-import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents
-import cloud.glitchdev.rfu.events.managers.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.managers.chat.registerAllowGameEvent
+import cloud.glitchdev.rfu.events.managers.fishing.SeaCreatureCatchEvents
+import cloud.glitchdev.rfu.events.managers.fishing.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat

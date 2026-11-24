@@ -3,9 +3,9 @@
 import cloud.glitchdev.rfu.constants.chat.RegexConstants.PLAYER_REGEX
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerSendCommandEvent
-import cloud.glitchdev.rfu.events.managers.PartyEvents.registerOnPartyChangeEvent
+import cloud.glitchdev.rfu.events.managers.chat.ChatEvents.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.chat.ChatEvents.registerSendCommandEvent
+import cloud.glitchdev.rfu.events.managers.party.PartyEvents.registerOnPartyChangeEvent
 import cloud.glitchdev.rfu.config.categories.PartySettings
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.Coroutines

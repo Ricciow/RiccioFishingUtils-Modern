@@ -10,10 +10,10 @@ import cloud.glitchdev.rfu.constants.fishing.RareDrops
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.data.mob.SkyblockEntity
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerRareDropEvent
-import cloud.glitchdev.rfu.events.managers.registerMobDetectEvent
-import cloud.glitchdev.rfu.events.managers.registerMobDisposeEvent
-import cloud.glitchdev.rfu.events.managers.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.loot.registerRareDropEvent
+import cloud.glitchdev.rfu.events.managers.entity.registerMobDetectEvent
+import cloud.glitchdev.rfu.events.managers.entity.registerMobDisposeEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import kotlin.math.abs
 
 @Achievement

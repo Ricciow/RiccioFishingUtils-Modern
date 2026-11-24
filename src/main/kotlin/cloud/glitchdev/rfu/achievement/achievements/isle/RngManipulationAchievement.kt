@@ -7,7 +7,7 @@ import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.BaseAchievement
 import cloud.glitchdev.rfu.constants.fishing.RareDrops
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerRareDropEvent
+import cloud.glitchdev.rfu.events.managers.loot.registerRareDropEvent
 
 @Achievement
 object RngManipulationAchievement : BaseAchievement() {

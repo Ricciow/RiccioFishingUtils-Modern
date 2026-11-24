@@ -10,7 +10,7 @@ import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 import cloud.glitchdev.rfu.data.mob.DeployableManager
 import cloud.glitchdev.rfu.data.mob.DeployableType
-import cloud.glitchdev.rfu.events.managers.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.utils.dsl.toReadableString
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds

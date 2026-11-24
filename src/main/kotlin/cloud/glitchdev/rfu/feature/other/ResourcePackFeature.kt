@@ -13,7 +13,7 @@ import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import kotlin.io.path.nameWithoutExtension
 import kotlin.use
-import cloud.glitchdev.rfu.events.managers.registerPackSelectionScreenTickEvent
+import cloud.glitchdev.rfu.events.managers.ui.registerPackSelectionScreenTickEvent
 import java.nio.file.attribute.FileTime
 
 @RFUFeature

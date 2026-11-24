@@ -2,7 +2,7 @@ package cloud.glitchdev.rfu.feature.streak.challenge.challenges.island
 
 import cloud.glitchdev.rfu.constants.fishing.FishingIslands
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.feature.streak.challenge.BaseChallenge
 import cloud.glitchdev.rfu.utils.World
 

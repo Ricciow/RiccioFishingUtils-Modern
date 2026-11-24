@@ -4,8 +4,8 @@ import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.achievement.BaseAchievement
 import cloud.glitchdev.rfu.constants.skyblock.Dyes
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerContainerOpenEvent
-import cloud.glitchdev.rfu.events.managers.registerDyeDropEvent
+import cloud.glitchdev.rfu.events.managers.inventory.registerContainerOpenEvent
+import cloud.glitchdev.rfu.events.managers.loot.registerDyeDropEvent
 import cloud.glitchdev.rfu.utils.Coroutines
 import gg.essential.universal.utils.toUnformattedString
 import kotlinx.coroutines.Job

@@ -3,11 +3,11 @@ package cloud.glitchdev.rfu.feature.fishing
 import cloud.glitchdev.rfu.data.other.OtherManager
 import cloud.glitchdev.rfu.data.other.data.MobyDuckEntry
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerAnyChatEvent
-import cloud.glitchdev.rfu.events.managers.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.registerLocationEvent
-import cloud.glitchdev.rfu.events.managers.ServerCountdownEvents.ServerCountdownEvent
-import cloud.glitchdev.rfu.events.managers.registerServerCountdownEvent
+import cloud.glitchdev.rfu.events.managers.chat.registerAnyChatEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.ServerCountdownEvents.ServerCountdownEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerServerCountdownEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.World

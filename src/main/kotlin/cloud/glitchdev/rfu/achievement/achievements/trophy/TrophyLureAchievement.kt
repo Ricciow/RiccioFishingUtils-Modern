@@ -8,8 +8,8 @@ import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.BaseAchievement
 import cloud.glitchdev.rfu.achievement.AchievementProvider
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerContainerOpenEvent
-import cloud.glitchdev.rfu.events.managers.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.inventory.registerContainerOpenEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.utils.Tablist
 import cloud.glitchdev.rfu.utils.dsl.removeFormatting
 import gg.essential.universal.utils.toUnformattedString

@@ -4,9 +4,9 @@ import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.data.mob.SkyblockEntity
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
-import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDeathEvent
+import cloud.glitchdev.rfu.events.managers.connection.ConnectionEvents.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.connection.HypixelModApiEvents.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.entity.MobEvents.registerMobDeathEvent
 import cloud.glitchdev.rfu.utils.Coroutines
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

@@ -8,7 +8,7 @@ import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
 import cloud.glitchdev.rfu.constants.fishing.RareDrops
 import cloud.glitchdev.rfu.data.drops.DropManager
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 
 @Achievement
 object LotteryTicketAchievement: NumericStageAchievement() {

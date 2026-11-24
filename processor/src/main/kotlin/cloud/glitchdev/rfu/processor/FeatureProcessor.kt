@@ -12,6 +12,15 @@ private const val AUTO_REGISTER = "cloud.glitchdev.rfu.events.AutoRegister"
 private const val RFU_FEATURE = "cloud.glitchdev.rfu.feature.RFUFeature"
 private const val HUD_ELEMENT = "cloud.glitchdev.rfu.gui.hud.HudElement"
 
+private fun registrationPath(symbol: KSClassDeclaration): String {
+    val path = symbol.containingFile?.filePath.orEmpty().replace('\\', '/')
+    val managersDirectory = "/events/managers/"
+    if (managersDirectory !in path) return path
+
+    // Package organization should not change the order in which event hooks register.
+    return path.substringBefore(managersDirectory) + managersDirectory + path.substringAfterLast('/')
+}
+
 private data class LoaderScope(val fieldName: String, val unloadFuncName: String)
 
 private data class GeneratorSpec(
@@ -97,7 +106,7 @@ class FeatureProcessor(
                 (symbols + autoRegisteredManagers)
                     .distinctBy { it.qualifiedName?.asString() }
                     .sortedWith(compareBy<KSClassDeclaration, String>(String.CASE_INSENSITIVE_ORDER) {
-                        it.containingFile?.filePath.orEmpty()
+                        registrationPath(it)
                     }.thenBy { (it.location as? FileLocation)?.lineNumber ?: 0 })
             } else {
                 symbols

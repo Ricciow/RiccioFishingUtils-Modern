@@ -1,7 +1,7 @@
 package cloud.glitchdev.rfu.feature.streak.challenge.challenges.drops
 
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerLootshareEvent
+import cloud.glitchdev.rfu.events.managers.loot.registerLootshareEvent
 import cloud.glitchdev.rfu.feature.streak.challenge.BaseChallenge
 import cloud.glitchdev.rfu.feature.streak.challenge.RFUChallenge
 import gg.essential.universal.utils.toUnformattedString

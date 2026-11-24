@@ -2,7 +2,7 @@ package cloud.glitchdev.rfu.feature.settings
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.RiccioFishingUtils.settings
-import cloud.glitchdev.rfu.events.managers.CloseConfigEvents.registerCloseConfigEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.CloseConfigEvents.registerCloseConfigEvent
 import cloud.glitchdev.rfu.gui.window.HudWindow
 import cloud.glitchdev.rfu.utils.command.Command
 import cloud.glitchdev.rfu.utils.command.SimpleCommand

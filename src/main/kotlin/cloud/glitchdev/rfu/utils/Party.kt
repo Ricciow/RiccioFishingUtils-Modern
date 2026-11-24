@@ -1,5 +1,7 @@
 package cloud.glitchdev.rfu.utils
 
+import cloud.glitchdev.rfu.events.managers.party.MyPartyChanged
+import cloud.glitchdev.rfu.events.managers.party.OnPartyChange
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.chat.RegexConstants.PLAYER_REGEX
@@ -8,15 +10,14 @@ import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.hypixelModAPI
-import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
-import cloud.glitchdev.rfu.events.managers.PartyFinderEvents
-import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerJoinRequestEvent
-import cloud.glitchdev.rfu.events.managers.PartyEvents
-import cloud.glitchdev.rfu.events.managers.PartyEvents.registerOnPartyChangeEvent
-import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
+import cloud.glitchdev.rfu.events.managers.chat.ChatEvents.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.connection.ConnectionEvents.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.connection.HypixelModApiEvents.hypixelModAPI
+import cloud.glitchdev.rfu.events.managers.connection.HypixelModApiEvents.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.party.PartyFinderEvents
+import cloud.glitchdev.rfu.events.managers.party.PartyFinderEvents.registerJoinRequestEvent
+import cloud.glitchdev.rfu.events.managers.party.PartyEvents.registerOnPartyChangeEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.ShutdownEvents.registerShutdownEvent
 import cloud.glitchdev.rfu.model.party.FishingParty
 import cloud.glitchdev.rfu.party.WarpKickManager
 import cloud.glitchdev.rfu.utils.command.AbstractCommand
@@ -191,7 +192,7 @@ object Party : RegisteredEvent {
             syncPartyFinderListing()
         }
 
-        PartyFinderEvents.MyPartyChanged.register { party ->
+        MyPartyChanged.register { party ->
             if (party != null && inParty && !isLeader) {
                 PartyWebSocket.deleteParty(User.getUsername())
             }
@@ -318,7 +319,7 @@ object Party : RegisteredEvent {
             wasMemberCount != memberCount ||
             oldMembers != members
         ) {
-            PartyEvents.OnPartyChange.runTasks(inParty, isLeader, isAllInvite, members)
+            OnPartyChange.runTasks(inParty, isLeader, isAllInvite, members)
         }
 
         wasInParty = inParty

@@ -1,11 +1,11 @@
 package cloud.glitchdev.rfu.gui.hud
 
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerFishingSessionEndEvent
-import cloud.glitchdev.rfu.events.managers.registerFishingSessionPauseEvent
-import cloud.glitchdev.rfu.events.managers.registerFishingSessionResumeEvent
-import cloud.glitchdev.rfu.events.managers.registerFishingSessionStartEvent
-import cloud.glitchdev.rfu.events.managers.registerFishingSessionUpdatedEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerFishingSessionEndEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerFishingSessionPauseEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerFishingSessionResumeEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerFishingSessionStartEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerFishingSessionUpdatedEvent
 import cloud.glitchdev.rfu.feature.fishing.FishingSession
 
 abstract class AbstractFishingHudElement(id: String) : AbstractTextHudElement(id) {

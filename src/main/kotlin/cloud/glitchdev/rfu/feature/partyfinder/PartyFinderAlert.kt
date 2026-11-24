@@ -8,8 +8,8 @@ import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.World
-import cloud.glitchdev.rfu.events.managers.registerPartyListChangedEvent
-import cloud.glitchdev.rfu.events.managers.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.party.registerPartyListChangedEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.model.party.FishingParty
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component

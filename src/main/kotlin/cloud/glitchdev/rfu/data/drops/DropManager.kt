@@ -4,9 +4,9 @@ import cloud.glitchdev.rfu.constants.fishing.RareDrops
 import cloud.glitchdev.rfu.constants.skyblock.Dyes
 import cloud.glitchdev.rfu.data.catches.CatchTracker
 import cloud.glitchdev.rfu.data.drops.migration.DropMigration
-import cloud.glitchdev.rfu.events.managers.DropEvents
-import cloud.glitchdev.rfu.events.managers.CocoonEvents.registerCocoonEvent
-import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.managers.loot.DropEvents
+import cloud.glitchdev.rfu.events.managers.fishing.CocoonEvents.registerCocoonEvent
+import cloud.glitchdev.rfu.events.managers.fishing.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.utils.JsonFile
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent

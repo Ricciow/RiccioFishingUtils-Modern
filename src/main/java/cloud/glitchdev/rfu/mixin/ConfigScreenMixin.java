@@ -2,7 +2,7 @@ package cloud.glitchdev.rfu.mixin;
 
 import cloud.glitchdev.rfu.access.ConfigScreenInvoker;
 import cloud.glitchdev.rfu.access.ListWidgetExtension;
-import cloud.glitchdev.rfu.events.managers.CloseConfigEvents;
+import cloud.glitchdev.rfu.events.managers.lifecycle.CloseConfigEvents;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.teamresourceful.resourcefulconfig.api.types.ResourcefulConfig;

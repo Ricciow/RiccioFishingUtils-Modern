@@ -1,8 +1,8 @@
 package cloud.glitchdev.rfu.gui.hud
 
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerCloseConfigEvent
-import cloud.glitchdev.rfu.events.managers.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerCloseConfigEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerLocationEvent
 import cloud.glitchdev.rfu.feature.settings.Settings
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.hud.UIFakeInventory

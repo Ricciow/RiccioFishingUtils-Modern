@@ -1,0 +1,197 @@
+package cloud.glitchdev.rfu.events.managers.chat
+
+import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
+import cloud.glitchdev.rfu.events.AutoRegister
+import cloud.glitchdev.rfu.events.RegisteredEvent
+import cloud.glitchdev.rfu.events.registration.Defaults
+import cloud.glitchdev.rfu.events.registration.ScopedRegistration
+import cloud.glitchdev.rfu.utils.Chat
+import cloud.glitchdev.rfu.utils.RFULogger
+import gg.essential.universal.utils.toFormattedString
+import gg.essential.universal.utils.toUnformattedString
+import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
+import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents
+import net.minecraft.network.chat.Component
+
+@AutoRegister
+object ChatEvents : RegisteredEvent {
+    private var lastHandledChatMessage: Component? = null
+    private var lastHandledGameMessage: Component? = null
+    private var lastHandledGameOverlay = false
+
+    override fun register() {
+        ClientReceiveMessageEvents.ALLOW_CHAT.register { message, _, _, _, _ ->
+            if (Chat.isSendingModMessage) return@register true
+            lastHandledChatMessage = message
+            val result = ChatEventManager.runTasks(message)
+            if(!result) RFULogger.dev("Chat message was hid: ${message.toFormattedString()}")
+            result
+        }
+
+        ClientReceiveMessageEvents.CHAT.register { _, _, _, _, _ ->
+            if (!Chat.isSendingModMessage) {
+                lastHandledChatMessage = null
+            }
+        }
+
+        ClientReceiveMessageEvents.CHAT_CANCELED.register { message, _, _, _, _ ->
+            if (Chat.isSendingModMessage) return@register
+            if (lastHandledChatMessage === message) {
+                lastHandledChatMessage = null
+                return@register
+            }
+            ChatEventManager.runTasks(message)
+        }
+
+        ClientReceiveMessageEvents.ALLOW_GAME.register { message, overlay ->
+            if (Chat.isSendingModMessage) return@register true
+            lastHandledGameMessage = message
+            lastHandledGameOverlay = overlay
+            val result = GameEventManager.runTasks(message, overlay)
+            if(!result) RFULogger.dev("Game message was hid: ${message.toFormattedString()}")
+            result
+        }
+
+        ClientReceiveMessageEvents.GAME.register { _, _ ->
+            if (!Chat.isSendingModMessage) {
+                lastHandledGameMessage = null
+            }
+        }
+
+        ClientReceiveMessageEvents.GAME_CANCELED.register { message, overlay ->
+            if (Chat.isSendingModMessage) return@register
+            if (lastHandledGameMessage === message && lastHandledGameOverlay == overlay) {
+                lastHandledGameMessage = null
+                return@register
+            }
+            GameEventManager.runTasks(message, overlay)
+        }
+
+        ClientSendMessageEvents.ALLOW_CHAT.register { message ->
+            val result = SendChatEventManager.runTasks(message)
+            if(!result) RFULogger.dev("Sent message was cancelled: $message")
+            result
+        }
+
+        ClientSendMessageEvents.MODIFY_CHAT.register { message ->
+            ModifyChatEventManager.runTasks(message)
+        }
+
+        ClientSendMessageEvents.ALLOW_COMMAND.register { command ->
+            if (Chat.isSendingModCommand) return@register true
+            val result = SendCommandEventManager.runTasks(command)
+            if(!result) RFULogger.dev("Sent commnad was cancelled: $command")
+            result
+        }
+
+        ClientSendMessageEvents.MODIFY_COMMAND.register { command ->
+            if (Chat.isSendingModCommand) return@register command
+            ModifyCommandEventManager.runTasks(command)
+        }
+    }
+
+    fun registerSendChatEvent(
+        priority: Int = DEFAULT_EVENT_PRIORITY,
+        callback: (message: String) -> Boolean
+    ) : SendChatEventManager.SendChatEvent {
+        return SendChatEventManager.register(priority, callback)
+    }
+
+    fun registerSendCommandEvent(
+        priority: Int = DEFAULT_EVENT_PRIORITY,
+        callback: (message: String) -> Boolean
+    ) : SendCommandEventManager.SendCommandEvent {
+        return SendCommandEventManager.register(priority, callback)
+    }
+
+    fun registerModifyChatEvent(
+        priority: Int = DEFAULT_EVENT_PRIORITY,
+        callback: (message: String) -> String
+    ): ModifyChatEventManager.ModifyChatEvent {
+        return ModifyChatEventManager.register(priority, callback)
+    }
+
+    fun registerModifyCommandEvent(
+        priority: Int = DEFAULT_EVENT_PRIORITY,
+        callback: (command: String) -> String
+    ): ModifyCommandEventManager.ModifyCommandEvent {
+        return ModifyCommandEventManager.register(priority, callback)
+    }
+
+    @ScopedRegistration
+    @Defaults("filter = null")
+    fun registerAnyChatEvent(
+        filter: Regex? = null,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
+        callback: (text: Component, matches: MatchResult?) -> Unit
+    ): Pair<ChatEventManager.ChatEvent, GameEventManager.GameEvent> {
+        val chatEvent = registerChatEvent(filter, priority, callback)
+        val gameEvent = registerGameEvent(filter, priority, false) { text, _, matches ->
+            callback(text, matches)
+        }
+        return Pair(chatEvent, gameEvent)
+    }
+
+    @ScopedRegistration
+    @Defaults("filter = null")
+    fun registerChatEvent(
+        filter: Regex? = null,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
+        callback: (text: Component, matches: MatchResult?) -> Unit
+    ): ChatEventManager.ChatEvent {
+        return registerAllowChatEvent(filter, priority) { text, matches ->
+            callback(text, matches)
+            true
+        }
+    }
+
+    @ScopedRegistration
+    @Defaults("filter = null", "isOverlay = false")
+    fun registerGameEvent(
+        filter: Regex? = null,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
+        isOverlay: Boolean = false,
+        callback: (text: Component, overlay: Boolean, matches: MatchResult?) -> Unit
+    ): GameEventManager.GameEvent {
+        return registerAllowGameEvent(filter, priority) { text, overlay, matches ->
+            if (isOverlay != overlay) return@registerAllowGameEvent true
+
+            callback(text, overlay, matches)
+            true
+        }
+    }
+
+    @ScopedRegistration
+    @Defaults("filter = null")
+    fun registerAllowChatEvent(
+        filter: Regex? = null,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
+        callback: (text: Component, matches: MatchResult?) -> Boolean
+    ): ChatEventManager.ChatEvent {
+        return ChatEventManager.register(priority) { text ->
+            if (filter != null) {
+                val match = filter.find(text.toUnformattedString()) ?: return@register true
+                return@register callback(text, match)
+            }
+
+            return@register callback(text, null)
+        }
+    }
+
+    @ScopedRegistration
+    @Defaults("filter = null")
+    fun registerAllowGameEvent(
+        filter: Regex? = null,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
+        callback: (text: Component, overlay: Boolean, matches: MatchResult?) -> Boolean
+    ): GameEventManager.GameEvent {
+        return GameEventManager.register(priority) { text, overlay ->
+            if (filter != null) {
+                val match = filter.find(text.toUnformattedString()) ?: return@register true
+                return@register callback(text, overlay, match)
+            }
+
+            return@register callback(text, overlay, null)
+        }
+    }
+}

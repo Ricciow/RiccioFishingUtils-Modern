@@ -3,9 +3,9 @@ package cloud.glitchdev.rfu.feature.fishing
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerEntityRenderEvent
-import cloud.glitchdev.rfu.events.managers.registerLocationEvent
-import cloud.glitchdev.rfu.events.managers.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.render.registerEntityRenderEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.gui.hud.elements.RodTimerDisplay

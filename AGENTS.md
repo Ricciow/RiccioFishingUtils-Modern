@@ -29,6 +29,7 @@ The `processor` module scans for specific annotations and generates `cloud.glitc
 | `@Achievement` | `BaseAchievement` | `registerAchievements()` |
 | `@Command` | `AbstractCommand` | `registerCommands()` |
 | `@HudElement` | `AbstractHudElement` | `registerHud()` |
+| `@EventManager(register = true)` | `AbstractEventManager`, `RegisteredEvent` | `registerEvents()` |
 | `@AutoRegister` | `RegisteredEvent` | `registerEvents()` |
 | `@InstantRegister` | `InstantRegisteredEvent` | `registerInstantEvents()` |
 
@@ -97,7 +98,7 @@ Each achievement MUST define:
 
 ```kotlin
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerSeaCreatureCatchEvent
 
 @Achievement
 object SeaCreatureExpert : BaseAchievement() {
@@ -164,12 +165,14 @@ RFU uses a custom layer on top of Fabric events for "managed tasks".
 
 ### Event Managers (`cloud.glitchdev.rfu.events.managers`)
 
-Managers are annotated with `@AutoRegister`. They must implement `RegisteredEvent` and use `runTasks` with `safeExecution {}`.
+Event managers live in domain packages such as `chat`, `fishing`, and `lifecycle`, with one concrete manager per file. Annotate managers with `@EventManager`. Use `register = true` for managers that install their own hooks and implement `RegisteredEvent`. Shared hooks such as `ChatEvents` use `@AutoRegister` and dispatch to the managers in their package. Use `runTasks` with `safeExecution {}` for dispatch.
+
+KSP generates one `ScopedRegistrations.kt` per package with the `EventScope.registerXEvent` extensions for that package. Use `@ScopedRegistration` on a method when registration needs a custom signature or filtering and `@Defaults` to declare defaults copied into the generated extension.
 
 Common managers:
-- `TickEvents`: `registerTickEvent(priority, interval) { ... }`
-- `ChatEvents`: `registerChatEvent`, `registerGameEvent(regex)`.
-- `SeaCreatureCatchEvents`: `registerSeaCreatureCatchEvent { sc, isDoubleHook, inHotspot -> ... }`
+- `lifecycle.TickEvents`: `registerTickEvent(priority, interval) { ... }`
+- `chat.ChatEventManager` and `chat.GameEventManager`: `registerChatEvent`, `registerGameEvent(regex)`.
+- `fishing.SeaCreatureCatchEvents`: `registerSeaCreatureCatchEvent { sc, isDoubleHook, hotspot, pos, bait -> ... }`
 
 ### Managed Tasks
 
@@ -187,7 +190,7 @@ Features are core functionality units.
 
 ```kotlin
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 
 @RFUFeature
 object MyFeature : Feature {

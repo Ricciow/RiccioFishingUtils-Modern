@@ -1,5 +1,8 @@
 package cloud.glitchdev.rfu.utils.network
 
+import cloud.glitchdev.rfu.events.managers.party.InfoMessage
+import cloud.glitchdev.rfu.events.managers.party.JoinRequest
+import cloud.glitchdev.rfu.events.managers.party.MyPartyChanged
 import cloud.glitchdev.rfu.config.categories.BackendSettings
 import cloud.glitchdev.rfu.RiccioFishingUtils.API_URL
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
@@ -7,7 +10,7 @@ import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.chat.RegexConstants.PLAYER_REGEX
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.PartyFinderEvents
+import cloud.glitchdev.rfu.events.managers.party.PartyFinderEvents
 import cloud.glitchdev.rfu.model.network.WebSocketEvent
 import cloud.glitchdev.rfu.model.network.WebSocketEventType
 import cloud.glitchdev.rfu.model.party.FishingParty
@@ -23,9 +26,9 @@ import cloud.glitchdev.rfu.utils.Coroutines
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.constants.text.TextStyle
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerAllowGameEvent
-import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
-import cloud.glitchdev.rfu.events.managers.WebSocketEvents.registerConnectionStatusChangedEvent
+import cloud.glitchdev.rfu.events.managers.chat.ChatEvents.registerAllowGameEvent
+import cloud.glitchdev.rfu.events.managers.ui.ErrorEvents.registerErrorMessageEvent
+import cloud.glitchdev.rfu.events.managers.connection.WebSocketEvents.registerConnectionStatusChangedEvent
 import cloud.glitchdev.rfu.data.party.PartyPresetsManager
 import cloud.glitchdev.rfu.utils.dsl.isIgnored
 import cloud.glitchdev.rfu.utils.dsl.removeRankTag
@@ -60,7 +63,7 @@ object PartyWebSocket : RegisteredEvent {
             if (value != null) {
                 lastParty = value.deepCopy()
             }
-            PartyFinderEvents.MyPartyChanged.runTasks(value)
+            MyPartyChanged.runTasks(value)
         }
 
     private var lastJoinTarget: String? = null
@@ -162,7 +165,7 @@ object PartyWebSocket : RegisteredEvent {
         val joinRequestCallback: (String) -> Unit = { msg ->
             try {
                 val notification = gson.fromJson(msg, JoinPartyNotification::class.java)
-                PartyFinderEvents.JoinRequest.runTasks(notification.applicant)
+                JoinRequest.runTasks(notification.applicant)
             } catch (e: Exception) {
                 RFULogger.error("Error parsing join request notification: ", e)
             }
@@ -193,7 +196,7 @@ object PartyWebSocket : RegisteredEvent {
                 if (message != null && message.isJsonPrimitive && message.asJsonPrimitive.isString &&
                     (isWarning == null || (isWarning.isJsonPrimitive && isWarning.asJsonPrimitive.isBoolean))) {
                     message.asString.takeIf { it.isNotBlank() }?.let {
-                        PartyFinderEvents.InfoMessage.runTasks(it, isWarning?.asBoolean ?: false)
+                        InfoMessage.runTasks(it, isWarning?.asBoolean ?: false)
                     }
                 }
             } catch (e: Exception) {

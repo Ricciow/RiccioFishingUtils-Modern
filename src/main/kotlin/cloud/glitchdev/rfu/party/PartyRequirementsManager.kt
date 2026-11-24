@@ -7,8 +7,8 @@ import cloud.glitchdev.rfu.data.other.OtherManager
 import cloud.glitchdev.rfu.data.other.data.BooleanEntry
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.ContainerEvents.registerContainerOpenEvent
-import cloud.glitchdev.rfu.events.managers.PartyFinderEvents
+import cloud.glitchdev.rfu.events.managers.inventory.ContainerEvents.registerContainerOpenEvent
+import cloud.glitchdev.rfu.events.managers.party.PartyFinderEvents
 import cloud.glitchdev.rfu.model.party.FishingParty
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.core.component.DataComponents

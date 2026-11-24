@@ -6,7 +6,7 @@ import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.BaseAchievement
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerLootshareEvent
+import cloud.glitchdev.rfu.events.managers.loot.registerLootshareEvent
 import gg.essential.universal.utils.toUnformattedString
 
 @Achievement

@@ -1,7 +1,7 @@
 package cloud.glitchdev.rfu.feature.streak.challenge.challenges.general
 
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.chat.registerGameEvent
 import cloud.glitchdev.rfu.feature.streak.challenge.BaseChallenge
 import cloud.glitchdev.rfu.feature.streak.challenge.RFUChallenge
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex

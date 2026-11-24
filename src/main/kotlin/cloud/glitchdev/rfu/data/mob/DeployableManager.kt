@@ -6,8 +6,8 @@ import cloud.glitchdev.rfu.data.mob.strategies.FluxStrategy
 import cloud.glitchdev.rfu.data.mob.strategies.UmberellaStrategy
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.connection.ConnectionEvents.registerJoinEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.TickEvents.registerTickEvent
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.world.phys.Vec3
 import kotlin.math.round

@@ -6,7 +6,7 @@ import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerCocoonEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerCocoonEvent
 
 @Achievement
 object WrappingItUpAchievement : NumericStageAchievement() {

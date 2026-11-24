@@ -4,10 +4,10 @@ import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.TrophyFishing
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerPetUpdateEvent
-import cloud.glitchdev.rfu.events.managers.registerRenderEvent
-import cloud.glitchdev.rfu.events.managers.ServerTickEvents
-import cloud.glitchdev.rfu.events.managers.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.player.registerPetUpdateEvent
+import cloud.glitchdev.rfu.events.managers.render.registerRenderEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.ServerTickEvents
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.dsl.toReadableString

@@ -11,7 +11,7 @@ import cloud.glitchdev.rfu.data.catches.CatchTracker.catchHistory
 import cloud.glitchdev.rfu.data.collections.CollectionItem
 import cloud.glitchdev.rfu.data.collections.CollectionsHandler
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerCollectionUpdateEvent
+import cloud.glitchdev.rfu.events.managers.progress.registerCollectionUpdateEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.feature.fishing.FishingSession

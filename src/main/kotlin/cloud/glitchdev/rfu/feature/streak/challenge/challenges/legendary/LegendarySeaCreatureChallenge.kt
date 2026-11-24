@@ -2,7 +2,7 @@ package cloud.glitchdev.rfu.feature.streak.challenge.challenges.legendary
 
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.feature.streak.challenge.BaseChallenge
 
 abstract class LegendarySeaCreatureChallenge(

@@ -2,8 +2,8 @@ package cloud.glitchdev.rfu.feature.other
 
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerSendChatEvent
-import cloud.glitchdev.rfu.events.managers.registerSendCommandEvent
+import cloud.glitchdev.rfu.events.managers.chat.registerSendChatEvent
+import cloud.glitchdev.rfu.events.managers.chat.registerSendCommandEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat

@@ -3,7 +3,7 @@ package cloud.glitchdev.rfu.utils
 import cloud.glitchdev.rfu.RiccioFishingUtils.CONFIG_DIR
 import cloud.glitchdev.rfu.RiccioFishingUtils.MOD_ID
 import cloud.glitchdev.rfu.constants.text.TextColor
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
+import cloud.glitchdev.rfu.events.managers.connection.ConnectionEvents.registerJoinEvent
 import com.google.gson.JsonObject
 import com.teamresourceful.resourcefulconfig.api.patching.ConfigPatchEvent
 import com.teamresourceful.resourcefulconfig.common.jsonc.JsoncObject

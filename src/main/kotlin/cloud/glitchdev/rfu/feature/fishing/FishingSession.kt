@@ -1,19 +1,23 @@
 package cloud.glitchdev.rfu.feature.fishing
 
+import cloud.glitchdev.rfu.events.managers.fishing.FishingSessionEndEventManager
+import cloud.glitchdev.rfu.events.managers.fishing.FishingSessionPauseEventManager
+import cloud.glitchdev.rfu.events.managers.fishing.FishingSessionResumeEventManager
+import cloud.glitchdev.rfu.events.managers.fishing.FishingSessionStartEventManager
+import cloud.glitchdev.rfu.events.managers.fishing.FishingSessionUpdatedEventManager
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.data.fishing.Hotspot
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.FishingSessionEvents
-import cloud.glitchdev.rfu.events.managers.registerArmorChangeEvent
-import cloud.glitchdev.rfu.events.managers.registerLocationEvent
-import cloud.glitchdev.rfu.events.managers.registerItemUsedEvent
-import cloud.glitchdev.rfu.events.managers.registerKeybind
-import cloud.glitchdev.rfu.events.managers.registerSeaCreatureCatchEvent
-import cloud.glitchdev.rfu.events.managers.registerTickEvent
-import cloud.glitchdev.rfu.events.managers.registerSkillXpUpdateEvent
+import cloud.glitchdev.rfu.events.managers.inventory.registerArmorChangeEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.inventory.registerItemUsedEvent
+import cloud.glitchdev.rfu.events.managers.input.registerKeybind
+import cloud.glitchdev.rfu.events.managers.fishing.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.progress.registerSkillXpUpdateEvent
 import cloud.glitchdev.rfu.utils.SkillTracker
 import cloud.glitchdev.rfu.constants.skyblock.SkillType
 import cloud.glitchdev.rfu.feature.Feature
@@ -155,7 +159,7 @@ object FishingSession : Feature {
     fun pauseSession(at: Instant = Clock.System.now()) {
         if (!isFishing || isPaused) return
         pausedAt = at
-        FishingSessionEvents.FishingSessionPauseEventManager.runTasks()
+        FishingSessionPauseEventManager.runTasks()
     }
 
     fun resumeSession() {
@@ -179,9 +183,9 @@ object FishingSession : Feature {
         lastFishingEvent = now
 
         if (isStarting) {
-            FishingSessionEvents.FishingSessionStartEventManager.runTasks()
+            FishingSessionStartEventManager.runTasks()
         } else if (wasPaused) {
-            FishingSessionEvents.FishingSessionResumeEventManager.runTasks()
+            FishingSessionResumeEventManager.runTasks()
         }
     }
 
@@ -206,7 +210,7 @@ object FishingSession : Feature {
         xpTracker.update()
 
         if (wasFishing) {
-            FishingSessionEvents.FishingSessionEndEventManager.runTasks()
+            FishingSessionEndEventManager.runTasks()
         }
     }
 
@@ -219,7 +223,7 @@ object FishingSession : Feature {
         if (newType == fishingType) return
 
         fishingType = newType
-        FishingSessionEvents.FishingSessionUpdatedEventManager.runTasks(newType)
+        FishingSessionUpdatedEventManager.runTasks(newType)
     }
 
     @Command

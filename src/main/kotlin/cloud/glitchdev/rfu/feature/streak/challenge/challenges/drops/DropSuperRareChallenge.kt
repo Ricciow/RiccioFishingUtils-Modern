@@ -2,7 +2,7 @@ package cloud.glitchdev.rfu.feature.streak.challenge.challenges.drops
 
 import cloud.glitchdev.rfu.constants.fishing.RareDrops
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerRareDropEvent
+import cloud.glitchdev.rfu.events.managers.loot.registerRareDropEvent
 import cloud.glitchdev.rfu.feature.streak.challenge.BaseChallenge
 import cloud.glitchdev.rfu.feature.streak.challenge.RFUChallenge
 

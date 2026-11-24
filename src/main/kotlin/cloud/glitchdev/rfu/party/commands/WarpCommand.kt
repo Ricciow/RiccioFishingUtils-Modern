@@ -4,7 +4,7 @@ import cloud.glitchdev.rfu.config.categories.PartySettings
 import cloud.glitchdev.rfu.constants.chat.RegexConstants.PLAYER_REGEX
 import cloud.glitchdev.rfu.constants.chat.PartyCommandListMode
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.chat.registerGameEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.party.AbstractPartyCommand

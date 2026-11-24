@@ -7,13 +7,13 @@ import cloud.glitchdev.rfu.config.categories.LavaFishing
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.data.mob.SkyblockEntity
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.ArmorEvents
-import cloud.glitchdev.rfu.events.managers.registerGameEvent
-import cloud.glitchdev.rfu.events.managers.registerMobDeathEvent
-import cloud.glitchdev.rfu.events.managers.registerMobDetectEvent
-import cloud.glitchdev.rfu.events.managers.registerPlayerDetectEvent
-import cloud.glitchdev.rfu.events.managers.registerSeaCreatureCatchEvent
-import cloud.glitchdev.rfu.events.managers.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.inventory.ArmorEvents
+import cloud.glitchdev.rfu.events.managers.chat.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.entity.registerMobDeathEvent
+import cloud.glitchdev.rfu.events.managers.entity.registerMobDetectEvent
+import cloud.glitchdev.rfu.events.managers.entity.registerPlayerDetectEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import net.minecraft.world.level.levelgen.Heightmap
 
 @Achievement

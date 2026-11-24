@@ -5,10 +5,10 @@ import cloud.glitchdev.rfu.constants.skyblock.Skills
 import cloud.glitchdev.rfu.data.skills.SkillsData
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.ContainerEvents.registerContainerOpenEvent
-import cloud.glitchdev.rfu.events.managers.SkillEvents
+import cloud.glitchdev.rfu.events.managers.chat.ChatEvents.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.connection.ConnectionEvents.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.inventory.ContainerEvents.registerContainerOpenEvent
+import cloud.glitchdev.rfu.events.managers.progress.SkillEvents
 import cloud.glitchdev.rfu.utils.dsl.toSkillLevel
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.core.component.DataComponents

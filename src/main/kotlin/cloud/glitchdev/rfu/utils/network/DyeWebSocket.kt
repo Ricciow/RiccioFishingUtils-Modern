@@ -3,8 +3,8 @@ package cloud.glitchdev.rfu.utils.network
 import cloud.glitchdev.rfu.config.categories.BackendSettings
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.ContainerEvents.registerContainerOpenEvent
-import cloud.glitchdev.rfu.events.managers.DyeEvents
+import cloud.glitchdev.rfu.events.managers.inventory.ContainerEvents.registerContainerOpenEvent
+import cloud.glitchdev.rfu.events.managers.loot.DyeEvents
 import cloud.glitchdev.rfu.model.dye.Dyes
 import cloud.glitchdev.rfu.model.network.WebSocketEvent
 import cloud.glitchdev.rfu.model.network.WebSocketEventType

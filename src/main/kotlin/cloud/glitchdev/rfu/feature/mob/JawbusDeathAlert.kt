@@ -2,7 +2,7 @@ package cloud.glitchdev.rfu.feature.mob
 
 import cloud.glitchdev.rfu.config.categories.LavaFishing
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.chat.registerGameEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Sounds

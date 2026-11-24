@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.mixin;
 
-import cloud.glitchdev.rfu.events.managers.PlayerRenderStateEvents;
+import cloud.glitchdev.rfu.events.managers.render.PlayerRenderStateEvents;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.world.entity.Avatar;

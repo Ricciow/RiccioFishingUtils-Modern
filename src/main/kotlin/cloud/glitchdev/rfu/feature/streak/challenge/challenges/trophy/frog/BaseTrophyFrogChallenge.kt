@@ -3,7 +3,7 @@ package cloud.glitchdev.rfu.feature.streak.challenge.challenges.trophy.frog
 import cloud.glitchdev.rfu.constants.fishing.TrophyFrog
 import cloud.glitchdev.rfu.constants.skyblock.Rarity
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerTrophyFrogCatchEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerTrophyFrogCatchEvent
 import cloud.glitchdev.rfu.feature.streak.challenge.BaseChallenge
 
 abstract class BaseTrophyFrogChallenge(

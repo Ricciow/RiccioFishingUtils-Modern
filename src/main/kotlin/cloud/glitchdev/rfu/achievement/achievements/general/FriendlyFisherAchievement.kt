@@ -6,8 +6,8 @@ import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.ArmorEvents
-import cloud.glitchdev.rfu.events.managers.registerArmorChangeEvent
+import cloud.glitchdev.rfu.events.managers.inventory.ArmorEvents
+import cloud.glitchdev.rfu.events.managers.inventory.registerArmorChangeEvent
 
 @Achievement
 object FriendlyFisherAchievement : NumericStageAchievement() {

@@ -6,7 +6,7 @@ import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.keybind.KeyContext
-import cloud.glitchdev.rfu.events.managers.registerKeybind
+import cloud.glitchdev.rfu.events.managers.input.registerKeybind
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.mixin.AbstractContainerScreenAccessor

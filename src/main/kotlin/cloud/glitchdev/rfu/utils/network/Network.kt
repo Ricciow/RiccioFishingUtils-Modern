@@ -14,11 +14,11 @@ import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.Coroutines
 import cloud.glitchdev.rfu.config.categories.BackendSettings
 import cloud.glitchdev.rfu.utils.World
-import cloud.glitchdev.rfu.events.managers.AfkEvents.registerAfkStatusChangedEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
-import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
-import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
+import cloud.glitchdev.rfu.events.managers.player.AfkEvents.registerAfkStatusChangedEvent
+import cloud.glitchdev.rfu.events.managers.connection.ConnectionEvents.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.connection.ConnectionEvents.registerJoinEvent
+import cloud.glitchdev.rfu.events.managers.connection.HypixelModApiEvents.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.ShutdownEvents.registerShutdownEvent
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.HoverEvent
 import net.minecraft.network.chat.Component

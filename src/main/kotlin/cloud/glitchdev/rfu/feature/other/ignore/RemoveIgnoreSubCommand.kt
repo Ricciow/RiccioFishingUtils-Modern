@@ -1,7 +1,7 @@
 package cloud.glitchdev.rfu.feature.other.ignore
 
 import cloud.glitchdev.rfu.constants.text.TextColor
-import cloud.glitchdev.rfu.events.managers.PartyFinderEvents
+import cloud.glitchdev.rfu.events.managers.party.PartyFinderEvents
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.command.AbstractCommand
 import com.mojang.brigadier.arguments.StringArgumentType

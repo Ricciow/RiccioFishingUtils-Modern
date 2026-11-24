@@ -2,10 +2,10 @@ package cloud.glitchdev.rfu.feature.ink
 
 import cloud.glitchdev.rfu.config.categories.InkFishing
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerBobberLiquidEvent
-import cloud.glitchdev.rfu.events.managers.registerGameEvent
-import cloud.glitchdev.rfu.events.managers.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.registerJoinEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerBobberLiquidEvent
+import cloud.glitchdev.rfu.events.managers.chat.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerJoinEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.World

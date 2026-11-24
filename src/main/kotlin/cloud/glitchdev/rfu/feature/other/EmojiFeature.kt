@@ -5,8 +5,8 @@ import cloud.glitchdev.rfu.constants.text.Emoji
 import cloud.glitchdev.rfu.constants.text.EmojiData
 import cloud.glitchdev.rfu.data.other.EmojiPreferences
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerModifyChatEvent
-import cloud.glitchdev.rfu.events.managers.registerModifyCommandEvent
+import cloud.glitchdev.rfu.events.managers.chat.registerModifyChatEvent
+import cloud.glitchdev.rfu.events.managers.chat.registerModifyCommandEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import net.minecraft.client.StringSplitter

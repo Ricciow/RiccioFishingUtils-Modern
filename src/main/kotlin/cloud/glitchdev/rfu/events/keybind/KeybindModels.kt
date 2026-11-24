@@ -4,7 +4,7 @@ package cloud.glitchdev.rfu.events.keybind
 /*import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 *///?}
 import cloud.glitchdev.rfu.events.AbstractEventManager
-import cloud.glitchdev.rfu.events.managers.KeybindEvents
+import cloud.glitchdev.rfu.events.managers.input.KeybindEvents
 import cloud.glitchdev.rfu.utils.dsl.toInputKey
 import com.mojang.blaze3d.platform.InputConstants
 

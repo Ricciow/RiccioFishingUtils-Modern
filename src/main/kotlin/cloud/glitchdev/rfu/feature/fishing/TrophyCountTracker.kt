@@ -9,9 +9,9 @@ import cloud.glitchdev.rfu.data.fishing.TrophyCountEntry
 import cloud.glitchdev.rfu.data.fishing.TrophyDataManager
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.ContainerEvents.registerContainerOpenEvent
-import cloud.glitchdev.rfu.events.managers.TrophyCatchEvents.registerTrophyFishCatchEvent
-import cloud.glitchdev.rfu.events.managers.TrophyCatchEvents.registerTrophyFrogCatchEvent
+import cloud.glitchdev.rfu.events.managers.inventory.ContainerEvents.registerContainerOpenEvent
+import cloud.glitchdev.rfu.events.managers.fishing.TrophyCatchEvents.registerTrophyFishCatchEvent
+import cloud.glitchdev.rfu.events.managers.fishing.TrophyCatchEvents.registerTrophyFrogCatchEvent
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.TextUtils
 import gg.essential.universal.utils.toUnformattedString

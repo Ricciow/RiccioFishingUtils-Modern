@@ -6,7 +6,7 @@ import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.StageAchievement
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerTrophyFishCatchEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerTrophyFishCatchEvent
 import cloud.glitchdev.rfu.constants.fishing.TrophyTier
 
 @Achievement

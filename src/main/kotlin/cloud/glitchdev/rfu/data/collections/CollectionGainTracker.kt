@@ -2,10 +2,10 @@
 
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
-import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
-import cloud.glitchdev.rfu.events.managers.SetSlotEvents.registerSetSlotEvent
-import cloud.glitchdev.rfu.events.managers.SkillEvents.registerSkillXpUpdateEvent
+import cloud.glitchdev.rfu.events.managers.chat.ChatEvents.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.fishing.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.managers.inventory.SetSlotEvents.registerSetSlotEvent
+import cloud.glitchdev.rfu.events.managers.progress.SkillEvents.registerSkillXpUpdateEvent
 import cloud.glitchdev.rfu.constants.skyblock.SkillType
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.client.Minecraft

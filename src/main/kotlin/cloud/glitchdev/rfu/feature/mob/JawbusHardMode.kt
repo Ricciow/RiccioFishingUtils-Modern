@@ -4,10 +4,10 @@ import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.LavaFishing
 import cloud.glitchdev.rfu.data.mob.SkyblockEntity
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerGameEvent
-import cloud.glitchdev.rfu.events.managers.registerMobDetectEvent
-import cloud.glitchdev.rfu.events.managers.registerMobDisposeEvent
-import cloud.glitchdev.rfu.events.managers.ShutdownEvents
+import cloud.glitchdev.rfu.events.managers.chat.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.entity.registerMobDetectEvent
+import cloud.glitchdev.rfu.events.managers.entity.registerMobDisposeEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.ShutdownEvents
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.gui.window.DeadWindow

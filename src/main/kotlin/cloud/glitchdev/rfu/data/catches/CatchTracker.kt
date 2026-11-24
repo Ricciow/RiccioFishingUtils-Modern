@@ -5,8 +5,8 @@ import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
-import cloud.glitchdev.rfu.events.managers.CocoonEvents.registerCocoonEvent
+import cloud.glitchdev.rfu.events.managers.fishing.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.managers.fishing.CocoonEvents.registerCocoonEvent
 import cloud.glitchdev.rfu.utils.command.Command
 import cloud.glitchdev.rfu.utils.JsonFile
 import cloud.glitchdev.rfu.utils.TextUtils

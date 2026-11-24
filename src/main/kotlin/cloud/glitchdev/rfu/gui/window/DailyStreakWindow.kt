@@ -3,8 +3,8 @@ package cloud.glitchdev.rfu.gui.window
 import cloud.glitchdev.rfu.RiccioFishingUtils
 import cloud.glitchdev.rfu.constants.text.Emoji
 import cloud.glitchdev.rfu.data.streak.DailyStreakManager
-import cloud.glitchdev.rfu.events.managers.DailyStreakEvents.registerStreakUpdatedEvent
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.progress.DailyStreakEvents.registerStreakUpdatedEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.elementa.UIEmoji
 import cloud.glitchdev.rfu.gui.components.streak.UIDailyChallengeCard

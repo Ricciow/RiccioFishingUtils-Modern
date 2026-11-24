@@ -8,9 +8,9 @@ import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.data.catches.CatchTracker
 import cloud.glitchdev.rfu.data.mob.SkyblockEntity
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerMobDeathEvent
-import cloud.glitchdev.rfu.events.managers.registerMobDisposeEvent
-import cloud.glitchdev.rfu.events.managers.SeaCreaturePersonalBestEvents
+import cloud.glitchdev.rfu.events.managers.entity.registerMobDeathEvent
+import cloud.glitchdev.rfu.events.managers.entity.registerMobDisposeEvent
+import cloud.glitchdev.rfu.events.managers.fishing.SeaCreaturePersonalBestEvents
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.feature.fishing.BobbinTime

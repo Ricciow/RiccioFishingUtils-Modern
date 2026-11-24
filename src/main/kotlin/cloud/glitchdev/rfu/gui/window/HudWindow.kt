@@ -6,11 +6,11 @@ import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.events.keybind.KeyContext
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerJoinEvent
-import cloud.glitchdev.rfu.events.managers.registerHudRenderEvent
-import cloud.glitchdev.rfu.events.managers.registerKeybind
-import cloud.glitchdev.rfu.events.managers.registerShutdownEvent
-import cloud.glitchdev.rfu.events.managers.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerJoinEvent
+import cloud.glitchdev.rfu.events.managers.render.registerHudRenderEvent
+import cloud.glitchdev.rfu.events.managers.input.registerKeybind
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerShutdownEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.hud.UIFakeInventory

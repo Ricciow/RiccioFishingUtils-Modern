@@ -2,9 +2,9 @@ package cloud.glitchdev.rfu.feature.announcements
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.API_URL
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerAnnouncementUpdateEvent
-import cloud.glitchdev.rfu.events.managers.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.registerJoinEvent
+import cloud.glitchdev.rfu.events.managers.ui.registerAnnouncementUpdateEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerJoinEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.feature.announcements.command.Open

@@ -5,10 +5,10 @@ import cloud.glitchdev.rfu.config.categories.HotSpotSettings
 import cloud.glitchdev.rfu.constants.fishing.HotspotType
 import cloud.glitchdev.rfu.data.fishing.Hotspot
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.HotSpotEvents
-import cloud.glitchdev.rfu.events.managers.registerLocationEvent
-import cloud.glitchdev.rfu.events.managers.registerRenderEvent
-import cloud.glitchdev.rfu.events.managers.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.fishing.HotSpotEvents
+import cloud.glitchdev.rfu.events.managers.connection.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.render.registerRenderEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.gui.UIScheme.decreaseOpacity

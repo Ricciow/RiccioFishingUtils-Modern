@@ -4,7 +4,7 @@ import cloud.glitchdev.rfu.config.categories.DailyStreakSettings
 import cloud.glitchdev.rfu.constants.text.Emoji
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.DailyStreakEvents
+import cloud.glitchdev.rfu.events.managers.progress.DailyStreakEvents
 import cloud.glitchdev.rfu.feature.streak.challenge.ChallengeRegistry
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.User

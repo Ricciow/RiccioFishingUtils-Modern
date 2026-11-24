@@ -3,7 +3,7 @@ package cloud.glitchdev.rfu.achievement.achievements.isle
 import cloud.glitchdev.rfu.achievement.*
 import cloud.glitchdev.rfu.achievement.types.NumericAchievement
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerMobDetectEvent
+import cloud.glitchdev.rfu.events.managers.entity.registerMobDetectEvent
 
 @Achievement
 object MenacingTrioAchievement : NumericAchievement() {

@@ -3,8 +3,8 @@ package cloud.glitchdev.rfu.feature.fishing
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerEntityRemovedEvent
-import cloud.glitchdev.rfu.events.managers.registerItemUsedEvent
+import cloud.glitchdev.rfu.events.managers.entity.registerEntityRemovedEvent
+import cloud.glitchdev.rfu.events.managers.inventory.registerItemUsedEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Sounds

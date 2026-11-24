@@ -20,9 +20,9 @@ import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.dsl.compact
 import cloud.glitchdev.rfu.utils.network.PartyWebSocket
-import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
-import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
-import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerMyPartyChangedEvent
+import cloud.glitchdev.rfu.events.managers.ui.ErrorEvents.registerErrorMessageEvent
+import cloud.glitchdev.rfu.events.managers.connection.HypixelModApiEvents.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.party.PartyFinderEvents.registerMyPartyChangedEvent
 import cloud.glitchdev.rfu.utils.Coroutines
 import kotlinx.coroutines.delay
 import kotlin.jvm.optionals.getOrNull

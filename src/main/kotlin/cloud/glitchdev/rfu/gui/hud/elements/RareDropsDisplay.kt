@@ -14,11 +14,11 @@ import cloud.glitchdev.rfu.constants.text.TextEffects.RESET
 import cloud.glitchdev.rfu.data.catches.CatchTracker
 import cloud.glitchdev.rfu.data.drops.DropHistory
 import cloud.glitchdev.rfu.data.drops.DropManager
-import cloud.glitchdev.rfu.events.managers.registerDyeDropEvent
-import cloud.glitchdev.rfu.events.managers.registerRareDropEvent
-import cloud.glitchdev.rfu.events.managers.registerLocationEvent
-import cloud.glitchdev.rfu.events.managers.registerSeaCreatureCatchEvent
-import cloud.glitchdev.rfu.events.managers.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.loot.registerDyeDropEvent
+import cloud.glitchdev.rfu.events.managers.loot.registerRareDropEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.feature.fishing.FishingSession
 import cloud.glitchdev.rfu.gui.components.elementa.MultilineHudText
 import cloud.glitchdev.rfu.gui.hud.AbstractFishingHudElement

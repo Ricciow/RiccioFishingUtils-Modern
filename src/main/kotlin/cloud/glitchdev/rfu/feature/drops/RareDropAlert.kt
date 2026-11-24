@@ -6,10 +6,10 @@ import cloud.glitchdev.rfu.constants.fishing.RareDrops
 import cloud.glitchdev.rfu.data.drops.DropManager
 import cloud.glitchdev.rfu.data.drops.DropRecord
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.DropEvents
-import cloud.glitchdev.rfu.events.managers.registerAllowGameEvent
-import cloud.glitchdev.rfu.events.managers.registerDyeDropEvent
-import cloud.glitchdev.rfu.events.managers.registerRareDropEvent
+import cloud.glitchdev.rfu.events.managers.loot.DropEvents
+import cloud.glitchdev.rfu.events.managers.chat.registerAllowGameEvent
+import cloud.glitchdev.rfu.events.managers.loot.registerDyeDropEvent
+import cloud.glitchdev.rfu.events.managers.loot.registerRareDropEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat.sendMessage

@@ -7,10 +7,10 @@ import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.BaseAchievement
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.ArmorEvents
-import cloud.glitchdev.rfu.events.managers.registerArmorChangeEvent
-import cloud.glitchdev.rfu.events.managers.HotSpotEvents
-import cloud.glitchdev.rfu.events.managers.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.inventory.ArmorEvents
+import cloud.glitchdev.rfu.events.managers.inventory.registerArmorChangeEvent
+import cloud.glitchdev.rfu.events.managers.fishing.HotSpotEvents
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 
 @Achievement
 object ShameOnYouAchievement : BaseAchievement() {

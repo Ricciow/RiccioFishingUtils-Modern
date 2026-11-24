@@ -5,9 +5,9 @@ import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.constants.fishing.RareDrops
 import cloud.glitchdev.rfu.data.drops.DropManager
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerCocoonEvent
-import cloud.glitchdev.rfu.events.managers.registerRareDropEvent
-import cloud.glitchdev.rfu.events.managers.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerCocoonEvent
+import cloud.glitchdev.rfu.events.managers.loot.registerRareDropEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerSeaCreatureCatchEvent
 
 abstract class DropDryStreakAchievement(private val drop: RareDrops) : NumericStageAchievement() {
     protected open val milestones: List<Long> = listOf(50L)

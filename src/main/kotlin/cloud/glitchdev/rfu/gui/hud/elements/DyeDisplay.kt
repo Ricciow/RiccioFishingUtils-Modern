@@ -11,7 +11,7 @@ import cloud.glitchdev.rfu.gui.hud.AbstractHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 import cloud.glitchdev.rfu.model.dye.Dyes
 import cloud.glitchdev.rfu.utils.network.DyeWebSocket
-import cloud.glitchdev.rfu.events.managers.registerDyeUpdateEvent
+import cloud.glitchdev.rfu.events.managers.loot.registerDyeUpdateEvent
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIText
 import gg.essential.elementa.constraints.ChildBasedMaxSizeConstraint

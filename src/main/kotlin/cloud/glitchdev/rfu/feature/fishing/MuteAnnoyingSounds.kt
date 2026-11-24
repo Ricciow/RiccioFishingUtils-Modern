@@ -3,7 +3,7 @@ package cloud.glitchdev.rfu.feature.fishing
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.constants.fishing.FishingIslands
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerSoundPlayEvent
+import cloud.glitchdev.rfu.events.managers.ui.registerSoundPlayEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.World

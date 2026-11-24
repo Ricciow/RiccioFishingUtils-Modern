@@ -7,10 +7,10 @@ import cloud.glitchdev.rfu.achievement.AchievementProvider
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.interfaces.IAchievement
 import cloud.glitchdev.rfu.achievement.interfaces.IStageAchievement
-import cloud.glitchdev.rfu.events.managers.AchievementStageUnlockedEvents.registerAchievementStageUnlockedEvent
-import cloud.glitchdev.rfu.events.managers.AchievementUnlockedEvents.registerAchievementUnlockedEvent
-import cloud.glitchdev.rfu.events.managers.AchievementUpdatedEvents.registerAchievementUpdatedEvent
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.progress.AchievementStageUnlockedEvents.registerAchievementStageUnlockedEvent
+import cloud.glitchdev.rfu.events.managers.progress.AchievementUnlockedEvents.registerAchievementUnlockedEvent
+import cloud.glitchdev.rfu.events.managers.progress.AchievementUpdatedEvents.registerAchievementUpdatedEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.achievement.Achievement

@@ -1,0 +1,66 @@
+package cloud.glitchdev.rfu.events.managers.fishing
+
+import cloud.glitchdev.rfu.constants.fishing.Bait
+import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.events.EventManager
+import cloud.glitchdev.rfu.events.RegisteredEvent
+import cloud.glitchdev.rfu.events.managers.inventory.SetSlotEvents.registerSetSlotEvent
+import cloud.glitchdev.rfu.utils.ItemCountUtils
+
+@EventManager
+object BaitEventManager : AbstractEventManager<(Bait?, Int) -> Unit, BaitEventManager.BaitChangedEvent>(), RegisteredEvent {
+    var lastBait: Bait? = null
+    var lastCount: Int = 0
+    private var currentCount: Int = 0
+
+    private const val PLAYER_INVENTORY_ID = 0
+
+    override fun register() {
+        registerSetSlotEvent { id, slot, item ->
+            if (id != PLAYER_INVENTORY_ID || item.isEmpty) return@registerSetSlotEvent
+            if (slot != 44) return@registerSetSlotEvent
+            val bait = Bait.fromName(item.hoverName.string)
+
+            if (bait == null) {
+                lastBait = null
+                lastCount = 0
+                currentCount = 0
+                runTasks(null, 0)
+                return@registerSetSlotEvent
+            }
+
+            lastBait = bait
+
+            val count = ItemCountUtils.getRemainingCount(item, "Bait") ?: 0
+
+            if (lastCount == 0 || lastCount <= count) {
+                lastCount = count
+            } else {
+                lastCount = currentCount
+            }
+            currentCount = count
+
+            runTasks(bait, count)
+        }
+    }
+
+    override val runTasks: (Bait?, Int) -> Unit = { bait, count ->
+        safeExecution {
+            tasks.forEach { task ->
+                task.callback(bait, count)
+            }
+        }
+    }
+
+    fun registerBaitChangedEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (Bait?, Int) -> Unit): BaitChangedEvent {
+        return BaitChangedEvent(priority, callback).register()
+    }
+
+    class BaitChangedEvent(
+        priority: Int = DEFAULT_EVENT_PRIORITY,
+        callback: (Bait?, Int) -> Unit
+    ) : ManagedTask<(Bait?, Int) -> Unit, BaitChangedEvent>(priority, callback) {
+        override fun register() = submitTask(this)
+        override fun unregister() = removeTask(this)
+    }
+}

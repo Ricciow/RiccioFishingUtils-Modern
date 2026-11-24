@@ -2,8 +2,8 @@ package cloud.glitchdev.rfu.feature.streak.challenge.challenges.trophy
 
 import cloud.glitchdev.rfu.constants.fishing.TrophyTier
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerTrophyFishCatchEvent
-import cloud.glitchdev.rfu.events.managers.registerTrophyFrogCatchEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerTrophyFishCatchEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerTrophyFrogCatchEvent
 import cloud.glitchdev.rfu.feature.streak.challenge.BaseChallenge
 import cloud.glitchdev.rfu.feature.streak.challenge.RFUChallenge
 

@@ -7,7 +7,7 @@ import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
 import cloud.glitchdev.rfu.constants.skyblock.SkillType
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerSkillXpUpdateEvent
+import cloud.glitchdev.rfu.events.managers.progress.registerSkillXpUpdateEvent
 import cloud.glitchdev.rfu.utils.SkillTracker
 
 @Achievement

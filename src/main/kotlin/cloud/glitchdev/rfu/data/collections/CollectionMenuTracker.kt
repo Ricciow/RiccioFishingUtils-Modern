@@ -3,9 +3,9 @@ package cloud.glitchdev.rfu.data.collections
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.ContainerEvents.registerContainerOpenEvent
-import cloud.glitchdev.rfu.events.managers.TickEvents
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.inventory.ContainerEvents.registerContainerOpenEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.TickEvents
+import cloud.glitchdev.rfu.events.managers.lifecycle.TickEvents.registerTickEvent
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.core.component.DataComponents
 

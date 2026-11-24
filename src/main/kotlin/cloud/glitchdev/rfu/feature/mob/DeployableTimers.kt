@@ -3,12 +3,12 @@ package cloud.glitchdev.rfu.feature.mob
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.data.mob.DeployableManager
 import cloud.glitchdev.rfu.data.mob.DeployableType
-import cloud.glitchdev.rfu.events.managers.registerJoinEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerJoinEvent
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.Sounds
 

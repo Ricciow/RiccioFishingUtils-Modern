@@ -8,7 +8,7 @@ import cloud.glitchdev.rfu.achievement.BaseAchievement
 import cloud.glitchdev.rfu.constants.fishing.TrophyTier
 import cloud.glitchdev.rfu.data.fishing.TrophyDataManager
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerTrophyFrogCatchEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerTrophyFrogCatchEvent
 
 @Achievement
 object FrogPityAchievement : BaseAchievement() {

@@ -7,7 +7,7 @@ import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.StageAchievement
 import cloud.glitchdev.rfu.data.catches.CatchTracker
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerSeaCreaturePersonalBestEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerSeaCreaturePersonalBestEvent
 
 @Achievement
 object ThunderPersonalBestAchievement : StageAchievement() {

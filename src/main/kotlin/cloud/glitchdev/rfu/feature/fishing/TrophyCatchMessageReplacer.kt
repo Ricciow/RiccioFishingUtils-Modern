@@ -7,8 +7,8 @@ import cloud.glitchdev.rfu.constants.fishing.TrophyTier
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.data.fishing.TrophyDataManager
 import cloud.glitchdev.rfu.events.EventScope
-import cloud.glitchdev.rfu.events.managers.registerAllowGameEvent
-import cloud.glitchdev.rfu.events.managers.TrophyCatchEvents
+import cloud.glitchdev.rfu.events.managers.chat.registerAllowGameEvent
+import cloud.glitchdev.rfu.events.managers.fishing.TrophyCatchEvents
 import cloud.glitchdev.rfu.constants.fishing.Trophy
 import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.feature.Feature

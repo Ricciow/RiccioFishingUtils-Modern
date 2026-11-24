@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.mixin;
 
-import cloud.glitchdev.rfu.events.managers.EntityRenderEvents;
+import cloud.glitchdev.rfu.events.managers.render.EntityRenderEvents;
 import cloud.glitchdev.rfu.events.wrappers.Cancelable;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;

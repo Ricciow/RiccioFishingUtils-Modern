@@ -12,14 +12,14 @@ import cloud.glitchdev.rfu.data.catches.CatchTracker
 import cloud.glitchdev.rfu.gui.hud.AbstractFishingHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 import cloud.glitchdev.rfu.utils.dsl.toReadableString
-import cloud.glitchdev.rfu.events.managers.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerLocationEvent
 import net.minecraft.world.phys.Vec3
 import kotlin.math.ceil
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Clock
 import cloud.glitchdev.rfu.feature.fishing.FishingSession
-import cloud.glitchdev.rfu.events.managers.registerSeaCreatureCatchEvent
-import cloud.glitchdev.rfu.events.managers.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.utils.fishing.SeaCreatureAvailability
 
 @HudElement
