@@ -5,6 +5,7 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.BaseAchievement
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
 
@@ -19,7 +20,7 @@ object FailureIsExpectedAchievement : BaseAchievement() {
 
     val DEATH_REGEX = """ ☠ You were killed by Lord Jawbus.""".toExactRegex()
 
-    override fun setupListeners() {
+    override fun setupListeners(scope: EventScope) {
         activeListeners.add(registerGameEvent(DEATH_REGEX) { _, _, _ ->
             complete()
         })

@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.achievement.types
 
 import cloud.glitchdev.rfu.achievement.BaseAchievement
 import cloud.glitchdev.rfu.constants.skyblock.Dyes
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.ContainerEvents
 import cloud.glitchdev.rfu.events.managers.DropEvents
 import cloud.glitchdev.rfu.utils.Coroutines
@@ -13,7 +14,7 @@ abstract class DyeAchievement(val dye: Dyes) : BaseAchievement() {
     private val DROPPED_REGEX = """You've dropped: (\d+)""".toRegex()
     private val DYE_GUIDE_REGEX = """\(\d+/\d+\) Dye Guide""".toRegex()
 
-    override fun setupListeners() {
+    override fun setupListeners(scope: EventScope) {
         activeListeners.add(DropEvents.registerDyeDropEvent { dyeDrop, _ ->
             if (dyeDrop == dye) {
                 Coroutines.launch {

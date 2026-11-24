@@ -3,9 +3,12 @@ package cloud.glitchdev.rfu.processor
 import com.google.devtools.ksp.getAllSuperTypes
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.ClassKind
+import com.google.devtools.ksp.symbol.FileLocation
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import java.io.OutputStream
+
+private const val AUTO_REGISTER = "cloud.glitchdev.rfu.events.AutoRegister"
 
 private data class GeneratorSpec(
     val annotation: String,
@@ -18,8 +21,10 @@ class FeatureProcessor(
     private val codeGenerator: CodeGenerator,
     private val logger: KSPLogger
 ) : SymbolProcessor {
+    private val eventRegistrations = EventRegistrationGenerator(codeGenerator, logger)
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
+        val autoRegisteredManagers = eventRegistrations.generate(resolver)
         val specs = listOf(
             GeneratorSpec(
                 annotation = "cloud.glitchdev.rfu.achievement.Achievement",
@@ -34,13 +39,13 @@ class FeatureProcessor(
                 requiredSuperType = "cloud.glitchdev.rfu.feature.Feature"
             ),
             GeneratorSpec(
-                annotation = "cloud.glitchdev.rfu.events.AutoRegister",
+                annotation = AUTO_REGISTER,
                 loaderFuncName = "registerEvents",
                 methodToCall = "register",
                 requiredSuperType = "cloud.glitchdev.rfu.events.RegisteredEvent"
             ),
             GeneratorSpec(
-                annotation = "cloud.glitchdev.rfu.events.AutoRegister",
+                annotation = AUTO_REGISTER,
                 loaderFuncName = "postInitializeEvents",
                 methodToCall = "postInitialize",
                 requiredSuperType = "cloud.glitchdev.rfu.events.RegisteredEvent"
@@ -78,9 +83,18 @@ class FeatureProcessor(
         )
 
         val symbolsMap = specs.associateWith { spec: GeneratorSpec ->
-            resolver.getSymbolsWithAnnotation(spec.annotation)
+            val symbols = resolver.getSymbolsWithAnnotation(spec.annotation)
                 .filterIsInstance<KSClassDeclaration>()
                 .toList()
+            if (spec.annotation == AUTO_REGISTER) {
+                (symbols + autoRegisteredManagers)
+                    .distinctBy { it.qualifiedName?.asString() }
+                    .sortedWith(compareBy<KSClassDeclaration, String>(String.CASE_INSENSITIVE_ORDER) {
+                        it.containingFile?.filePath.orEmpty()
+                    }.thenBy { (it.location as? FileLocation)?.lineNumber ?: 0 })
+            } else {
+                symbols
+            }
         }
 
         var hasErrors = false
@@ -92,8 +106,9 @@ class FeatureProcessor(
                     }
 
                     if (!implementsInterface) {
+                        val annotation = if (symbol in autoRegisteredManagers) "EventManager" else spec.annotation.substringAfterLast(".")
                         logger.error(
-                            "Class '${symbol.simpleName.asString()}' is annotated with @${spec.annotation.substringAfterLast(".")} " +
+                            "Class '${symbol.simpleName.asString()}' is annotated with @$annotation " +
                                     "but does not implement '${spec.requiredSuperType}'.",
                             symbol
                         )

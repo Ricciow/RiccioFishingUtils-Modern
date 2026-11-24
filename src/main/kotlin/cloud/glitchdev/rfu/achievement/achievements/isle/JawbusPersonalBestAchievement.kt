@@ -6,6 +6,7 @@ import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.StageAchievement
 import cloud.glitchdev.rfu.data.catches.CatchTracker
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.SeaCreaturePersonalBestEvents.registerSeaCreaturePersonalBestEvent
 
 @Achievement
@@ -28,7 +29,7 @@ object JawbusPersonalBestAchievement : StageAchievement() {
         addStageInfo(5, "Dethroned", "Kill a Lord Jawbus you caught in under 20 seconds.", AchievementDifficulty.HARD)
     }
 
-    override fun setupListeners() {
+    override fun setupListeners(scope: EventScope) {
         val savedBest = CatchTracker.catchHistory.catches.find { it.name == "Lord Jawbus" }?.bestKillTimeMs
         checkPersonalBest(savedBest)
         if (isCompleted) return

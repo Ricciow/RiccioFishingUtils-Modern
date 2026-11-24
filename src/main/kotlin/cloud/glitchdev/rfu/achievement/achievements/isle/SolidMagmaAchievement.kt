@@ -7,6 +7,7 @@ import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.data.catches.CatchTracker.catchHistory
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 
 @Achievement
@@ -31,7 +32,7 @@ object SolidMagmaAchievement : NumericStageAchievement() {
 
     val creature = SeaCreatures.get("Plhlegblast")!!
 
-    override fun setupListeners() {
+    override fun setupListeners(scope: EventScope) {
         val history = catchHistory.getOrAdd(creature)
         currentCount = if(history.total > 0) {
             history.count.toLong()

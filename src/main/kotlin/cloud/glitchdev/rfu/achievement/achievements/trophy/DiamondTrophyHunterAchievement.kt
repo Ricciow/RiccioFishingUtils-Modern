@@ -5,6 +5,7 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.StageAchievement
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.ArmorEvents
 import cloud.glitchdev.rfu.events.managers.ArmorEvents.registerArmorChangeEvent
 
@@ -25,7 +26,7 @@ object DiamondTrophyHunterAchievement : StageAchievement() {
         addStageInfo(4, "Diamond Trophy Hunter", "Equip a full set of Diamond Hunter armor.", AchievementDifficulty.VERY_HARD)
     }
 
-    override fun setupListeners() {
+    override fun setupListeners(scope: EventScope) {
         activeListeners.add(registerArmorChangeEvent {
             checkArmor()
         })

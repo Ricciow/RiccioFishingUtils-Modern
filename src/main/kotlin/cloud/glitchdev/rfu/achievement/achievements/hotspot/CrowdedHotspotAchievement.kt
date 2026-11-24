@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.achievement.achievements.hotspot
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.achievement.*
 import cloud.glitchdev.rfu.achievement.types.NumericAchievement
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.HotSpotEvents
 import cloud.glitchdev.rfu.events.managers.PlayerEvents.registerPlayerDetectEvent
 
@@ -16,7 +17,7 @@ object CrowdedHotspotAchievement : NumericAchievement() {
     override val category: AchievementCategory = AchievementCategory.HOT_SPOT
     override val targetCount: Long = 6L
 
-    override fun setupListeners() {
+    override fun setupListeners(scope: EventScope) {
         activeListeners.add(registerPlayerDetectEvent { players ->
             val user = mc.player ?: return@registerPlayerDetectEvent
             val userPos = user.position()

@@ -4,6 +4,7 @@ import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.constants.fishing.RareDrops
 import cloud.glitchdev.rfu.data.drops.DropManager
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.CocoonEvents.registerCocoonEvent
 import cloud.glitchdev.rfu.events.managers.DropEvents.registerRareDropEvent
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
@@ -38,7 +39,7 @@ abstract class DropDryStreakAchievement(private val drop: RareDrops) : NumericSt
 
     override fun getTargetCountForStage(stage: Int): Long = milestones.getOrNull(stage - 1) ?: milestones.last()
 
-    override fun setupListeners() {
+    override fun setupListeners(scope: EventScope) {
         activeListeners.add(registerSeaCreatureCatchEvent { sc, _, _, _, _ ->
             if (sc in drop.relatedScs) updateProgress()
         })

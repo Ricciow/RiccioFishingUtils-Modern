@@ -9,6 +9,7 @@ import cloud.glitchdev.rfu.achievement.types.NumericAchievement
 import cloud.glitchdev.rfu.constants.fishing.RareDrops
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.data.mob.SkyblockEntity
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.DropEvents.registerRareDropEvent
 import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDetectEvent
 import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDisposeEvent
@@ -32,7 +33,7 @@ object NuclearResonanceAchievement : NumericAchievement() {
     private val unmatchedDisposals = mutableListOf<Long>()
     private val unmatchedDrops = mutableListOf<Long>()
 
-    override fun setupListeners() {
+    override fun setupListeners(scope: EventScope) {
         activeListeners.add(registerMobDetectEvent { entities ->
             entities.forEach { entity ->
                 if (entity.sbName == SEA_CREATURE?.scName) {

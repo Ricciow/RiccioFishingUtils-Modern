@@ -6,6 +6,7 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.BaseAchievement
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.ArmorEvents
 import cloud.glitchdev.rfu.events.managers.ArmorEvents.registerArmorChangeEvent
 import cloud.glitchdev.rfu.events.managers.HotSpotEvents
@@ -20,7 +21,7 @@ object ShameOnYouAchievement : BaseAchievement() {
     override val difficulty: AchievementDifficulty = AchievementDifficulty.MEDIUM
     override val category: AchievementCategory = AchievementCategory.GENERAL
 
-    override fun setupListeners() {
+    override fun setupListeners(scope: EventScope) {
         activeListeners.add(registerArmorChangeEvent {
             checkCondition()
         })

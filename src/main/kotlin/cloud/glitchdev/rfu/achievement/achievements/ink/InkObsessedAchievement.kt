@@ -5,6 +5,7 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import cloud.glitchdev.rfu.feature.ink.InkSessionTracker
 import cloud.glitchdev.rfu.utils.dsl.compact
@@ -47,7 +48,7 @@ object InkObsessedAchievement: NumericStageAchievement() {
 
     }
 
-    override fun setupListeners() {
+    override fun setupListeners(scope: EventScope) {
         activeListeners.add(registerTickEvent(interval = 20) {
             val inkSession = InkSessionTracker.totalInk
             currentCount = inkSession.toLong()

@@ -6,6 +6,7 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.BaseAchievement
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import gg.essential.universal.utils.toUnformattedString
 
@@ -18,7 +19,7 @@ object NowThisIsGiantAchievement : BaseAchievement() {
     override val difficulty: AchievementDifficulty = AchievementDifficulty.HARD
     override val category: AchievementCategory = AchievementCategory.GENERAL
 
-    override fun setupListeners() {
+    override fun setupListeners(scope: EventScope) {
         activeListeners.add(registerTickEvent(interval = 100) {
             if(mc.player?.mainHandItem?.customName?.toUnformattedString()?.contains("Giant Fishing Rod") ?: false) {
                 complete()

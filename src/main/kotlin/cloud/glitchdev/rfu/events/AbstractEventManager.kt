@@ -14,6 +14,10 @@ import java.util.concurrent.CopyOnWriteArrayList
  * @param T The specific task type implementation
  */
 abstract class AbstractEventManager<CB, T : AbstractEventManager.ManagedTask<CB, T>> {
+    companion object {
+        internal const val DEFAULT_EVENT_PRIORITY = 20
+    }
+
     protected val tasks = CopyOnWriteArrayList<T>()
 
     fun submitTask(task: T): T {

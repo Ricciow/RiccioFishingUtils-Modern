@@ -6,6 +6,7 @@ import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
 import cloud.glitchdev.rfu.constants.skyblock.SkillType
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.SkillEvents.registerSkillXpUpdateEvent
 import cloud.glitchdev.rfu.utils.SkillTracker
 
@@ -72,7 +73,7 @@ object FishingGodAchievement : NumericStageAchievement() {
             }
         }
 
-    override fun setupListeners() {
+    override fun setupListeners(scope: EventScope) {
         activeListeners.add(registerSkillXpUpdateEvent(SkillType.FISHING) { _, xp ->
             totalFishingXp = xp
         })

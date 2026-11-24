@@ -6,6 +6,7 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.BaseAchievement
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDisposeEvent
 import net.minecraft.world.level.levelgen.Heightmap
 
@@ -18,7 +19,7 @@ object TooMuchDowntimeAchievement : BaseAchievement() {
     override val difficulty: AchievementDifficulty = AchievementDifficulty.MEDIUM
     override val category: AchievementCategory = AchievementCategory.ISLE
 
-    override fun setupListeners() {
+    override fun setupListeners(scope: EventScope) {
         activeListeners.add(registerMobDisposeEvent { entities ->
             val achieved = entities.any { entity ->
                 if (entity.sbName != "Lord Jawbus") return@any false

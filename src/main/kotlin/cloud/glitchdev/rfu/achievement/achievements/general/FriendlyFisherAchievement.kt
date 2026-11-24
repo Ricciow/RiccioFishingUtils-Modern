@@ -5,6 +5,7 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.ArmorEvents
 import cloud.glitchdev.rfu.events.managers.ArmorEvents.registerArmorChangeEvent
 
@@ -24,7 +25,7 @@ object FriendlyFisherAchievement : NumericStageAchievement() {
         addStageInfo(3, "Friendly Fisher", "Equip a Bobbin' Time 5 full armor set.", AchievementDifficulty.MEDIUM)
     }
 
-    override fun setupListeners() {
+    override fun setupListeners(scope: EventScope) {
         activeListeners.add(registerArmorChangeEvent {
             checkAll()
         })

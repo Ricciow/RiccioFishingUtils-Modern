@@ -1,8 +1,11 @@
 package cloud.glitchdev.rfu.events.managers
 
 import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
+import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.wrappers.Cancelable
 
+@EventManager(register = false)
 object FovEvents : AbstractEventManager<(Cancelable<Float>, Float) -> Unit, FovEvents.FovEvent>() {
     override val runTasks: (Cancelable<Float>, Float) -> Unit = { cancelable, partialTick ->
         safeExecution {
@@ -12,7 +15,7 @@ object FovEvents : AbstractEventManager<(Cancelable<Float>, Float) -> Unit, FovE
         }
     }
 
-    fun registerFovEvent(priority: Int = 20, callback: (Cancelable<Float>, Float) -> Unit): FovEvent {
+    fun registerFovEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (Cancelable<Float>, Float) -> Unit): FovEvent {
         return FovEvent(priority, callback).register()
     }
 

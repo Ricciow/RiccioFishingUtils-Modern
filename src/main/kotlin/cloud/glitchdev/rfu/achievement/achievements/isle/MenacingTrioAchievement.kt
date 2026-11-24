@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.achievement.achievements.isle
 
 import cloud.glitchdev.rfu.achievement.*
 import cloud.glitchdev.rfu.achievement.types.NumericAchievement
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDetectEvent
 
 @Achievement
@@ -15,7 +16,7 @@ object MenacingTrioAchievement : NumericAchievement() {
 
     override val targetCount: Long = 3L
 
-    override fun setupListeners() {
+    override fun setupListeners(scope: EventScope) {
         activeListeners.add(registerMobDetectEvent { entities ->
             var found = 0L
             if(entities.any { it.sbName == "Thunder" }) found++

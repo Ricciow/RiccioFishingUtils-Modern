@@ -5,6 +5,7 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.BaseAchievement
+import cloud.glitchdev.rfu.events.EventScope
 
 @Achievement
 object WhatIsMfAchievement : BaseAchievement() {
@@ -14,5 +15,5 @@ object WhatIsMfAchievement : BaseAchievement() {
     override val type: AchievementType = AchievementType.NORMAL
     override val difficulty: AchievementDifficulty = AchievementDifficulty.HARD
     override val category: AchievementCategory = AchievementCategory.LEGACY
-    override fun setupListeners() {}
+    override fun setupListeners(scope: EventScope) {}
 }

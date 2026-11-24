@@ -5,6 +5,7 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.StageAchievement
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.TrophyCatchEvents.registerTrophyFrogCatchEvent
 import cloud.glitchdev.rfu.constants.fishing.TrophyTier
 
@@ -27,7 +28,7 @@ object AmphibianTwinsAchievement : StageAchievement() {
         addStageInfo(4, "Diamond Amphibian Twins", "Catch two Diamond trophy frogs back-to-back.", AchievementDifficulty.VERY_HARD)
     }
 
-    override fun setupListeners() {
+    override fun setupListeners(scope: EventScope) {
         activeListeners.add(registerTrophyFrogCatchEvent { _, tier, amount ->
             val requiredTier = when (currentStage) {
                 1 -> TrophyTier.BRONZE

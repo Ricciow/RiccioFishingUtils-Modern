@@ -5,6 +5,7 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyJoinedEvent
 
 @Achievement
@@ -32,7 +33,7 @@ object PartyExplorerAchievement : NumericStageAchievement() {
         addStageInfo(10, "Party Legend", "Join or host 2500 players through the RFU Party Finder.", AchievementDifficulty.IMPOSSIBLE)
     }
 
-    override fun setupListeners() {
+    override fun setupListeners(scope: EventScope) {
         activeListeners.add(registerPartyJoinedEvent {
             addProgress(1)
         })

@@ -2,6 +2,7 @@ package cloud.glitchdev.rfu.achievement.achievements.hotspot
 
 import cloud.glitchdev.rfu.achievement.*
 import cloud.glitchdev.rfu.achievement.types.NumericAchievement
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 
 @Achievement
@@ -23,7 +24,7 @@ object BuffCollectorAchievement : NumericAchievement() {
         "Trophy Chance"
     )
 
-    override fun setupListeners() {
+    override fun setupListeners(scope: EventScope) {
         activeListeners.add(registerSeaCreatureCatchEvent { _, _, hotspot, _, _ ->
             if (hotspot != null) {
                 val buff = hotspot.buff

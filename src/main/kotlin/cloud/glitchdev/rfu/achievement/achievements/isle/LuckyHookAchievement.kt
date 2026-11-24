@@ -5,6 +5,7 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 
 @Achievement
@@ -31,7 +32,7 @@ object LuckyHookAchievement : NumericStageAchievement() {
         addStageInfo(10, "Lucky Hook: Plhlegblast", "Catch a Plhlegblast b2b", AchievementDifficulty.IMPOSSIBLE)
     }
 
-    override fun setupListeners() {
+    override fun setupListeners(scope: EventScope) {
         activeListeners.add(registerSeaCreatureCatchEvent { sc, _, _, _, _ ->
             val lookingFor = getCurrentSc() ?: return@registerSeaCreatureCatchEvent
 

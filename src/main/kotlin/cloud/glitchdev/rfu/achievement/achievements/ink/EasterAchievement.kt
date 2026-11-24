@@ -5,6 +5,7 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.BaseAchievement
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.utils.World
 
@@ -19,7 +20,7 @@ object EasterAchievement: BaseAchievement() {
     override val category: AchievementCategory = AchievementCategory.INK
 
 
-    override fun setupListeners() {
+    override fun setupListeners(scope: EventScope) {
 
         activeListeners.add(registerSeaCreatureCatchEvent { sc, _, _, _, _ ->
             if (sc.scName == "Carrot King") {

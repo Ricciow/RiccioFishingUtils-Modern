@@ -5,6 +5,7 @@ import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.BaseAchievement
 import cloud.glitchdev.rfu.constants.fishing.RareDrops
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.DropEvents.registerRareDropEvent
 
 object ItsMyLuckyDayAchievement : BaseAchievement() {
@@ -15,7 +16,7 @@ object ItsMyLuckyDayAchievement : BaseAchievement() {
     override val difficulty: AchievementDifficulty = AchievementDifficulty.MEDIUM
     override val category: AchievementCategory = AchievementCategory.ISLE
 
-    override fun setupListeners() {
+    override fun setupListeners(scope: EventScope) {
         activeListeners.add(registerRareDropEvent { drop, _ ->
             if(drop == RareDrops.RADIOACTIVE_VIAL) {
                 complete()

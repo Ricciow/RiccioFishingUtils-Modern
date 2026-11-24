@@ -6,6 +6,7 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.BaseAchievement
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.ItemUsedEvents.registerItemUsedEvent
 import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.utils.dsl.isFishingRod
@@ -23,7 +24,7 @@ object BeginnersLuckAchievement : BaseAchievement() {
     override val category: AchievementCategory = AchievementCategory.HOT_SPOT
     private var lastCastRod: ItemStack? = null
 
-    override fun setupListeners() {
+    override fun setupListeners(scope: EventScope) {
         activeListeners.add(registerItemUsedEvent { item ->
             if (!item.isFishingRod() || mc.player?.fishing != null) return@registerItemUsedEvent
             lastCastRod = item.copy()

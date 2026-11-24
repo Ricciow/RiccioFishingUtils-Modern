@@ -6,6 +6,7 @@ import cloud.glitchdev.rfu.achievement.types.StageAchievement
 import cloud.glitchdev.rfu.config.categories.LavaFishing
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.data.mob.SkyblockEntity
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.ArmorEvents
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDeathEvent
@@ -48,7 +49,7 @@ object SurvivalistAchievement : StageAchievement() {
         addStageInfo(8, "Professional Survivalist+", "Solo kill a double hooked Jawbus without armor with Hard Mode enabled.\nNo player must be nearby for this.", AchievementDifficulty.IMPOSSIBLE)
     }
 
-    override fun setupListeners() {
+    override fun setupListeners(scope: EventScope) {
         activeListeners.add(registerSeaCreatureCatchEvent { sc, doubleHook, _, _, _ ->
             if (sc == SEA_CREATURE) {
                 waitingForJawbus = true

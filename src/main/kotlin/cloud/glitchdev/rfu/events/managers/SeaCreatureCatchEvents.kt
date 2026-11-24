@@ -3,7 +3,8 @@
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.events.AbstractEventManager
-import cloud.glitchdev.rfu.events.AutoRegister
+import cloud.glitchdev.rfu.events.AbstractEventManager.Companion.DEFAULT_EVENT_PRIORITY
+import cloud.glitchdev.rfu.events.EventManager
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
@@ -13,7 +14,7 @@ import net.minecraft.world.phys.Vec3
 import cloud.glitchdev.rfu.constants.fishing.Bait
 import cloud.glitchdev.rfu.data.fishing.Hotspot
 
-@AutoRegister
+@EventManager
 object SeaCreatureCatchEvents : AbstractEventManager<(SeaCreatures, doubleHook : Boolean, hotspot : Hotspot?, pos : Vec3, bait : Bait?) -> Unit, SeaCreatureCatchEvents.SeaCreatureCatchEvent>(), RegisteredEvent {
     val DOUBLE_HOOK_REGEX = """Double Hook!|It's a Double Hook! Woot woot!|It's a Double Hook!""".toExactRegex()
     var isDoubleHook = false
@@ -42,12 +43,12 @@ object SeaCreatureCatchEvents : AbstractEventManager<(SeaCreatures, doubleHook :
         }
     }
 
-    fun registerSeaCreatureCatchEvent(priority: Int = 20, callback: (SeaCreatures, doubleHook : Boolean, hotspot : Hotspot?, pos : Vec3, bait : Bait?) -> Unit): SeaCreatureCatchEvent {
+    fun registerSeaCreatureCatchEvent(priority: Int = DEFAULT_EVENT_PRIORITY, callback: (SeaCreatures, doubleHook : Boolean, hotspot : Hotspot?, pos : Vec3, bait : Bait?) -> Unit): SeaCreatureCatchEvent {
         return SeaCreatureCatchEvent(priority, callback).register()
     }
 
     class SeaCreatureCatchEvent(
-        priority: Int = 20,
+        priority: Int = DEFAULT_EVENT_PRIORITY,
         callback: (SeaCreatures, doubleHook : Boolean, hotspot : Hotspot?, pos : Vec3, bait : Bait?) -> Unit
     ) : ManagedTask<(SeaCreatures, doubleHook : Boolean, hotspot : Hotspot?, pos : Vec3, bait : Bait?) -> Unit, SeaCreatureCatchEvent>(priority, callback) {
         override fun register() = submitTask(this)

@@ -5,6 +5,7 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.managers.CocoonEvents.registerCocoonEvent
 
 @Achievement
@@ -31,7 +32,7 @@ object WrappingItUpAchievement : NumericStageAchievement() {
         addStageInfo(10, "Wrapping it up: Plhlegblast", "Cocoon a Plhlegblast", AchievementDifficulty.IMPOSSIBLE)
     }
 
-    override fun setupListeners() {
+    override fun setupListeners(scope: EventScope) {
         activeListeners.add(registerCocoonEvent { sc ->
             val lookingFor = getCurrentSc() ?: return@registerCocoonEvent
             if (sc.scName == lookingFor) {
