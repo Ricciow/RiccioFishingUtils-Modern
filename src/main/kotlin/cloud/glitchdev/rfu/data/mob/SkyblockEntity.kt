@@ -311,10 +311,14 @@ class SkyblockEntity(
     ) {
         if (disposed) return
         countdownScope?.close()
-        val scope = eventScopes.load(::initializeListeners).child()
-        countdownScope = scope
-        countdownEvent = scope.registerServerCountdownEvent(totalTicks)
+        countdownScope = null
+        countdownEvent = null
         timerCondition = condition
+        val scope = eventScopes.load(::initializeListeners)?.child()
+        if (scope != null) {
+            countdownScope = scope
+            countdownEvent = scope.registerServerCountdownEvent(totalTicks)
+        }
 
         if (hasTimer) return
         hasTimer = true

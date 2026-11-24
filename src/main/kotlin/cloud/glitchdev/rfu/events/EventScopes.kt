@@ -1,29 +1,5 @@
 package cloud.glitchdev.rfu.events
 
-import cloud.glitchdev.rfu.utils.RFULogger
-
-internal class IsolatedScopeBuilder(private val parent: EventScope) {
-    internal var failure: Throwable? = null
-        private set
-
-    fun mount(name: String, initialize: (EventScope) -> Unit) {
-        val child = parent.child()
-        try {
-            initialize(child)
-        } catch (error: Throwable) {
-            try {
-                child.close()
-            } catch (cleanupFailure: Throwable) {
-                if (cleanupFailure !== error) error.addSuppressed(cleanupFailure)
-            }
-            RFULogger.error("Failed to initialize $name", error)
-            val first = failure
-            if (first == null) failure = error
-            else if (first !== error) first.addSuppressed(error)
-        }
-    }
-}
-
 internal class EventScopes {
     private sealed interface OwnerInitializer {
         data class Single(val initialize: (EventScope) -> Unit) : OwnerInitializer
@@ -34,19 +10,25 @@ internal class EventScopes {
     var activeScope: EventScope? = null
         private set
 
-    fun load(initialize: (EventScope) -> Unit): EventScope {
+    fun load(initialize: (EventScope) -> Unit): EventScope? {
         activeScope?.let { return it }
-        synchronized(stateLock) {
+        val shouldMount = synchronized(stateLock) {
+            if (clientScope.isClosed) return null
             owners[this] = OwnerInitializer.Single(initialize)
+            !stopped
         }
+        if (!shouldMount) return null
         return mountSingle(initialize, removeOnFailure = true)
     }
 
-    fun loadIsolated(build: IsolatedScopeBuilder.() -> Unit): EventScope {
+    fun loadIsolated(build: IsolatedScopeBuilder.() -> Unit): EventScope? {
         activeScope?.let { return it }
-        synchronized(stateLock) {
+        val shouldMount = synchronized(stateLock) {
+            if (clientScope.isClosed) return null
             owners[this] = OwnerInitializer.Isolated(build)
+            !stopped
         }
+        if (!shouldMount) return null
         return mountIsolated(build, removeOnFailure = true)
     }
 
@@ -58,8 +40,8 @@ internal class EventScopes {
         }
     }
 
-    private fun mountSingle(initialize: (EventScope) -> Unit, removeOnFailure: Boolean): EventScope {
-        val scope = createRestartableChild(removeOnFailure)
+    private fun mountSingle(initialize: (EventScope) -> Unit, removeOnFailure: Boolean): EventScope? {
+        val scope = createRestartableChild(removeOnFailure) ?: return null
         try {
             initialize(scope)
         } catch (failure: Throwable) {
@@ -77,17 +59,20 @@ internal class EventScopes {
         return scope
     }
 
-    private fun mountIsolated(build: IsolatedScopeBuilder.() -> Unit, removeOnFailure: Boolean): EventScope {
-        val scope = createRestartableChild(removeOnFailure)
+    private fun mountIsolated(build: IsolatedScopeBuilder.() -> Unit, removeOnFailure: Boolean): EventScope? {
+        val scope = createRestartableChild(removeOnFailure) ?: return null
         val builder = IsolatedScopeBuilder(scope)
         builder.build()
         builder.failure?.let { throw it }
         return scope
     }
 
-    private fun createRestartableChild(removeOnFailure: Boolean): EventScope {
+    private fun createRestartableChild(removeOnFailure: Boolean): EventScope? {
         val scope = try {
-            synchronized(stateLock) { restartableScope.child() }
+            synchronized(stateLock) {
+                if (clientScope.isClosed || stopped) return null
+                restartableScope.child()
+            }
         } catch (failure: Throwable) {
             if (removeOnFailure) {
                 synchronized(stateLock) { owners.remove(this) }
@@ -117,6 +102,11 @@ internal class EventScopes {
         val startup = clientScope.child()
         private var restartableScope = clientScope.child()
         private val owners = linkedMapOf<EventScopes, OwnerInitializer>()
+        @Volatile
+        private var stopped = false
+
+        val isStopped: Boolean
+            get() = stopped
 
         inline fun withStartupScope(action: (EventScope) -> Unit) {
             if (startup.isClosed) return
@@ -127,36 +117,63 @@ internal class EventScopes {
             }
         }
 
+        fun stop(): Boolean {
+            val previousRoot = synchronized(stateLock) {
+                if (clientScope.isClosed || stopped) return false
+                stopped = true
+                restartableScope
+            }
+            previousRoot.close()
+            return true
+        }
+
+        fun start(): Boolean {
+            val ownersToMount = synchronized(stateLock) {
+                if (clientScope.isClosed || !stopped) return false
+                stopped = false
+                restartableScope = clientScope.child()
+                owners.keys.toList()
+            }
+            runScopeActions(buildMountActions(ownersToMount))
+            return true
+        }
+
         fun restart() {
             val previousOwners = synchronized(stateLock) {
                 if (clientScope.isClosed) return
                 owners.keys.toList()
             }
             val closeRoot: () -> Unit = {
-                val previousRoot = synchronized(stateLock) { restartableScope }
+                val previousRoot = synchronized(stateLock) {
+                    stopped = false
+                    restartableScope
+                }
                 try {
                     previousRoot.close()
                 } finally {
                     synchronized(stateLock) {
-                        if (!clientScope.isClosed) {
+                        if (!clientScope.isClosed && !stopped) {
                             restartableScope = clientScope.child()
                         }
                     }
                 }
             }
-            val restoreOwners: List<() -> Unit> = previousOwners.map { owner ->
+            runScopeActions(listOf(closeRoot) + buildMountActions(previousOwners))
+        }
+
+        private fun buildMountActions(ownerList: List<EventScopes>): List<() -> Unit> =
+            ownerList.map { owner ->
                 {
                     val entry = synchronized(stateLock) {
-                        if (clientScope.isClosed) null else owners[owner]
+                        if (clientScope.isClosed || stopped) null else owners[owner]
                     }
                     entry?.let { owner.remount(it) }
                 }
             }
-            runScopeActions(listOf(closeRoot) + restoreOwners)
-        }
 
         fun shutdown() {
             synchronized(stateLock) {
+                stopped = true
                 owners.clear()
             }
             clientScope.close()
