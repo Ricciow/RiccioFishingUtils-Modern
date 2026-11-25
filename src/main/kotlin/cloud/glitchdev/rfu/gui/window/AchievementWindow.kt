@@ -42,7 +42,7 @@ import cloud.glitchdev.rfu.gui.components.colors
 object AchievementWindow : BaseWindow() {
     private var selectedCategory: AchievementCategory = AchievementCategory.GENERAL
     private lateinit var scrollArea: ScrollComponent
-    private val achievementComponents = mutableListOf<Achievement>()
+    private var achievementComponents = emptyList<Achievement>()
     private val categoryButtons = mutableListOf<Pair<AchievementCategory, UIButton>>()
     private var needsRefresh = false
 
@@ -211,14 +211,8 @@ object AchievementWindow : BaseWindow() {
             }
         }
 
-        val existingCardsMap = achievementComponents.associateBy { it.achievement.id }
-        
-        achievementComponents.forEach {
-            scrollArea.removeChild(it)
-        }
-        achievementComponents.clear()
-
-        visibleAchievements
+        val existingCards = achievementComponents.associateBy { it.achievement.id }
+        val newCards = visibleAchievements
             .filter { it.category == selectedCategory }
             .sortedWith(compareBy(
                 {
@@ -231,17 +225,20 @@ object AchievementWindow : BaseWindow() {
                 },
                 { it.getDisplayDifficulty() }
             ))
-            .forEach { achievement ->
-                val existingCard = existingCardsMap[achievement.id]
+            .map { achievement ->
+                val existingCard = existingCards[achievement.id]
                 val wasHovered = existingCard?.isHovered() ?: false
                 val savedViewingStage = existingCard?.viewingStage
-                
-                val component = Achievement(achievement, wasHovered, savedViewingStage).constrain {
+
+                Achievement(achievement, wasHovered, savedViewingStage).constrain {
                     x = CenterConstraint()
                     y = SiblingConstraint(5f)
                     width = 100.percent()
-                } childOf scrollArea
-                achievementComponents.add(component)
+                }
             }
+
+        scrollArea.clearChildren()
+        newCards.forEach { it childOf scrollArea }
+        achievementComponents = newCards
     }
 }
