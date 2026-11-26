@@ -20,6 +20,7 @@
 - Changed Prince's Crown Jewel to just say Crown Jewel
 - Made the Bobbin' Time requisite have more priority on the card (Appear first)
 - RNG Manipulation achievement now requires 200 MF or more
+- Rebalanced LF drop dry streak achievements for the Magic Find update.
 - The “What is Magic Find?” achievement has been retired. Players who previously had it can find it under the Legacy tab.
 
 ### Fixes
