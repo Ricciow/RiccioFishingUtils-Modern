@@ -1,8 +1,3 @@
-#Defined in gradle.properties
-#loom_version = "1.18.2"
-#kotlin_version = "2.4.20"
-#ksp_version = "2.3.12"
-
 #RFU
 mod.version = "1.21.0"
 mod.group = "cloud.glitchdev.rfu"
@@ -10,18 +5,18 @@ mod.id = "rfu"
 mod.name = "RiccioFishingUtils"
 
 #Fabric
-deps.fabric_loader = "0.19.5"
+deps.fabric_loader = "0.20.1"
 
 #Devauth
 devauth_version = "1.2.2"
 
 #Essential
 elementa_version = "787"
-universalcraft_version = "538"
+universalcraft_version = "551"
 
-#Faric_language_kotlin
-fabric_language_kotlin = "1.14.1+kotlin.2.4.20"
-modrinth.kotlin_version = "1.14.1+kotlin.2.4.20"
+#Fabric Language Kotlin
+fabric_language_kotlin = "1.14.2+kotlin.2.4.21"
+modrinth.kotlin_version = "1.14.2+kotlin.2.4.21"
 
 ["26.1"]
 #Fabric
@@ -37,8 +32,8 @@ resourceful_version = "4.0.1"
 resourcefulkt_mc_version = "26.1"
 resourcefulkt_version = "4.0.0"
 #Hypixel Mod API
-hypixel_mod_api_version = "1.0.2"
-modrinth.hypixel_version = "1.0.2+build.1+mc26.1"
+hypixel_mod_api_version = "1.0.3"
+modrinth.hypixel_version = "1.0.3+build.1+mc26.1"
 
 ["26.1.1"]
 stonecutter.redirect = "26.1"
@@ -56,26 +51,26 @@ mod.mc_dep = ">=26.2 <26.3"
 universalcraft_mc_version = "26.2"
 #ResourcefulConfig
 resourceful_mc_version = "26.2"
-resourceful_version = "5.0.0"
+resourceful_version = "5.0.1"
 resourcefulkt_mc_version = "26.1"
 resourcefulkt_version = "4.0.0"
 #Hypixel Mod API
-hypixel_mod_api_version = "1.0.2"
-modrinth.hypixel_version = "1.0.2+build.1+mc26.1"
+hypixel_mod_api_version = "1.0.3"
+modrinth.hypixel_version = "1.0.3+build.1+mc26.1"
 
 ["26.3"]
 #Fabric
-deps.fabric_api = "0.161.0+26.3"
-modrinth.fapi_version = "0.161.0+26.3"
+deps.fabric_api = "0.166.2+26.3"
+modrinth.fapi_version = "0.166.2+26.3"
 #Minecraft
 mod.mc_dep = ">=26.3 <26.4"
 #Essential
 universalcraft_mc_version = "26.3"
 #ResourcefulConfig
 resourceful_mc_version = "26.3"
-resourceful_version = "6.0.1"
+resourceful_version = "6.0.2"
 resourcefulkt_mc_version = "26.1"
 resourcefulkt_version = "4.0.0"
 #Hypixel Mod API
-hypixel_mod_api_version = "1.0.2"
-modrinth.hypixel_version = "1.0.2+build.1+mc26.1"
+hypixel_mod_api_version = "1.0.3"
+modrinth.hypixel_version = "1.0.3+build.1+mc26.1"

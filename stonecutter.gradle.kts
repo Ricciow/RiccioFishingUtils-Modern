@@ -21,7 +21,7 @@ stonecutter parameters {
     swaps["mod_version"] = "\"" + getProp(project, "mod.version") + "\";"
     swaps["minecraft"] = "\"" + node.metadata.version + "\";"
     constants["release"] = getProp(project, "mod.id") != "rfu"
-    dependencies["fapi"] = getProp(node.project, "deps.fabric_api")
+    targets["fapi"] = getProp(node.project, "deps.fabric_api")
 }
 
 tasks.register("publishModrinth") {
