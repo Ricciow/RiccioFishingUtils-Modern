@@ -9,6 +9,7 @@ import cloud.glitchdev.rfu.gui.components.checkbox.UICheckbox
 import cloud.glitchdev.rfu.gui.components.elementa.UIEmoji
 import cloud.glitchdev.rfu.gui.components.elementa.UIVanillaTooltip
 import cloud.glitchdev.rfu.gui.components.textinput.UIDecoratedTextInput
+import gg.essential.elementa.UIComponent
 import gg.essential.elementa.components.ScrollComponent
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
@@ -18,6 +19,7 @@ import gg.essential.elementa.constraints.CramSiblingConstraint
 import gg.essential.elementa.constraints.FillConstraint
 import gg.essential.elementa.constraints.SiblingConstraint
 import gg.essential.elementa.constraints.TextAspectConstraint
+import gg.essential.elementa.dsl.basicWidthConstraint
 import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.dsl.min
@@ -32,6 +34,8 @@ import net.minecraft.network.chat.Component
 class EmojiEditWindow(private val parentScreen: Screen? = null) : BaseWindow(true) {
     private companion object {
         const val SEARCH_RESULT_LIMIT = 150
+        const val MIN_CARD_WIDTH = 94f
+        const val CARD_GAP = 4f
     }
 
     private val catalog = Emoji.EMOJIS.sortedBy { it.displayName.lowercase() }
@@ -193,9 +197,14 @@ class EmojiEditWindow(private val parentScreen: Screen? = null) : BaseWindow(tru
 
     private fun addEmoji(list: ScrollComponent, emoji: EmojiData) {
         val card = UIRoundedRectangle(3f).constrain {
-            x = CramSiblingConstraint(4f)
-            y = CramSiblingConstraint(4f)
-            width = min(96.pixels(), 100.percent())
+            x = CramSiblingConstraint(CARD_GAP)
+            y = CramSiblingConstraint(CARD_GAP)
+            width = basicWidthConstraint { card ->
+                val availableWidth = card.parent.getWidth().coerceAtLeast(0f)
+                val columns = ((availableWidth + CARD_GAP) / (MIN_CARD_WIDTH + CARD_GAP)).toInt().coerceAtLeast(1)
+                val cardWidth = (availableWidth - (columns - 1) * CARD_GAP) / columns
+                UIComponent.guiHint(cardWidth, roundDown = true)
+            }
             height = 35.pixels()
             color = UIScheme.contentBackground.toConstraint()
         } childOf list
@@ -203,7 +212,6 @@ class EmojiEditWindow(private val parentScreen: Screen? = null) : BaseWindow(tru
         val tooltip = UIVanillaTooltip(buildList {
             add(Component.literal(emoji.displayName).withStyle(ChatFormatting.YELLOW))
             for (trigger in emoji.triggers) {
-                // Split the shortcut across components so the emoji renderer leaves it readable.
                 add(Component.literal(trigger.take(1)).append(trigger.drop(1)).withStyle(ChatFormatting.GRAY))
             }
         }).constrain {
