@@ -6,6 +6,7 @@ import cloud.glitchdev.rfu.config.Category
 import cloud.glitchdev.rfu.config.SoundTitleSettings
 import cloud.glitchdev.rfu.config.TitleSettings
 import cloud.glitchdev.rfu.constants.chat.MessageTypes
+import cloud.glitchdev.rfu.constants.text.EmojiUpdater
 import cloud.glitchdev.rfu.constants.ui.TooltipGuiScale
 import cloud.glitchdev.rfu.constants.ui.PartyFinderGuiScale
 import cloud.glitchdev.rfu.constants.ui.VisiblePlayerEquipment
@@ -154,6 +155,22 @@ object OtherSettings : Category("Other") {
     var emojis by reloadableBoolean(true) {
         name = Literal("Toggle Emojis")
         description = Literal("Replaces triggers like :dog: with the respective emoji. Use /rfuemojis to browse and manage emojis.")
+    }
+
+    var autoUpdateEmojis by boolean(true) {
+        name = Literal("Auto Update Emojis")
+        description = Literal("Checks for emoji pack updates when Minecraft starts.")
+    }
+
+    var useCustomEmojiRepo by reloadableBoolean(false) {
+        name = Literal("Use Custom Emoji Repo")
+        description = Literal("Use a custom source for emojis. Requires a restart.")
+    }
+
+    var emojiReleaseUrl by string(EmojiUpdater.DEFAULT_LATEST_RELEASE_URL) {
+        name = Literal("Emojis Source")
+        description = Literal("Release API URL for the custom emoji pack. Requires a restart.")
+        condition = { useCustomEmojiRepo }
     }
 
     init {

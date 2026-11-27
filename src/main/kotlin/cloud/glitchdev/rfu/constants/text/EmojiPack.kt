@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.constants.text
 
+import cloud.glitchdev.rfu.config.categories.OtherSettings
 import com.google.gson.Gson
 import org.slf4j.LoggerFactory
 import java.io.ByteArrayInputStream
@@ -22,6 +23,7 @@ internal object EmojiPack {
     private var startupUpdateFuture: CompletableFuture<Bundle?>? = null
 
     fun updateEmojiPack() {
+        if (!OtherSettings.autoUpdateEmojis) return
         if (!startupUpdateStarted.compareAndSet(false, true)) return
         startupUpdateFuture = CompletableFuture.supplyAsync(
             { EmojiUpdater.fetchLatestRelease() },

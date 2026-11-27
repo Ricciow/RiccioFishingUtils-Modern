@@ -8,7 +8,7 @@
 - Added an option to show the Bobbin' Time Magic Find bonus when a rare sea creature dies.
 - Added Mute Non-RFU Sounds to silence game audio while keeping RFU alerts and the timer ding.
 - Added /rfuemojis or /rfuemojiedit to browse, search, and manage emojis.
-- Emojis now automatically update from the RFU Emojis repository.
+- Emojis now update automatically, with options in Other settings to turn off updates or use a custom source.
 - Added setting that lets muted party members request a warp with Hypixel's muted private message.
 
 ### Changes

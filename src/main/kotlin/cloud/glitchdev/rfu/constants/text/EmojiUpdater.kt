@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.constants.text
 
-import cloud.glitchdev.rfu.config.categories.DevSettings
+import cloud.glitchdev.rfu.config.categories.OtherSettings
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
@@ -19,7 +19,7 @@ import java.time.Duration
 import java.util.HexFormat
 
 internal object EmojiUpdater {
-    private const val DEFAULT_LATEST_RELEASE_URL = "https://api.github.com/repos/Ricciow/RFU-Emojis/releases/latest"
+    const val DEFAULT_LATEST_RELEASE_URL = "https://api.github.com/repos/Ricciow/RFU-Emojis/releases/latest"
     private const val BUNDLE_FILE = "emojis.zip"
     private const val CACHE_META_NAME = "emojis-meta.json"
     private val SHA256_REGEX = Regex("^[0-9a-fA-F]{64}$")
@@ -36,8 +36,8 @@ internal object EmojiUpdater {
     internal fun defaultCacheDir(): Path = FabricLoader.getInstance().configDir.resolve("rfu/repo")
 
     internal fun configuredLatestReleaseUrl(): String {
-        if (!DevSettings.devMode || !DevSettings.useCustomEmojiRepo) return DEFAULT_LATEST_RELEASE_URL
-        val url = DevSettings.emojiReleaseUrl.trim()
+        if (!OtherSettings.useCustomEmojiRepo) return DEFAULT_LATEST_RELEASE_URL
+        val url = OtherSettings.emojiReleaseUrl.trim()
         val scheme = runCatching { URI.create(url).scheme?.lowercase() }.getOrNull()
         if (scheme != "https" && scheme != "http") {
             logger.warn("[RFU] Invalid custom emoji release URL '{}'; using default.", url)
