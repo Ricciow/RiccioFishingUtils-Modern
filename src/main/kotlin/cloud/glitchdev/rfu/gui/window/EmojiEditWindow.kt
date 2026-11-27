@@ -120,7 +120,7 @@ class EmojiEditWindow(private val parentScreen: Screen? = null) : BaseWindow(tru
 
         searchStatus = UIText("").constrain {
             x = 5.pixels()
-            y = SiblingConstraint()
+            y = SiblingConstraint(2f)
             width = min(TextAspectConstraint(), 100.percent() - 10.pixels())
             height = 0.pixels()
             textScale = 0.8.pixels()
@@ -172,7 +172,7 @@ class EmojiEditWindow(private val parentScreen: Screen? = null) : BaseWindow(tru
             query.isEmpty() -> ""
             matches.isEmpty() -> "No emojis found"
             matches.size > SEARCH_RESULT_LIMIT ->
-                "Showing $SEARCH_RESULT_LIMIT of ${matches.size} matches — refine search"
+                "Showing $SEARCH_RESULT_LIMIT of ${matches.size} matches"
             else -> ""
         }
         searchStatus.setText(status)
