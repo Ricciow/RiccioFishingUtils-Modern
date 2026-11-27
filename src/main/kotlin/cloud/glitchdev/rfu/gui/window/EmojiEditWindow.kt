@@ -11,6 +11,7 @@ import cloud.glitchdev.rfu.gui.components.elementa.UIVanillaTooltip
 import cloud.glitchdev.rfu.gui.components.textinput.UIDecoratedTextInput
 import gg.essential.elementa.UIComponent
 import gg.essential.elementa.components.ScrollComponent
+import gg.essential.elementa.components.UIBlock
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
@@ -178,16 +179,32 @@ class EmojiEditWindow(private val parentScreen: Screen? = null) : BaseWindow(tru
         searchStatus.constrain { height = if (status.isEmpty()) 0.pixels() else 13.pixels() }
 
         emojiList.clearChildren()
-        emojiList.scrollToTop()
         val visible = if (query.isEmpty()) matches else matches.take(SEARCH_RESULT_LIMIT)
-        visible.forEach { addEmoji(emojiList, it) }
+        if (query.isEmpty()) {
+            val sections = visible.groupBy { it.subcategory }
+                .toSortedMap(nullsLast(String.CASE_INSENSITIVE_ORDER.thenBy { it }))
+            for ((subcategory, emojis) in sections) {
+                if (subcategory != null || sections.size > 1) addSectionDivider(subcategory ?: "Other")
+                emojis.forEach(::addEmoji)
+            }
+        } else {
+            for ((section, emojis) in visible.groupBy { it.category to it.subcategory }) {
+                val (category, subcategory) = section
+                val title = Emoji.formatDisplayName(category)
+                addSectionDivider(if (subcategory == null) title else "$title / $subcategory")
+                emojis.forEach(::addEmoji)
+            }
+        }
+        emojiList.scrollToTop(smoothScroll = false)
     }
 
     private fun searchRank(emoji: EmojiData, query: String): Int? {
         val shortcuts = emoji.aliases + emoji.customTriggers.map { it.trim(':') }
         if (shortcuts.any { it.equals(query, ignoreCase = true) }) return 0
 
-        val fields = shortcuts + listOf(emoji.displayName, emoji.category, Emoji.formatDisplayName(emoji.category))
+        val fields = shortcuts + listOfNotNull(
+            emoji.displayName, emoji.category, Emoji.formatDisplayName(emoji.category), emoji.subcategory,
+        )
         return when {
             fields.any { it.startsWith(query, ignoreCase = true) } -> 1
             fields.any { it.contains(query, ignoreCase = true) } -> 2
@@ -195,7 +212,31 @@ class EmojiEditWindow(private val parentScreen: Screen? = null) : BaseWindow(tru
         }
     }
 
-    private fun addEmoji(list: ScrollComponent, emoji: EmojiData) {
+    private fun addSectionDivider(title: String) {
+        val row = UIContainer().constrain {
+            y = CramSiblingConstraint(CARD_GAP)
+            width = 100.percent()
+            height = 15.pixels()
+        } childOf emojiList
+
+        val label = UIText(title).constrain {
+            x = CenterConstraint()
+            y = CenterConstraint()
+            width = min(TextAspectConstraint(), 100.percent() - 20.pixels())
+            color = UIScheme.secondaryTextColor.toConstraint()
+        } childOf row
+
+        for (right in listOf(false, true)) {
+            UIBlock(UIScheme.secondaryColorDisabledOpaque).constrain {
+                x = 0.pixels(right)
+                y = CenterConstraint()
+                width = basicWidthConstraint { (row.getWidth() - label.getWidth()) / 2f - CARD_GAP }
+                height = 1.pixels()
+            } childOf row
+        }
+    }
+
+    private fun addEmoji(emoji: EmojiData) {
         val card = UIRoundedRectangle(3f).constrain {
             x = CramSiblingConstraint(CARD_GAP)
             y = CramSiblingConstraint(CARD_GAP)
@@ -207,7 +248,7 @@ class EmojiEditWindow(private val parentScreen: Screen? = null) : BaseWindow(tru
             }
             height = 35.pixels()
             color = UIScheme.contentBackground.toConstraint()
-        } childOf list
+        } childOf emojiList
 
         val tooltip = UIVanillaTooltip(buildList {
             add(Component.literal(emoji.displayName).withStyle(ChatFormatting.YELLOW))

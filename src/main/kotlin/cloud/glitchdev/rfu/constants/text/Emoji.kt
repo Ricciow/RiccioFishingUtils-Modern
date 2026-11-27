@@ -18,6 +18,7 @@ data class EmojiData(
     val messageReplacement: String? = null,
     val category: String = "general",
     val id: String = aliases.firstOrNull() ?: "",
+    val subcategory: String? = null,
 ) {
     val primaryAlias: String get() = aliases.firstOrNull() ?: id
     val text: String get() = textReplacement ?: messageReplacement ?: ":$primaryAlias:"

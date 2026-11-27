@@ -149,6 +149,7 @@ internal object EmojiPack {
                     ascent = metadata.ascent,
                     category = category,
                     id = id,
+                    subcategory = metadata.subcategory?.trim()?.takeIf { it.isNotEmpty() },
                 ),
                 texture = texture,
                 listed = metadata.listed,
@@ -194,5 +195,6 @@ internal object EmojiPack {
         val listed: Boolean = true,
         val useIdAsAlias: Boolean = true,
         val category: String? = "general",
+        val subcategory: String? = null,
     )
 }
