@@ -38,6 +38,7 @@
 - Fixed Hypixel detection when the server address includes a port.
 - Fixed Party Finder failing to load the party list when many parties are listed.
 - Fixed dye drop detection.
+- Fixed Render Chat Coords placing markers for max/min/avg tps messages.
 
 ### Backend
 - Isolated chat and skill event listeners so errors in one listener do not skip others.

@@ -44,6 +44,9 @@ object ChatCoordinates : Feature {
     private val senderRegex = Regex(
         """^(?:(?:Party|Guild|Officer|Co-op)\s*>\s*|From\s+)?(?:\[[^\]\r\n]+]\s*|[^\x00-\x7F\s]+\s+)*([a-zA-Z0-9_]{3,16})(?:\s+\[[^\]\r\n]+])?\s*:\s*(.+)$"""
     )
+    private val tpsMessageRegex = Regex(
+        """Current:\s*$NUMBER\s+\(max/min/avg\)\s*$NUMBER\s*/\s*$NUMBER\s*/\s*$NUMBER"""
+    )
     private val labelledRegex = Regex(
         """(?<![\w.+-])$AXIS$SEPARATOR$AXIS$SEPARATOR$AXIS""", RegexOption.IGNORE_CASE
     )
@@ -150,6 +153,7 @@ object ChatCoordinates : Feature {
     fun parse(text: String): Message? {
         val senderMatch = senderRegex.matchEntire(text.trim()) ?: return null
         val body = senderMatch.groupValues[2]
+        if (tpsMessageRegex.matches(body)) return null
         // Prefer explicit axes even when an unrelated numeric triple occurs earlier in the message.
         val labelled = labelledRegex.findAll(body).firstOrNull { match ->
             listOf(1, 3, 5).map { match.groupValues[it].lowercase() }.toSet().size == 3
