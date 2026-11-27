@@ -1,3 +1,5 @@
+import net.fabricmc.loom.api.LoomGradleExtensionAPI
+
 plugins {
     id("net.fabricmc.fabric-loom")
     kotlin("jvm")
@@ -126,7 +128,7 @@ dependencies {
     ksp(project(":processor"))
 }
 
-configure<net.fabricmc.loom.api.LoomGradleExtensionAPI> {
+configure<LoomGradleExtensionAPI> {
     fabricModJsonPath = rootProject.file("src/main/resources/fabric.mod.json")
     accessWidenerPath = rootProject.file("src/main/resources/$awFileName")
 
@@ -137,7 +139,7 @@ configure<net.fabricmc.loom.api.LoomGradleExtensionAPI> {
     val modsFolder = project.findProperty("stonecutter.redirect")?.toString() ?: stonecutter.current.version
     runConfigs.all {
         generateRunConfig.set(name == "client")
-        preferGradleTask.set(false)
+        preferGradleTask.set(true)
 
         jvmArguments.addAll(
             "-Dmixin.debug.export=true",
