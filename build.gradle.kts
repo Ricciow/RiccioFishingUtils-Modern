@@ -140,6 +140,7 @@ configure<LoomGradleExtensionAPI> {
     runConfigs.all {
         generateRunConfig.set(name == "client")
         preferGradleTask.set(true)
+        ideConfigFolder.set("Minecraft")
 
         jvmArguments.addAll(
             "-Dmixin.debug.export=true",
