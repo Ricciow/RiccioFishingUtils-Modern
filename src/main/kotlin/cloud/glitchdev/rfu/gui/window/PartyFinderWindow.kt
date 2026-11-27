@@ -139,7 +139,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
 
         scope.registerPartyListChangedEvent { parties ->
             this.parties = parties
-            onUpdate()
+            updateFiltering()
         }
 
         scope.registerSkillXpUpdateEvent(SkillType.FISHING) { _, _ -> updateFiltering() }
@@ -423,13 +423,14 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             party.requisites.any { it.value && it.id != "has_killer" }
         }
         val existingCardsMap = partyCards.associateBy { it.party.user }
+        val canPreserveHover = !isPeeking && !partiesContainer.isHidden()
 
         val newCards = currentFilteredParties.map { party ->
             val existingCard = existingCardsMap[party.user]
             if (existingCard?.party == party && existingCard.showNoRequirements == showNoRequirements) {
                 existingCard
             } else {
-                val wasHovered = !isPeeking && (existingCard?.isHovered() ?: false)
+                val wasHovered = canPreserveHover && existingCard?.isHovered() == true
                 UIPartyCard(party, 5f, wasHovered = wasHovered, showNoRequirements = showNoRequirements).constrain {
                     x = JustifiedCramSiblingConstraint(2f)
                     y = JustifiedCramSiblingConstraint(2f)
