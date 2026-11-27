@@ -178,26 +178,26 @@ open class UISpecialTextInput @JvmOverloads constructor(
             if (hasSelection()) cursorComponent.hide(instantly = true)
             extractColoredLine(extractor, 0, getLeft() - horizontalScrollingOffset, lineY)
         } else if (hasSelection()) {
-            var currentX = getLeft()
+            var currentX = getLeft() - horizontalScrollingOffset
             cursorComponent.hide(instantly = true)
 
             if (!selectionStart().isAtLineStart) {
                 val preSelectionText = lineText.substring(0, selectionStart().column)
                 getFontProvider().extractMcScale(
-                    extractor, preSelectionText, getColor(), currentX - horizontalScrollingOffset, lineY, getTextScale(), shadow
+                    extractor, preSelectionText, getColor(), currentX, lineY, getTextScale(), shadow
                 )
-                currentX += preSelectionText.width(getTextScale())
+                currentX += preSelectionText.width(getTextScale(), getFontProvider())
             }
 
             val selectedText = lineText.substring(selectionStart().column, selectionEnd().column)
-            val selectedTextWidth = selectedText.width(getTextScale())
-            extractSelectedText(extractor, selectedText, currentX, currentX + selectedTextWidth, row = 0)
+            val selectedTextWidth = selectedText.width(getTextScale(), getFontProvider())
+            extractPlainSelection(extractor, selectedText, currentX, currentX + selectedTextWidth, lineY)
             currentX += selectedTextWidth
 
             if (!selectionEnd().isAtLineEnd) {
                 val postSelectionText = lineText.substring(selectionEnd().column)
                 getFontProvider().extractMcScale(
-                    extractor, postSelectionText, getColor(), currentX - horizontalScrollingOffset, lineY, getTextScale(), shadow
+                    extractor, postSelectionText, getColor(), currentX, lineY, getTextScale(), shadow
                 )
             }
         } else {

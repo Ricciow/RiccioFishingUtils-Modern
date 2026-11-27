@@ -39,6 +39,7 @@
 - Fixed Party Finder failing to load the party list when many parties are listed.
 - Fixed dye drop detection.
 - Fixed Render Chat Coords placing markers for max/min/avg tps messages.
+- Fixed text moving up when selected in input fields.
 
 ### Backend
 - Isolated chat and skill event listeners so errors in one listener do not skip others.

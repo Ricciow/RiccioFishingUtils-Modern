@@ -68,6 +68,26 @@ abstract class RFUTextInput(
         return text.length
     }
 
+    protected fun extractPlainSelection(
+        extractor: ElementaExtractor,
+        text: String,
+        left: Float,
+        right: Float,
+        lineY: Float,
+    ) {
+        val scale = getTextScale()
+        extractor.fillMcScale(
+            left, lineY, right, lineY + lineHeight * scale,
+            if (active) selectionBackgroundColor else inactiveSelectionBackgroundColor,
+        )
+        if (text.isNotEmpty()) {
+            getFontProvider().extractMcScale(
+                extractor, text, if (active) selectionForegroundColor else inactiveSelectionForegroundColor,
+                left, lineY, scale, shadow = false,
+            )
+        }
+    }
+
     /** Draw the selection behind the preview so formatting remains visible while selecting it. */
     protected fun extractColoredLine(extractor: ElementaExtractor, row: Int, left: Float, y: Float) {
         val scale = getTextScale()

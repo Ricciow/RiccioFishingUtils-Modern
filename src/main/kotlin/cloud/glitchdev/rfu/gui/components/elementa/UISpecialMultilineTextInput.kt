@@ -214,10 +214,10 @@ class UISpecialMultilineTextInput @JvmOverloads constructor(
                     else -> ""
                 }
 
-                val startTextWidth = startText.width(textScale)
-                val selectedTextWidth = selectedText.width(textScale)
+                val startTextWidth = startText.width(textScale, getFontProvider())
+                val selectedTextWidth = selectedText.width(textScale, getFontProvider())
 
-                val newlinePadding = if (i < selectionEnd.line) ' '.width(textScale) else 0f
+                val newlinePadding = if (i < selectionEnd.line) " ".width(textScale, getFontProvider()) else 0f
 
                 if (startText.isNotEmpty()) {
                     getFontProvider().extractMcScale(
@@ -226,12 +226,12 @@ class UISpecialMultilineTextInput @JvmOverloads constructor(
                 }
 
                 if (selectedText.isNotEmpty() || newlinePadding != 0f) {
-                    extractSelectedText(
+                    extractPlainSelection(
                         extractor,
                         selectedText,
                         getLeft() + startTextWidth,
                         getLeft() + startTextWidth + selectedTextWidth + newlinePadding,
-                        i
+                        lineY
                     )
                 }
 
