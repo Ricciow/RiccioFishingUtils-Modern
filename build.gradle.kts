@@ -136,7 +136,7 @@ configure<net.fabricmc.loom.api.LoomGradleExtensionAPI> {
 
     val modsFolder = project.findProperty("stonecutter.redirect")?.toString() ?: stonecutter.current.version
     runConfigs.all {
-        generateRunConfig.set(true)
+        generateRunConfig.set(name == "client")
         preferGradleTask.set(false)
 
         jvmArguments.addAll(
