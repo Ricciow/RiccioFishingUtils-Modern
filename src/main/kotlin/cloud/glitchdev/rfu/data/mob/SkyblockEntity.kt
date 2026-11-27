@@ -35,14 +35,18 @@ import cloud.glitchdev.rfu.utils.dsl.parseHealthValue
 class SkyblockEntity(
     var nameTagEntity: ArmorStand,
     initialModels: Collection<LivingEntity>,
+    initialCreatedAt: Instant? = null,
+    initialOriginBobber: BobberInfo? = null,
+    val wasRedetected: Boolean = false,
 ) {
     constructor(nameTagEntity: ArmorStand, modelEntity: LivingEntity) : this(nameTagEntity, listOf(modelEntity))
 
     val modelEntities: MutableSet<LivingEntity> = initialModels.toMutableSet()
+    val modelIds: MutableSet<Int> = initialModels.mapTo(mutableSetOf()) { it.id }
     var modelEntity: LivingEntity = modelEntities.firstOrNull() ?: (nameTagEntity as LivingEntity)
 
     lateinit var sbName: String
-    val createdAt : Instant = Clock.System.now() - (modelEntity.tickCount * 50L).milliseconds
+    val createdAt : Instant = initialCreatedAt ?: (Clock.System.now() - (modelEntity.tickCount * 50L).milliseconds)
     private var cachedHealth: Long? = null
     private var cachedMaxHealth: Long? = null
 
@@ -66,7 +70,7 @@ class SkyblockEntity(
     var hasHealth: Boolean = false
         private set
     var isShurikened: Boolean = false
-    var originBobber: BobberInfo? = null
+    var originBobber: BobberInfo? = initialOriginBobber
     var isDying: Boolean = false
 
     val parts: MutableSet<Entity> = mutableSetOf()
@@ -86,7 +90,18 @@ class SkyblockEntity(
     init {
         updateEntityData()
         updateParts()
-        linkToBobber()
+        if (!wasRedetected && originBobber == null) {
+            linkToBobber()
+        }
+    }
+
+    fun addModelEntities(models: Collection<LivingEntity>) {
+        modelEntities.addAll(models)
+        models.forEach { modelIds.add(it.id) }
+        updateParts()
+        if (!wasRedetected && originBobber == null && ::sbName.isInitialized && SeaCreatures.get(sbName) != null) {
+            originBobber = parts.firstNotNullOfOrNull { BobberManager.getBobberForEntity(it.id) }
+        }
     }
 
     fun updateParts() {
@@ -152,7 +167,11 @@ class SkyblockEntity(
             val sc = SeaCreatures.get(sbName)
             if (sc != null) {
                 originBobber = parts.firstNotNullOfOrNull { BobberManager.getBobberForEntity(it.id) }
-                    ?: BobberManager.findClosestBobber(modelEntity.position(), maxDistance = 1.0)
+                    ?: if (modelEntity.tickCount <= 20) {
+                        BobberManager.findClosestBobber(modelEntity.position(), maxDistance = 1.0)
+                    } else {
+                        null
+                    }
             }
         }
     }
@@ -165,9 +184,6 @@ class SkyblockEntity(
     }
 
     fun isOwn(): Boolean {
-        if (originBobber == null) {
-            linkToBobber()
-        }
         val origin = originBobber ?: return false
         val player = mc.player ?: return false
         val ownerName = origin.ownerName

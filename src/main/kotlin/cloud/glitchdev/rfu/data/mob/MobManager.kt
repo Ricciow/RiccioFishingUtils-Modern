@@ -15,9 +15,13 @@ import cloud.glitchdev.rfu.events.managers.entity.MobDisposeEventManager
 import cloud.glitchdev.rfu.events.managers.entity.MobUpdateEventManager
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
+import cloud.glitchdev.rfu.data.fishing.BobberInfo
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
 import gg.essential.universal.utils.toUnformattedString
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Instant
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityEvent
@@ -28,9 +32,20 @@ import net.minecraft.world.entity.player.Player
 
 @AutoRegister
 object MobManager : RegisteredEvent {
+    private const val CACHE_TTL = 5L //Minutes
+    private const val CACHE_SIZE = 500
+    private const val MIN_DISTANCE_SQR = 40.0 * 40.0
+
+    private data class PersistedMobState(
+        val createdAt: Instant,
+        val originBobber: BobberInfo?,
+        val disposedAt: Instant,
+    )
+
     private val sbEntities = HashMap<Int, SkyblockEntity>()
     private val uniqueSbEntities = HashSet<SkyblockEntity>()
     private val pendingNametags = HashSet<Int>()
+    private val mobCache = LinkedHashMap<Int, PersistedMobState>()
 
     override fun register(scope: EventScope) {
         scope.registerEntityAddedEvent { entity ->
@@ -97,6 +112,7 @@ object MobManager : RegisteredEvent {
                 val sbEntity = sbEntities[entity.id] ?: return@registerEntityStatusEvent
                 if (!sbEntity.isDying && sbEntity.modelEntities.any { it.id == entity.id }) {
                     sbEntity.isDying = true
+                    sbEntity.modelIds.forEach { mobCache.remove(it) }
                     MobDeathEventManager.runTasks(setOf(sbEntity))
                 }
             }
@@ -106,6 +122,7 @@ object MobManager : RegisteredEvent {
             val world = mc.level ?: return@registerTickEvent
 
             checkPendingNametags(world)
+            prunePersistedStates()
 
             val toDispose = mutableSetOf<SkyblockEntity>()
             for (sbEntity in uniqueSbEntities.toList()) {
@@ -314,8 +331,8 @@ object MobManager : RegisteredEvent {
                 MobUpdateEventManager.runTasks(existingLink)
                 return false
             } else if (isSerpentine && existingLink.nameTagEntity.id == entity.id) {
-                existingLink.modelEntities.addAll(validModels)
-                existingLink.updateParts()
+                validModels.forEach { mobCache.remove(it.id) }
+                existingLink.addModelEntities(validModels)
                 sbEntities[entity.id] = existingLink
                 for (part in existingLink.parts) {
                     sbEntities[part.id] = existingLink
@@ -327,7 +344,15 @@ object MobManager : RegisteredEvent {
             }
         } else {
             val assignedModels = if (isSerpentine) validModels else listOf(validModels.first())
-            val sbEntity = SkyblockEntity(entity, assignedModels)
+            val persistedState = assignedModels.firstNotNullOfOrNull { mobCache.remove(it.id) }
+            assignedModels.forEach { mobCache.remove(it.id) }
+            val sbEntity = SkyblockEntity(
+                nameTagEntity = entity,
+                initialModels = assignedModels,
+                initialCreatedAt = persistedState?.createdAt,
+                initialOriginBobber = persistedState?.originBobber,
+                wasRedetected = persistedState != null,
+            )
             sbEntities[entity.id] = sbEntity
 
             for (part in sbEntity.parts) {
@@ -394,6 +419,16 @@ object MobManager : RegisteredEvent {
     }
 
     fun removeEntity(sbEntity: SkyblockEntity) {
+        val player = mc.player
+        val unloadedAtDistance = !sbEntity.isDying &&
+            player != null &&
+            player.distanceToSqr(sbEntity.position()) > MIN_DISTANCE_SQR
+
+        if (unloadedAtDistance) {
+            persistEntityState(sbEntity)
+        } else {
+            sbEntity.modelIds.forEach { mobCache.remove(it) }
+        }
         sbEntity.dispose()
         uniqueSbEntities.remove(sbEntity)
         sbEntities.remove(sbEntity.nameTagEntity.id)
@@ -405,8 +440,35 @@ object MobManager : RegisteredEvent {
         }
     }
 
+    private fun persistEntityState(sbEntity: SkyblockEntity) {
+        val state = PersistedMobState(
+            createdAt = sbEntity.createdAt,
+            originBobber = sbEntity.originBobber,
+            disposedAt = Clock.System.now(),
+        )
+        for (id in sbEntity.modelIds) {
+            mobCache.remove(id)
+            mobCache[id] = state
+        }
+        while (mobCache.size > CACHE_SIZE) {
+            val iterator = mobCache.entries.iterator()
+            if (iterator.hasNext()) {
+                iterator.next()
+                iterator.remove()
+            }
+        }
+    }
+
+    private fun prunePersistedStates() {
+        if (mobCache.isEmpty()) return
+        val now = Clock.System.now()
+        val ttl = CACHE_TTL.minutes
+        mobCache.entries.removeIf { now - it.value.disposedAt > ttl }
+    }
+
     fun clearAll() {
         pendingNametags.clear()
+        mobCache.clear()
         val oldEntities = uniqueSbEntities.toSet()
         sbEntities.clear()
         uniqueSbEntities.forEach {

@@ -40,6 +40,7 @@
 - Fixed dye drop detection.
 - Fixed Render Chat Coords placing markers for max/min/avg tps messages.
 - Fixed text moving up when selected in input fields.
+- Fixed sea creature kill times now save if you die.
 
 ### Backend
 - Isolated chat and skill event listeners so errors in one listener do not skip others.
