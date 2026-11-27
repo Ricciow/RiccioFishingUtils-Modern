@@ -53,7 +53,7 @@ object RareScDeathMessage : Feature {
             if (!sc.special) return@forEach
 
             val showPersonalBest = isPersonalBest && SeaCreatureConfig.killTimePersonalBest
-            val bobbinBonus = if (!isDisposal && SeaCreatureConfig.bobbinTimeDeathMessage) {
+            val bobbinBonus = if (SeaCreatureConfig.bobbinTimeDeathMessage) {
                 BobbinTime.calculateCurrentBuffPercentage(player)
             } else {
                 null
