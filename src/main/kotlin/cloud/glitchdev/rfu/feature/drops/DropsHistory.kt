@@ -323,10 +323,10 @@ object DropsHistory {
                 val details = dropNameComponent(item.drop)
                     .append(Component.literal("\n${YELLOW}Total: $WHITE$totalCount$breakdownStr"))
                     .append(Component.literal("\n${YELLOW}Last drop: $WHITE${lastDrop.date.toFormattedDate()}"))
-                lastDrop.sinceCount?.let { details.append(Component.literal("\n${YELLOW}Catches since previous drop: $WHITE$it")) }
-                lastDrop.magicFind?.let { details.append(Component.literal("\n${AQUAMARINE}Magic Find: ($it\uE01A)")) }
-                lastDrop.mobName?.let { details.append(Component.literal("\n${GRAY}Creature: $it")) }
-                details.append(Component.literal("\n${YELLOW}Click to view history"))
+                lastDrop.sinceCount?.let { details.append(Component.literal("\n${YELLOW}Catches Since: $WHITE$it")) }
+                lastDrop.magicFind?.let { details.append(Component.literal("\n${AQUAMARINE}Magic Find: $it\uE01A")) }
+                lastDrop.mobName?.let { details.append(Component.literal("\n${YELLOW}Creature: ${GRAY}$it")) }
+                details.append(Component.literal("\n${DARK_GRAY}Click to view history"))
 
                 val style = Style.EMPTY
                     .withClickEvent(ClickEvent.RunCommand(itemCmd))
