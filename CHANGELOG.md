@@ -5,5 +5,6 @@
 ### Changes
 
 ### Fixes
+- Fixed Baby Yeti pets being detected as Yeti sea creatures.
 
 ### Backend
