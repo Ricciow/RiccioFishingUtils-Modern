@@ -5,8 +5,9 @@ import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig
 import cloud.glitchdev.rfu.config.categories.SeaCreatureConfig.RARE_SC_REGEX
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
-import cloud.glitchdev.rfu.events.managers.RenderEvents
-import cloud.glitchdev.rfu.events.managers.RenderEvents.registerRenderEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.EventScopes
+import cloud.glitchdev.rfu.events.managers.render.registerRenderEvent
 import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.utils.rendering.Render3D
 import cloud.glitchdev.rfu.utils.rendering.Render3DBuilder.Companion.sphere
@@ -25,23 +26,27 @@ import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.phys.Vec3
 import kotlin.time.Instant
 import cloud.glitchdev.rfu.data.fishing.BobberInfo
-import cloud.glitchdev.rfu.events.managers.BobberManager
-import cloud.glitchdev.rfu.events.managers.ServerCountdownEvents.ServerCountdownEvent
-import cloud.glitchdev.rfu.events.managers.ServerCountdownEvents.registerServerCountdownEvent
+import cloud.glitchdev.rfu.events.managers.fishing.BobberManager
+import cloud.glitchdev.rfu.events.managers.lifecycle.ServerCountdownEvents.ServerCountdownEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerServerCountdownEvent
 import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.dsl.parseHealthValue
 
 class SkyblockEntity(
     var nameTagEntity: ArmorStand,
     initialModels: Collection<LivingEntity>,
+    initialCreatedAt: Instant? = null,
+    initialOriginBobber: BobberInfo? = null,
+    val wasRedetected: Boolean = false,
 ) {
     constructor(nameTagEntity: ArmorStand, modelEntity: LivingEntity) : this(nameTagEntity, listOf(modelEntity))
 
     val modelEntities: MutableSet<LivingEntity> = initialModels.toMutableSet()
+    val modelIds: MutableSet<Int> = initialModels.mapTo(mutableSetOf()) { it.id }
     var modelEntity: LivingEntity = modelEntities.firstOrNull() ?: (nameTagEntity as LivingEntity)
 
     lateinit var sbName: String
-    val createdAt : Instant = Clock.System.now() - (modelEntity.tickCount * 50L).milliseconds
+    val createdAt : Instant = initialCreatedAt ?: (Clock.System.now() - (modelEntity.tickCount * 50L).milliseconds)
     private var cachedHealth: Long? = null
     private var cachedMaxHealth: Long? = null
 
@@ -65,24 +70,38 @@ class SkyblockEntity(
     var hasHealth: Boolean = false
         private set
     var isShurikened: Boolean = false
-    var originBobber: BobberInfo? = null
+    var originBobber: BobberInfo? = initialOriginBobber
     var isDying: Boolean = false
 
     val parts: MutableSet<Entity> = mutableSetOf()
     private var isGlowing: Boolean = false
     private var glowColor: Color = Color.WHITE
 
+    private val eventScopes = EventScopes()
+    private var countdownScope: EventScope? = null
+    private var disposed = false
     private val renderers = mutableListOf<(LevelRenderContext, LivingEntity) -> Unit>()
-    var renderEvent: RenderEvents.RenderEvent? = null
     private var hasLsRange = false
     private var hasTimer = false
     private var timerCondition: () -> Boolean = { true }
     var countdownEvent: ServerCountdownEvent? = null
+        private set
 
     init {
         updateEntityData()
         updateParts()
-        linkToBobber()
+        if (!wasRedetected && originBobber == null) {
+            linkToBobber()
+        }
+    }
+
+    fun addModelEntities(models: Collection<LivingEntity>) {
+        modelEntities.addAll(models)
+        models.forEach { modelIds.add(it.id) }
+        updateParts()
+        if (!wasRedetected && originBobber == null && ::sbName.isInitialized && SeaCreatures.get(sbName) != null) {
+            originBobber = parts.firstNotNullOfOrNull { BobberManager.getBobberForEntity(it.id) }
+        }
     }
 
     fun updateParts() {
@@ -148,7 +167,11 @@ class SkyblockEntity(
             val sc = SeaCreatures.get(sbName)
             if (sc != null) {
                 originBobber = parts.firstNotNullOfOrNull { BobberManager.getBobberForEntity(it.id) }
-                    ?: BobberManager.findClosestBobber(modelEntity.position(), maxDistance = 1.0)
+                    ?: if (modelEntity.tickCount <= 20) {
+                        BobberManager.findClosestBobber(modelEntity.position(), maxDistance = 1.0)
+                    } else {
+                        null
+                    }
             }
         }
     }
@@ -161,9 +184,6 @@ class SkyblockEntity(
     }
 
     fun isOwn(): Boolean {
-        if (originBobber == null) {
-            linkToBobber()
-        }
         val origin = originBobber ?: return false
         val player = mc.player ?: return false
         val ownerName = origin.ownerName
@@ -249,14 +269,23 @@ class SkyblockEntity(
     }
 
     fun registerRenderer(renderer: (LevelRenderContext, LivingEntity) -> Unit) {
+        if (disposed) return
+        eventScopes.load(::initializeListeners)
         renderers.add(renderer)
-        if (renderEvent == null) {
-            renderEvent = registerRenderEvent { context ->
-                for (r in renderers) {
-                    r(context, this.modelEntity)
-                }
+    }
+
+    private fun initializeListeners(scope: EventScope) {
+        scope.registerRenderEvent { context ->
+            for (renderer in renderers) {
+                renderer(context, modelEntity)
             }
         }
+        countdownEvent?.takeUnless { it.isCompleted }?.let { timer ->
+            val countdown = scope.child()
+            countdownScope = countdown
+            countdown.registerTask(timer::register)
+        }
+        scope.onClose { countdownScope = null }
     }
 
     fun registerLsRange() {
@@ -296,9 +325,16 @@ class SkyblockEntity(
         label: String? = null,
         condition: () -> Boolean = { true }
     ) {
-        countdownEvent?.unregister()
-        countdownEvent = registerServerCountdownEvent(totalTicks)
+        if (disposed) return
+        countdownScope?.close()
+        countdownScope = null
+        countdownEvent = null
         timerCondition = condition
+        val scope = eventScopes.load(::initializeListeners)?.child()
+        if (scope != null) {
+            countdownScope = scope
+            countdownEvent = scope.registerServerCountdownEvent(totalTicks)
+        }
 
         if (hasTimer) return
         hasTimer = true
@@ -334,16 +370,20 @@ class SkyblockEntity(
     }
 
     fun dispose() {
-        if (isGlowing) {
-            applyGlowToParts(false, Color.WHITE)
+        if (disposed) return
+        disposed = true
+        try {
+            if (isGlowing) {
+                applyGlowToParts(false, Color.WHITE)
+            }
+        } finally {
+            countdownScope = null
+            countdownEvent = null
+            renderers.clear()
+            hasTimer = false
+            timerCondition = { true }
+            eventScopes.close()
         }
-        renderEvent?.unregister()
-        renderEvent = null
-        renderers.clear()
-        countdownEvent?.unregister()
-        countdownEvent = null
-        hasTimer = false
-        timerCondition = { true }
     }
 
     data class NameTagData(

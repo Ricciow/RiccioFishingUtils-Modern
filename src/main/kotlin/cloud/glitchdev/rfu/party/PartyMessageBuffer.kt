@@ -1,8 +1,9 @@
 package cloud.glitchdev.rfu.party
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.chat.registerAllowGameEvent
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerAllowGameEvent
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.dsl.removeRankTag
 import cloud.glitchdev.rfu.utils.dsl.toExactRegex
@@ -15,8 +16,8 @@ object PartyMessageBuffer : RegisteredEvent {
     
     private val buffers = mutableMapOf<String, MutableMap<Int, String>>()
 
-    override fun register() {
-        registerAllowGameEvent(CHUNK_REGEX, priority = 10) { _, _, matches ->
+    override fun register(scope: EventScope) {
+        scope.registerAllowGameEvent(CHUNK_REGEX, priority = 10) { _, _, matches ->
             val matchGroups = matches?.groupValues ?: return@registerAllowGameEvent true
             val sender = matchGroups[1].removeRankTag()
             val current = matchGroups[2].toInt()

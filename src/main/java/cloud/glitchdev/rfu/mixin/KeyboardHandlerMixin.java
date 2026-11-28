@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.mixin;
 
-import cloud.glitchdev.rfu.events.managers.KeybindEvents;
+import cloud.glitchdev.rfu.events.managers.input.KeybindEvents;
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.input.KeyEvent;
 import org.spongepowered.asm.mixin.Mixin;

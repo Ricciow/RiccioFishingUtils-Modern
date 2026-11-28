@@ -4,7 +4,6 @@ import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
 import cloud.glitchdev.rfu.constants.chat.PartyTypes
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextEffects
-import cloud.glitchdev.rfu.events.managers.PartyFinderEvents
 import cloud.glitchdev.rfu.feature.other.ignore.IgnoreUtils
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.UIButton
@@ -19,6 +18,7 @@ import cloud.glitchdev.rfu.gui.components.elementa.RFUWrappedText
 import cloud.glitchdev.rfu.gui.components.elementa.RFUFitText
 import cloud.glitchdev.rfu.gui.components.elementa.UIVanillaTooltip
 import cloud.glitchdev.rfu.model.data.DataOption
+import cloud.glitchdev.rfu.party.PartyFinderManager
 import cloud.glitchdev.rfu.party.PartyRequirementsManager
 import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.dsl.isUser
@@ -125,7 +125,7 @@ class UIPartyCard(
                 joinErrorPopup.showWarning("You are already hosting a party! Please delete your current party listing before joining another.")
             } else {
                 val validation = PartyRequirementsManager.canJoinParty(party)
-                if (!validation.isSuccess) {
+                if (!validation.isSuccess && !PartyRequirementsManager.shouldDeferJoinValidationToServer(validation)) {
                     joinErrorPopup.showWarning(validation.getErrorMessage())
                     return@onMouseClick
                 }
@@ -332,11 +332,12 @@ class UIPartyCard(
             .filter { it.value && it.id != "has_killer" }
             .sortedBy {
                 when (it.id) {
-                    "bloodshot" -> 1
-                    "enderman_9" -> 2
-                    "brain_food" -> 3
+                    "bobbin_time" -> 1
+                    "bloodshot" -> 2
+                    "enderman_9" -> 3
                     "wither_impact" -> 4
-                    else -> 5
+                    "brain_food" -> 5
+                    else -> 6
                 }
             }
         if (activeRequisites.isEmpty() && !showNoRequirements) return
@@ -399,7 +400,7 @@ class UIPartyCard(
         ) {
             val entry = IgnoreUtils.getIgnoredEntry()
             if (entry.add(party.user)) IgnoreUtils.saveIgnoredEntry(entry)
-            PartyFinderEvents.refreshParties()
+            PartyFinderManager.refreshParties()
         }
     }
 

@@ -2,10 +2,15 @@ package cloud.glitchdev.rfu.achievement
 
 import cloud.glitchdev.rfu.achievement.interfaces.IAchievement
 import cloud.glitchdev.rfu.data.achievements.AchievementHandler
-import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.EventScopes
 
 abstract class BaseAchievement : IAchievement {
-    protected val activeListeners = mutableListOf<AbstractEventManager.ManagedTask<*, *>>()
+    private val listenerScopes = EventScopes()
+
+    private val isLegacy: Boolean
+        get() = category == AchievementCategory.LEGACY
+    private var isApplyingDebugChange = false
     
     private var _isCompleted: Boolean = false
     override val isCompleted: Boolean
@@ -31,8 +36,8 @@ abstract class BaseAchievement : IAchievement {
             }
         }
         
-        if (!isCompleted) {
-            setupListeners()
+        if (!isCompleted && !isLegacy) {
+            startListeners()
         }
     }
 
@@ -56,23 +61,26 @@ abstract class BaseAchievement : IAchievement {
     }
 
     fun postReload() {
-        if (!isCompleted) {
-            setupListeners()
+        if (!isCompleted && !isLegacy) {
+            startListeners()
         }
     }
 
-    abstract fun setupListeners()
+    abstract fun setupListeners(scope: EventScope)
+
+    private fun startListeners() {
+        listenerScopes.load(::setupListeners)
+    }
 
     protected open fun complete() {
-        if (_isCompleted) return
+        if (_isCompleted || (isLegacy && !isApplyingDebugChange)) return
         _isCompleted = true
         unregisterAllListeners()
         AchievementProvider.fireAchievementUnlocked(this)
     }
 
     open fun debugComplete() {
-        _isCheated = true
-        complete()
+        applyDebugChange { complete() }
     }
 
     open fun debugReset() {
@@ -81,19 +89,25 @@ abstract class BaseAchievement : IAchievement {
         _progress = 0.0f
         unregisterAllListeners()
         loadState(emptyMap())
-        setupListeners()
+        if (!isLegacy) {
+            startListeners()
+        }
         AchievementProvider.fireAchievementUpdated(this)
     }
 
-    fun markAsCheated() {
+    protected fun applyDebugChange(change: () -> Unit) {
         _isCheated = true
+        val wasApplyingDebugChange = isApplyingDebugChange
+        isApplyingDebugChange = true
+        try {
+            change()
+        } finally {
+            isApplyingDebugChange = wasApplyingDebugChange
+        }
     }
 
     protected fun unregisterAllListeners() {
-        for (listener in activeListeners) {
-            listener.unregister()
-        }
-        activeListeners.clear()
+        listenerScopes.close()
     }
     
     open fun loadState(progressData: Map<String, Any>) {}

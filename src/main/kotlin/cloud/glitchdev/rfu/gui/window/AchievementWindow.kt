@@ -7,14 +7,16 @@ import cloud.glitchdev.rfu.achievement.AchievementProvider
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.interfaces.IAchievement
 import cloud.glitchdev.rfu.achievement.interfaces.IStageAchievement
-import cloud.glitchdev.rfu.events.managers.AchievementStageUnlockedEvents.registerAchievementStageUnlockedEvent
-import cloud.glitchdev.rfu.events.managers.AchievementUnlockedEvents.registerAchievementUnlockedEvent
-import cloud.glitchdev.rfu.events.managers.AchievementUpdatedEvents.registerAchievementUpdatedEvent
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.progress.registerAchievementStageUnlockedEvent
+import cloud.glitchdev.rfu.events.managers.progress.registerAchievementUnlockedEvent
+import cloud.glitchdev.rfu.events.managers.progress.registerAchievementUpdatedEvent
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.achievement.Achievement
 import cloud.glitchdev.rfu.utils.gui.UIImages
+import cloud.glitchdev.rfu.utils.gui.setHidden
 import gg.essential.elementa.components.ScrollComponent
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
@@ -40,14 +42,16 @@ import cloud.glitchdev.rfu.gui.components.colors
 object AchievementWindow : BaseWindow() {
     private var selectedCategory: AchievementCategory = AchievementCategory.GENERAL
     private lateinit var scrollArea: ScrollComponent
-    private val achievementComponents = mutableListOf<Achievement>()
+    private var achievementComponents = emptyList<Achievement>()
     private val categoryButtons = mutableListOf<Pair<AchievementCategory, UIButton>>()
     private var needsRefresh = false
 
     init {
         create()
+    }
 
-        registerTickEvent {
+    override fun initializeWindow(scope: EventScope) {
+        scope.registerTickEvent {
             //~ if >=26.2 'screen' -> 'gui.screen()' {
             if (needsRefresh && RiccioFishingUtils.mc.gui.screen() == this) {
             //~}
@@ -56,15 +60,15 @@ object AchievementWindow : BaseWindow() {
             }
         }
 
-        registerAchievementUnlockedEvent { _ ->
+        scope.registerAchievementUnlockedEvent { _ ->
             needsRefresh = true
         }
 
-        registerAchievementStageUnlockedEvent { _ ->
+        scope.registerAchievementStageUnlockedEvent { _ ->
             needsRefresh = true
         }
 
-        registerAchievementUpdatedEvent { _ ->
+        scope.registerAchievementUpdatedEvent { _ ->
             needsRefresh = true
         }
     }
@@ -122,6 +126,7 @@ object AchievementWindow : BaseWindow() {
                 AchievementCategory.INK -> "/assets/rfu/ui/squid.png"
                 AchievementCategory.TROPHY_FISHING -> "/assets/rfu/ui/trophy.png"
                 AchievementCategory.SPECIAL -> "/assets/rfu/ui/looting_5.png"
+                AchievementCategory.LEGACY -> "/assets/resourcefulconfig/textures/gui/sprites/icons/clipboard_list.png"
             }
             val image = UIImages.ofResource(iconPath)
             val btn = UIButton.withImage(image, 5f) {
@@ -179,7 +184,16 @@ object AchievementWindow : BaseWindow() {
     }
 
     private fun refreshAchievements() {
+        val visibleAchievements = AchievementProvider.getVisibleAchievements()
+        val hasLegacyAchievements = visibleAchievements.any { it.category == AchievementCategory.LEGACY }
+        if (!hasLegacyAchievements && selectedCategory == AchievementCategory.LEGACY) {
+            selectedCategory = AchievementCategory.GENERAL
+        }
+
         categoryButtons.forEach { (cat, btn) ->
+            if (cat == AchievementCategory.LEGACY) {
+                btn.setHidden(!hasLegacyAchievements)
+            }
             if (selectedCategory == cat) {
                 btn.colors {
                     textColor = UIScheme.pfFilterButtonSelected.toConstraint()
@@ -197,14 +211,8 @@ object AchievementWindow : BaseWindow() {
             }
         }
 
-        val existingCardsMap = achievementComponents.associateBy { it.achievement.id }
-        
-        achievementComponents.forEach {
-            scrollArea.removeChild(it)
-        }
-        achievementComponents.clear()
-
-        AchievementProvider.getVisibleAchievements()
+        val existingCards = achievementComponents.associateBy { it.achievement.id }
+        val newCards = visibleAchievements
             .filter { it.category == selectedCategory }
             .sortedWith(compareBy(
                 {
@@ -217,17 +225,20 @@ object AchievementWindow : BaseWindow() {
                 },
                 { it.getDisplayDifficulty() }
             ))
-            .forEach { achievement ->
-                val existingCard = existingCardsMap[achievement.id]
+            .map { achievement ->
+                val existingCard = existingCards[achievement.id]
                 val wasHovered = existingCard?.isHovered() ?: false
                 val savedViewingStage = existingCard?.viewingStage
-                
-                val component = Achievement(achievement, wasHovered, savedViewingStage).constrain {
+
+                Achievement(achievement, wasHovered, savedViewingStage).constrain {
                     x = CenterConstraint()
                     y = SiblingConstraint(5f)
                     width = 100.percent()
-                } childOf scrollArea
-                achievementComponents.add(component)
+                }
             }
+
+        scrollArea.clearChildren()
+        newCards.forEach { it childOf scrollArea }
+        achievementComponents = newCards
     }
 }

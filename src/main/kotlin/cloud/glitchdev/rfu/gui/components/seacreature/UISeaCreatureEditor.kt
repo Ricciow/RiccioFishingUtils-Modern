@@ -36,7 +36,6 @@ class UISeaCreatureEditor : UIContainer() {
     private lateinit var lsRangeCheckbox: UICheckbox
     private lateinit var bossbarCheckbox: UICheckbox
     private lateinit var mergeBossbarHpCheckbox: UICheckbox
-    private lateinit var gdragAlertCheckbox: UICheckbox
     private lateinit var rareSCAlertCheckbox: UICheckbox
     private lateinit var invulnerabilityTimerCheckbox: UICheckbox
     private lateinit var scDisplayColorInput: UIDecoratedTextInput
@@ -137,7 +136,6 @@ class UISeaCreatureEditor : UIContainer() {
         specialCheckbox = UICheckbox("Rare", false) { isRare ->
             lsRangeCheckbox.state = isRare
             bossbarCheckbox.state = isRare
-            gdragAlertCheckbox.state = isRare
             rareSCAlertCheckbox.state = isRare
             invulnerabilityTimerCheckbox.state = isRare
             refreshEnabledStates()
@@ -170,13 +168,6 @@ class UISeaCreatureEditor : UIContainer() {
             x = 15.pixels()
             y = SiblingConstraint(5f)
             width = 150.pixels()
-            height = 15.pixels()
-        } childOf parent
-
-        gdragAlertCheckbox = UICheckbox("Gdrag Alert", false) { saveCurrent() }.constrain {
-            x = 15.pixels()
-            y = SiblingConstraint(5f)
-            width = 100.pixels()
             height = 15.pixels()
         } childOf parent
 
@@ -252,7 +243,6 @@ class UISeaCreatureEditor : UIContainer() {
         specialCheckbox.state = current.special
         lsRangeCheckbox.state = current.lsRangeEnabled
         bossbarCheckbox.state = current.bossbar
-        gdragAlertCheckbox.state = current.gdragAlert
         rareSCAlertCheckbox.state = current.rareSCAlert
         invulnerabilityTimerCheckbox.state = current.invulnerabilityTimer
         mergeBossbarHpCheckbox.state = current.mergeBossbarHp
@@ -268,7 +258,6 @@ class UISeaCreatureEditor : UIContainer() {
         val hasBossbar = bossbarCheckbox.state
         lsRangeCheckbox.isEnabled = isRare
         bossbarCheckbox.isEnabled = isRare
-        gdragAlertCheckbox.isEnabled = isRare
         rareSCAlertCheckbox.isEnabled = isRare
         invulnerabilityTimerCheckbox.isEnabled = isRare
         rarePartyMessageInput.isEnabled = isRare
@@ -276,7 +265,7 @@ class UISeaCreatureEditor : UIContainer() {
     }
 
     private fun updatePreviews() {
-        val sc = currentSc ?: return
+        if (currentSc == null) return
         val style = styleInput.getText()
         val name = nameInput.getText()
         val plural = pluralInput.getText()
@@ -333,7 +322,6 @@ class UISeaCreatureEditor : UIContainer() {
                 special = specialCheckbox.state,
                 lsRangeEnabled = lsRangeCheckbox.state,
                 bossbar = bossbarCheckbox.state,
-                gdragAlert = gdragAlertCheckbox.state,
                 rareSCAlert = rareSCAlertCheckbox.state,
                 scDisplayColor = scDisplayColorInput.getText().toMcCodes(),
                 rarePartyMessage = rarePartyMessageInput.getText(),

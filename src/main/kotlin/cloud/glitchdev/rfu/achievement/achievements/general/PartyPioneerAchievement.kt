@@ -5,7 +5,8 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.BaseAchievement
-import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyCreatedEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.party.registerPartyCreatedEvent
 
 @Achievement
 object PartyPioneerAchievement : BaseAchievement() {
@@ -16,9 +17,9 @@ object PartyPioneerAchievement : BaseAchievement() {
     override val difficulty: AchievementDifficulty = AchievementDifficulty.EASY
     override val category: AchievementCategory = AchievementCategory.GENERAL
 
-    override fun setupListeners() {
-        activeListeners.add(registerPartyCreatedEvent {
+    override fun setupListeners(scope: EventScope) {
+        scope.registerPartyCreatedEvent {
             complete()
-        })
+        }
     }
 }

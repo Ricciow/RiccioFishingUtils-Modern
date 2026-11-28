@@ -2,9 +2,10 @@ package cloud.glitchdev.rfu.feature.fishing
 
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
-import cloud.glitchdev.rfu.events.managers.EntityRenderEvents.registerEntityRenderEvent
-import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.render.registerEntityRenderEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.gui.hud.elements.RodTimerDisplay
@@ -18,8 +19,8 @@ object RodTimer : Feature {
     var timer : ArmorStand? = null
     private var isHoldingRod = false
 
-    override fun onInitialize() {
-        registerTickEvent(0, 2) { _ ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerTickEvent(0, 2) { _ ->
             if(timer?.isRemoved ?: true) {
                 timer = null
             }
@@ -41,8 +42,10 @@ object RodTimer : Feature {
             RodTimerDisplay.updateState()
         }
 
-        registerEntityRenderEvent { entity, _, event ->
-            if(!GeneralFishing.rodTimerDisplay && !GeneralFishing.rodTimerSound) return@registerEntityRenderEvent
+        scope.registerEntityRenderEvent { entity, _, event ->
+            if (!GeneralFishing.rodTimerDisplay && !GeneralFishing.rodTimerSound && !GeneralFishing.muteNonRfuSounds) {
+                return@registerEntityRenderEvent
+            }
             if(!isHoldingRod) return@registerEntityRenderEvent
 
             if (timer != null && entity.id == timer?.id) {
@@ -59,7 +62,7 @@ object RodTimer : Feature {
             if (GeneralFishing.rodTimerDisplay) event.cancel()
         }
 
-        registerLocationEvent {
+        scope.registerLocationEvent {
             timer = null
         }
     }

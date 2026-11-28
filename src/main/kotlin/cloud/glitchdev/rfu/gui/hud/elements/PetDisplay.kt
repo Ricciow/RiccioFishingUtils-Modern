@@ -1,9 +1,10 @@
 package cloud.glitchdev.rfu.gui.hud.elements
 
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.text.TextColor
-import cloud.glitchdev.rfu.events.managers.PetEvents.PetUpdateEventManager
-import cloud.glitchdev.rfu.events.managers.PetEvents.registerPetUpdateEvent
+import cloud.glitchdev.rfu.events.managers.player.PetUpdateEventManager
+import cloud.glitchdev.rfu.events.managers.player.registerPetUpdateEvent
 import cloud.glitchdev.rfu.gui.hud.AbstractTextHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
 
@@ -17,8 +18,8 @@ object PetDisplay : AbstractTextHudElement("petDisplay") {
 
     private var currentPet : String? = null
 
-    override fun onInitialize() {
-        registerPetUpdateEvent { pet, _, _ ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerPetUpdateEvent { pet, _, _ ->
             currentPet = pet
             updateState()
         }

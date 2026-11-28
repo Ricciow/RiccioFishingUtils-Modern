@@ -3,18 +3,18 @@ package cloud.glitchdev.rfu.gui.window
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.skyblock.SkillType
-import cloud.glitchdev.rfu.events.managers.CloseConfigEvents.registerCloseConfigEvent
-import cloud.glitchdev.rfu.events.managers.HudRenderEvents.registerHudRenderEvent
-import cloud.glitchdev.rfu.events.managers.KeybindEvents.registerKeybind
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerCloseConfigEvent
+import cloud.glitchdev.rfu.events.managers.render.registerHudRenderEvent
+import cloud.glitchdev.rfu.events.managers.input.registerKeybind
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.components.UIPopup
-import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyListChangedEvent
-import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyCreatedEvent
-import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyUpdatedEvent
-import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerInfoMessageEvent
-import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
-import cloud.glitchdev.rfu.events.managers.PartyFinderEvents
-import cloud.glitchdev.rfu.events.managers.SkillEvents.registerSkillXpUpdateEvent
+import cloud.glitchdev.rfu.events.managers.party.registerPartyListChangedEvent
+import cloud.glitchdev.rfu.events.managers.party.registerPartyCreatedEvent
+import cloud.glitchdev.rfu.events.managers.party.registerPartyUpdatedEvent
+import cloud.glitchdev.rfu.events.managers.party.registerInfoMessageEvent
+import cloud.glitchdev.rfu.events.managers.ui.registerErrorMessageEvent
+import cloud.glitchdev.rfu.events.managers.progress.registerSkillXpUpdateEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.gui.components.UIButton
@@ -27,6 +27,7 @@ import cloud.glitchdev.rfu.gui.components.partyfinder.UIFilterArea
 import cloud.glitchdev.rfu.gui.components.partyfinder.UIPartyCard
 import cloud.glitchdev.rfu.gui.components.partyfinder.UIPartyPresetsModal
 import cloud.glitchdev.rfu.model.party.FishingParty
+import cloud.glitchdev.rfu.party.PartyFinderManager
 import cloud.glitchdev.rfu.utils.Coroutines
 import cloud.glitchdev.rfu.utils.World
 import cloud.glitchdev.rfu.utils.User
@@ -71,7 +72,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
     private var wasFilterOpen = false
     private var creationOpen = false
     private var reloadOnCooldown = false
-    private var parties : List<FishingParty> = PartyFinderEvents.parties
+    private var parties : List<FishingParty> = PartyFinderManager.parties
     private var partyCards : MutableList<UIPartyCard> = mutableListOf()
     private var isPeeking = false
     private var pendingInfoMessage: Pair<String, Boolean>? = null
@@ -89,9 +90,6 @@ object PartyFinderWindow : BaseWindow(false), Feature {
     lateinit var creationArea : UICreateParty
     lateinit var scrollArea : ScrollComponent
     lateinit var partiesContainer : UIContainer
-
-    //To force initialization of gui
-    override fun onInitialize() {}
 
     override fun onOpenWindow() {
         super.onOpenWindow()
@@ -123,41 +121,44 @@ object PartyFinderWindow : BaseWindow(false), Feature {
     init {
         create()
         onUpdate()
+    }
 
-        registerCloseConfigEvent {
-            halloweenComponent.update()
-        }
-
-        registerPartyListChangedEvent { parties ->
-            this.parties = parties
-            onUpdate()
-        }
-
-        registerSkillXpUpdateEvent(SkillType.FISHING) { _, _ -> updateFiltering() }
-
-        registerPartyCreatedEvent { party ->
-            if (party.user == User.getUsername()) {
-                creationOpen = false
-                onUpdate()
-            }
-        }
-
-        registerPartyUpdatedEvent { party ->
-            if (party.user == User.getUsername()) {
-                creationOpen = false
-                onUpdate()
-            }
-        }
-
-        registerErrorMessageEvent { message, origin ->
-            //~ if >=26.2 'screen' -> 'gui.screen()' {
-            if (mc.gui.screen() == this && (origin == "/app/party/join" || origin == "/app/party/report" || origin == "/app/party/delete")) {
-            //~}
+    override fun initializeWindow(scope: EventScope) {
+        creationArea.initialize(scope)
+        scope.registerErrorMessageEvent { message, origin ->
+            if (origin == "/app/party/join" || origin == "/app/party/report" || origin == "/app/party/delete") {
                 popup.showWarning(message)
             }
         }
+    }
 
-        registerInfoMessageEvent { message, isWarning ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerCloseConfigEvent {
+            halloweenComponent.update()
+        }
+
+        scope.registerPartyListChangedEvent { parties ->
+            this.parties = parties
+            updateFiltering()
+        }
+
+        scope.registerSkillXpUpdateEvent(SkillType.FISHING) { _, _ -> updateFiltering() }
+
+        scope.registerPartyCreatedEvent { party ->
+            if (party.user == User.getUsername()) {
+                creationOpen = false
+                onUpdate()
+            }
+        }
+
+        scope.registerPartyUpdatedEvent { party ->
+            if (party.user == User.getUsername()) {
+                creationOpen = false
+                onUpdate()
+            }
+        }
+
+        scope.registerInfoMessageEvent { message, isWarning ->
             //~ if >=26.2 'screen' -> 'gui.screen()' {
             if (mc.gui.screen() == this) {
             //~}
@@ -167,7 +168,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             }
         }
 
-        registerKeybind {
+        scope.registerKeybind {
             key = { OtherSettings.peekPartyFinderKeybind }
             onPress = {
                 if (!World.isOnAlpha) {
@@ -195,7 +196,7 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             }
         }
 
-        registerHudRenderEvent(50) { context, ticks ->
+        scope.registerHudRenderEvent(50) { context, ticks ->
             if (isPeeking) {
                 extractRenderState(context, 0, 0, ticks)
             }
@@ -422,13 +423,14 @@ object PartyFinderWindow : BaseWindow(false), Feature {
             party.requisites.any { it.value && it.id != "has_killer" }
         }
         val existingCardsMap = partyCards.associateBy { it.party.user }
+        val canPreserveHover = !isPeeking && !partiesContainer.isHidden()
 
         val newCards = currentFilteredParties.map { party ->
             val existingCard = existingCardsMap[party.user]
             if (existingCard?.party == party && existingCard.showNoRequirements == showNoRequirements) {
                 existingCard
             } else {
-                val wasHovered = !isPeeking && (existingCard?.isHovered() ?: false)
+                val wasHovered = canPreserveHover && existingCard?.isHovered() == true
                 UIPartyCard(party, 5f, wasHovered = wasHovered, showNoRequirements = showNoRequirements).constrain {
                     x = JustifiedCramSiblingConstraint(2f)
                     y = JustifiedCramSiblingConstraint(2f)

@@ -1,5 +1,10 @@
 package cloud.glitchdev.rfu.utils
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.connection.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerJoinEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.fishing.FishingIslands
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatureCategory
@@ -7,18 +12,13 @@ import cloud.glitchdev.rfu.constants.skyblock.Mayors
 import cloud.glitchdev.rfu.data.fishing.HotspotCache
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.HotSpotEvents
-import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.fishing.HotSpotEvents
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
-import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
 import net.hypixel.data.type.GameType
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.dimension.BuiltinDimensionTypes
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
-import kotlin.jvm.optionals.getOrElse
 import kotlin.jvm.optionals.getOrNull
 
 @AutoRegister
@@ -87,40 +87,31 @@ object  World : RegisteredEvent {
                 (level.dimensionType().hasCeiling && !level.dimensionType().hasSkyLight)
     }
 
-    override fun register() {
-        registerLocationEvent(-1) { event ->
+    override fun register(scope: EventScope) {
+        scope.registerLocationEvent(-1) { event ->
             isInSkyblock = event.serverType.getOrNull() == GameType.SKYBLOCK
             lobby = event.serverName
-            val islandName = event.map.getOrElse {
-                if (island != null) {
-                    HotSpotEvents.clearHotspots()
-                    HotspotCache.clearSessionBuffs()
-                }
-                island = null
-                return@registerLocationEvent
-            }
-
-            val newIsland = FishingIslands.findIslandObject(islandName)
+            val newIsland = event.map.getOrNull()?.let(FishingIslands::findIslandObject)
             if (newIsland != island) {
-                HotSpotEvents.clearHotspots()
+                island = newIsland
                 HotspotCache.clearSessionBuffs()
+                HotSpotEvents.reloadHotspotsForIsland()
             }
-            island = newIsland
         }
 
-        registerSeaCreatureCatchEvent(priority = -100) { sc, _, _, _, _ ->
+        scope.registerSeaCreatureCatchEvent(priority = -100) { sc, _, _, _, _ ->
             if (!isInSkyblock || isOnAlpha) return@registerSeaCreatureCatchEvent
-            when (sc.category) {
+            when (sc.category.id) {
                 SeaCreatureCategory.SPOOKY -> spookyFestivalDay = SBDayIndex
                 SeaCreatureCategory.SHARK -> fishingFestivalDay = SBDayIndex
                 else -> Unit
             }
         }
 
-        registerJoinEvent(priority = -100) { wasConnected ->
+        scope.registerJoinEvent(priority = -100) { wasConnected ->
             if (!wasConnected) {
-                val ip = mc.currentServer?.ip?.lowercase()
-                val isAlpha = ip != null && (ip == "alpha.hypixel.net" || ip.endsWith(".alpha.hypixel.net"))
+                val host = mc.currentServer?.ip?.substringBefore(':')?.lowercase()
+                val isAlpha = host != null && (host == "alpha.hypixel.net" || host.endsWith(".alpha.hypixel.net"))
 
                 if (isAlpha) {
                     isOnAlpha = true
@@ -132,13 +123,13 @@ object  World : RegisteredEvent {
                     isOnAlpha = false
                 }
 
-                isOnHypixel = ip != null && listOf("hypixel.net", "hypixel.fast").any {
-                    ip == it || ip.endsWith(".$it")
+                isOnHypixel = host != null && listOf("hypixel.net", "hypixel.fast").any {
+                    host == it || host.endsWith(".$it")
                 }
             }
         }
 
-        registerDisconnectEvent(priority = -100) {
+        scope.registerDisconnectEvent(priority = -100) {
             spookyFestivalDay = -1L
             fishingFestivalDay = -1L
             if (isOnAlpha) {

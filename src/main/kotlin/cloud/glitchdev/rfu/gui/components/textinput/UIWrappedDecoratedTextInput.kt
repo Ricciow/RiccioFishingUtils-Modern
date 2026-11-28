@@ -19,6 +19,7 @@ class UIWrappedDecoratedTextInput(
     val placeholder: String,
     radius: Float,
     val maxChars: Int = 0,
+    val allowColors: Boolean = false,
     var onChange: (String) -> Unit = {}
 ) : UIRoundedRectangle(radius), Colorable {
     var primaryColor = UIScheme.secondaryColorOpaque.toConstraint()
@@ -55,7 +56,7 @@ class UIWrappedDecoratedTextInput(
             }
         }
 
-        textInput = (UISpecialMultilineTextInput(placeholder).apply {
+        textInput = (UISpecialMultilineTextInput(placeholder, allowColors = allowColors).apply {
             onUpdate { newText ->
                 handleTextChange(newText)
             }

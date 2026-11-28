@@ -1,6 +1,9 @@
 {
   "sources": [
     {
+      "type": "rfu:bundled_emojis"
+    },
+    {
       "type": "directory",
       "source": "emoji",
       "prefix": "emoji/"

@@ -4,8 +4,9 @@ import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.DevSettings
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.constants.text.TextStyle
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.keybind.KeyContext
-import cloud.glitchdev.rfu.events.managers.KeybindEvents.registerKeybind
+import cloud.glitchdev.rfu.events.managers.input.registerKeybind
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.mixin.AbstractContainerScreenAccessor
@@ -22,15 +23,15 @@ import net.minecraft.world.item.ItemStack
 
 @RFUFeature
 object CopyItemDataFeature : Feature {
-    override fun onInitialize() {
-        registerKeybind {
+    override fun onInitialize(scope: EventScope) {
+        scope.registerKeybind {
             key = { DevSettings.copyItemDataKeybind }
             context = KeyContext.ANY
             condition = { DevSettings.devMode }
             onPress = { copyCurrentItemData() }
         }
 
-        registerKeybind {
+        scope.registerKeybind {
             key = { DevSettings.copyContainerDataKeybind }
             context = KeyContext.ANY
             condition = { DevSettings.devMode }

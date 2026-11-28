@@ -3,7 +3,7 @@ package cloud.glitchdev.rfu.data.mob.strategies
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.data.mob.DeployableManager.Deployable
 import cloud.glitchdev.rfu.data.mob.DeployableType
-import cloud.glitchdev.rfu.events.managers.ServerTickEvents
+import cloud.glitchdev.rfu.events.managers.lifecycle.ServerTickEvents
 import net.minecraft.core.component.DataComponents
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EquipmentSlot

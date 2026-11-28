@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.mixin;
 
-import cloud.glitchdev.rfu.events.managers.FogEvents;
+import cloud.glitchdev.rfu.events.managers.render.FogEventManager;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -15,6 +15,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class AtmosphericFogEnvironmentMixin {
     @Inject(method = "setupFog", at = @At("TAIL"))
     private void rfu$onSetupFog(FogData fog, Camera camera, ClientLevel level, float renderDistance, DeltaTracker deltaTracker, CallbackInfo ci) {
-        FogEvents.FogEventManager.INSTANCE.getRunTasks().invoke(fog, camera, level, renderDistance, deltaTracker);
+        FogEventManager.INSTANCE.getRunTasks().invoke(fog, camera, level, renderDistance, deltaTracker);
     }
 }

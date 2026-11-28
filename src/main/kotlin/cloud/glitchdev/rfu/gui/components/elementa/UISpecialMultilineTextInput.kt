@@ -20,6 +20,7 @@
 
 package cloud.glitchdev.rfu.gui.components.elementa
 
+import cloud.glitchdev.rfu.gui.components.textinput.ColorCodeText
 import gg.essential.elementa.constraints.HeightConstraint
 import gg.essential.elementa.dsl.coerceAtMost
 import gg.essential.elementa.dsl.pixels
@@ -38,7 +39,8 @@ class UISpecialMultilineTextInput @JvmOverloads constructor(
     allowInactiveSelection: Boolean = false,
     inactiveSelectionBackgroundColor: Color = Color(176, 176, 176),
     inactiveSelectionForegroundColor: Color = Color.WHITE,
-    cursorColor: Color = Color.WHITE
+    cursorColor: Color = Color.WHITE,
+    allowColors: Boolean = false,
 ) : RFUTextInput(
     placeholder,
     shadow,
@@ -47,7 +49,8 @@ class UISpecialMultilineTextInput @JvmOverloads constructor(
     allowInactiveSelection,
     inactiveSelectionBackgroundColor,
     inactiveSelectionForegroundColor,
-    cursorColor
+    cursorColor,
+    allowColors,
 ) {
     private var maxHeight: HeightConstraint? = null
     private var lastSplitWidth = 0f
@@ -63,7 +66,7 @@ class UISpecialMultilineTextInput @JvmOverloads constructor(
     override fun getText() = textualLines.joinToString("\n") { it.text }
 
     override fun textToLines(text: String): List<String> {
-        return text.split('\n')
+        return (if (allowColors) ColorCodeText.toEditable(text) else text).split('\n')
     }
 
     override fun splitTextForWrapping(text: String, maxLineWidth: Float): List<String> {
@@ -78,11 +81,19 @@ class UISpecialMultilineTextInput @JvmOverloads constructor(
     override fun recalculateAllVisualLines() {
         visualLines.clear()
 
+        var offset = 0
         for ((index, textualLine) in textualLines.withIndex()) {
-            val splitLines = splitTextForWrapping(textualLine.text, getWidth())
+            val splitLines = if (allowColors) {
+                splitColoredLine(textualLine.text, offset, getWidth())
+            } else splitTextForWrapping(textualLine.text, getWidth())
             textualLine.visualIndices = visualLines.size until (visualLines.size + splitLines.size)
             visualLines.addAll(splitLines.map { VisualLine(it, index) })
+            offset += textualLine.length + 1
         }
+    }
+
+    override fun recalculateVisualLinesFor(textualLineIndex: Int) {
+        if (allowColors) recalculateAllVisualLines() else super.recalculateVisualLinesFor(textualLineIndex)
     }
 
     override fun scrollIntoView(pos: LinePosition) {
@@ -154,7 +165,7 @@ class UISpecialMultilineTextInput @JvmOverloads constructor(
             cursorComponent.hide(instantly = true)
         } else if (active) {
             cursorComponent.unhide()
-            val (cursorPosX, cursorPosY) = cursor.toScreenPos()
+            val (cursorPosX, cursorPosY) = inputCursorScreenPos()
             cursorComponent.setX((cursorPosX).pixels())
             cursorComponent.setY((cursorPosY).pixels())
         }
@@ -167,6 +178,11 @@ class UISpecialMultilineTextInput @JvmOverloads constructor(
                 continue
 
             val lineY = getTop() + topOffset
+
+            if (allowColors) {
+                extractColoredLine(extractor, i, getLeft(), lineY)
+                continue
+            }
 
             if (!hasSelection() || i < selectionStart.line || i > selectionEnd.line) {
                 getFontProvider().extractMcScale(
@@ -198,10 +214,10 @@ class UISpecialMultilineTextInput @JvmOverloads constructor(
                     else -> ""
                 }
 
-                val startTextWidth = startText.width(textScale)
-                val selectedTextWidth = selectedText.width(textScale)
+                val startTextWidth = startText.width(textScale, getFontProvider())
+                val selectedTextWidth = selectedText.width(textScale, getFontProvider())
 
-                val newlinePadding = if (i < selectionEnd.line) ' '.width(textScale) else 0f
+                val newlinePadding = if (i < selectionEnd.line) " ".width(textScale, getFontProvider()) else 0f
 
                 if (startText.isNotEmpty()) {
                     getFontProvider().extractMcScale(
@@ -210,12 +226,12 @@ class UISpecialMultilineTextInput @JvmOverloads constructor(
                 }
 
                 if (selectedText.isNotEmpty() || newlinePadding != 0f) {
-                    extractSelectedText(
+                    extractPlainSelection(
                         extractor,
                         selectedText,
                         getLeft() + startTextWidth,
                         getLeft() + startTextWidth + selectedTextWidth + newlinePadding,
-                        i
+                        lineY
                     )
                 }
 
@@ -241,6 +257,7 @@ class UISpecialMultilineTextInput @JvmOverloads constructor(
             return LinePosition(visualLines.lastIndex, visualLines.last().text.length, isVisual = true)
 
         val text = visualLines[line].text
+        if (allowColors) return LinePosition(line, coloredColumnAtX(line, x), isVisual = true)
         var column = 0
         var currWidth = 0f
 

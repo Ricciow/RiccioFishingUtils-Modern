@@ -1,14 +1,15 @@
 package cloud.glitchdev.rfu.utils
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.chat.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.inventory.registerContainerOpenEvent
 import cloud.glitchdev.rfu.constants.skyblock.SkillType
 import cloud.glitchdev.rfu.constants.skyblock.Skills
 import cloud.glitchdev.rfu.data.skills.SkillsData
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.ContainerEvents.registerContainerOpenEvent
-import cloud.glitchdev.rfu.events.managers.SkillEvents
+import cloud.glitchdev.rfu.events.managers.progress.SkillEvents
 import cloud.glitchdev.rfu.utils.dsl.toSkillLevel
 import gg.essential.universal.utils.toUnformattedString
 import net.minecraft.core.component.DataComponents
@@ -26,10 +27,10 @@ object SkillTracker : RegisteredEvent {
     private val SKILL_ITEM_NAME_REGEX = """^(Combat|Farming|Foraging|Fishing|Mining|Enchanting|Alchemy|Carpentry|Taming|Hunting)\s+([IVXLCDM]+|\d+)$""".toRegex(RegexOption.IGNORE_CASE)
     private val LORE_LEVEL_REGEX = """Progress to Level\s+([IVXLCDM]+|\d+)""".toRegex(RegexOption.IGNORE_CASE)
     private val LORE_PROGRESS_REGEX = """(?<![0-9,.])([0-9][0-9,]*(?:\.[0-9]+)?[kMB]?)\s*/\s*([0-9][0-9,]*(?:\.[0-9]+)?[kMB]?)""".toRegex(RegexOption.IGNORE_CASE)
-    private val LORE_TOTAL_XP_REGEX = """([0-9,]{5,}(?:\.[0-9]+)?)""".toRegex()
+    private val LORE_TOTAL_XP_REGEX = """^[\s-]*([0-9][0-9,]*(?:\.[0-9]+)?)\s*$""".toRegex()
 
-    override fun register() {
-        registerGameEvent(ACTION_BAR_REGEX, isOverlay = true) { msg, _, matches ->
+    override fun register(scope: EventScope) {
+        scope.registerGameEvent(ACTION_BAR_REGEX, isOverlay = true) { msg, _, matches ->
             if (matches == null) return@registerGameEvent
             val gainedXpStr = matches.groupValues[1]
             val skillName = matches.groupValues[2]
@@ -65,9 +66,9 @@ object SkillTracker : RegisteredEvent {
             setSkillXp(skill, newTotal)
         }
 
-        registerDisconnectEvent { lastPercentageGains.clear() }
+        scope.registerDisconnectEvent { lastPercentageGains.clear() }
 
-        registerContainerOpenEvent { _, _, items ->
+        scope.registerContainerOpenEvent { _, _, items ->
             for (item in items) {
                 val name = item.hoverName.toUnformattedString()
                 val match = SKILL_ITEM_NAME_REGEX.find(name) ?: continue
@@ -77,16 +78,17 @@ object SkillTracker : RegisteredEvent {
                 if (level !in 0..skill.maxLevel) continue
 
                 val loreLines = item[DataComponents.LORE]?.lines?.map { it.toUnformattedString() } ?: continue
-                val loreText = loreLines.joinToString(" ")
 
                 var parsedTotalXp: Long? = null
 
-                if (loreText.contains("Max Skill level reached!", ignoreCase = true)) {
-                    val totalXpMatch = LORE_TOTAL_XP_REGEX.findAll(loreText).lastOrNull()
+                val maxLevelIndex = loreLines.indexOfFirst { it.contains("Max Skill level reached!", ignoreCase = true) }
+                if (maxLevelIndex != -1) {
+                    val totalXpMatch = loreLines.getOrNull(maxLevelIndex + 1)?.let { LORE_TOTAL_XP_REGEX.matchEntire(it) }
                     if (totalXpMatch != null) {
                         parsedTotalXp = Skills.parseXp(totalXpMatch.groupValues[1])
                     }
                 } else {
+                    val loreText = loreLines.joinToString(" ")
                     val levelMatch = LORE_LEVEL_REGEX.find(loreText)
                     val progressMatch = LORE_PROGRESS_REGEX.find(loreText)
                     
@@ -135,7 +137,6 @@ object SkillTracker : RegisteredEvent {
     private fun calculatePercentageXp(skill: SkillType, percentage: Double): Long? {
         val key = skill.name.lowercase()
         var level = jsonFile.data.skillLevelMap[key] ?: return null
-        if (level == skill.maxLevel) return getSkillXp(skill)
         if (level !in 0 until skill.maxLevel) return null
 
         val previousPercentage = (getSkillXp(skill) - xpRequiredForLevel(level)) * 100.0 /

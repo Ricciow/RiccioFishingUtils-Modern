@@ -6,10 +6,11 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.BaseAchievement
-import cloud.glitchdev.rfu.events.managers.ArmorEvents
-import cloud.glitchdev.rfu.events.managers.ArmorEvents.registerArmorChangeEvent
-import cloud.glitchdev.rfu.events.managers.HotSpotEvents
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.inventory.ArmorChangeEventManager
+import cloud.glitchdev.rfu.events.managers.inventory.registerArmorChangeEvent
+import cloud.glitchdev.rfu.events.managers.fishing.HotSpotEvents
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 
 @Achievement
 object ShameOnYouAchievement : BaseAchievement() {
@@ -20,13 +21,13 @@ object ShameOnYouAchievement : BaseAchievement() {
     override val difficulty: AchievementDifficulty = AchievementDifficulty.MEDIUM
     override val category: AchievementCategory = AchievementCategory.GENERAL
 
-    override fun setupListeners() {
-        activeListeners.add(registerArmorChangeEvent {
+    override fun setupListeners(scope: EventScope) {
+        scope.registerArmorChangeEvent {
             checkCondition()
-        })
-        activeListeners.add(registerTickEvent(interval = 40) {
+        }
+        scope.registerTickEvent(interval = 40) {
             checkCondition()
-        })
+        }
     }
 
     private fun checkCondition() {
@@ -34,7 +35,7 @@ object ShameOnYouAchievement : BaseAchievement() {
         val userPos = player.position()
         HotSpotEvents.getHotspotAt(userPos) ?: return
 
-        if (ArmorEvents.currentArmorSet.isWearingBlazeArmorSet) {
+        if (ArmorChangeEventManager.currentArmorSet.isWearingBlazeArmorSet) {
             complete()
         }
     }

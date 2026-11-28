@@ -7,10 +7,11 @@ import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.data.mob.MobManager
 import cloud.glitchdev.rfu.data.mob.SkyblockEntity
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.EntityInteractEvents.registerEntityInteractEvent
-import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
-import cloud.glitchdev.rfu.events.managers.RenderEvents.registerRenderEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.connection.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.entity.registerEntityInteractEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.render.registerRenderEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat
@@ -40,8 +41,8 @@ object Sb : SimpleCommand("sb"), Feature {
     private val clickedSbEntities = mutableSetOf<SkyblockEntity>()
     private val clickedEntityIds = mutableSetOf<Int>()
 
-    override fun onInitialize() {
-        registerRenderEvent { context ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerRenderEvent { context ->
             if (!DevSettings.devMode || !enabled) return@registerRenderEvent
 
             val entities = MobManager.getEntities()
@@ -113,17 +114,17 @@ object Sb : SimpleCommand("sb"), Feature {
             }
         }
 
-        registerEntityInteractEvent { entity ->
+        scope.registerEntityInteractEvent { entity ->
             if (!DevSettings.devMode || !enabled) return@registerEntityInteractEvent
             handleEntityRightClick(entity)
         }
 
-        registerLocationEvent {
+        scope.registerLocationEvent {
             clickedSbEntities.clear()
             clickedEntityIds.clear()
         }
 
-        registerDisconnectEvent {
+        scope.registerDisconnectEvent {
             clickedSbEntities.clear()
             clickedEntityIds.clear()
         }

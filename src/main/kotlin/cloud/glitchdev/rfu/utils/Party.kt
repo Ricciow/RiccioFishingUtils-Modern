@@ -1,5 +1,14 @@
 package cloud.glitchdev.rfu.utils
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.chat.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerShutdownEvent
+import cloud.glitchdev.rfu.events.managers.party.registerJoinRequestEvent
+import cloud.glitchdev.rfu.events.managers.party.registerOnPartyChangeEvent
+import cloud.glitchdev.rfu.events.managers.party.registerMyPartyChangedEvent
+import cloud.glitchdev.rfu.events.managers.party.OnPartyChangeEventManager
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.chat.RegexConstants.PLAYER_REGEX
@@ -8,16 +17,10 @@ import cloud.glitchdev.rfu.constants.text.TextEffects
 import cloud.glitchdev.rfu.constants.text.TextStyle
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.hypixelModAPI
-import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
-import cloud.glitchdev.rfu.events.managers.PartyFinderEvents
-import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerJoinRequestEvent
-import cloud.glitchdev.rfu.events.managers.PartyEvents
-import cloud.glitchdev.rfu.events.managers.PartyEvents.registerOnPartyChangeEvent
-import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
+import cloud.glitchdev.rfu.events.managers.connection.HypixelModApiEvents.hypixelModAPI
+import cloud.glitchdev.rfu.events.managers.party.PartyJoinedEventManager
 import cloud.glitchdev.rfu.model.party.FishingParty
+import cloud.glitchdev.rfu.party.WarpKickManager
 import cloud.glitchdev.rfu.utils.command.AbstractCommand
 import cloud.glitchdev.rfu.utils.command.Command
 import cloud.glitchdev.rfu.utils.dsl.removeRankTag
@@ -44,6 +47,8 @@ object Party : RegisteredEvent {
     var isAllInvite = false
     val members: MutableMap<String, ClientboundPartyInfoPacket.PartyRole> = mutableMapOf()
     var memberCount = 0
+    val effectiveMemberCount: Int
+        get() = if (inParty && isLeader) memberCount + WarpKickManager.pendingRejoinCount else memberCount
     var requestedUser: String? = null
     private val joinedCooldowns: MutableMap<String, Long> = mutableMapOf()
     private val pendingPFInvites: MutableSet<String> = ConcurrentHashMap.newKeySet()
@@ -51,7 +56,7 @@ object Party : RegisteredEvent {
     private val uuidToNameCache = mutableMapOf<UUID, String>()
     private val partyInfoCallbacks = mutableListOf<() -> Unit>()
 
-    override fun register() {
+    override fun register(scope: EventScope) {
         hypixelModAPI.createHandler(ClientboundPartyInfoPacket::class.java) { event ->
             Coroutines.launch {
                 inParty = event.isInParty
@@ -72,19 +77,23 @@ object Party : RegisteredEvent {
             }
         }
 
-        registerLocationEvent {
+        scope.registerLocationEvent {
             if(!wasInServer) {
                 wasInServer = true
                 requestPartyInfo()
             }
         }
 
-        registerDisconnectEvent {
+        scope.registerDisconnectEvent {
             wasInServer = false
             uuidToNameCache.clear()
         }
 
-        registerJoinRequestEvent { applicant ->
+        scope.registerJoinRequestEvent { applicant ->
+            val currentParty = PartyWebSocket.myParty
+            if (currentParty != null && effectiveMemberCount >= currentParty.players.max) {
+                return@registerJoinRequestEvent
+            }
             if (OtherSettings.autoAcceptPlayers) {
                 sendPFInvite(applicant, preventDuplicate = true)
             } else {
@@ -92,14 +101,14 @@ object Party : RegisteredEvent {
             }
         }
 
-        registerGameEvent("""You have joined ($PLAYER_REGEX)'s? party!""".toExactRegex()) { _, _, matches ->
+        scope.registerGameEvent("""You have joined ($PLAYER_REGEX)'s? party!""".toExactRegex()) { _, _, matches ->
             val matchGroups = matches?.groupValues ?: return@registerGameEvent
             val username = matchGroups[1].removeRankTag()
             if (username == requestedUser) {
                 val lastJoin = joinedCooldowns[username] ?: 0L
                 val now = System.currentTimeMillis()
                 if (now - lastJoin > 15 * 60 * 1000) {
-                    PartyFinderEvents.runPartyJoinedTasks()
+                    PartyJoinedEventManager.runTasks()
                     joinedCooldowns[username] = now
                 }
             }
@@ -107,7 +116,7 @@ object Party : RegisteredEvent {
             requestPartyInfo()
         }
 
-        registerGameEvent("""($PLAYER_REGEX) joined the party\.""".toExactRegex()) { _, _, matches ->
+        scope.registerGameEvent("""($PLAYER_REGEX) joined the party\.""".toExactRegex()) { _, _, matches ->
             val matchGroups = matches?.groupValues ?: return@registerGameEvent
             val player = matchGroups[1].removeRankTag()
 
@@ -115,7 +124,7 @@ object Party : RegisteredEvent {
                 val lastJoin = joinedCooldowns[player] ?: 0L
                 val now = System.currentTimeMillis()
                 if (now - lastJoin > 15 * 60 * 1000) {
-                    PartyFinderEvents.runPartyJoinedTasks()
+                    PartyJoinedEventManager.runTasks()
                     joinedCooldowns[player] = now
                 }
                 pendingPFInvites.remove(player)
@@ -123,7 +132,7 @@ object Party : RegisteredEvent {
             requestPartyInfo()
         }
 
-        registerGameEvent("""Party > ($PLAYER_REGEX): .*""".toExactRegex()) { _, _, matches ->
+        scope.registerGameEvent("""Party > ($PLAYER_REGEX): .*""".toExactRegex()) { _, _, matches ->
             val matchGroups = matches?.groupValues ?: return@registerGameEvent
             val username = matchGroups[1].removeRankTag()
             if (!members.containsKey(username)) {
@@ -131,7 +140,7 @@ object Party : RegisteredEvent {
             }
         }
 
-        registerGameEvent(
+        scope.registerGameEvent(
             ("You left the party\\." +
                     "|You have been kicked from the party by $PLAYER_REGEX" +
                     "|The party was disbanded because the party leader disconnected\\." +
@@ -143,25 +152,25 @@ object Party : RegisteredEvent {
             requestPartyInfo()
         }
 
-        registerGameEvent("""Created a public party! Players can join with /party join .+""".toExactRegex()) { _, _, _ ->
+        scope.registerGameEvent("""Created a public party! Players can join with /party join .+""".toExactRegex()) { _, _, _ ->
             requestPartyInfo()
         }
 
-        registerGameEvent("""$PLAYER_REGEX invited $PLAYER_REGEX to the party! They have 60 seconds to accept.""".toExactRegex()) { _, _, _ ->
+        scope.registerGameEvent("""$PLAYER_REGEX invited $PLAYER_REGEX to the party! They have 60 seconds to accept.""".toExactRegex()) { _, _, _ ->
             if(!inParty) {
                 requestPartyInfo()
             }
         }
 
-        registerGameEvent("""The party was transferred to ($PLAYER_REGEX) by ($PLAYER_REGEX)""".toExactRegex()) { _, _, _ ->
+        scope.registerGameEvent("""The party was transferred to ($PLAYER_REGEX) by ($PLAYER_REGEX)""".toExactRegex()) { _, _, _ ->
             requestPartyInfo()
         }
 
-        registerGameEvent("""The party was transferred to ($PLAYER_REGEX) because ($PLAYER_REGEX) left""".toExactRegex()) { _, _, _ ->
+        scope.registerGameEvent("""The party was transferred to ($PLAYER_REGEX) because ($PLAYER_REGEX) left""".toExactRegex()) { _, _, _ ->
             requestPartyInfo()
         }
 
-        registerGameEvent(
+        scope.registerGameEvent(
             ("($PLAYER_REGEX) (?:has left the party\\." +
                     "|was removed from your party because they disconnected\\." +
                     "|has been removed from the party\\.)"
@@ -170,41 +179,43 @@ object Party : RegisteredEvent {
             requestPartyInfo()
         }
 
-        registerGameEvent("$PLAYER_REGEX enabled All Invite".toExactRegex()) { _, _, _ ->
+        scope.registerGameEvent("$PLAYER_REGEX enabled All Invite".toExactRegex()) { _, _, _ ->
             isAllInvite = true
             executePartyChange()
         }
 
-        registerGameEvent("$PLAYER_REGEX disabled All Invite".toExactRegex()) { _, _, _ ->
+        scope.registerGameEvent("$PLAYER_REGEX disabled All Invite".toExactRegex()) { _, _, _ ->
             isAllInvite = false
             executePartyChange()
         }
 
-        registerOnPartyChangeEvent { _, isLeader, _, _ ->
-            val currentParty: FishingParty? = PartyWebSocket.myParty
-            if (currentParty != null) {
-                if (isLeader) {
-                    val updatedParty = currentParty.copy(
-                        players = currentParty.players.copy(current = memberCount),
-                        profileId = User.profileId
-                    )
-                    PartyWebSocket.editParty(updatedParty)
-                } else {
-                    PartyWebSocket.deleteParty(User.getUsername())
-                }
-            }
+        scope.registerOnPartyChangeEvent { _, _, _, _ ->
+            syncPartyFinderListing()
         }
 
-        PartyFinderEvents.MyPartyChanged.register { party ->
+        scope.registerMyPartyChangedEvent { party ->
             if (party != null && inParty && !isLeader) {
                 PartyWebSocket.deleteParty(User.getUsername())
             }
         }
 
-        registerShutdownEvent {
+        scope.registerShutdownEvent {
             if (PartyWebSocket.myParty != null) {
                 PartyWebSocket.deleteParty(User.getUsername())
             }
+        }
+    }
+
+    fun syncPartyFinderListing() {
+        val currentParty: FishingParty = PartyWebSocket.myParty ?: return
+        if (isLeader) {
+            val updatedParty = currentParty.copy(
+                players = currentParty.players.copy(current = effectiveMemberCount),
+                profileId = User.profileId
+            )
+            PartyWebSocket.editParty(updatedParty)
+        } else {
+            PartyWebSocket.deleteParty(User.getUsername())
         }
     }
 
@@ -309,7 +320,7 @@ object Party : RegisteredEvent {
             wasMemberCount != memberCount ||
             oldMembers != members
         ) {
-            PartyEvents.OnPartyChange.runTasks(inParty, isLeader, isAllInvite, members)
+            OnPartyChangeEventManager.runTasks(inParty, isLeader, isAllInvite, members)
         }
 
         wasInParty = inParty

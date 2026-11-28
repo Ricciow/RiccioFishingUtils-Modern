@@ -3,8 +3,9 @@ package cloud.glitchdev.rfu.feature.fishing
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.categories.LavaFishing
 import cloud.glitchdev.rfu.constants.fishing.FishingIslands
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerGameEvent
-import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.chat.registerGameEvent
+import cloud.glitchdev.rfu.events.managers.fishing.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat
@@ -14,14 +15,14 @@ import cloud.glitchdev.rfu.utils.dsl.formatTemplate
 object VanquisherPartyMessage : Feature {
     private var seaCreaturesSinceLastVanquisher = 0
 
-    override fun onInitialize() {
-        registerSeaCreatureCatchEvent { seaCreature, isDoubleHook, _, _, _ ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerSeaCreatureCatchEvent { seaCreature, isDoubleHook, _, _, _ ->
             if (seaCreature.category.islands.contains(FishingIslands.ISLE)) {
                 seaCreaturesSinceLastVanquisher += if (isDoubleHook) 2 else 1
             }
         }
 
-        registerGameEvent(Regex("A Vanquisher is spawning nearby!")) { _, _, _ ->
+        scope.registerGameEvent(Regex("A Vanquisher is spawning nearby!")) { _, _, _ ->
             if (!LavaFishing.vanquisherPartyMessages) return@registerGameEvent
 
             val pos = mc.player?.blockPosition()

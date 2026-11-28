@@ -1,7 +1,8 @@
 package cloud.glitchdev.rfu.feature.fishing
 
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Sounds
@@ -11,11 +12,9 @@ import gg.essential.universal.utils.toUnformattedString
 object RodTimerSound : Feature {
     private var lastRodTime = -1f
 
-    override fun onInitialize() {
-        registerTickEvent(0, 2) { _ ->
-            if (!GeneralFishing.rodTimerSound) return@registerTickEvent
-
-            val text = RodTimer.timer?.name?.toUnformattedString()
+    override fun onInitialize(scope: EventScope) {
+        scope.registerTickEvent(0, 2) { _ ->
+            val text = RodTimer.timer?.takeUnless { it.isRemoved }?.name?.toUnformattedString()
 
             val currentRodTime = if (text == "!!!") {
                 0f
@@ -23,12 +22,12 @@ object RodTimerSound : Feature {
                 text?.toFloatOrNull() ?: -1f
             }
 
-            if (currentRodTime != -1f) {
-                if (currentRodTime != lastRodTime) {
+            if (currentRodTime >= 0f && currentRodTime != lastRodTime) {
+                if (currentRodTime == 0f && GeneralFishing.muteNonRfuSounds) {
+                    Sounds.playSound("rfu:rod_timer_expired")
+                } else if (GeneralFishing.rodTimerSound) {
                     val progress = 1f - (currentRodTime / 3.0f).coerceIn(0f, 1f)
-                    
                     val pitch = 0.5f + progress * 1.5f
-                    
                     Sounds.playSound("rfu:rod_timer", pitch)
                 }
             }

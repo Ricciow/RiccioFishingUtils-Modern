@@ -166,12 +166,12 @@ object ResourcePackUtils {
 
                     if (toDelete.isNotEmpty()) {
                         Thread {
-                            for (attempt in 0 until 10) {
+                            repeat(10) {
                                 try {
                                     Thread.sleep(2000)
                                 } catch (e: InterruptedException) {
                                     Thread.currentThread().interrupt()
-                                    break
+                                    return@Thread
                                 }
                                 var allDeleted = true
                                 for (path in toDelete) {
@@ -182,7 +182,7 @@ object ResourcePackUtils {
                                     }
                                 }
                                 if (allDeleted) {
-                                    break
+                                    return@Thread
                                 }
                             }
                         }.start()

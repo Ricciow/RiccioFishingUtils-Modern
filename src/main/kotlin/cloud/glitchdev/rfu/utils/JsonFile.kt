@@ -1,15 +1,17 @@
 package cloud.glitchdev.rfu.utils
 
+import cloud.glitchdev.rfu.events.EventScopes
+import cloud.glitchdev.rfu.events.managers.connection.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerJoinEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerShutdownEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.RiccioFishingUtils.CONFIG_DIR
 import cloud.glitchdev.rfu.RiccioFishingUtils.MOD_ID
 import cloud.glitchdev.rfu.constants.text.TextColor
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
-import cloud.glitchdev.rfu.events.managers.ShutdownEvents.registerShutdownEvent
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
 import com.google.gson.*
 import java.io.File
 import java.io.FileReader
+import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.time.Instant
 
 /**
@@ -47,20 +49,22 @@ class JsonFile<T : Any>(
         instances.add(this)
         load(triggerOnReload = false)
 
-        registerJoinEvent {
-            save()
-        }
+        EventScopes.withStartupScope { scope ->
+            scope.registerJoinEvent {
+                save()
+            }
 
-        registerDisconnectEvent {
-            save()
-        }
+            scope.registerDisconnectEvent {
+                save()
+            }
 
-        registerShutdownEvent {
-            save()
-        }
+            scope.registerShutdownEvent {
+                save()
+            }
 
-        registerTickEvent(interval = 30 * 60 * 20L) {
-            save()
+            scope.registerTickEvent(interval = 30 * 60 * 20L) {
+                save()
+            }
         }
     }
 
@@ -141,7 +145,7 @@ class JsonFile<T : Any>(
     }
 
     companion object {
-        private val instances = mutableListOf<JsonFile<*>>()
+        private val instances = CopyOnWriteArrayList<JsonFile<*>>()
 
         fun reloadAll() {
             instances.filter { it.revertOnAlpha }.forEach {

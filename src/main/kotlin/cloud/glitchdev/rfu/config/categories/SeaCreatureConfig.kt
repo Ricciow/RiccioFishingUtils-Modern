@@ -3,7 +3,6 @@ package cloud.glitchdev.rfu.config.categories
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.config.Category
 import cloud.glitchdev.rfu.config.SoundTitleSettings
-import cloud.glitchdev.rfu.config.TitleSettings
 import cloud.glitchdev.rfu.constants.fishing.RareScDisplayDataType
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.feature.fishing.CatchMessageReplacer
@@ -47,19 +46,31 @@ object SeaCreatureConfig : Category("Sea Creatures") {
         description = Literal("Makes rare sea creatures glow.\n§cUse at your own risk!")
     }
 
+    var invulnerabilityTimer by reloadableBoolean(true) {
+        name = Literal("Invulnerability Timer")
+        description = Literal("Displays the invulnerability timer on rare sea creatures and Vanquishers.")
+    }
+
+    init {
+        dualSeparator {
+            title = "Death Messages"
+            description = "Kill times and personal bests for rare sea creatures"
+        }
+    }
+
     var timeToKill by boolean(true) {
-        name = Literal("Time to kill")
-        description = Literal("Sends a message after killing a rare Sea Creature saying how long it took.")
+        name = Literal("Time To Kill")
+        description = Literal("Shows how long it took to kill a rare sea creature.")
     }
 
     var killTimePersonalBest by boolean(true) {
         name = Literal("Kill Time PB")
-        description = Literal("Sends personal best message for kill times on rare sea creatures.")
+        description = Literal("Announces new personal bests.")
     }
 
-    var invulnerabilityTimer by reloadableBoolean(true) {
-        name = Literal("Invulnerability Timer")
-        description = Literal("Displays the invulnerability timer on rare sea creatures and Vanquishers.")
+    var bobbinTimeDeathMessage by boolean(true) {
+        name = Literal("Bobbin' Time")
+        description = Literal("Shows the Magic Find bonus at death while wearing Bobbin' Time armor.")
     }
 
     init {
@@ -130,19 +141,6 @@ object SeaCreatureConfig : Category("Sea Creatures") {
     var filledLsRange by boolean(true) {
         name = Literal("Filled lootshare range")
         description = Literal("Renders the lootshare range as a filled sphere")
-    }
-
-    init {
-        dualSeparator {
-            title = "Golden Dragon"
-            description = "Alerts for when you're not using a Golden Dragon"
-        }
-    }
-
-    val goldenDragon by obj(GoldenDragonTitleSettings()) {
-        name = Literal("Golden Dragon Alert")
-        description = Literal("Toggle and edit the title, subtitle, duration, and preview.")
-        searchTerms = listOf("golden dragon", "goldendragon", "title", "subtitle", "duration", "sound", "volume", "gdrag", "pet warning", "health threshold", "gdrag alert threshold", "low health")
     }
 
     init {
@@ -270,27 +268,5 @@ object SeaCreatureConfig : Category("Sea Creatures") {
     var scCapDisplay by reloadableBoolean(false) {
         name = Literal("Sea Creature Cap Display")
         description = Literal("Displays the number of active sea creatures owned by you.")
-    }
-
-    class GoldenDragonTitleSettings : SoundTitleSettings(
-        title = "&c&lNO G-DRAGON!",
-        subtitle = "&eEquip your Golden Dragon!",
-        duration = 40,
-        soundId = "rfu:gdrag_alert"
-    ) {
-        init {
-            separator {
-                title = "Trigger Options"
-                condition = { enabled }
-            }
-        }
-
-        var threshold by int(20) {
-            name = Literal("GDrag Alert Threshold (%)")
-            description = Literal("The health percentage at which the alert will trigger.")
-            range = 1..100
-            slider = true
-            condition = { enabled }
-        }
     }
 }

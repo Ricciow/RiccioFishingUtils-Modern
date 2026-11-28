@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.mixin;
 
-import cloud.glitchdev.rfu.events.managers.FogEvents;
+import cloud.glitchdev.rfu.events.managers.render.WaterVisionFluidEventManager;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.player.LocalPlayer;
@@ -15,9 +15,9 @@ public class LocalPlayerMixin {
     @WrapOperation(method = {"aiStep", "getWaterVision"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;isEyeInFluid(Lnet/minecraft/tags/TagKey;)Z"))
     private boolean rfu$waterVisionFluid(LocalPlayer player, TagKey<Fluid> tag, Operation<Boolean> original) {
         if (!tag.equals(FluidTags.WATER)) return original.call(player, tag);
-        FogEvents.WaterVisionFluidEventManager.WaterVisionFluidContext context = new FogEvents.WaterVisionFluidEventManager.WaterVisionFluidContext(
+        WaterVisionFluidEventManager.WaterVisionFluidContext context = new WaterVisionFluidEventManager.WaterVisionFluidContext(
                 player, original.call(player, tag));
-        FogEvents.WaterVisionFluidEventManager.INSTANCE.getRunTasks().invoke(context);
+        WaterVisionFluidEventManager.INSTANCE.getRunTasks().invoke(context);
         return context.getSubmerged();
     }
 }

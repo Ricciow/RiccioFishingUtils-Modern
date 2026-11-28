@@ -1,15 +1,13 @@
 package cloud.glitchdev.rfu.feature.streak.challenge
 
 import cloud.glitchdev.rfu.data.streak.DailyStreakManager
-import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.events.EventScope
 
 abstract class BaseChallenge {
     abstract val id: String
     open val title: String = ""
     open val description: String = ""
     open val weight: Int = 100
-
-    protected val activeListeners = mutableListOf<AbstractEventManager.ManagedTask<*, *>>()
 
     abstract fun getTargetProgress(streakDays: Int): Int
 
@@ -21,12 +19,9 @@ abstract class BaseChallenge {
         ChallengeRegistry.register(this)
     }
 
-    open fun setupListeners() {}
+    open fun setupListeners(scope: EventScope) {}
 
-    fun unregisterListeners() {
-        activeListeners.forEach { it.unregister() }
-        activeListeners.clear()
-    }
+    open fun resetTransientState() {}
 
     protected fun addProgress(amount: Int = 1) {
         DailyStreakManager.addProgressForChallenge(id, amount)

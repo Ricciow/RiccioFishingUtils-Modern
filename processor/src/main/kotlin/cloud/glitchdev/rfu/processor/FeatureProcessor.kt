@@ -3,23 +3,42 @@ package cloud.glitchdev.rfu.processor
 import com.google.devtools.ksp.getAllSuperTypes
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.ClassKind
+import com.google.devtools.ksp.symbol.FileLocation
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import java.io.OutputStream
+
+private const val AUTO_REGISTER = "cloud.glitchdev.rfu.events.AutoRegister"
+private const val RFU_FEATURE = "cloud.glitchdev.rfu.feature.RFUFeature"
+private const val HUD_ELEMENT = "cloud.glitchdev.rfu.gui.hud.HudElement"
+
+private fun registrationPath(symbol: KSClassDeclaration): String {
+    val path = symbol.containingFile?.filePath.orEmpty().replace('\\', '/')
+    val managersDirectory = "/events/managers/"
+    if (managersDirectory !in path) return path
+
+    // Package organization should not change the order in which event hooks register.
+    return path.substringBefore(managersDirectory) + managersDirectory + path.substringAfterLast('/')
+}
+
+private data class LoaderScope(val fieldName: String, val unloadFuncName: String)
 
 private data class GeneratorSpec(
     val annotation: String,
     val loaderFuncName: String,
     val methodToCall: String,
-    val requiredSuperType: String? = null
+    val requiredSuperType: String? = null,
+    val scope: LoaderScope? = null,
 )
 
 class FeatureProcessor(
     private val codeGenerator: CodeGenerator,
     private val logger: KSPLogger
 ) : SymbolProcessor {
+    private val eventRegistrations = EventRegistrationGenerator(codeGenerator, logger)
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
+        val autoRegisteredManagers = eventRegistrations.generate(resolver)
         val specs = listOf(
             GeneratorSpec(
                 annotation = "cloud.glitchdev.rfu.achievement.Achievement",
@@ -28,28 +47,30 @@ class FeatureProcessor(
                 requiredSuperType = "cloud.glitchdev.rfu.achievement.BaseAchievement"
             ),
             GeneratorSpec(
-                annotation = "cloud.glitchdev.rfu.feature.RFUFeature",
+                annotation = RFU_FEATURE,
                 loaderFuncName = "loadFeatures",
                 methodToCall = "onInitialize",
-                requiredSuperType = "cloud.glitchdev.rfu.feature.Feature"
+                requiredSuperType = "cloud.glitchdev.rfu.feature.Feature",
+                scope = LoaderScope("featureScopes", "unloadFeatures"),
             ),
             GeneratorSpec(
-                annotation = "cloud.glitchdev.rfu.events.AutoRegister",
+                annotation = AUTO_REGISTER,
                 loaderFuncName = "registerEvents",
                 methodToCall = "register",
                 requiredSuperType = "cloud.glitchdev.rfu.events.RegisteredEvent"
             ),
             GeneratorSpec(
-                annotation = "cloud.glitchdev.rfu.events.AutoRegister",
+                annotation = AUTO_REGISTER,
                 loaderFuncName = "postInitializeEvents",
                 methodToCall = "postInitialize",
                 requiredSuperType = "cloud.glitchdev.rfu.events.RegisteredEvent"
             ),
             GeneratorSpec(
-                annotation = "cloud.glitchdev.rfu.gui.hud.HudElement",
+                annotation = HUD_ELEMENT,
                 loaderFuncName = "registerHud",
                 methodToCall = "initialize",
-                requiredSuperType = "cloud.glitchdev.rfu.gui.hud.AbstractHudElement"
+                requiredSuperType = "cloud.glitchdev.rfu.gui.hud.AbstractHudElement",
+                scope = LoaderScope("hudScopes", "unloadHud"),
             ),
             GeneratorSpec(
                 annotation = "cloud.glitchdev.rfu.utils.command.Command",
@@ -78,9 +99,22 @@ class FeatureProcessor(
         )
 
         val symbolsMap = specs.associateWith { spec: GeneratorSpec ->
-            resolver.getSymbolsWithAnnotation(spec.annotation)
+            val symbols = resolver.getSymbolsWithAnnotation(spec.annotation)
                 .filterIsInstance<KSClassDeclaration>()
                 .toList()
+            if (spec.annotation == AUTO_REGISTER) {
+                (symbols + autoRegisteredManagers)
+                    .distinctBy { it.qualifiedName?.asString() }
+                    .sortedWith(
+                        compareBy<KSClassDeclaration, String>(String.CASE_INSENSITIVE_ORDER) {
+                            registrationPath(it)
+                        }
+                            .thenBy { (it.location as? FileLocation)?.lineNumber ?: 0 }
+                            .thenBy { it.qualifiedName?.asString().orEmpty() }
+                    )
+            } else {
+                symbols
+            }
         }
 
         var hasErrors = false
@@ -92,8 +126,9 @@ class FeatureProcessor(
                     }
 
                     if (!implementsInterface) {
+                        val annotation = if (symbol in autoRegisteredManagers) "EventManager" else spec.annotation.substringAfterLast(".")
                         logger.error(
-                            "Class '${symbol.simpleName.asString()}' is annotated with @${spec.annotation.substringAfterLast(".")} " +
+                            "Class '${symbol.simpleName.asString()}' is annotated with @$annotation " +
                                     "but does not implement '${spec.requiredSuperType}'.",
                             symbol
                         )
@@ -117,7 +152,9 @@ class FeatureProcessor(
         file.bufferedWriter().use { writer ->
             writer.write("package $packageName\n\n")
 
-            val allSymbols = symbolsMap.values.flatten()
+            val allSymbols = symbolsMap.values.flatten().distinctBy { it.qualifiedName?.asString() }
+            writer.write("import cloud.glitchdev.rfu.events.EventScopes\n")
+            writer.write("import cloud.glitchdev.rfu.gui.window.HudWindow\n")
 
             // Detect duplicate simple names so we can use fully-qualified references for them
             val simpleNameCounts = allSymbols
@@ -133,12 +170,19 @@ class FeatureProcessor(
                 .forEach { writer.write("import $it\n") }
 
             writer.write("\nobject $fileName {\n")
+            specs.mapNotNull { it.scope }.forEach {
+                writer.write("    private val ${it.fieldName} = EventScopes()\n")
+            }
 
             specs.forEach { spec ->
                 val symbols = symbolsMap[spec] ?: emptyList()
+                val scope = spec.scope
 
                 writer.write("\n    fun ${spec.loaderFuncName}() {\n")
-                if (symbols.isEmpty()) writer.write("        // No entries found\n")
+                if (scope != null) writer.write("        ${scope.fieldName}.loadIsolated {\n")
+                val indent = if (scope != null) "            " else "        "
+                if (spec.annotation == HUD_ELEMENT) writer.write("${indent}mount(\"HudWindow\") { HudWindow.initialize(it) }\n")
+                if (symbols.isEmpty()) writer.write("$indent// No entries found\n")
 
                 symbols.forEach { symbol ->
                     val simpleName = symbol.simpleName.asString()
@@ -148,15 +192,17 @@ class FeatureProcessor(
                     } else {
                         simpleName
                     }
-                    writer.write("        ")
-                    if (symbol.classKind == ClassKind.OBJECT) {
-                        writer.write("$ref.${spec.methodToCall}()")
+                    val instance = if (symbol.classKind == ClassKind.OBJECT) ref else "$ref()"
+                    if (scope != null) {
+                        writer.write("${indent}mount(\"$simpleName\") { $instance.${spec.methodToCall}(it) }\n")
                     } else {
-                        writer.write("$ref().${spec.methodToCall}()")
+                        val arguments = if (spec.annotation == AUTO_REGISTER) "EventScopes.startup" else ""
+                        writer.write("$indent$instance.${spec.methodToCall}($arguments)\n")
                     }
-                    writer.write("\n")
                 }
+                if (scope != null) writer.write("        }\n")
                 writer.write("    }\n")
+                if (scope != null) writer.write("\n    fun ${scope.unloadFuncName}() = ${scope.fieldName}.close()\n")
             }
             writer.write("}")
         }

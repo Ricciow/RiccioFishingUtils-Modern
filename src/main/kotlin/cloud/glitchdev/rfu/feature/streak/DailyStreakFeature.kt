@@ -3,22 +3,22 @@ package cloud.glitchdev.rfu.feature.streak
 import cloud.glitchdev.rfu.config.categories.DailyStreakSettings
 import cloud.glitchdev.rfu.constants.text.Emoji
 import cloud.glitchdev.rfu.data.streak.DailyStreakManager
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerJoinEvent
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.connection.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerJoinEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.World
-import net.minecraft.network.chat.Component
 
 @RFUFeature
 object DailyStreakFeature : Feature {
     var wasInSkyblock = false
 
-    override fun onInitialize() {
-        registerJoinEvent(delayMillis = 1000) { _ ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerJoinEvent(delayMillis = 1000) { _ ->
             if (!DailyStreakSettings.dailyStreakEnabled || !World.isOnHypixel || !World.isInSkyblock) return@registerJoinEvent
 
             DailyStreakManager.checkDailyReset()
@@ -34,11 +34,12 @@ object DailyStreakFeature : Feature {
             wasInSkyblock = World.isInSkyblock
         }
 
-        registerDisconnectEvent {
+        scope.registerDisconnectEvent {
             wasInSkyblock = false
+            DailyStreakManager.unregisterAllListeners()
         }
 
-        registerTickEvent(interval = 20) {
+        scope.registerTickEvent(interval = 20) {
             if (!DailyStreakSettings.dailyStreakEnabled) return@registerTickEvent
 
             DailyStreakManager.checkDailyReset()

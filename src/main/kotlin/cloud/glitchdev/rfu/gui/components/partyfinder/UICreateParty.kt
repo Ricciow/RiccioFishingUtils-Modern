@@ -8,6 +8,7 @@ import cloud.glitchdev.rfu.data.other.data.PartyPresetData
 import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.UIPopup
 import cloud.glitchdev.rfu.gui.components.textinput.UIDecoratedTextInput
+import cloud.glitchdev.rfu.gui.components.textinput.ColorCodeText
 import cloud.glitchdev.rfu.gui.components.dropdown.UIDropdown
 import cloud.glitchdev.rfu.gui.components.dropdown.UIDropdownCard
 import cloud.glitchdev.rfu.gui.components.textinput.UIWrappedDecoratedTextInput
@@ -19,10 +20,12 @@ import cloud.glitchdev.rfu.utils.Party
 import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.dsl.compact
 import cloud.glitchdev.rfu.utils.network.PartyWebSocket
-import cloud.glitchdev.rfu.events.managers.ErrorEvents.registerErrorMessageEvent
-import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
-import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerMyPartyChangedEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.connection.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.party.registerMyPartyChangedEvent
+import cloud.glitchdev.rfu.events.managers.ui.registerErrorMessageEvent
 import cloud.glitchdev.rfu.utils.Coroutines
+import cloud.glitchdev.rfu.utils.World
 import kotlinx.coroutines.delay
 import kotlin.jvm.optionals.getOrNull
 import cloud.glitchdev.rfu.gui.UIScheme
@@ -56,6 +59,7 @@ import gg.essential.elementa.effects.ScissorEffect
 class UICreateParty : UIContainer() {
     private val popup: UIPopup get() = PartyFinderWindow.popup
     private var party: FishingParty = PartyWebSocket.myParty ?: loadInitialParty()
+    private var lastKnownIsland: FishingIslands? = null
 
     private fun loadInitialParty(): FishingParty {
         val blank = FishingParty.blankParty()
@@ -91,14 +95,27 @@ class UICreateParty : UIContainer() {
     private var lastSubmitTime = 0L
 
     init {
-        registerErrorMessageEvent { message, origin ->
+        create()
+    }
+
+    fun initialize(scope: EventScope) {
+        val currentParty = PartyWebSocket.myParty
+        if (currentParty != null && currentParty !== party) {
+            party = currentParty
+            updateFields()
+        } else {
+            updateButtonLabel()
+        }
+        if (World.island != lastKnownIsland) updateIsland(World.island)
+
+        scope.registerErrorMessageEvent { message, origin ->
             if (!this.isHidden() && (origin == "/app/party/publish" || origin == "/app/party/edit")) {
                 popup.showWarning(message)
                 submitButton.disabled = false
             }
         }
 
-        registerMyPartyChangedEvent { updatedParty ->
+        scope.registerMyPartyChangedEvent { updatedParty ->
             if (updatedParty != null) {
                 party = updatedParty
                 updateFields()
@@ -107,20 +124,20 @@ class UICreateParty : UIContainer() {
             }
         }
 
-        registerLocationEvent { event ->
-            if (PartyWebSocket.myParty != null) return@registerLocationEvent
-            val islandName = event.map.getOrNull() ?: return@registerLocationEvent
-            val newIsland = FishingIslands.findIslandObject(islandName)
-            if (newIsland != null && newIsland != FishingIslands.OTHER && newIsland != FishingIslands.NOT_SB && newIsland != FishingIslands.UNKNOWN) {
-                if (party.island != newIsland) {
-                    party.island = newIsland
-                    islandField.setSelected(newIsland.toDataOption())
-                    updatePartyTypeVisibility(newIsland)
-                }
-            }
+        scope.registerLocationEvent { event ->
+            updateIsland(event.map.getOrNull()?.let(FishingIslands::findIslandObject))
         }
+    }
 
-        create()
+    private fun updateIsland(island: FishingIslands?) {
+        lastKnownIsland = island
+        if (PartyWebSocket.myParty != null || island == null || island == FishingIslands.OTHER ||
+            island == FishingIslands.NOT_SB || island == FishingIslands.UNKNOWN || party.island == island
+        ) return
+
+        party.island = island
+        islandField.setSelected(island.toDataOption())
+        updatePartyTypeVisibility(island)
     }
 
     private fun create() {
@@ -176,7 +193,7 @@ class UICreateParty : UIContainer() {
         } childOf row1
 
         createLabel("TITLE", titleGroup, 0f)
-        titleField = UIDecoratedTextInput("Party Title", 2f).constrain {
+        titleField = UIDecoratedTextInput("Party Title", 2f, allowColors = true).constrain {
             x = 0.pixels()
             y = SiblingConstraint(UIScheme.pfLabelSpacing)
             width = 100.percent()
@@ -211,7 +228,7 @@ class UICreateParty : UIContainer() {
 
     private fun createRow2(parent: UIContainer) {
         createLabel("DESCRIPTION", parent, UIScheme.pfSectionSpacing)
-        descriptionField = UIWrappedDecoratedTextInput("Party Description", 2f).constrain {
+        descriptionField = UIWrappedDecoratedTextInput("Party Description", 2f, allowColors = true).constrain {
             x = 0.pixels()
             y = SiblingConstraint(UIScheme.pfLabelSpacing)
             width = 100.percent()
@@ -221,6 +238,14 @@ class UICreateParty : UIContainer() {
             hoverColor = UIScheme.pfInputBgHovered.toConstraint()
         } childOf parent
         descriptionField.setText(party.description)
+
+        UIText("Use &0-9 or &a-f for colors in the title and description.").constrain {
+            x = 0.pixels()
+            y = SiblingConstraint(UIScheme.pfLabelSpacing)
+            width = TextAspectConstraint()
+            height = ScaledTextConstraint(0.75f)
+            color = UIScheme.pfCardUserColor.toConstraint()
+        } childOf parent
     }
 
     private fun createRow3(parent: UIContainer) {
@@ -499,6 +524,7 @@ class UICreateParty : UIContainer() {
                         popup.showWarning("You must be the party leader to do this!")
                         submitButton.disabled = false
                     } else {
+                        party.players.current = if (Party.inParty) maxOf(Party.effectiveMemberCount, 1) else 1
                         PartyWebSocket.submitParty(party)
                     }
                 }
@@ -560,13 +586,13 @@ class UICreateParty : UIContainer() {
 
     private fun updatePartyModel() {
         party.profileId = User.profileId
-        party.title = titleField.getText()
-        party.description = descriptionField.getText()
+        party.title = ColorCodeText.toFormatted(titleField.getText())
+        party.description = ColorCodeText.toFormatted(descriptionField.getText())
         party.island = islandField.getSelectedItem().value as FishingIslands
         updatePartyTypeVisibility(party.island)
         party.level = (levelField.getText().toIntOrNull() ?: 0).coerceIn(0, 50)
         party.overflow = if (party.level == 50) parseOverflow() ?: party.overflow else 0L
-        party.players.current = if (Party.inParty) Party.memberCount else 1
+        party.players.current = if (Party.inParty) maxOf(Party.effectiveMemberCount, 1) else 1
         party.players.max = maxPlayersField.getText().toIntOrNull() ?: 6
 
         party.setRequisite("has_killer", "Has Killer", killerToggle.selected)

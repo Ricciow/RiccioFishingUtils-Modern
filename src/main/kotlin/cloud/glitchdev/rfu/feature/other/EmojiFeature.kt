@@ -3,6 +3,12 @@ package cloud.glitchdev.rfu.feature.other
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.text.Emoji
 import cloud.glitchdev.rfu.constants.text.EmojiData
+import cloud.glitchdev.rfu.data.other.EmojiPreferences
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.chat.registerModifyChatEvent
+import cloud.glitchdev.rfu.events.managers.chat.registerModifyCommandEvent
+import cloud.glitchdev.rfu.feature.Feature
+import cloud.glitchdev.rfu.feature.RFUFeature
 import net.minecraft.client.StringSplitter
 import net.minecraft.client.gui.Font
 import net.minecraft.network.chat.FormattedText
@@ -10,11 +16,80 @@ import net.minecraft.network.chat.Style
 import net.minecraft.util.FormattedCharSequence
 import net.minecraft.util.FormattedCharSink
 import net.minecraft.util.StringDecomposer
+import net.minecraft.util.StringUtil
 import java.util.Optional
 
-object EmojiFeature {
+@RFUFeature
+object EmojiFeature : Feature {
     private val colonTriggers = Emoji.COLON_TRIGGERS.mapKeys { it.key.lowercase() }
     private val otherTriggers = Emoji.CUSTOM_TRIGGERS.mapKeys { it.key.lowercase() }
+    private val outgoingTrigger = Emoji.MESSAGE_REPLACEMENTS.keys
+        .sortedByDescending { it.length }
+        .joinToString("|") { trigger ->
+            val literal = Regex.escape(trigger)
+            if (trigger.startsWith(':') && trigger.endsWith(':')) literal else "(?<!\\S)$literal(?!\\S)"
+        }
+        .takeIf { it.isNotEmpty() }
+        ?.toRegex(RegexOption.IGNORE_CASE)
+
+    private val singleArgChatCommands = setOf(
+        "ac", "achat", "allchat",
+        "pc", "pchat", "partychat",
+        "gc", "gchat", "guildchat",
+        "oc", "ochat", "officerchat",
+        "cc", "cchat", "coopchat",
+        "r", "reply", "shout",
+    )
+    private val whisperCommands = setOf("msg", "w", "tell", "message", "whisper")
+    private val subChatCommands = setOf("g", "guild", "p", "party", "co", "coop")
+
+    override fun onInitialize(scope: EventScope) {
+        scope.registerModifyChatEvent { message ->
+            if (!OtherSettings.emojis) return@registerModifyChatEvent message
+            val expanded = expandOutgoing(message)
+            if (StringUtil.trimChatMessage(expanded) == expanded) expanded else message
+        }
+
+        scope.registerModifyCommandEvent { command ->
+            if (!OtherSettings.emojis) return@registerModifyCommandEvent command
+            val messageStart = chatCommandMessageStart(command) ?: return@registerModifyCommandEvent command
+            val expanded = command.substring(0, messageStart) + expandOutgoing(command.substring(messageStart))
+            if (StringUtil.trimChatMessage(expanded) == expanded) expanded else command
+        }
+    }
+
+    private fun expandOutgoing(message: String): String {
+        return outgoingTrigger?.replace(message) { match ->
+            Emoji.MESSAGE_REPLACEMENTS[match.value.lowercase()]
+                ?.takeIf(EmojiPreferences::isEnabled)
+                ?.messageReplacement ?: match.value
+        } ?: message
+    }
+
+    private fun chatCommandMessageStart(command: String): Int? {
+        val firstSpace = command.indexOf(' ')
+        if (firstSpace <= 0) return null
+        val name = command.substring(0, firstSpace).lowercase()
+        val firstArgStart = command.indexOfFirstAfter(firstSpace) { it != ' ' } ?: return null
+        if (name in singleArgChatCommands) return firstArgStart
+
+        if (name in whisperCommands || name in subChatCommands) {
+            val secondSpace = command.indexOf(' ', firstArgStart)
+            if (secondSpace == -1) return null
+            if (name in subChatCommands && !command.substring(firstArgStart, secondSpace).equals("chat", ignoreCase = true)) {
+                return null
+            }
+            return command.indexOfFirstAfter(secondSpace) { it != ' ' }
+        }
+        return null
+    }
+
+    private inline fun String.indexOfFirstAfter(startIndex: Int, predicate: (Char) -> Boolean): Int? {
+        for (i in startIndex until length) {
+            if (predicate(this[i])) return i
+        }
+        return null
+    }
 
     private fun hasPossibleEmoji(text: String): Boolean = text.contains(':') ||
         otherTriggers.keys.any { text.contains(it, ignoreCase = true) }
@@ -34,20 +109,31 @@ object EmojiFeature {
             val end = text.indexOf(':', start + 1)
             if (end == -1) break
             val trigger = text.substring(start, end + 1).lowercase()
-            val emoji = colonTriggers[trigger]
+            val emoji = colonTriggers[trigger]?.takeIf(EmojiPreferences::isEnabled)
             if (emoji != null) matches.add(EmojiMatch(start, end + 1, emoji))
             searchIndex = if (emoji != null) end + 1 else start + 1
         }
         for ((trigger, emoji) in otherTriggers) {
+            if (!EmojiPreferences.isEnabled(emoji)) continue
+            val wordOnly = trigger.all { it.isLetterOrDigit() }
+            val messageShortcut = emoji.messageReplacement != null && !trigger.equals(emoji.messageReplacement, ignoreCase = true)
             var index = text.indexOf(trigger, ignoreCase = true)
             while (index != -1) {
+                val end = index + trigger.length
+                val bounded = when {
+                    messageShortcut -> (index == 0 || text[index - 1].isWhitespace()) &&
+                        (end == text.length || text[end].isWhitespace())
+                    wordOnly -> (index == 0 || !text[index - 1].isLetterOrDigit() || (index >= 2 && text[index - 2] == '§')) &&
+                        (end == text.length || !text[end].isLetterOrDigit())
+                    else -> true
+                }
                 val replacement = emoji.textReplacement.orEmpty()
                 val triggerOffset = replacement.indexOf(trigger, ignoreCase = true)
                 val alreadyExpanded = triggerOffset >= 0 && text.regionMatches(
                     index - triggerOffset, replacement, 0, replacement.length, ignoreCase = true
                 )
-                if (!alreadyExpanded) matches.add(EmojiMatch(index, index + trigger.length, emoji))
-                index = text.indexOf(trigger, index + trigger.length, ignoreCase = true)
+                if (bounded && !alreadyExpanded) matches.add(EmojiMatch(index, end, emoji))
+                index = text.indexOf(trigger, end, ignoreCase = true)
             }
         }
         matches.sortBy { it.start }

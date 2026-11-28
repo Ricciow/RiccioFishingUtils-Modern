@@ -6,7 +6,8 @@ import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericAchievement
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
-import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.fishing.registerSeaCreatureCatchEvent
 
 @Achievement
 object InklingStreakAchievement: NumericAchievement() {
@@ -18,16 +19,15 @@ object InklingStreakAchievement: NumericAchievement() {
     override val category: AchievementCategory = AchievementCategory.INK
     override val targetCount: Long = 6L
 
-    override fun setupListeners() {
-        activeListeners.add(registerSeaCreatureCatchEvent
-        { sc, _, _, _, _ ->
+    override fun setupListeners(scope: EventScope) {
+        scope.registerSeaCreatureCatchEvent { sc, _, _, _, _ ->
             val inkling = SeaCreatures.get("Inkling")
             if (inkling != null && sc == inkling) {
                 addProgress()
             } else {
                 currentCount = 0L
             }
-        })
+        }
     }
 
 }

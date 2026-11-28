@@ -10,7 +10,7 @@ import net.minecraft.resources.Identifier
 
 /** ResourcefulConfig's string button titles cannot carry a native sprite component. */
 class EmojiConfigButton(
-    private val emoji: EmojiData,
+    private val emoji: () -> EmojiData,
     private val title: String,
     private val description: String,
     private val text: String,
@@ -27,7 +27,7 @@ class EmojiConfigButton(
             ResourcefulConfigUI.registerElementRenderer(id) { element ->
                 val button = element as EmojiConfigButton
                 object : ResourcefulConfigElementRenderer {
-                    override fun title(): Component = button.emoji.component().append(" ${button.title}")
+                    override fun title(): Component = button.emoji().component().append(" ${button.title}")
                     override fun description(): Component = Component.literal(button.description)
                     override fun widgets(): List<AbstractWidget> = listOf(
                         ResourcefulConfigUI.button(0, 0, 96, 12, Component.literal(button.text)) { button.invoke() }

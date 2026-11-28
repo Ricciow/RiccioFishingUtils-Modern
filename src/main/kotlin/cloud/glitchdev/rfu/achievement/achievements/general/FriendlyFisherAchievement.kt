@@ -1,13 +1,13 @@
 package cloud.glitchdev.rfu.achievement.achievements.general
 
-import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.achievement.Achievement
 import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
-import cloud.glitchdev.rfu.events.managers.ArmorEvents
-import cloud.glitchdev.rfu.events.managers.ArmorEvents.registerArmorChangeEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.inventory.ArmorChangeEventManager
+import cloud.glitchdev.rfu.events.managers.inventory.registerArmorChangeEvent
 
 @Achievement
 object FriendlyFisherAchievement : NumericStageAchievement() {
@@ -25,17 +25,17 @@ object FriendlyFisherAchievement : NumericStageAchievement() {
         addStageInfo(3, "Friendly Fisher", "Equip a Bobbin' Time 5 full armor set.", AchievementDifficulty.MEDIUM)
     }
 
-    override fun setupListeners() {
-        activeListeners.add(registerArmorChangeEvent {
+    override fun setupListeners(scope: EventScope) {
+        scope.registerArmorChangeEvent {
             checkAll()
-        })
+        }
         checkAll()
     }
 
     private fun checkAll() {
         while (!isCompleted) {
             val targetLevel = getTargetBobbinLevelForStage(currentStage)
-            val count = ArmorEvents.currentArmorSet.getValidBobbinCount(targetLevel).toLong()
+            val count = ArmorChangeEventManager.currentArmorSet.getValidBobbinCount(targetLevel).toLong()
             currentCount = count
             if (count < targetCount) break
         }

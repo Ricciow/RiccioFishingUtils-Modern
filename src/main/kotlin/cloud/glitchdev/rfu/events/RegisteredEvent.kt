@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.events
 
 interface RegisteredEvent {
-    fun register()
-    fun postInitialize() {}
+    fun register(scope: EventScope)
+    fun postInitialize(scope: EventScope) {}
 }

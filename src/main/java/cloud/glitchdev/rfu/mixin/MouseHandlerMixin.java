@@ -1,6 +1,6 @@
 package cloud.glitchdev.rfu.mixin;
 
-import cloud.glitchdev.rfu.events.managers.KeybindEvents;
+import cloud.glitchdev.rfu.events.managers.input.KeybindEvents;
 import cloud.glitchdev.rfu.gui.window.HudWindow;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -41,7 +41,7 @@ public class MouseHandlerMixin {
                         ci.cancel();
                     }
                 } else if (action == 0) {
-                    if (HudWindow.INSTANCE.handleMouseReleased(xm, ym, rawButtonInfo.button())) {
+                    if (HudWindow.INSTANCE.handleMouseReleased()) {
                         ci.cancel();
                     }
                 }
@@ -76,7 +76,7 @@ public class MouseHandlerMixin {
     )
     private boolean rfu$wrapMouseDragged(Screen instance, MouseButtonEvent event, double dx, double dy, Operation<Boolean> original) {
         if (instance instanceof AbstractContainerScreen) {
-            if (HudWindow.INSTANCE.handleMouseDragged(event.x(), event.y(), event.button(), dx, dy)) {
+            if (HudWindow.INSTANCE.handleMouseDragged()) {
                 return true;
             }
         }

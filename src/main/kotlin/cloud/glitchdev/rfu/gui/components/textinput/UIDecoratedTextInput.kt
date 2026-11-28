@@ -20,6 +20,7 @@ class UIDecoratedTextInput(
     radius: Float,
     val numberOnly: Boolean = false,
     val maxChars: Int = 0,
+    val allowColors: Boolean = false,
     var onChange: (String) -> Unit = {}
 ) : UIRoundedRectangle(radius), Colorable {
     var primaryColor = UIScheme.secondaryColorOpaque.toConstraint()
@@ -68,7 +69,7 @@ class UIDecoratedTextInput(
             }
         }
 
-        textInput = (object : UISpecialTextInput(placeholder) {
+        textInput = (object : UISpecialTextInput(placeholder, allowColors = allowColors) {
             override fun keyType(typedChar: Char, keyCode: Int) {
                 if (isEnabled) super.keyType(typedChar, keyCode)
             }

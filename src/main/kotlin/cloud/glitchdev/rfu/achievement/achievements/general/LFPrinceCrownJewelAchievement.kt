@@ -11,5 +11,5 @@ object LFPrinceCrownJewelAchievement : DropDryStreakAchievement(RareDrops.PRINCE
     override val name: String = "LF Jewel"
     override val category: AchievementCategory = AchievementCategory.GENERAL
 
-    override val milestones: List<Long> = listOf(25L, 50L, 75L, 100L, 150L)
+    override val milestones: List<Long> = listOf(15L, 30L, 50L, 70L, 90L)
 }

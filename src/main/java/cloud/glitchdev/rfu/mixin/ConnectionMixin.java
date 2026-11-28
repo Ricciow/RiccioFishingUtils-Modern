@@ -1,7 +1,7 @@
 package cloud.glitchdev.rfu.mixin;
 
-import cloud.glitchdev.rfu.events.managers.PacketSentEvents;
-import cloud.glitchdev.rfu.events.managers.ParticleEvents;
+import cloud.glitchdev.rfu.events.managers.connection.PacketSentEvents;
+import cloud.glitchdev.rfu.events.managers.render.ParticleEvents;
 import cloud.glitchdev.rfu.events.wrappers.VoidCancelable;
 import cloud.glitchdev.rfu.feature.other.TpsTracker;
 import io.netty.channel.ChannelFutureListener;

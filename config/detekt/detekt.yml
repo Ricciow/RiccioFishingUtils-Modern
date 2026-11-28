@@ -1,0 +1,13 @@
+style:
+  active: true
+  severity: warning
+  excludes: ['**/build/generated/ksp/**']
+  UnusedImport:
+    active: true
+  UnusedParameter:
+    active: true
+  UnusedPrivateProperty:
+    active: true
+    allowedNames: '^(unused|_)$'
+  UnusedVariable:
+    active: true

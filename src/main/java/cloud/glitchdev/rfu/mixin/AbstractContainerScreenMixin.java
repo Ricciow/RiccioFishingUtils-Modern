@@ -1,7 +1,7 @@
 package cloud.glitchdev.rfu.mixin;
 
-import cloud.glitchdev.rfu.events.managers.SlotClickedEvents;
-import cloud.glitchdev.rfu.events.managers.SlotRenderEvents;
+import cloud.glitchdev.rfu.events.managers.inventory.SlotClickedEvents;
+import cloud.glitchdev.rfu.events.managers.render.SlotRenderEvents;
 import cloud.glitchdev.rfu.gui.window.HudWindow;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;

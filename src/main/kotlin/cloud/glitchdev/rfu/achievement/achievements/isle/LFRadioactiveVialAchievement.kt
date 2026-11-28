@@ -11,6 +11,6 @@ object LFRadioactiveVialAchievement : DropDryStreakAchievement(RareDrops.RADIOAC
     override val name: String = "LF Vial"
     override val category: AchievementCategory = AchievementCategory.ISLE
 
-    override val milestones: List<Long> = listOf(20L, 40L, 60L, 80L, 100L)
+    override val milestones: List<Long> = listOf(25L, 50L, 75L, 100L, 125L)
     override val stageNumerals: List<String> = listOf("I", "II", "III", "IV", "V")
 }

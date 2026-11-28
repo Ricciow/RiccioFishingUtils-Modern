@@ -22,7 +22,6 @@ class SeaCreatures(
     val condition: (Hotspot?, Vec3, Bait?) -> Boolean = { _, _, _ -> true },
     val lsRangeEnabled: Boolean = true,
     val bossbar: Boolean = false,
-    val gdragAlert: Boolean = false,
     val rareSCAlert: Boolean = false,
     val mergeBossbarHp: Boolean = false,
     val scDisplayColor: String = "§f",
@@ -48,21 +47,30 @@ class SeaCreatures(
 
     companion object {
         private val registry = mutableMapOf<String, SeaCreatures>()
-        private val displayNameRegistry = mutableMapOf<String, SeaCreatures>()
+        private var catchMessageIndex: Map<String, SeaCreatures>? = null
 
         val entries: Collection<SeaCreatures>
             get() = registry.values
 
         fun get(name: String): SeaCreatures? = registry[name]
 
+        fun getByCatchMessage(message: String): SeaCreatures? {
+            val index = catchMessageIndex ?: buildMap(registry.size) {
+                for (creature in registry.values) {
+                    putIfAbsent(creature.catchMessage, creature)
+                }
+            }.also { catchMessageIndex = it }
+            return index[message]
+        }
+
         fun register(sc: SeaCreatures) {
             registry[sc.scName] = sc
-            displayNameRegistry[sc.scDisplayName.lowercase()] = sc
+            catchMessageIndex = null
         }
 
         fun clear() {
             registry.clear()
-            displayNameRegistry.clear()
+            catchMessageIndex = null
         }
     }
 }
@@ -82,6 +90,8 @@ class SeaCreaturesAdapter : TypeAdapter<SeaCreatures>() {
             return null
         }
         val name = `in`.nextString()
-        return SeaCreatures.get(name) ?: SeaCreatures(name, name, "", "", "", false, "", LiquidTypes.WATER, SeaCreatureCategory.GENERAL_WATER)
+        return SeaCreatures.get(name) ?: SeaCreatures(
+            name, name, "", "", "", false, "", LiquidTypes.WATER, SeaCreatureCategory(SeaCreatureCategory.GENERAL_WATER)
+        )
     }
 }

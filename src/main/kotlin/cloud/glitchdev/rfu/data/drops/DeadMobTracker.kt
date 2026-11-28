@@ -1,15 +1,14 @@
 package cloud.glitchdev.rfu.data.drops
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.connection.registerDisconnectEvent
+import cloud.glitchdev.rfu.events.managers.connection.registerLocationEvent
+import cloud.glitchdev.rfu.events.managers.entity.registerMobDeathEvent
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.data.mob.SkyblockEntity
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.ConnectionEvents.registerDisconnectEvent
-import cloud.glitchdev.rfu.events.managers.HypixelModApiEvents.registerLocationEvent
-import cloud.glitchdev.rfu.events.managers.MobEvents.registerMobDeathEvent
-import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.Coroutines
-import cloud.glitchdev.rfu.utils.TextUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import net.minecraft.world.phys.Vec3
@@ -39,16 +38,16 @@ object DeadMobTracker : RegisteredEvent {
     private val records = CopyOnWriteArrayList<DeadMob>()
     private val pendingLookups = CopyOnWriteArrayList<PendingLookup>()
 
-    override fun register() {
-        registerMobDeathEvent(0) { mobs ->
+    override fun register(scope: EventScope) {
+        scope.registerMobDeathEvent(0) { mobs ->
             recordDeaths(mobs)
         }
 
-        registerLocationEvent {
+        scope.registerLocationEvent {
             clear()
         }
 
-        registerDisconnectEvent {
+        scope.registerDisconnectEvent {
             clear()
         }
     }

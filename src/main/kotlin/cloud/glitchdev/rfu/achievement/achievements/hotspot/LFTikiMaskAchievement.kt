@@ -11,6 +11,6 @@ object LFTikiMaskAchievement : DropDryStreakAchievement(RareDrops.TIKI_MASK) {
     override val name: String = "LF Mask"
     override val category: AchievementCategory = AchievementCategory.HOT_SPOT
 
-    override val milestones: List<Long> = listOf(25L, 50L, 75L, 100L, 150L, 200L)
+    override val milestones: List<Long> = listOf(10L, 20L, 30L, 40L, 60L, 80L)
     override val stageNumerals: List<String> = listOf("I", "II", "III", "IV", "V", "VI")
 }

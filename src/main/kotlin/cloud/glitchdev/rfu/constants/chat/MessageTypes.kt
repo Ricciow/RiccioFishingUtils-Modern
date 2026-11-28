@@ -10,10 +10,10 @@ enum class MessageTypes(val displayName: String, val regex: Regex) {
     CATCH("Catch", """(?:Double Hook!|It's a Double Hook! Woot woot!|It's a Double Hook!)""".toExactRegex()),
     COMBO("Combo", """\+\d+ Kill Combo (.+)""".toExactRegex()),
     BLOCKS("Blocks in the way", """There are blocks in the way!""".toExactRegex()),
-    THUNDER_SPARK("Thunder Spark", """Try clicking this Thunder Spark with an Empty Thunder Bottle to collect it!""".toExactRegex()),
+    THUNDER_SPARK("Thunder Spark", """Try clicking this Thunder Spark with an Empty Thunder in a Bottle to collect it!""".toExactRegex()),
     COCOON("Cocoon", """CAUGHT! You cocooned (?:an? )?(.+)!""".toExactRegex()),
     SACKS("Sacks", """\[Sacks\] \+\d+ items?\. \(Last \d+s\.\)""".toExactRegex()),
-    CHARM("Charm", """(?:CHARM! You charmed .+ and received .+|LOOT SHARE You received \d+ .+? Shards? for assisting .+!)""".toExactRegex()),
+    CHARM("Charm", """(?:CHARM! You charmed .+ and received .+|LOOT SHARE! You received \d+ .+? Shards? for assisting .+!)""".toExactRegex()),
     HURRICANE_BOTTLE("Hurricane in a Bottle", """(?:> )?Your (?:Empty )?Hurricane (?:in a )?Bottle has absorbed .+""".toExactRegex()),
     VANQUISHER("Vanquisher", """A Vanquisher is spawning nearby!""".toExactRegex()),
     TREASURES("Treasures", """(?:\uE025\s*)?(?:GOOD|GREAT|OUTSTANDING) CATCH! You caught .+!""".toExactRegex()),
@@ -21,7 +21,7 @@ enum class MessageTypes(val displayName: String, val regex: Regex) {
     STEALTH("Stealth Enchantment", """The .+ didn't notice your presence thanks to your Stealth enchantment!""".toExactRegex());
 
     fun matches(message: String): Boolean {
-        if (this == CATCH && SeaCreatures.entries.any { it.catchMessage == message }) return true
+        if (this == CATCH && SeaCreatures.getByCatchMessage(message) != null) return true
 
         val match = regex.find(message) ?: return false
         return this != COMBO || !match.groupValues[1].contains("Magic Find")

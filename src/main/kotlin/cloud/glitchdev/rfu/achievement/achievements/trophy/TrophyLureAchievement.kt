@@ -7,8 +7,9 @@ import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.BaseAchievement
 import cloud.glitchdev.rfu.achievement.AchievementProvider
-import cloud.glitchdev.rfu.events.managers.ContainerEvents.registerContainerOpenEvent
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.inventory.registerContainerOpenEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.utils.Tablist
 import cloud.glitchdev.rfu.utils.dsl.removeFormatting
 import gg.essential.universal.utils.toUnformattedString
@@ -35,14 +36,14 @@ object TrophyLureAchievement : BaseAchievement() {
     private val tablistRegex = """Trophy Chance:\s*\s*([0-9]+(?:\.[0-9]+)?)""".toRegex(RegexOption.IGNORE_CASE)
     private val statRegex = """\s*Trophy Chance\s*([0-9]+(?:\.[0-9]+)?)%?""".toRegex(RegexOption.IGNORE_CASE)
 
-    override fun setupListeners() {
-        activeListeners.add(registerTickEvent(interval = 20) {
+    override fun setupListeners(scope: EventScope) {
+        scope.registerTickEvent(interval = 20) {
             checkProgress()
-        })
+        }
 
-        activeListeners.add(registerContainerOpenEvent { _, _, _ ->
+        scope.registerContainerOpenEvent { _, _, _ ->
             checkProgress()
-        })
+        }
     }
 
     private fun extractTrophyChance(text: String, regex: Regex): Float? {

@@ -5,7 +5,8 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.feature.fishing.FishingSession
 
 @Achievement
@@ -34,8 +35,8 @@ object MarathonFisherAchievement : NumericStageAchievement() {
         return STAGE_TARGET_MINUTES.getOrNull(stage - 1) ?: STAGE_TARGET_MINUTES.last()
     }
 
-    override fun setupListeners() {
-        activeListeners.add(registerTickEvent(interval = 20) {
+    override fun setupListeners(scope: EventScope) {
+        scope.registerTickEvent(interval = 20) {
             if (isCompleted) return@registerTickEvent
 
             if (!FishingSession.isFishing || FishingSession.isPaused) {
@@ -45,6 +46,6 @@ object MarathonFisherAchievement : NumericStageAchievement() {
 
             val currentMinutes = FishingSession.duration.inWholeMinutes
             currentCount = currentMinutes
-        })
+        }
     }
 }

@@ -54,8 +54,8 @@ enum class Dyes(val dyeName: String, val hex: String, val relatedScNames : List<
         get() = when {
             relatedScNames.contains("WATER_LIQUID") -> SeaCreatures.entries.filter { it.liquidType == LiquidTypes.WATER }
             relatedScNames.contains("LAVA_LIQUID") -> SeaCreatures.entries.filter { it.liquidType == LiquidTypes.LAVA }
-            relatedScNames.contains("WINTER_CATEGORY") -> SeaCreatures.entries.filter { it.category == SeaCreatureCategory.WINTER }
-            relatedScNames.contains("SPOOKY_CATEGORY") -> SeaCreatures.entries.filter { it.category == SeaCreatureCategory.SPOOKY }
+            relatedScNames.contains("WINTER_CATEGORY") -> SeaCreatures.entries.filter { it.category.id == SeaCreatureCategory.WINTER }
+            relatedScNames.contains("SPOOKY_CATEGORY") -> SeaCreatures.entries.filter { it.category.id == SeaCreatureCategory.SPOOKY }
             else -> relatedScNames.mapNotNull { SeaCreatures.get(it) }
         }
 

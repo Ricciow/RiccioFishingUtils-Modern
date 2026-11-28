@@ -2,21 +2,16 @@ package cloud.glitchdev.rfu.achievement
 
 import cloud.glitchdev.rfu.achievement.interfaces.IAchievement
 import cloud.glitchdev.rfu.achievement.interfaces.IStageAchievement
-import cloud.glitchdev.rfu.events.managers.AchievementUnlockedEvents
-import cloud.glitchdev.rfu.events.managers.AchievementStageUnlockedEvents
-import cloud.glitchdev.rfu.events.managers.AchievementUpdatedEvents
+import cloud.glitchdev.rfu.events.managers.progress.AchievementUnlockedEvents
+import cloud.glitchdev.rfu.events.managers.progress.AchievementStageUnlockedEvents
+import cloud.glitchdev.rfu.events.managers.progress.AchievementUpdatedEvents
 
 object AchievementProvider {
-    fun getVisibleAchievements(): List<IAchievement> {
-        val all = AchievementManager.getRegistry().values
-        return all.filter { 
-            when (it.type) {
-                AchievementType.NORMAL -> true
-                AchievementType.SECRET -> true // Description masked by UI if not completed
-                AchievementType.OBFUSCATED -> true // Obfuscated by UI if not completed
-            }
-        }
-    }
+    fun isVisible(achievement: IAchievement): Boolean =
+        achievement.category != AchievementCategory.LEGACY || achievement.isCompleted
+
+    fun getVisibleAchievements(): List<IAchievement> =
+        AchievementManager.getRegistry().values.filter(::isVisible)
     
     fun fireAchievementUnlocked(achievement: IAchievement) {
         AchievementUnlockedEvents.runTasks(achievement)

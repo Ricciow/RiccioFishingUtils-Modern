@@ -53,13 +53,11 @@ abstract class StageAchievement : BaseAchievement(), IStageAchievement {
 
     fun debugAdvanceStage() {
         if (isCompleted) return
-        markAsCheated()
-        advanceStage()
+        applyDebugChange { advanceStage() }
     }
 
     override fun debugComplete() {
-        markAsCheated()
-        currentStage = targetStage + 1
+        applyDebugChange { currentStage = targetStage + 1 }
     }
 
     override fun debugReset() {
@@ -68,8 +66,7 @@ abstract class StageAchievement : BaseAchievement(), IStageAchievement {
     }
 
     fun debugSetStage(stage: Int) {
-        markAsCheated()
-        currentStage = stage
+        applyDebugChange { currentStage = stage }
     }
 
     override fun loadState(progressData: Map<String, Any>) {

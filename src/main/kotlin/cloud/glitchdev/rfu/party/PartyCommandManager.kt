@@ -1,11 +1,12 @@
 ﻿package cloud.glitchdev.rfu.party
 
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.chat.registerAllowGameEvent
 import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.constants.chat.PartyCommandListMode
 import cloud.glitchdev.rfu.constants.chat.RegexConstants.PLAYER_REGEX
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.RegisteredEvent
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerAllowGameEvent
 import cloud.glitchdev.rfu.config.categories.PartySettings
 import cloud.glitchdev.rfu.utils.Coroutines
 import cloud.glitchdev.rfu.utils.Chat
@@ -27,8 +28,8 @@ object PartyCommandManager : RegisteredEvent {
         command.aliases.forEach { commands[it.lowercase()] = command }
     }
 
-    override fun register() {
-        registerAllowGameEvent { text, _, _ ->
+    override fun register(scope: EventScope) {
+        scope.registerAllowGameEvent { text, _, _ ->
             if (!PartySettings.togglePartyCommands) return@registerAllowGameEvent true
             
             val message = text.toUnformattedString()

@@ -5,7 +5,8 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.StageAchievement
-import cloud.glitchdev.rfu.events.managers.TrophyCatchEvents.registerTrophyFishCatchEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.fishing.registerTrophyFishCatchEvent
 import cloud.glitchdev.rfu.constants.fishing.TrophyTier
 
 @Achievement
@@ -27,8 +28,8 @@ object VolcanicTwinsAchievement : StageAchievement() {
         addStageInfo(4, "Diamond Volcanic Twins", "Catch two Diamond trophy fish back-to-back.", AchievementDifficulty.VERY_HARD)
     }
 
-    override fun setupListeners() {
-        activeListeners.add(registerTrophyFishCatchEvent { _, tier, amount ->
+    override fun setupListeners(scope: EventScope) {
+        scope.registerTrophyFishCatchEvent { _, tier, amount ->
             val requiredTier = when (currentStage) {
                 1 -> TrophyTier.BRONZE
                 2 -> TrophyTier.SILVER
@@ -52,7 +53,7 @@ object VolcanicTwinsAchievement : StageAchievement() {
             } else {
                 lastTrophyTier = tierStr
             }
-        })
+        }
     }
 
     override fun onStageChanged(oldStage: Int, newStage: Int) {

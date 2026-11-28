@@ -11,5 +11,5 @@ object LFBurntTextsAchievement : DropDryStreakAchievement(RareDrops.BURNT_TEXTS)
     override val name: String = "LF Texts"
     override val category: AchievementCategory = AchievementCategory.HOT_SPOT
 
-    override val milestones: List<Long> = listOf(10L, 20L, 30L, 40L, 50L)
+    override val milestones: List<Long> = listOf(8L, 16L, 24L, 32L, 40L)
 }

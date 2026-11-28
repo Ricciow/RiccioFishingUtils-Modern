@@ -1,7 +1,8 @@
 package cloud.glitchdev.rfu.feature.fishing
 
 import cloud.glitchdev.rfu.config.categories.GeneralFishing
-import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.fishing.registerSeaCreatureCatchEvent
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat
@@ -14,8 +15,8 @@ import net.minecraft.network.chat.Component
 object DoubleHookMessages : Feature {
     var currentIndex = 0
 
-    override fun onInitialize() {
-        registerSeaCreatureCatchEvent { _, isDoubleHook, _, _, _ ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerSeaCreatureCatchEvent { _, isDoubleHook, _, _, _ ->
             if(GeneralFishing.toggleDoubleHookMessages && isDoubleHook) {
                 var message = GeneralFishing.doubleHookMessages[currentIndex]
 

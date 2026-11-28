@@ -1,7 +1,6 @@
 package cloud.glitchdev.rfu.gui.components.pets
 
 import cloud.glitchdev.rfu.gui.UIScheme
-import cloud.glitchdev.rfu.gui.components.UIButton
 import cloud.glitchdev.rfu.gui.components.colors
 import cloud.glitchdev.rfu.gui.components.dropdown.UIDropdown
 import cloud.glitchdev.rfu.gui.components.elementa.JustifiedCramSiblingConstraint
@@ -13,9 +12,7 @@ import cloud.glitchdev.rfu.model.pets.PetCategory
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedMaxSizeConstraint
-import gg.essential.elementa.constraints.ChildBasedSizeConstraint
 import gg.essential.elementa.constraints.CramSiblingConstraint
-import gg.essential.elementa.constraints.FillConstraint
 import gg.essential.elementa.constraints.SiblingConstraint
 import gg.essential.elementa.dsl.*
 import java.util.Timer
@@ -67,14 +64,14 @@ class UIPetFilterArea(var onSearch: () -> Unit = {}) : UIContainer() {
             onSelect = { triggerUpdate() }
         } childOf topArea
 
-        val rarities = arrayListOf(DataOption("ALL", "All Rarities"))
+        val rarities = arrayListOf<DataOption>()
         ItemRarity.entries
             .takeWhile { it <= ItemRarity.MYTHIC }
             .forEach { rarities.add(DataOption(it, it.toString())) }
 
         val defaultRarityIndex = rarities.indexOfFirst { it.value == ItemRarity.LEGENDARY }.coerceAtLeast(0)
 
-        rarityDropdown = UIDropdown(rarities, defaultRarityIndex, 2f, label = "Rarity").constrain {
+        rarityDropdown = UIDropdown(rarities, defaultRarityIndex, 2f, label = "Min Rarity").constrain {
             x = JustifiedCramSiblingConstraint(2f)
             y = CenterConstraint()
             width = 35.percent()
@@ -132,7 +129,7 @@ class UIPetFilterArea(var onSearch: () -> Unit = {}) : UIContainer() {
     }
 
     fun getCategory(): PetCategory? = categoryDropdown.getSelectedItem().value as? PetCategory
-    fun getRarity(): ItemRarity? = rarityDropdown.getSelectedItem().value as? ItemRarity
+    fun getRarity(): ItemRarity? = (rarityDropdown.getSelectedItem().value as? ItemRarity)?.takeIf { it != ItemRarity.COMMON }
     fun getCount(): Int = countField.getText().toIntOrNull()?.coerceIn(1, 24) ?: 12
     fun getMaxLevel(): Int? = maxLevelField.getText().toIntOrNull()
     fun getFilterCandy(): Boolean = candyToggle.selected

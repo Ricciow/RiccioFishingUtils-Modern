@@ -7,8 +7,8 @@ import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.data.catches.CatchTracker
 import cloud.glitchdev.rfu.data.fishing.Hotspot
-import cloud.glitchdev.rfu.events.managers.BaitEventManager
-import cloud.glitchdev.rfu.events.managers.HotSpotEvents
+import cloud.glitchdev.rfu.events.managers.fishing.BaitEventManager
+import cloud.glitchdev.rfu.events.managers.fishing.HotSpotEvents
 import cloud.glitchdev.rfu.utils.World
 import net.minecraft.world.phys.Vec3
 

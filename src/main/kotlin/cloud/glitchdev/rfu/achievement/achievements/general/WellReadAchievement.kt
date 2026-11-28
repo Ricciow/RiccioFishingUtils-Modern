@@ -5,7 +5,8 @@ import cloud.glitchdev.rfu.achievement.AchievementCategory
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
-import cloud.glitchdev.rfu.events.managers.ChatEvents.registerAnyChatEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.chat.registerAnyChatEvent
 import cloud.glitchdev.rfu.feature.fishing.MobyDuckFeature
 import cloud.glitchdev.rfu.utils.World
 
@@ -31,14 +32,12 @@ object WellReadAchievement : NumericStageAchievement() {
         addStageInfo(5, "Well Read", "Consume 100 Collector's Edition Moby-Ducks.", AchievementDifficulty.VERY_HARD)
     }
 
-    override fun setupListeners() {
-        val (chatEvent, gameEvent) = registerAnyChatEvent(MobyDuckFeature.mobyDuckRegex) { _, match ->
+    override fun setupListeners(scope: EventScope) {
+        scope.registerAnyChatEvent(MobyDuckFeature.mobyDuckRegex) { _, match ->
             if (World.isInSkyblock && match?.groupValues?.getOrNull(1) == "Collector's Edition") {
                 addProgress()
             }
         }
-        activeListeners.add(chatEvent)
-        activeListeners.add(gameEvent)
     }
 
     override fun getTargetCountForStage(stage: Int): Long {

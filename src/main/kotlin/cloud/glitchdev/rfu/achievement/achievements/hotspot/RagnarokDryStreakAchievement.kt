@@ -7,7 +7,8 @@ import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
 import cloud.glitchdev.rfu.constants.fishing.SeaCreatures
 import cloud.glitchdev.rfu.data.catches.CatchTracker.catchHistory
-import cloud.glitchdev.rfu.events.managers.SeaCreatureCatchEvents.registerSeaCreatureCatchEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.fishing.registerSeaCreatureCatchEvent
 
 @Achievement
 object RagnarokDryStreakAchievement : NumericStageAchievement() {
@@ -31,7 +32,7 @@ object RagnarokDryStreakAchievement : NumericStageAchievement() {
 
     val creature = SeaCreatures.get("Ragnarok")!!
 
-    override fun setupListeners() {
+    override fun setupListeners(scope: EventScope) {
         val history = catchHistory.getOrAdd(creature)
         currentCount = if(history.total > 0) {
             history.count.toLong()
@@ -39,7 +40,7 @@ object RagnarokDryStreakAchievement : NumericStageAchievement() {
             0L
         }
 
-        activeListeners.add(registerSeaCreatureCatchEvent { _, _, _, _, _ ->
+        scope.registerSeaCreatureCatchEvent { _, _, _, _, _ ->
             val history = catchHistory.getOrAdd(creature)
 
             currentCount = if(history.total > 0) {
@@ -47,7 +48,7 @@ object RagnarokDryStreakAchievement : NumericStageAchievement() {
             } else {
                 0L
             }
-        })
+        }
     }
 
     override fun getTargetCountForStage(stage: Int): Long {

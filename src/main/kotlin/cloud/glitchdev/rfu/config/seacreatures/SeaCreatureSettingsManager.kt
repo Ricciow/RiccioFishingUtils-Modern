@@ -1,5 +1,6 @@
 package cloud.glitchdev.rfu.config.seacreatures
 
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.events.AutoRegister
 import cloud.glitchdev.rfu.events.InstantRegister
 import cloud.glitchdev.rfu.events.InstantRegisteredEvent
@@ -13,6 +14,7 @@ import cloud.glitchdev.rfu.data.fishing.Hotspot
 import cloud.glitchdev.rfu.utils.World
 import net.minecraft.world.phys.Vec3
 import cloud.glitchdev.rfu.RiccioFishingUtils
+import cloud.glitchdev.rfu.RiccioFishingUtils.mc
 import cloud.glitchdev.rfu.utils.RFULogger
 import cloud.glitchdev.rfu.utils.network.Network
 import cloud.glitchdev.rfu.config.categories.BackendSettings
@@ -46,7 +48,7 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
             ?: return SeaCreatureSettings.empty()
 
         return try {
-            Gson().fromJson(stream.bufferedReader(), SeaCreatureSettings::class.java)
+            stream.bufferedReader().use { Gson().fromJson(it, SeaCreatureSettings::class.java) }
         } catch (e: Exception) {
             RFULogger.error("Failed to load Sea Creature defaults", e)
             SeaCreatureSettings.empty()
@@ -85,9 +87,11 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
     fun getPlural(scName: String): String = resolve(scName) { it.plural } ?: scName
     fun getArticle(scName: String): String = resolve(scName) { it.article } ?: ""
     fun getStyle(scName: String): String = resolve(scName) { it.style } ?: ""
+    internal fun getCategory(id: String): SeaCreatureCategorySetting? =
+        scConfig.categories?.get(id) ?: defaultConfig.categories?.get(id)
+
     fun isSpecial(scName: String): Boolean = resolve(scName) { it.special } ?: false
     fun isLsRangeEnabled(scName: String): Boolean = isSpecial(scName) && (resolve(scName) { it.lsRangeEnabled } ?: false)
-    fun isGdragAlert(scName: String): Boolean = isSpecial(scName) && (resolve(scName) { it.gdragAlert } ?: false)
     fun isRareSCAlert(scName: String): Boolean = isSpecial(scName) && (resolve(scName) { it.rareSCAlert } ?: false)
     fun isBossbarEnabled(scName: String): Boolean = isSpecial(scName) && (resolve(scName) { it.bossbar } ?: false)
     fun isMergeBossbarHpEnabled(scName: String): Boolean = isBossbarEnabled(scName) && (resolve(scName) { it.mergeBossbarHp } ?: scName.contains("Scuttler", ignoreCase = true))
@@ -109,7 +113,6 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
             updated = updated.copy(
                 lsRangeEnabled = false,
                 bossbar = false,
-                gdragAlert = false,
                 rareSCAlert = false,
                 invulnerabilityTimer = false
             )
@@ -146,16 +149,9 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
                 return
             }
 
-            val category = try {
-                val raw = resolve(scName) { it.category }
-                if (raw != null) SeaCreatureCategory.valueOf(raw) else null
-            } catch (e: Exception) {
-                RFULogger.error("Invalid category for $scName: ${resolve(scName) { it.category }}. Skipping registration.")
-                return
-            }
-
-            if (category == null) {
-                RFULogger.error("Category is missing for $scName. Skipping registration.")
+            val categoryId = resolve(scName) { it.category }
+            if (categoryId == null || getCategory(categoryId) == null) {
+                RFULogger.error("Invalid or missing category for $scName: $categoryId. Skipping registration.")
                 return
             }
 
@@ -168,11 +164,10 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
                 special = resolve(scName) { it.special } ?: false,
                 catchMessage = resolve(scName) { it.catchMessage } ?: "",
                 liquidType = liquidType,
-                category = category,
+                category = SeaCreatureCategory(categoryId),
                 condition = buildCondition(scConfig.creatures[scName]?.conditions ?: defaultConfig.creatures[scName]?.conditions),
                 lsRangeEnabled = isLsRangeEnabled(scName),
                 bossbar = isBossbarEnabled(scName),
-                gdragAlert = isGdragAlert(scName),
                 rareSCAlert = isRareSCAlert(scName),
                 mergeBossbarHp = isMergeBossbarHpEnabled(scName),
                 scDisplayColor = resolve(scName) { it.scDisplayColor } ?: "§f",
@@ -198,88 +193,87 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
 
     fun updateFromBackend() {
         Network.getRequest("${RiccioFishingUtils.API_URL}/config/sc-config") { response ->
-            if (response.isSuccessful()) {
-                val gson = Gson()
-                val backendConfig = try {
-                    gson.fromJson(response.body, SeaCreatureSettings::class.java)
-                } catch (e: Exception) {
-                    RFULogger.error("Failed to parse backend Sea Creature settings", e)
-                    null
-                } ?: return@getRequest
+            if (!response.isSuccessful()) return@getRequest
 
-                val currentConfig = seaCreatureConfigFile.data
-                val mergedCreatures = currentConfig.creatures.toMutableMap()
-                var updatedCount = 0
-                var addedCount = 0
-                var deletedCount = 0
+            val backendConfig = try {
+                Gson().fromJson(response.body, SeaCreatureSettings::class.java)
+            } catch (e: Exception) {
+                RFULogger.error("Failed to parse backend Sea Creature settings", e)
+                null
+            } ?: return@getRequest
 
-                backendConfig.creatures.forEach { (scName, backendSc) ->
-                    try {
-                        val currentSc = mergedCreatures[scName]
-                        if (currentSc == null) {
-                            mergedCreatures[scName] = backendSc
-                            addedCount++
-                            RFULogger.dev("New Sea Creature from backend: $scName")
-                        } else {
-                            val updatedSc = currentSc.copy(
-                                name = currentSc.name ?: backendSc.name,
-                                plural = currentSc.plural ?: backendSc.plural,
-                                article = currentSc.article ?: backendSc.article,
-                                style = currentSc.style ?: backendSc.style,
-                                scDisplayColor = currentSc.scDisplayColor ?: backendSc.scDisplayColor,
-                                rarePartyMessage = currentSc.rarePartyMessage ?: backendSc.rarePartyMessage,
-                                catchMessage = backendSc.catchMessage,
-                                liquidType = backendSc.liquidType,
-                                category = backendSc.category,
-                                conditions = backendSc.conditions,
-                                mergeBossbarHp = currentSc.mergeBossbarHp ?: backendSc.mergeBossbarHp,
-                                invulnerabilityTimer = currentSc.invulnerabilityTimer ?: backendSc.invulnerabilityTimer,
-                                modelAliases = backendSc.modelAliases ?: currentSc.modelAliases
-                            )
-                            if (updatedSc != currentSc) {
-                                mergedCreatures[scName] = updatedSc
-                                updatedCount++
-                                RFULogger.dev("Updated Sea Creature from backend: $scName")
-                            }
-                        }
-                    } catch (e: Exception) {
-                        RFULogger.error("Failed to process backend Sea Creature: $scName", e)
+            mc.execute { applyBackendConfig(backendConfig) }
+        }
+    }
+
+    private fun applyBackendConfig(backendConfig: SeaCreatureSettings) {
+        val currentConfig = scConfig
+        val mergedCreatures = currentConfig.creatures.toMutableMap()
+        val backendCategories = backendConfig.categories ?: currentConfig.categories
+        var updatedCount = 0
+        var addedCount = 0
+
+        val backendCreatures: Map<String, SeaCreatureSetting>? = backendConfig.creatures
+        if (backendCreatures == null) {
+            RFULogger.error("Backend Sea Creature settings are missing the creatures map")
+            return
+        }
+
+        backendCreatures.forEach { (scName, backendSc) ->
+            try {
+                val currentSc = mergedCreatures[scName]
+                if (currentSc == null) {
+                    mergedCreatures[scName] = backendSc
+                    addedCount++
+                    RFULogger.dev("New Sea Creature from backend: $scName")
+                } else {
+                    val updatedSc = currentSc.copy(
+                        name = currentSc.name ?: backendSc.name,
+                        plural = currentSc.plural ?: backendSc.plural,
+                        article = currentSc.article ?: backendSc.article,
+                        style = currentSc.style ?: backendSc.style,
+                        scDisplayColor = currentSc.scDisplayColor ?: backendSc.scDisplayColor,
+                        rarePartyMessage = currentSc.rarePartyMessage ?: backendSc.rarePartyMessage,
+                        catchMessage = backendSc.catchMessage,
+                        liquidType = backendSc.liquidType,
+                        category = backendSc.category,
+                        conditions = backendSc.conditions,
+                        mergeBossbarHp = currentSc.mergeBossbarHp ?: backendSc.mergeBossbarHp,
+                        invulnerabilityTimer = currentSc.invulnerabilityTimer ?: backendSc.invulnerabilityTimer,
+                        modelAliases = backendSc.modelAliases ?: currentSc.modelAliases
+                    )
+                    if (updatedSc != currentSc) {
+                        mergedCreatures[scName] = updatedSc
+                        updatedCount++
+                        RFULogger.dev("Updated Sea Creature from backend: $scName")
                     }
                 }
-
-                val backendKeys = backendConfig.creatures.keys
-                val currentKeys = mergedCreatures.keys.toSet()
-                currentKeys.forEach { key ->
-                    if (!backendKeys.contains(key)) {
-                        mergedCreatures.remove(key)
-                        deletedCount++
-                        RFULogger.dev("Removed Sea Creature not in backend: $key")
-                    }
-                }
-
-                if (addedCount == 0 && updatedCount == 0 && deletedCount == 0) return@getRequest
-
-                val newSettings = currentConfig.copy(creatures = mergedCreatures)
-
-                try {
-                    val field: Field = JsonFile::class.java.getDeclaredField("data")
-                    field.isAccessible = true
-                    field.set(seaCreatureConfigFile, newSettings)
-                    RFULogger.info("Backend SC sync complete: $addedCount added, $updatedCount updated, $deletedCount deleted")
-                    seaCreatureConfigFile.save()
-
-                    newSettings.creatures.keys.forEach { name ->
-                        try {
-                            registerCreature(name)
-                        } catch (e: Exception) {
-                            RFULogger.error("Failed to register Sea Creature after backend sync: $name", e)
-                        }
-                    }
-                } catch (e: Exception) {
-                    RFULogger.error("Failed to apply backend Sea Creature settings", e)
-                    e.printStackTrace()
-                }
+            } catch (e: Exception) {
+                RFULogger.error("Failed to process backend Sea Creature: $scName", e)
             }
+        }
+
+        val deleted = mergedCreatures.keys - backendCreatures.keys
+        deleted.forEach { scName ->
+            mergedCreatures.remove(scName)
+            RFULogger.dev("Removed Sea Creature not in backend: $scName")
+        }
+
+        val categoriesChanged = backendCategories != currentConfig.categories
+        if (addedCount == 0 && updatedCount == 0 && deleted.isEmpty() && !categoriesChanged) return
+
+        val newSettings = currentConfig.copy(creatures = mergedCreatures, categories = backendCategories)
+        try {
+            val field: Field = JsonFile::class.java.getDeclaredField("data")
+            field.isAccessible = true
+            field.set(seaCreatureConfigFile, newSettings)
+            seaCreatureConfigFile.save()
+
+            SeaCreatures.clear()
+            instantRegister()
+            RFULogger.info("Backend SC sync complete: $addedCount added, $updatedCount updated, ${deleted.size} deleted, categories changed: $categoriesChanged")
+        } catch (e: Exception) {
+            RFULogger.error("Failed to apply backend Sea Creature settings", e)
         }
     }
 
@@ -293,8 +287,8 @@ object SeaCreatureSettingsManager : InstantRegisteredEvent, RegisteredEvent {
         }
     }
 
-    override fun register() {
-        if (BackendSettings.backendAccepted && BackendSettings.loadScConfigFromBackend) {
+    override fun register(scope: EventScope) {
+        if (BackendSettings.loadScConfigFromBackend) {
             updateFromBackend()
         }
     }

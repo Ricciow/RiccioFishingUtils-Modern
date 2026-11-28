@@ -2,13 +2,14 @@ package cloud.glitchdev.rfu.feature.partyfinder
 
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.text.TextColor.*
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.feature.Feature
 import cloud.glitchdev.rfu.feature.RFUFeature
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.World
-import cloud.glitchdev.rfu.events.managers.PartyFinderEvents.registerPartyListChangedEvent
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.managers.party.registerPartyListChangedEvent
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 import cloud.glitchdev.rfu.model.party.FishingParty
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
@@ -22,8 +23,8 @@ object PartyFinderAlert : Feature {
     private val pendingAlerts = ConcurrentHashMap<String, Long>()
     private var isFirstFetch = true
 
-    override fun onInitialize() {
-        registerPartyListChangedEvent { parties ->
+    override fun onInitialize(scope: EventScope) {
+        scope.registerPartyListChangedEvent { parties ->
             if (!World.isInSkyblock || World.isOnAlpha) {
                 isFirstFetch = true
                 lastParties.clear()
@@ -33,7 +34,7 @@ object PartyFinderAlert : Feature {
             processParties(parties)
         }
 
-        registerTickEvent(interval = 600L) {
+        scope.registerTickEvent(interval = 600L) {
             if (!World.isInSkyblock || World.isOnAlpha) {
                 isFirstFetch = true
                 lastParties.clear()

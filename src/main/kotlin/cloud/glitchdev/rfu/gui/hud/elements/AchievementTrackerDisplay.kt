@@ -1,15 +1,17 @@
 package cloud.glitchdev.rfu.gui.hud.elements
 
+import cloud.glitchdev.rfu.events.EventScope
 import cloud.glitchdev.rfu.achievement.AchievementDifficulty
 import cloud.glitchdev.rfu.achievement.AchievementManager
+import cloud.glitchdev.rfu.achievement.AchievementProvider
 import cloud.glitchdev.rfu.achievement.interfaces.IStageAchievement
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.text.TextColor.GRAY
 import cloud.glitchdev.rfu.constants.text.TextColor.YELLOW
 import cloud.glitchdev.rfu.data.achievements.AchievementHandler
-import cloud.glitchdev.rfu.events.managers.AchievementStageUnlockedEvents.registerAchievementStageUnlockedEvent
-import cloud.glitchdev.rfu.events.managers.AchievementUnlockedEvents.registerAchievementUnlockedEvent
-import cloud.glitchdev.rfu.events.managers.AchievementUpdatedEvents.registerAchievementUpdatedEvent
+import cloud.glitchdev.rfu.events.managers.progress.registerAchievementStageUnlockedEvent
+import cloud.glitchdev.rfu.events.managers.progress.registerAchievementUnlockedEvent
+import cloud.glitchdev.rfu.events.managers.progress.registerAchievementUpdatedEvent
 import cloud.glitchdev.rfu.gui.UIScheme
 import cloud.glitchdev.rfu.gui.hud.AbstractHudElement
 import cloud.glitchdev.rfu.gui.hud.HudElement
@@ -31,7 +33,10 @@ object AchievementTrackerDisplay : AbstractHudElement("achievementTrackerDisplay
     override val requirement: Boolean
         get() = OtherSettings.achievementTrackerDisplay
     override val isElementActive: Boolean
-        get() = AchievementHandler.getTrackedAchievements().isNotEmpty()
+        get() = AchievementHandler.getTrackedAchievements().any { getVisibleAchievement(it) != null }
+
+    private fun getVisibleAchievement(id: String) =
+        AchievementManager.getAchievement(id)?.takeIf(AchievementProvider::isVisible)
 
     private val container = UIContainer().constrain {
         width = ChildBasedMaxSizeConstraint()
@@ -40,15 +45,15 @@ object AchievementTrackerDisplay : AbstractHudElement("achievementTrackerDisplay
 
     private var achievementLines: List<UIText> = emptyList()
 
-    override fun onInitialize() {
-        super.onInitialize()
-        registerAchievementUpdatedEvent { _ ->
+    override fun onInitialize(scope: EventScope) {
+        super.onInitialize(scope)
+        scope.registerAchievementUpdatedEvent { _ ->
             updateState()
         }
-        registerAchievementUnlockedEvent { _ ->
+        scope.registerAchievementUnlockedEvent { _ ->
             updateState()
         }
-        registerAchievementStageUnlockedEvent { _ ->
+        scope.registerAchievementStageUnlockedEvent { _ ->
             updateState()
         }
     }
@@ -56,8 +61,8 @@ object AchievementTrackerDisplay : AbstractHudElement("achievementTrackerDisplay
     override fun onUpdateState() {
         achievementLines.forEach { container.removeChild(it) }
 
-        val trackedIds = AchievementHandler.getTrackedAchievements()
-        if (trackedIds.isEmpty()) {
+        val trackedAchievements = AchievementHandler.getTrackedAchievements().mapNotNull(::getVisibleAchievement)
+        if (trackedAchievements.isEmpty()) {
             if (isEditing) {
                 achievementLines = listOf(
                     UIText("Achievement Tracker").constrain {
@@ -72,9 +77,7 @@ object AchievementTrackerDisplay : AbstractHudElement("achievementTrackerDisplay
             return
         }
 
-        achievementLines = trackedIds.mapNotNull { id ->
-            val achievement = AchievementManager.getAchievement(id) ?: return@mapNotNull null
-            
+        achievementLines = trackedAchievements.map { achievement ->
             val name = if (achievement is IStageAchievement && !achievement.isCompleted) {
                 achievement.getStageName(achievement.currentStage) ?: achievement.name
             } else {

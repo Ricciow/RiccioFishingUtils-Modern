@@ -20,42 +20,24 @@ class SlidingRateTracker(
             val hoursElapsed = FishingSession.duration.inWholeMilliseconds / 3600000.0
             return if (hoursElapsed > 0) total / hoursElapsed else 0.0
         }
-    var lastEvent: Instant = Instant.DISTANT_PAST
-        private set
-    var trackingStart: Instant = Instant.DISTANT_PAST
-        private set
+    private var trackingStart: Instant = Instant.DISTANT_PAST
 
     fun addEvent(value: Double) {
         val now = Clock.System.now()
         if (trackingStart == Instant.DISTANT_PAST) trackingStart = now
-        lastEvent = now
         total += value
         history.add(Pair(now, value))
         update()
     }
 
-    fun updateLastEvent(now: Instant) {
-        if (lastEvent != Instant.DISTANT_PAST) lastEvent = now
-    }
-
     fun update() {
-        val now = Clock.System.now()
-        val limit = limitProvider()
-
-        val isDowntimeReached = !FishingSession.isPaused && lastEvent != Instant.DISTANT_PAST && (now - lastEvent) > limit
-
-        if (isDowntimeReached) {
-            if (!GeneralFishing.pauseSessionOnWindowReached) {
-                reset()
-                return
-            }
-        }
-
         if (!FishingSession.isFishing) {
             currentRatePerHour = 0.0
             return
         }
 
+        val now = Clock.System.now()
+        val limit = limitProvider()
         while (history.isNotEmpty() && (now - history.first().first) > limit) {
             history.removeFirst()
         }
@@ -73,7 +55,6 @@ class SlidingRateTracker(
     }
 
     fun reset() {
-        lastEvent = Instant.DISTANT_PAST
         trackingStart = Instant.DISTANT_PAST
         history.clear()
         total = 0.0

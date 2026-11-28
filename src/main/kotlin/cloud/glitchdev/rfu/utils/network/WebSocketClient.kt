@@ -4,9 +4,9 @@ import cloud.glitchdev.rfu.RiccioFishingUtils.WS_URL
 import cloud.glitchdev.rfu.RiccioFishingUtils.RFU_VERSION
 import cloud.glitchdev.rfu.constants.text.TextColor
 import cloud.glitchdev.rfu.utils.RFULogger
-import cloud.glitchdev.rfu.events.managers.ErrorEvents
-import cloud.glitchdev.rfu.events.managers.AfkEvents
-import cloud.glitchdev.rfu.events.managers.WebSocketEvents
+import cloud.glitchdev.rfu.events.managers.ui.ErrorEvents
+import cloud.glitchdev.rfu.events.managers.player.AfkEvents
+import cloud.glitchdev.rfu.events.managers.connection.ConnectionStatusChangedEventManager
 import cloud.glitchdev.rfu.utils.Coroutines
 import com.google.gson.Gson
 import java.net.URI
@@ -68,7 +68,7 @@ object WebSocketClient {
         private set(value) {
             if (field != value) {
                 field = value
-                WebSocketEvents.trigger(value)
+                ConnectionStatusChangedEventManager.runTasks(value)
             }
         }
 
@@ -84,6 +84,8 @@ object WebSocketClient {
         client.newWebSocketBuilder()
             .header("User-Agent", USER_AGENT)
             .buildAsync(URI.create(wsUrl), object : WebSocket.Listener {
+                private val textBuffer = StringBuilder()
+
                 override fun onOpen(webSocket: WebSocket) {
                     RFULogger.dev("WebSocket Opened (URL: $wsUrl), sending CONNECT frame...")
                     isReconnecting = false
@@ -97,15 +99,22 @@ object WebSocketClient {
                 }
 
                 override fun onText(webSocket: WebSocket, data: CharSequence, last: Boolean): CompletionStage<*>? {
-                    val frame = data.toString()
-                    if (frame.trim() != "") {
-                        handleFrame(frame)
+                    textBuffer.append(data)
+                    if (last) {
+                        val message = textBuffer.toString()
+                        textBuffer.setLength(0)
+                        try {
+                            handleMessage(message)
+                        } catch (e: Exception) {
+                            RFULogger.error("Error handling WebSocket message: ", e)
+                        }
                     }
                     webSocket.request(1)
                     return null
                 }
 
                 override fun onClose(webSocket: WebSocket, statusCode: Int, reason: String): CompletionStage<*>? {
+                    textBuffer.setLength(0)
                     RFULogger.info("WebSocket Closed: $statusCode $reason")
                     if (lastAuthToken != null && lastConnectionIssue == null) {
                         lastConnectionIssue = "The server closed the connection (code $statusCode)."
@@ -119,6 +128,7 @@ object WebSocketClient {
                 }
 
                 override fun onError(webSocket: WebSocket, error: Throwable) {
+                    textBuffer.setLength(0)
                     RFULogger.error("WebSocket Error (on Listener): ", error)
                     lastConnectionIssue = describeConnectionError(error)
                     isConnected = false
@@ -172,6 +182,16 @@ object WebSocketClient {
                 Network.authenticateUser()
             } else {
                 lastAuthToken?.let { connect(it) }
+            }
+        }
+    }
+
+    private fun handleMessage(message: String) {
+        if (message.isBlank()) return
+        for (rawFrame in message.split('\u0000')) {
+            val frame = rawFrame.trimStart('\r', '\n')
+            if (frame.isNotBlank()) {
+                handleFrame(frame)
             }
         }
     }
@@ -230,7 +250,7 @@ object WebSocketClient {
                     val map = gson.fromJson(msg, Map::class.java)
                     val errorMsg = map["message"]?.toString() ?: "Unknown error"
                     val origin = map["origin"]?.toString() ?: "UNKNOWN"
-                    ErrorEvents.trigger(errorMsg, origin)
+                    ErrorEvents.runTasks(errorMsg, origin)
                 } catch (e: Exception) {
                     RFULogger.error("Error parsing backend error message: ", e)
                 }

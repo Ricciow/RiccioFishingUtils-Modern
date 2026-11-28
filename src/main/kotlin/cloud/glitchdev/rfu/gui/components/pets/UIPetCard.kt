@@ -9,7 +9,6 @@ import cloud.glitchdev.rfu.model.pets.PetAuctionResponse
 import cloud.glitchdev.rfu.utils.Chat
 import cloud.glitchdev.rfu.utils.TextUtils
 import cloud.glitchdev.rfu.utils.gui.ColorUtils.toJavaColor
-import gg.essential.elementa.UIComponent
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
@@ -23,7 +22,6 @@ import gg.essential.elementa.constraints.TextAspectConstraint
 import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.*
 import gg.essential.universal.UKeyboard
-import java.awt.Color
 import kotlin.text.format
 
 class UIPetCard(
@@ -32,7 +30,6 @@ class UIPetCard(
 ) : UIRoundedRectangle(radiusProps) {
     private val borderWidth = UIScheme.pfCardBorderWidth
     private val innerPadding = UIScheme.pfCardInnerPadding
-    private val smallPadding = UIScheme.pfCardSmallPadding
     
     private var titleText: UIText = UIText("")
 

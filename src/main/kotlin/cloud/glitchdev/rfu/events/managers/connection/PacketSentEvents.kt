@@ -1,0 +1,26 @@
+package cloud.glitchdev.rfu.events.managers.connection
+
+import cloud.glitchdev.rfu.events.AbstractEventManager
+import cloud.glitchdev.rfu.events.EventManager
+import cloud.glitchdev.rfu.events.wrappers.VoidCancelable
+import net.minecraft.network.protocol.Packet
+
+@EventManager(register = false)
+object PacketSentEvents : AbstractEventManager<(packet: Packet<*>, cancelable: VoidCancelable) -> Unit, PacketSentEvents.PacketSentEvent>() {
+    override val runTasks: (Packet<*>, VoidCancelable) -> Unit = { packet, cancelable ->
+        safeExecution(mainThread = false) {
+            for (task in tasks) {
+                task.callback(packet, cancelable)
+                if (cancelable.isCancelled()) break
+            }
+        }
+    }
+
+    class PacketSentEvent(
+        priority: Int = DEFAULT_EVENT_PRIORITY,
+        callback: (packet: Packet<*>, cancelable: VoidCancelable) -> Unit
+    ) : ManagedTask<(Packet<*>, VoidCancelable) -> Unit, PacketSentEvent>(priority, callback) {
+        override fun register() = submitTask(this)
+        override fun unregister() = removeTask(this)
+    }
+}

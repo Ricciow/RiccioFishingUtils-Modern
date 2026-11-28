@@ -20,6 +20,7 @@
 
 package cloud.glitchdev.rfu.gui.components.elementa
 
+import cloud.glitchdev.rfu.gui.components.textinput.ColorCodeText
 import gg.essential.elementa.constraints.WidthConstraint
 import gg.essential.elementa.dsl.basicYConstraint
 import gg.essential.elementa.dsl.coerceIn
@@ -30,7 +31,7 @@ import gg.essential.elementa.renderer.ElementaExtractor
 import java.awt.Color
 
 /**
- * Same as Elementa's original Text Input but modified to have centered text and shadows on user input
+ * Same as Elementa's original Text Input but modified to have centered text and support & color codes and shadows on user input
  */
 open class UISpecialTextInput @JvmOverloads constructor(
     placeholder: String = "",
@@ -40,7 +41,8 @@ open class UISpecialTextInput @JvmOverloads constructor(
     allowInactiveSelection: Boolean = false,
     inactiveSelectionBackgroundColor: Color = Color(176, 176, 176),
     inactiveSelectionForegroundColor: Color = Color.WHITE,
-    cursorColor: Color = Color.WHITE
+    cursorColor: Color = Color.WHITE,
+    allowColors: Boolean = false,
 ) : RFUTextInput(
     placeholder,
     shadow,
@@ -49,7 +51,8 @@ open class UISpecialTextInput @JvmOverloads constructor(
     allowInactiveSelection,
     inactiveSelectionBackgroundColor,
     inactiveSelectionForegroundColor,
-    cursorColor
+    cursorColor,
+    allowColors,
 ) {
     protected var minWidth: WidthConstraint? = null
     protected var maxWidth: WidthConstraint? = null
@@ -70,12 +73,13 @@ open class UISpecialTextInput @JvmOverloads constructor(
 
     protected open fun setCursorPos() {
         cursorComponent.unhide()
-        val (cursorPosX, _) = cursor.toScreenPos()
+        val (cursorPosX, _) = inputCursorScreenPos()
         cursorComponent.setX((cursorPosX).pixels())
     }
 
     override fun textToLines(text: String): List<String> {
-        return listOf(text.replace('\n', ' '))
+        val editable = if (allowColors) ColorCodeText.toEditable(text) else text
+        return listOf(editable.replace('\n', ' '))
     }
 
     override fun scrollIntoView(pos: LinePosition) {
@@ -84,10 +88,11 @@ open class UISpecialTextInput @JvmOverloads constructor(
         if (column < 0 || column > lineText.length)
             return
 
-        val widthBeforePosition = lineText.substring(0, column).width(getTextScale())
+        val widthBeforePosition = if (allowColors) coloredWidth(0, column) else lineText.substring(0, column).width(getTextScale())
+        val fullWidth = if (allowColors) coloredWidth(0) else lineText.width(getTextScale())
 
         when {
-            getTextForRender().width(getTextScale()) < getWidth() -> {
+            fullWidth < getWidth() -> {
                 horizontalScrollingOffset = 0f
             }
             horizontalScrollingOffset > widthBeforePosition -> {
@@ -101,6 +106,7 @@ open class UISpecialTextInput @JvmOverloads constructor(
 
     override fun screenPosToVisualPos(x: Float, y: Float): LinePosition {
         val targetXPos = x + horizontalScrollingOffset
+        if (allowColors) return LinePosition(0, coloredColumnAtX(0, targetXPos), isVisual = true)
         var currentX = 0f
 
         val line = getTextForRender()
@@ -120,7 +126,7 @@ open class UISpecialTextInput @JvmOverloads constructor(
             val width = if (!hasText() && !this.active) {
                 placeholderWidth
             } else {
-                getTextForRender().width(getTextScale()) + 1 /* cursor */
+                (if (allowColors) coloredWidth(0) else getTextForRender().width(getTextScale())) + 1 /* cursor */
             }
             setWidth(width.pixels().coerceIn(minWidth!!, maxWidth!!))
         }
@@ -168,27 +174,30 @@ open class UISpecialTextInput @JvmOverloads constructor(
             setCursorPos()
         }
 
-        if (hasSelection()) {
-            var currentX = getLeft()
+        if (allowColors) {
+            if (hasSelection()) cursorComponent.hide(instantly = true)
+            extractColoredLine(extractor, 0, getLeft() - horizontalScrollingOffset, lineY)
+        } else if (hasSelection()) {
+            var currentX = getLeft() - horizontalScrollingOffset
             cursorComponent.hide(instantly = true)
 
             if (!selectionStart().isAtLineStart) {
                 val preSelectionText = lineText.substring(0, selectionStart().column)
                 getFontProvider().extractMcScale(
-                    extractor, preSelectionText, getColor(), currentX - horizontalScrollingOffset, lineY, getTextScale(), shadow
+                    extractor, preSelectionText, getColor(), currentX, lineY, getTextScale(), shadow
                 )
-                currentX += preSelectionText.width(getTextScale())
+                currentX += preSelectionText.width(getTextScale(), getFontProvider())
             }
 
             val selectedText = lineText.substring(selectionStart().column, selectionEnd().column)
-            val selectedTextWidth = selectedText.width(getTextScale())
-            extractSelectedText(extractor, selectedText, currentX, currentX + selectedTextWidth, row = 0)
+            val selectedTextWidth = selectedText.width(getTextScale(), getFontProvider())
+            extractPlainSelection(extractor, selectedText, currentX, currentX + selectedTextWidth, lineY)
             currentX += selectedTextWidth
 
             if (!selectionEnd().isAtLineEnd) {
                 val postSelectionText = lineText.substring(selectionEnd().column)
                 getFontProvider().extractMcScale(
-                    extractor, postSelectionText, getColor(), currentX - horizontalScrollingOffset, lineY, getTextScale(), shadow
+                    extractor, postSelectionText, getColor(), currentX, lineY, getTextScale(), shadow
                 )
             }
         } else {

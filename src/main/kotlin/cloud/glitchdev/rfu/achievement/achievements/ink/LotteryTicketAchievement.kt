@@ -7,7 +7,8 @@ import cloud.glitchdev.rfu.achievement.AchievementType
 import cloud.glitchdev.rfu.achievement.types.NumericStageAchievement
 import cloud.glitchdev.rfu.constants.fishing.RareDrops
 import cloud.glitchdev.rfu.data.drops.DropManager
-import cloud.glitchdev.rfu.events.managers.TickEvents.registerTickEvent
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
 
 @Achievement
 object LotteryTicketAchievement: NumericStageAchievement() {
@@ -46,12 +47,12 @@ object LotteryTicketAchievement: NumericStageAchievement() {
 
     }
 
-    override fun setupListeners() {
-        activeListeners.add(registerTickEvent(interval = 20) {
+    override fun setupListeners(scope: EventScope) {
+        scope.registerTickEvent(interval = 20) {
             val totalCores = DropManager.dropHistory.getOrAdd(RareDrops.LUCKY_CLOVER_CORE).history.size
             currentCount = totalCores.toLong()
 
-        })
+        }
     }
 
     override fun getTargetCountForStage(stage: Int): Long {

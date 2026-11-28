@@ -2,6 +2,8 @@ package cloud.glitchdev.rfu.feature.other
 
 import cloud.glitchdev.rfu.config.categories.OtherSettings
 import cloud.glitchdev.rfu.constants.text.Emoji
+import cloud.glitchdev.rfu.constants.text.EmojiData
+import cloud.glitchdev.rfu.data.other.EmojiPreferences
 import com.mojang.brigadier.context.StringRange
 import com.mojang.brigadier.suggestion.Suggestions
 import java.util.concurrent.CompletableFuture
@@ -19,15 +21,19 @@ object EmojiAutocomplete {
         if (!lastWord.startsWith(":") || lastWord.endsWith(":") || lastWord.length <= OtherSettings.requiredChars) return null
 
         val search = lastWord.lowercase()
-        val matches = Emoji.ALL.filter { (trigger, _) ->
-            trigger.lowercase().startsWith(search)
+        val matches = Emoji.ALL.filter { (trigger, emoji) ->
+            trigger.lowercase().startsWith(search) && EmojiPreferences.isEnabled(emoji)
         }
+        if (matches.isEmpty()) return null
 
+        val byShortestTrigger = compareBy<Map.Entry<String, EmojiData>> { it.key.length }
+            .thenBy { it.key.lowercase() }
         val uniqueMatches = matches.entries
             .groupBy { it.value }
             .mapNotNull { (_, entries) ->
-                entries.minByOrNull { it.key.length }
+                entries.minWithOrNull(byShortestTrigger)
             }
+            .sortedWith(byShortestTrigger)
 
         val range = StringRange.between(lastWordIndex, cursorPosition)
         val suggestionsList = uniqueMatches.map { entry ->

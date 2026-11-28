@@ -226,7 +226,7 @@ object ConfigMigration {
             "Ink Fishing" to listOf("rainAlertVolume"),
             "Lava Fishing" to listOf("diedJawbusVolume"),
             "Other" to listOf("achievementVolume", "littlefootVolume", "fullInventoryVolume"),
-            "Sea Creatures" to listOf("rareScSoundVolume", "goldenDragonVolume")
+            "Sea Creatures" to listOf("rareScSoundVolume")
         )
         for ((category, keys) in volumeSettings) {
             val cat = getCategory(json, category) ?: continue
@@ -280,9 +280,6 @@ object ConfigMigration {
         )
         migrate("Sea Creatures", "rareSc", "rareScTitleExtraTicks", 10,
             "detectionAlert" to "enabled", "rareScSound" to "sound", "rareScSoundVolume" to "volume", "rareScAlertPreset" to "titleTemplate"
-        )
-        migrate("Sea Creatures", "goldenDragon", "goldenDragonTitleExtraTicks", 40,
-            "goldenDragonAlert" to "enabled", "goldenDragonSound" to "sound", "goldenDragonVolume" to "volume", "gdragAlertThreshold" to "threshold"
         )
         migrate("Lava Fishing", "jawbusDeath", "jawbusDeathTitleExtraTicks", 10,
             "diedJawbusAlert" to "enabled", "diedJawbusSound" to "sound", "diedJawbusVolume" to "volume"

@@ -9,7 +9,7 @@ client-side mod built using Fabric and Kotlin.
 
 * **Language:** Kotlin (primary), Java.
 * **Loader:** Fabric Loader.
-* **Multi-version Support:** Uses `Stonecutter` to manage multiple Minecraft versions (e.g., 26.1, 26.2).
+* **Multi-version Support:** Uses `Stonecutter` to manage multiple Minecraft versions (e.g., 26.1, 26.2, 26.3).
 * **Libraries:**
     * **UniversalCraft / Elementa:** For UI/rendering (EssentialGG libs).
     * **ResourcefulConfig:** For configuration management.
@@ -29,20 +29,27 @@ The `processor` module scans for specific annotations and generates `cloud.glitc
 | `@Achievement` | `BaseAchievement` | `registerAchievements()` |
 | `@Command` | `AbstractCommand` | `registerCommands()` |
 | `@HudElement` | `AbstractHudElement` | `registerHud()` |
+| `@EventManager(register = true)` | `AbstractEventManager`, `RegisteredEvent` | `registerEvents()` |
 | `@AutoRegister` | `RegisteredEvent` | `registerEvents()` |
 | `@InstantRegister` | `InstantRegisteredEvent` | `registerInstantEvents()` |
+| `@PartyCommand` | `IPartyCommand` | `registerPartyCommands()` |
+| `@RFUChallenge` | `BaseChallenge` | `registerChallenges()` |
 
 ### Initialization Flow
 
-1.  **Static Init**: `ConfigMigration` runs.
+1.  **Static Init**: `ConfigMigration` and `AchievementMigration` run.
 2.  **`onInitializeClient`**:
     - `RFULoader.registerInstantEvents()`
     - `CLIENT_STARTED` event registers the rest:
+        - `registerChallenges()`
         - `loadFeatures()`
         - `registerCommands()`
+        - `registerPartyCommands()`
         - `registerEvents()`
+        - `CLIENT_STOPPING` hook to call `EventScopes.shutdown()` (registered after `registerEvents()` so `ShutdownEvents` flushes state first)
         - `registerHud()`
         - `registerAchievements()`
+        - `postInitializeEvents()`
 
 ## Project Structure
 
@@ -64,7 +71,7 @@ To create a new achievement, create a Kotlin `object` and annotate it with `@Ach
 1.  **`BaseAchievement`**: For simple, one-time tasks or custom logic.
 2.  **`NumericAchievement`**: For counting tasks (e.g., "Catch 100 fish"). Call `addProgress(amount)`.
 3.  **`StageAchievement`**: For multi-step tasks (e.g., "Catch Fish A, then Fish B, then Fish C"). Call `advanceStage()`.
-4.  **`NumericStageAchievement`**: For multi-step tasks that require a specific count per stage. Implement `getTargetCountForStage(stage: Int): Int`.
+4.  **`NumericStageAchievement`**: For multi-step tasks that require a specific count per stage. Implement `getTargetCountForStage(stage: Int): Long`.
 
 ### Required Fields
 
@@ -82,20 +89,23 @@ Each achievement MUST define:
 *   **`StageAchievement`**: Automatically uses `currentStage` (starts at 1) and `targetStage`. Use `addStageInfo()` to add metadata per stage.
 *   **`BaseAchievement`**: To show numerical progress (e.g., "2/5"), override:
     ```kotlin
-    override val currentProgress: Int get() = myValue
-    override val targetProgress: Int get() = myGoal
+    override val currentProgress: Long get() = myValue
+    override val targetProgress: Long get() = myGoal
     ```
     Also update `_progress = currentProgress.toFloat() / targetProgress.toFloat()` to drive the progress bar.
 
 ### Implementation Workflow
 
-1.  **Listeners**: Register event listeners in `setupListeners()`. The system automatically unregisters these when the achievement is completed.
+1.  Register listeners with `scope.registerXEvent` in `setupListeners(scope: EventScope)`. The achievement closes the scope on completion, reset, or reload.
 2.  **Completion**: Call `complete()` to finish the achievement immediately.
 3.  **Persistence**: For complex state, override `saveState()` and `loadState(progressData: Map<String, Any>)`.
 
 **Example:**
 
 ```kotlin
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.fishing.registerSeaCreatureCatchEvent
+
 @Achievement
 object SeaCreatureExpert : BaseAchievement() {
     override val id = "sc_expert"
@@ -103,21 +113,21 @@ object SeaCreatureExpert : BaseAchievement() {
     override val description = "Catch 5 unique sea creatures."
     override val type = AchievementType.NORMAL
     override val difficulty = AchievementDifficulty.MEDIUM
-    override val category = AchievementCategory.COLLECTION
+    override val category = AchievementCategory.GENERAL
 
     private val caughtIds = mutableSetOf<String>()
     private val goal = 5
 
-    override val currentProgress: Int get() = caughtIds.size
-    override val targetProgress: Int get() = goal
+    override val currentProgress: Long get() = caughtIds.size.toLong()
+    override val targetProgress: Long get() = goal.toLong()
 
-    override fun setupListeners() {
-        activeListeners.add(registerSeaCreatureCatchEvent { sc, _ ->
-            if (caughtIds.add(sc.id)) {
+    override fun setupListeners(scope: EventScope) {
+        scope.registerSeaCreatureCatchEvent { sc, _, _, _, _ ->
+            if (caughtIds.add(sc.scName)) {
                 _progress = currentProgress.toFloat() / targetProgress.toFloat()
                 if (caughtIds.size >= goal) complete()
             }
-        })
+        }
     }
 
     override fun loadState(progressData: Map<String, Any>) {
@@ -161,16 +171,22 @@ RFU uses a custom layer on top of Fabric events for "managed tasks".
 
 ### Event Managers (`cloud.glitchdev.rfu.events.managers`)
 
-Managers are annotated with `@AutoRegister`. They must implement `RegisteredEvent` and use `runTasks` with `safeExecution {}`.
+Event managers live in domain packages such as `chat`, `fishing`, and `lifecycle`, with one concrete manager per file. Annotate managers with `@EventManager`. Use `register = true` for managers that install their own hooks and implement `RegisteredEvent`. Shared hooks such as `ChatEvents` use `@AutoRegister` and dispatch to the managers in their package. Use `runTasks` with `safeExecution {}` for dispatch.
+
+KSP generates one `ScopedRegistrations.kt` per package with the `EventScope.registerXEvent` extensions for that package. Use `@ScopedRegistration` on a method when registration needs a custom signature or filtering and `@Defaults` to declare defaults copied into the generated extension.
+
+`RegisteredEvent.register(scope)` and `postInitialize(scope)` receive the client startup scope. Use the generated `scope.registerXEvent` functions for managed listeners. The startup scope closes at client shutdown and stays active during a listener restart.
+
+`EventScopes.restart()` (also exposed via `/rfudebug restartlisteners`) closes and remounts all restartable scopes (features, HUD elements, achievements, daily challenges, and active windows). Keep `onInitialize(scope)` and `setupListeners(scope)` idempotent across restarts, register cleanup in `scope.onClose`, and bind delayed coroutines with `Coroutines.launch(scope)` / `Coroutines.setTimeout(scope, ...)`.
 
 Common managers:
-- `TickEvents`: `registerTickEvent(priority, interval) { ... }`
-- `ChatEvents`: `registerChatEvent`, `registerGameEvent(regex)`.
-- `SeaCreatureCatchEvents`: `registerSeaCreatureCatchEvent { sc, isDoubleHook, inHotspot -> ... }`
+- `lifecycle.TickEvents`: `registerTickEvent(priority, interval) { ... }`
+- `chat.ChatEventManager` and `chat.GameEventManager`: `registerChatEvent`, `registerGameEvent(regex)`.
+- `fishing.SeaCreatureCatchEvents`: `registerSeaCreatureCatchEvent { sc, isDoubleHook, hotspot, pos, bait -> ... }`
 
 ### Managed Tasks
 
-Registration returns a `ManagedTask`. Call `.unregister()` to stop updates. Achievement base classes track these in `activeListeners` for auto-unregistration.
+Registration returns a `ManagedTask`. Scoped registrations unregister automatically when their `EventScope` closes. Call `.unregister()` to stop an individual task.
 
 ## Features
 
@@ -178,15 +194,18 @@ Features are core functionality units.
 
 *   **Definition:** Kotlin `object` implementing `Feature`.
 *   **Annotation:** `@RFUFeature`.
-*   **Initialization:** Implement `onInitialize()` to register listeners.
+*   Implement `onInitialize(scope: EventScope)` and register listeners on the supplied scope. The feature loader closes it on unload and client shutdown.
 
 **Example:**
 
 ```kotlin
+import cloud.glitchdev.rfu.events.EventScope
+import cloud.glitchdev.rfu.events.managers.lifecycle.registerTickEvent
+
 @RFUFeature
 object MyFeature : Feature {
-    override fun onInitialize() {
-        registerTickEvent(interval = 20) {
+    override fun onInitialize(scope: EventScope) {
+        scope.registerTickEvent(interval = 20) {
             // Logic
         }
     }
@@ -209,6 +228,7 @@ Preferred method is the `JsonFile` utility (`cloud.glitchdev.rfu.utils.JsonFile`
 ## UI & HUD
 
 *   **HUD Elements:** Annotate with `@HudElement` and extend `AbstractHudElement` for positioning/scaling.
+*   Register HUD listeners in `onInitialize(scope: EventScope)`. The loader closes each element's scope and removes the element from the HUD window on unload.
 *   **Framework:** Uses `Elementa` and `UIScheme` for styling.
 *   **Logic vs View:** Render in `HudElement`, logic in `Feature` or manager.
 

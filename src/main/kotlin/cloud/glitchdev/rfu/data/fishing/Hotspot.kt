@@ -1,4 +1,4 @@
-﻿package cloud.glitchdev.rfu.data.fishing
+package cloud.glitchdev.rfu.data.fishing
 
 import cloud.glitchdev.rfu.constants.fishing.FishingIslands
 import cloud.glitchdev.rfu.constants.fishing.HotSpotConstants
@@ -17,7 +17,8 @@ data class Hotspot(
     var buff: String,
     var radius: Float = 0f,
     val liquid: LiquidTypes,
-    val startTime: Long = System.currentTimeMillis()
+    val startTime: Long = System.currentTimeMillis(),
+    val entityId: Int? = null
 ) {
     val type: HotspotType get() = HotspotType.fromBuff(buff)
     val color: Color get() = type.color

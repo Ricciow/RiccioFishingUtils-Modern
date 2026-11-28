@@ -3,6 +3,7 @@ package cloud.glitchdev.rfu.config.categories
 import cloud.glitchdev.rfu.config.Category
 import cloud.glitchdev.rfu.config.SoundTitleSettings
 import cloud.glitchdev.rfu.config.TitleSettings
+import cloud.glitchdev.rfu.constants.fishing.BobbinTimeBonus
 import cloud.glitchdev.rfu.constants.fishing.FishTrackingType
 import cloud.glitchdev.rfu.constants.fishing.LiquidTypes
 import cloud.glitchdev.rfu.constants.fishing.RodTimerStyle
@@ -262,12 +263,23 @@ object GeneralFishing : Category("General Fishing") {
 
     var muteAnnoyingSounds by boolean(false) {
         name = Literal("Mute Annoying Sounds")
-        description = Literal("Mutes Ghast Crying in Backwater Bayou and Elder Guardian moans in the Crimson Isle.")
+        description = Literal("Mutes Ghast cries in Backwater Bayou, Elder Guardian moans in the Crimson Isle, totem activation in Jerry's Workshop, and Jade Dragon sounds in Galatea.")
+    }
+
+    var muteNonRfuSounds by boolean(false) {
+        name = Literal("Mute Non-RFU Sounds")
+        description = Literal("Silences all other audios.")
     }
 
     var bobbinTimeDisplay by reloadableBoolean(true) {
         name = Literal("Bobbin' Time Display")
         description = Literal("Display nearby bobbers and Bobbin' Time bonus on screen")
+    }
+
+    var bobbinTimeBonuses by enums(*BobbinTimeBonus.entries.toTypedArray()) {
+        name = Literal("Bobbin' Time Bonuses")
+        description = Literal("Select which bonuses appear.")
+        condition = { bobbinTimeDisplay }
     }
 
     var frozenBlazeDisplay by reloadableBoolean(true) {
