@@ -125,7 +125,7 @@ class UIPartyCard(
                 joinErrorPopup.showWarning("You are already hosting a party! Please delete your current party listing before joining another.")
             } else {
                 val validation = PartyRequirementsManager.canJoinParty(party)
-                if (!validation.isSuccess) {
+                if (!validation.isSuccess && !PartyRequirementsManager.shouldDeferJoinValidationToServer(validation)) {
                     joinErrorPopup.showWarning(validation.getErrorMessage())
                     return@onMouseClick
                 }

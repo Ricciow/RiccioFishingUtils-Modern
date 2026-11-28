@@ -17,10 +17,12 @@ import cloud.glitchdev.rfu.utils.User
 import cloud.glitchdev.rfu.utils.SkillTracker
 import cloud.glitchdev.rfu.utils.dsl.compact
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
 
 @AutoRegister
 object PartyRequirementsManager : RegisteredEvent {
+    private val JOIN_REFRESH_COOLDOWN = 5.minutes
     private var playerRequisites: PlayerRequisitesResult? = null
     var lastRequisitesFetchTime: Instant? = null
         private set
@@ -149,6 +151,18 @@ object PartyRequirementsManager : RegisteredEvent {
         val fishingXp = maxOf(SkillTracker.getSkillXp(SkillType.FISHING), cachedLevelXp)
         if (fishingXp < Skills.getTotalXpAtLevel(party.level.coerceIn(0, 50))) return false
         return party.level < 50 || fishingXp - Skills.getTotalXpAtLevel(50) >= party.requiredOverflow()
+    }
+
+    private fun PartyValidationResult.containsClientOnlyFailure(): Boolean = when (this) {
+        is PartyValidationResult.MissingBrainFood -> true
+        is PartyValidationResult.Invalid -> failures.any { it.containsClientOnlyFailure() }
+        else -> false
+    }
+
+    fun shouldDeferJoinValidationToServer(result: PartyValidationResult): Boolean {
+        if (result.isSuccess || result.containsClientOnlyFailure()) return false
+        val lastFetch = lastRequisitesFetchTime ?: return false
+        return (Clock.System.now() - lastFetch) >= JOIN_REFRESH_COOLDOWN
     }
 
     fun canJoinParty(party: FishingParty): PartyValidationResult = validatePartyRequirements(party)

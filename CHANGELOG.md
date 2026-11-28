@@ -23,6 +23,7 @@
 - Rebalanced LF drop dry streak achievements for the Magic Find update.
 - The “What is Magic Find?” achievement has been retired. Players who previously had it can find it under the Legacy tab.
 - Changed the /rfupets rarity filter to filter by minimum rarity.
+- Made the party finder check the requirements more often if it fails
 
 ### Fixes
 - Fixed trackers resetting when an individual tracker went quiet during an active fishing session.
