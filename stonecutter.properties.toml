@@ -1,5 +1,5 @@
 #RFU
-mod.version = "1.21.0"
+mod.version = "1.21.1"
 mod.group = "cloud.glitchdev.rfu"
 mod.id = "rfu"
 mod.name = "RiccioFishingUtils"
