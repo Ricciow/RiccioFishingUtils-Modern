@@ -64,14 +64,14 @@ class UIPetFilterArea(var onSearch: () -> Unit = {}) : UIContainer() {
             onSelect = { triggerUpdate() }
         } childOf topArea
 
-        val rarities = arrayListOf(DataOption("ALL", "All Rarities"))
+        val rarities = arrayListOf<DataOption>()
         ItemRarity.entries
             .takeWhile { it <= ItemRarity.MYTHIC }
             .forEach { rarities.add(DataOption(it, it.toString())) }
 
         val defaultRarityIndex = rarities.indexOfFirst { it.value == ItemRarity.LEGENDARY }.coerceAtLeast(0)
 
-        rarityDropdown = UIDropdown(rarities, defaultRarityIndex, 2f, label = "Rarity").constrain {
+        rarityDropdown = UIDropdown(rarities, defaultRarityIndex, 2f, label = "Min Rarity").constrain {
             x = JustifiedCramSiblingConstraint(2f)
             y = CenterConstraint()
             width = 35.percent()
@@ -129,7 +129,7 @@ class UIPetFilterArea(var onSearch: () -> Unit = {}) : UIContainer() {
     }
 
     fun getCategory(): PetCategory? = categoryDropdown.getSelectedItem().value as? PetCategory
-    fun getRarity(): ItemRarity? = rarityDropdown.getSelectedItem().value as? ItemRarity
+    fun getRarity(): ItemRarity? = (rarityDropdown.getSelectedItem().value as? ItemRarity)?.takeIf { it != ItemRarity.COMMON }
     fun getCount(): Int = countField.getText().toIntOrNull()?.coerceIn(1, 24) ?: 12
     fun getMaxLevel(): Int? = maxLevelField.getText().toIntOrNull()
     fun getFilterCandy(): Boolean = candyToggle.selected
